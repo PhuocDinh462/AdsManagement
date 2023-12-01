@@ -42,7 +42,6 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.16",
-    "font-awesome-sass-loader": "^2.0.1",
     "postcss": "^8.4.31",
     "sass": "^1.63.6"
   }
