@@ -16,7 +16,6 @@
     "react-router-dom": "^6.18.0",
     "react-scripts": "5.0.1",
     "recoil": "^0.7.7",
-    "sass": "^1.69.5",
     "web-vitals": "^3.5.0"
   },
   "scripts": {
@@ -39,13 +38,8 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.16",
-    "eslint": "^8.54.0",
-    "eslint-config-airbnb": "^19.0.4",
-    "eslint-plugin-import": "^2.29.0",
-    "eslint-plugin-jsx-a11y": "^6.8.0",
-    "eslint-plugin-react": "^7.33.2",
     "font-awesome-sass-loader": "^2.0.1",
     "postcss": "^8.4.31",
-    "sass-loader": "^13.3.2"
+    "sass": "^1.63.6"
   }
 }
