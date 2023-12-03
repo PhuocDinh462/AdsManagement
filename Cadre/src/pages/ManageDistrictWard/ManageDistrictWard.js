@@ -117,7 +117,7 @@ const ManageDistrictWard = () => {
 
     return (
         <div>
-            <HeaderTable />
+            <HeaderTable title={'Danh sách quận, phường'} />
             <div className={classes.container}>
                 {/* Tab Filter */}
                 <div className={classes.container__header}>

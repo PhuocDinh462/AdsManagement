@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import classes from './Home.module.scss';
 import SideBars from '../../components/sidebar/SideBars';
 import ManageDistrictWard from '../ManageDistrictWard/ManageDistrictWard';
+import ManageForm from '../ManageForm/ManageForm';
 
 const data = [
     {
@@ -34,13 +35,20 @@ const data = [
     },
 ];
 const Home = () => {
+    const [selectedPage, setSelectedPage] = useState(1);
+    const handlePageChange = (pageId) => {
+        setSelectedPage(pageId);
+    };
+
     return (
         <div className={classes.dashboard}>
             <div style={{ height: '60px', width: '100%', background: 'blue' }}>NavBar</div>
             <div className={classes.dashboard__container}>
-                <SideBars data={data} />
+                <SideBars data={data} onPageChange={handlePageChange} />
                 <div className={classes['dashboard__container--table']}>
-                    <ManageDistrictWard />
+                    {selectedPage === 1 && <ManageDistrictWard />}
+                    {selectedPage === 2 && <ManageForm />}
+                    {/* ... render other components based on selectedPage */}
                 </div>
             </div>
         </div>

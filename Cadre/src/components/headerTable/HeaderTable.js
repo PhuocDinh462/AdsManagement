@@ -1,10 +1,10 @@
 import React from 'react';
 import classes from './HeaderTable.module.scss';
 
-const HeaderTable = () => {
+const HeaderTable = ({ title }) => {
     return (
         <div className={classes.header}>
-            <p className={classes.header__title}>Danh sách Quận, Phường</p>
+            <p className={classes.header__title}>{title}</p>
             <div className={classes.header__buttonAdd}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
                     <path

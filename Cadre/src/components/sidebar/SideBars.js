@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import ItemSide from './ItemSide/ItemSide';
 import classes from './SideBars.module.scss';
 
-const SideBars = ({ data }) => {
+const SideBars = ({ data, onPageChange }) => {
     const [selectedItemId, setSelectedItemId] = useState(1);
 
     const handleItemClick = (id) => {
         setSelectedItemId(id);
+        onPageChange(id);
     };
     return (
         <div className={classes.sidebar}>
