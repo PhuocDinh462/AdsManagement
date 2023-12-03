@@ -1,12 +1,13 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import classes from './Home.module.scss';
+import SideBar from '../../components/sideBar/SideBar';
 
 const Home = () => {
     return (
         <div className={classes.home}>
-            <input className={classes.home_input} placeholder="nhap" />
-            <p className={classes.home_text}>huynh vinh</p>
+            <div style={{ height: '60px', width: '100%', background: 'blue' }}>NavBar</div>
+            <SideBar />
         </div>
     );
 };

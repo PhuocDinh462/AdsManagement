@@ -1,0 +1,35 @@
+.header {
+    // background-color: #86e9f1;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 20px;
+    &__title {
+        color: #0a6971;
+
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 28px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: normal;
+    }
+
+    &__buttonAdd {
+        background-color: #0a6971;
+        color: #fff;
+        border-radius: 50px;
+        padding: 10px 20px;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+
+        .add {
+            font-weight: 600;
+            font-size: 16px;
+            font-style: normal;
+            line-height: normal;
+        }
+    }
+}
+
