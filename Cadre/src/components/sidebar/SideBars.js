@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import ItemSide from './ItemSide/ItemSide';
-import classes from './SideBar.module.scss';
+import classes from './SideBars.module.scss';
 
-const SideBar = ({ data }) => {
+const SideBars = ({ data }) => {
     const [selectedItemId, setSelectedItemId] = useState(1);
 
     const handleItemClick = (id) => {
@@ -23,5 +23,5 @@ const SideBar = ({ data }) => {
     );
 };
 
-export default SideBar;
+export default SideBars;
 

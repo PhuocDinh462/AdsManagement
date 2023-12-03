@@ -1,8 +1,15 @@
-.home {
-    height: 500px;
+.dashboard {
+    height: 100%;
+    background: #f6f7fb;
 
-    &_input {
-        padding: 30px;
+    &__container {
+        display: flex;
+        &--table {
+            // background-color: yellow;
+
+            flex: 1;
+            margin: 16px 30px;
+        }
     }
 }
 
