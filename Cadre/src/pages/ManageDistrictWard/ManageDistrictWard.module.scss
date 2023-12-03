@@ -26,11 +26,45 @@
             text-align: center;
             font-family: Arial, Helvetica, sans-serif;
             border-collapse: collapse;
+
             &_row {
                 height: 50px;
 
                 &:nth-child(odd) {
                     background-color: #f6f7f9;
+                }
+
+                .btn_trash,
+                .btn_pen {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 1rem;
+                    border: none;
+
+                    transition: all 0.3s ease;
+                }
+
+                .btn_pen {
+                    background-color: #dbf4f1;
+                    color: #0a6971;
+
+                    &:hover {
+                        background-color: #0a6971;
+                        color: #fff;
+                        border: 1px solid #0a6971;
+                    }
+                }
+
+                .btn_trash {
+                    margin-right: 8px;
+                    background-color: #ffebec;
+                    color: #cd8d8d;
+
+                    &:hover {
+                        color: rgb(246, 22, 22);
+                        background-color: white;
+                        border: 0.5px solid red;
+                    }
                 }
             }
         }
@@ -39,9 +73,19 @@
     &__header {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
+        align-items: flex-end;
+        margin-bottom: 15px;
+        margin-top: 10px;
         padding: 0 20px;
+        border-bottom: #b9b3b3 solid 0.4px;
+
+        &_filter {
+            display: flex;
+            flex-direction: row;
+            gap: 15px;
+            font-weight: 600;
+            font-family: Arial, Helvetica, sans-serif;
+        }
 
         &_search {
             display: flex;
@@ -51,7 +95,7 @@
             border-radius: 20px;
             border: 1px solid #b9b3b3;
             padding: 1rem;
-            margin-top: 1rem;
+            margin-bottom: 2px;
 
             .ic {
                 font-size: 1.5rem;

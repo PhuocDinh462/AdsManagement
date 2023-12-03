@@ -3,7 +3,7 @@ import HeaderTable from '../../components/headerTable/HeaderTable';
 import classes from './ManageDistrictWard.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
-import { faPlus, faClose } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faClose, faTrash, faPen } from '@fortawesome/free-solid-svg-icons';
 
 const ManageDistrictWard = () => {
     const initialData = [
@@ -101,24 +101,19 @@ const ManageDistrictWard = () => {
     ];
 
     const [data, setData] = useState(initialData);
+    const [selectedFilter, setSelectedFilter] = useState('All');
 
     const handleFilterChange = (level) => {
-        if (level === 'All') {
-            setData(initialData);
-        } else {
-            const filteredData = initialData.filter((item) => item.level === level);
-            setData(filteredData);
-        }
+        const filteredData = level === 'All' ? initialData : initialData.filter((item) => item.level === level);
+        setData(filteredData);
+        setSelectedFilter(level);
     };
-    const columns = [
-        { Header: 'STT', accessor: 'stt' },
-        { Header: 'Khu vực', accessor: 'area' },
-        { Header: 'Tên cán bộ quản lý', accessor: 'managerName' },
-        { Header: 'Email', accessor: 'email' },
-        { Header: 'Số điện thoại', accessor: 'phoneNumber' },
-        { Header: 'Cấp', accessor: 'level' },
-        { Header: 'Chỉnh sửa', accessor: 'editButton' },
-    ];
+
+    const getFilterStyle = (filter) => ({
+        color: selectedFilter === filter ? '#0A6971' : '#2f2f2f',
+        borderBottom: selectedFilter === filter ? '2px solid #0A6971' : 'none',
+        cursor: 'pointer',
+    });
 
     return (
         <div>
@@ -126,10 +121,16 @@ const ManageDistrictWard = () => {
             <div className={classes.container}>
                 {/* Tab Filter */}
                 <div className={classes.container__header}>
-                    <div>
-                        <button onClick={() => handleFilterChange('All')}>All</button>
-                        <button onClick={() => handleFilterChange('Phường')}>Phường</button>
-                        <button onClick={() => handleFilterChange('Quận')}>Quận</button>
+                    <div className={classes.container__header_filter}>
+                        <div onClick={() => handleFilterChange('All')} style={getFilterStyle('All')}>
+                            All
+                        </div>
+                        <div onClick={() => handleFilterChange('Phường')} style={getFilterStyle('Phường')}>
+                            Phường
+                        </div>
+                        <div onClick={() => handleFilterChange('Quận')} style={getFilterStyle('Quận')}>
+                            Quận
+                        </div>
                     </div>
                     <div className={classes.container__header_search}>
                         <FontAwesomeIcon icon={faMagnifyingGlass} className={classes.ic} />
@@ -166,7 +167,14 @@ const ManageDistrictWard = () => {
                                     <td style={{ width: '20%' }}>{row.email}</td>
                                     <td style={{ width: '20%' }}>{row.phoneNumber}</td>
                                     <td style={{ width: '10%' }}>{row.level}</td>
-                                    <td style={{ width: '15%' }}>{row.editButton}</td>
+                                    <td style={{ width: '15%' }}>
+                                        <button className={classes.btn_trash}>
+                                            <FontAwesomeIcon icon={faTrash} />
+                                        </button>
+                                        <button className={classes.btn_pen}>
+                                            <FontAwesomeIcon icon={faPen} />
+                                        </button>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
