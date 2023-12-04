@@ -4,14 +4,12 @@ import { Outlet } from 'react-router-dom';
 
 const Layout = () => {
   return (
-    <div className=''>
+    <div className="">
       <Outlet />
     </div>
   );
 };
 
-Layout.propTypes = {
-
-};
+Layout.propTypes = {};
 
 export default Layout;

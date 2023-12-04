@@ -1,14 +1,13 @@
 .dashboard {
-    height: 100%;
-    &__container {
-        display: flex;
+  height: 100%;
+  &__container {
+    display: flex;
 
-        &--table {
-            // background-color: yellow;
+    &--table {
+      // background-color: yellow;
 
-            flex: 1;
-            margin: 16px 30px;
-        }
+      flex: 1;
+      margin: 16px 30px;
     }
+  }
 }
-
