@@ -1,0 +1,112 @@
+// .home {
+//   height: 500px;
+// }
+
+.wrapper {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    background-color: #0a6971;
+
+    .wrapper-user {
+        position: relative;
+        margin: 24px;
+        width: 30%;
+        height: 100%;
+
+        .header-user {
+            width: 100%;
+            padding: 24px;
+            .title-profile {
+                color: #fff;
+                font-weight: 700;
+                font-size: 32px;
+            }
+        }
+
+        .content-user {
+            width: 100%;
+            .wrapper-avatar-container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                .avatar-container {
+                    width: 50%;
+                    height: 50%;
+                    aspect-ratio: 1;
+                    background-color: #fce38a;
+                    border-radius: 50%; /* Đặt border-radius để tạo hình tròn */
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    .iconUser {
+                        color: #fff;
+                        width: 100%;
+                        height: 50%;
+                        // font-size: 72px;
+                    }
+                }
+            }
+            .username-container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin-top: 36px;
+                .username {
+                    color: #fff;
+                    font-weight: 700;
+                    font-size: 24px;
+                }
+            }
+        }
+
+        .footer-user {
+            margin-top: 200px;
+            width: 100%;
+
+            .change-password {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                .button-change {
+                    // padding: 12px 24px;
+                }
+            }
+        }
+    }
+    .wrapper-manage-account {
+        width: 70%;
+        height: 100%;
+        background-color: #f3f3f3;
+        border-left: 1px solid;
+
+        .wrapper-account {
+            border-top-left-radius: 16px;
+            border-bottom-left-radius: 16px;
+            padding: 48px;
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+
+            .header-manage-account {
+                margin: 50px 0;
+                p {
+                    font-size: 32px;
+                    font-weight: 600;
+                }
+            }
+
+            .container-manage-account {
+            }
+
+            .footer-manage-account {
+            }
+        }
+    }
+}
+
+.iconLock {
+    margin-left: 12px;
+}
+
