@@ -85,7 +85,6 @@ const ManageForm = () => {
                             <tr>
                                 <th style={{ width: '5%' }}>STT</th>
                                 <th style={{ width: '40%' }}>Nội dung</th>
-                                <th style={{ width: '20%' }}>Hình ảnh minh họa</th>
                                 <th style={{ width: '20%' }}>Loại</th>
                                 <th style={{ width: '15%' }}>Chỉnh sửa</th>
                             </tr>
@@ -101,7 +100,6 @@ const ManageForm = () => {
                                 <tr className={classes.table__body_wrap_row} key={rowIndex}>
                                     <td style={{ width: '5%' }}>{row.stt}</td>
                                     <td style={{ width: '40%' }}>{row.content}</td>
-                                    <td style={{ width: '20%' }}>{row.img}</td>
                                     <td style={{ width: '20%' }}>{row.type}</td>
                                     <td style={{ width: '15%' }}>
                                         <button className={classes.btn_trash}>
