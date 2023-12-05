@@ -12,9 +12,7 @@ $fontColor: #333;
   margin-bottom: 20px;
 }
 
-.first-row,
-.third-row,
-.fourth-row {
+.first-row {
   display: flex;
   justify-content: space-between;
 
@@ -60,7 +58,7 @@ $fontColor: #333;
   textarea {
     // Tùy chỉnh kiểu đầu xuống cho thẻ textarea
     resize: vertical; // Cho phép người dùng thay đổi kích thước theo chiều dọc
-    min-height: 100px; // Điều chỉnh chiều cao tối thiểu
+    min-height: 150px; // Điều chỉnh chiều cao tối thiểu
   }
 }
 
@@ -84,3 +82,4 @@ $fontColor: #333;
     cursor: not-allowed; /* Con trỏ không cho sự kiện không hoạt động */
   }
 }
+

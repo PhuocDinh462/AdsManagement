@@ -5,27 +5,23 @@ const Form = () => {
   const [officer, setOfficer] = useState('');
   const [timestamp, setTimestamp] = useState('');
   const [location, setLocation] = useState('');
-  const [image, setImage] = useState(null);
-  const [size, setSize] = useState('');
-  const [advertisementType, setAdvertisementType] = useState('');
-  const [content, setContent] = useState('');
+  const [positionType, setPositionType] = useState(null);
+  const [status, setStatus] = useState('');
+  const [regionType, setRegionType] = useState('');
   const [reason, setReason] = useState('');
 
-  const handleFileChange = (e) => {
-    // Xử lý khi người dùng chọn file hình ảnh
-    const selectedFile = e.target.files[0];
-    setImage(selectedFile);
-  };
+
 
   const handleSubmit = () => {
     // Xử lý nộp form - bạn có thể thực hiện các hành động cần thiết ở đây
-    console.log('Form submitted:', {
+    console.log("Form submitted:", {
       officer,
       timestamp,
       location,
       image,
       size,
       advertisementType,
+      regionType,
       content,
       reason,
     });
@@ -56,44 +52,36 @@ const Form = () => {
 
       <div className={classes['third-row']}>
         <label className={classes['title-input']}>
-          Hình ảnh 1:
-          <input type="file" accept="image/*" name="image" onChange={handleFileChange} />
-        </label>
-
-        <label className={classes['title-input']}>
-          Hình ảnh 2:
-          <input type="file" accept="image/*" name="image" onChange={handleFileChange} />
-        </label>
-      </div>
-
-      <div className={classes['fourth-row']}>
-        <label className={classes['title-input']}>
-          Kích thước:
-          <input type="text" name="size" value={size} onChange={(e) => setSize(e.target.value)} />
-        </label>
-        <label className={classes['title-input']}>
-          Hình thức quảng cáo:
-          <select
-            name="advertisementType"
-            value={advertisementType}
-            onChange={(e) => setAdvertisementType(e.target.value)}
-          >
+          Khu vực:
+          <select name="regionType" value={regionType} onChange={(e) => setRegionType(e.target.value)}>
             <option value="option1">Option 1</option>
             <option value="option2">Option 2</option>
           </select>
         </label>
       </div>
 
-      <div className={classes['fifth-row']}></div>
-
-      <div className={classes['sixth-row']}>
+      <div className={classes['fourth-row']}>
         <label className={classes['title-input']}>
-          Nội dung:
-          <textarea name="content" value={content} onChange={(e) => setContent(e.target.value)} />
+          Loại địa điểm:
+          <select name="positionType" value={positionType} onChange={(e) => setPositionType(e.target.value)}>
+            <option value="option1">Option 1</option>
+            <option value="option2">Option 2</option>
+          </select>
         </label>
       </div>
 
-      <div className={classes['seventh-row']}>
+      <div className={classes['fifth-row']}>
+        <label className={classes['title-input']}>
+          Tình trạng:
+          <select name="status" value={status} onChange={(e) => setStatus(e.target.value)}>
+            <option value="option1">Option 1</option>
+            <option value="option2">Option 2</option>
+          </select>
+        </label>
+
+      </div>
+
+      <div className={classes['sixth-row']}>
         <label className={classes['title-input']}>
           Lý do:
           <textarea name="reason" value={reason} onChange={(e) => setReason(e.target.value)} />
@@ -101,9 +89,7 @@ const Form = () => {
       </div>
 
       {/* Nút Submit Form */}
-      <button className={classes['custom-button']} type="button" onClick={handleSubmit}>
-        Submit Form
-      </button>
+      <button className={classes['custom-button']} type="button" onClick={handleSubmit}>Submit Form</button>
     </div>
   );
 };

@@ -8,6 +8,7 @@ const Form = () => {
   const [image, setImage] = useState(null);
   const [size, setSize] = useState('');
   const [advertisementType, setAdvertisementType] = useState('');
+  const [regionType, setRegionType] = useState('');
   const [content, setContent] = useState('');
   const [reason, setReason] = useState('');
 
@@ -19,13 +20,14 @@ const Form = () => {
 
   const handleSubmit = () => {
     // Xử lý nộp form - bạn có thể thực hiện các hành động cần thiết ở đây
-    console.log('Form submitted:', {
+    console.log("Form submitted:", {
       officer,
       timestamp,
       location,
       image,
       size,
       advertisementType,
+      regionType,
       content,
       reason,
     });
@@ -78,18 +80,22 @@ const Form = () => {
         </label>
         <label className={classes['title-input']}>
           Hình thức quảng cáo:
-          <select
-            name="advertisementType"
-            value={advertisementType}
-            onChange={(e) => setAdvertisementType(e.target.value)}
-          >
+          <select name="advertisementType" value={advertisementType} onChange={(e) => setAdvertisementType(e.target.value)}>
             <option value="option1">Option 1</option>
             <option value="option2">Option 2</option>
           </select>
         </label>
       </div>
 
-      <div className={classes['fifth-row']}></div>
+      <div className={classes['fifth-row']}>
+        <label className={classes['title-input']}>
+          Khu vực:
+          <select name="regionType" value={regionType} onChange={(e) => setRegionType(e.target.value)}>
+            <option value="option1">Option 1</option>
+            <option value="option2">Option 2</option>
+          </select>
+        </label>
+      </div>
 
       <div className={classes['sixth-row']}>
         <label className={classes['title-input']}>
@@ -106,9 +112,7 @@ const Form = () => {
       </div>
 
       {/* Nút Submit Form */}
-      <button className={classes['custom-button']} type="button" onClick={handleSubmit}>
-        Submit Form
-      </button>
+      <button className={classes['custom-button']} type="button" onClick={handleSubmit}>Submit Form</button>
     </div>
   );
 };
