@@ -7,6 +7,8 @@
     "@fortawesome/free-regular-svg-icons": "^6.5.0",
     "@fortawesome/free-solid-svg-icons": "^6.5.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
+    "@goongmaps/goong-geocoder-react": "^0.1.1",
+    "@goongmaps/goong-map-react": "^1.1.2",
     "@reduxjs/toolkit": "^1.9.7",
     "axios": "^1.6.0",
     "font-awesome": "^4.7.0",

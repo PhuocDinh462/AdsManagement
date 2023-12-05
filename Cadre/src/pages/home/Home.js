@@ -3,6 +3,7 @@ import classes from './Home.module.scss';
 import SideBars from '~components/sidebar/SideBars';
 import ManageDistrictWard from '../ManageDistrictWard/ManageDistrictWard';
 import ManageForm from '../ManageForm/ManageForm';
+import Maptiles from '~/src/components/maptiles/Maptiles';
 
 const data = [
   {
@@ -46,7 +47,7 @@ const Home = () => {
       <div className={classes.dashboard__container}>
         <SideBars data={data} onPageChange={handlePageChange} />
         <div className={classes['dashboard__container--table']}>
-          {selectedPage === 1 && <ManageDistrictWard />}
+          {selectedPage === 1 && <Maptiles />}
           {selectedPage === 2 && <ManageForm />}
           {/* ... render other components based on selectedPage */}
         </div>
@@ -56,3 +57,4 @@ const Home = () => {
 };
 
 export default Home;
+
