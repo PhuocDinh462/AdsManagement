@@ -9,7 +9,7 @@
       "~utils/*": ["./src/utils/*"],
       "~pages": ["./src/pages/*"],
       "~routes": ["./src/routes/*"],
-      "~styles": ["./src/Styles/*"],
+      "~styles": ["./src/styles/*"],
       "~hook": ["./src/hook/*"],
       "~store": ["./src/store/*"]
     }

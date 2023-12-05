@@ -1,0 +1,32 @@
+@import '/src/styles/colors.scss';
+
+.main_container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 3rem;
+  transition: opacity 0.2s;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.main_container:hover {
+  opacity: 0.5;
+}
+
+.item_text {
+  margin-left: 10px;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: $text_600;
+}
+
+.item_icon {
+  font-size: 1.85rem;
+  color: $text_500;
+}
+
+.item--active {
+  font-weight: 700;
+  color: rgba($color: $primary_300, $alpha: 0.8);
+}
