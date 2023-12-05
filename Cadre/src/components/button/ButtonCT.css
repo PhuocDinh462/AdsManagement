@@ -95,23 +95,23 @@
 }
 
 .outlineBtn {
-  border: 1px solid #B05E27;
-  color: #B05E27;
+  border: 1px solid #b05e27;
+  color: #b05e27;
   font-weight: 500;
 }
 
 .primary {
-  background-color: #B05E27;
+  background-color: #b05e27;
   color: #fff;
   font-size: 16px;
 }
 
 .redLinear {
   color: #fff;
-  background-image: linear-gradient(90deg, #C15D5D, rgba(193, 99, 93, 0.8));
+  background-image: linear-gradient(90deg, #c15d5d, rgba(193, 99, 93, 0.8));
 }
 
 .greenLinear {
   color: #fff;
-  background-image: linear-gradient(90deg, #79B14D, rgba(93, 193, 151, 0.8));
+  background-image: linear-gradient(90deg, #79b14d, rgba(93, 193, 151, 0.8));
 }

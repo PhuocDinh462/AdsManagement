@@ -1,0 +1,39 @@
+// Form.module.scss
+
+$primaryColor: #3498db;
+$fontColor: #333;
+
+.first-row,
+.second-row,
+.third-row,
+.fourth-row {
+  margin-bottom: 20px;
+}
+
+.first-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.title-input {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #bdc3c7;
+
+  input {
+    width: 100%;
+    height: 48px;
+    margin-top: 12px;
+    font-size: 16px;
+    padding: 8px;
+    border: 1px solid #767c80;
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.3s ease;
+
+    &:focus {
+      border-color: #000;
+    }
+  }
+}
