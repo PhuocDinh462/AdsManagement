@@ -1,4 +1,4 @@
-import styles from './styles.module.scss';
+import classes from './styles.module.scss';
 
 export default function AdSpots() {
   return <div>AdSpots</div>;
