@@ -1,0 +1,51 @@
+@import '/src/styles/colors.scss';
+
+.main_container {
+  width: fit-content;
+  height: fit-content;
+  border: 1px solid $text_300;
+  border-radius: 10px;
+  padding: 1.5rem;
+  background-color: white;
+}
+
+.item_container {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.item_container:hover {
+  opacity: 0.5;
+}
+
+.item_info_icon {
+  font-size: 2rem;
+  color: #00b2ff;
+}
+
+.item_info_name {
+  font-size: 1.6rem;
+  color: $text_700;
+  margin-left: 5px;
+}
+
+.item_logout_icon {
+  font-size: 2rem;
+  color: #ff4646;
+}
+
+.item_logout_name {
+  font-size: 1.6rem;
+  color: $text_700;
+  margin-left: 5px;
+  color: #ff4646;
+}
+
+.divider {
+  height: 1px;
+  width: 100%;
+  background-color: $text_300;
+  margin: 1.2rem 0;
+}
