@@ -43,7 +43,6 @@ const Home = () => {
 
   return (
     <div className={classes.dashboard}>
-      {/* <div style={{ height: '60px', width: '100%', background: 'blue' }}>NavBar</div> */}
       <div className={classes.dashboard__container}>
         <SideBars data={data} onPageChange={handlePageChange} />
         <div className={classes['dashboard__container--table']}>
