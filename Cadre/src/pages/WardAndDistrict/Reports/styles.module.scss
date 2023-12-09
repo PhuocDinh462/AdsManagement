@@ -91,10 +91,14 @@
     margin-bottom: 1rem;
     margin-top: 5px;
     border-bottom: $text_300 solid 1px;
+
+    .searchBar_container {
+      margin-bottom: 1rem;
+    }
   }
 }
 
-.pagination-bar-container {
+.paginationBar_container {
   margin-top: 0.6rem;
   display: flex;
   justify-content: center;

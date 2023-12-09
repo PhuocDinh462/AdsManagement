@@ -1,6 +1,6 @@
 import classes from './styles.module.scss';
 import React, { useState, useMemo } from 'react';
-import { faMagnifyingGlass, faInfo, faEye } from '@fortawesome/free-solid-svg-icons';
+import { faInfo, faEye } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Pagination from '~components/Pagination';
 import SearchBar from '~components/SearchBar';
@@ -105,7 +105,9 @@ export default function Reports() {
     <>
       <div className={classes.container}>
         <div className={classes.container__header}>
-          <SearchBar placeholder="Tìm kiếm..." onChange={(keyword) => console.log(keyword)} />
+          <div className={classes.searchBar_container}>
+            <SearchBar placeholder="Tìm kiếm..." onChange={(keyword) => console.log(keyword)} />
+          </div>
         </div>
 
         {/* Table Header */}
@@ -156,7 +158,7 @@ export default function Reports() {
         </div>
       </div>
 
-      <div className={classes['pagination-bar-container']}>
+      <div className={classes.paginationBar_container}>
         <Pagination
           currentPage={currentPage}
           totalCount={data.length}

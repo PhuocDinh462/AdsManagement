@@ -6,8 +6,8 @@ export default function NavBarItem(props) {
 
   return (
     <a href={path} className={classes.main_container}>
-      <FontAwesomeIcon icon={icon} className={`${classes['item_icon']} ${active ? classes['item--active'] : ''}`} />
-      <div className={`${classes['item_text']} ${active ? classes['item--active'] : ''}`}>{name}</div>
+      <FontAwesomeIcon icon={icon} className={`${classes['item_icon']} ${active && classes['item--active']}`} />
+      <div className={`${classes['item_text']} ${active && classes['item--active']}`}>{name}</div>
     </a>
   );
 }

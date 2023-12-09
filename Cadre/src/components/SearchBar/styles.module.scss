@@ -7,7 +7,6 @@
   border-radius: 100px;
   border: 1px solid $text_300;
   padding: 1rem;
-  margin-bottom: 1rem;
 
   .ic {
     font-size: 1.5rem;
@@ -21,5 +20,9 @@
     border: none;
     outline: none;
     background-color: transparent;
+  }
+
+  ::placeholder {
+    user-select: none;
   }
 }
