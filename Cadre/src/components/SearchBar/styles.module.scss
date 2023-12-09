@@ -1,0 +1,24 @@
+@import '/src/styles/colors.scss';
+
+.main_container {
+  display: flex;
+  align-items: center;
+  height: 2.5em;
+  border-radius: 100px;
+  border: 1px solid $text_300;
+  padding: 1rem;
+  margin-bottom: 1rem;
+
+  .ic {
+    font-size: 1.5rem;
+    margin-right: 7px;
+    color: $text_500;
+  }
+
+  .text_input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    outline: none;
+  }
+}

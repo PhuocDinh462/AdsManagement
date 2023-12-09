@@ -3,76 +3,89 @@ import React, { useState, useMemo } from 'react';
 import { faMagnifyingGlass, faInfo, faEye } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Pagination from '~components/Pagination';
+import SearchBar from '~components/SearchBar';
 
 export default function Reports() {
   const [data, setData] = useState([
     {
+      id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
       reportedObject: 'Bảng quảng cáo',
       numberOfReports: 2,
       date: '12/07/2023',
     },
     {
+      id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
       reportedObject: 'Địa điểm',
       numberOfReports: 1,
       date: '12/07/2023',
     },
     {
+      id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
       reportedObject: 'Bảng quảng cáo',
       numberOfReports: 2,
       date: '12/07/2023',
     },
     {
+      id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
       reportedObject: 'Địa điểm',
       numberOfReports: 1,
       date: '12/07/2023',
     },
     {
+      id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
       reportedObject: 'Bảng quảng cáo',
       numberOfReports: 2,
       date: '12/07/2023',
     },
     {
+      id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
       reportedObject: 'Địa điểm',
       numberOfReports: 1,
       date: '12/07/2023',
     },
     {
+      id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
       reportedObject: 'Bảng quảng cáo',
       numberOfReports: 2,
       date: '12/07/2023',
     },
     {
+      id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
       reportedObject: 'Địa điểm',
       numberOfReports: 1,
       date: '12/07/2023',
     },
     {
+      id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
       reportedObject: 'Bảng quảng cáo',
       numberOfReports: 2,
       date: '12/07/2023',
     },
     {
+      id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
       reportedObject: 'Địa điểm',
       numberOfReports: 1,
       date: '12/07/2023',
     },
     {
+      id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
       reportedObject: 'Bảng quảng cáo',
       numberOfReports: 2,
       date: '12/07/2023',
     },
     {
+      id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
       reportedObject: 'Địa điểm',
       numberOfReports: 1,
@@ -92,10 +105,7 @@ export default function Reports() {
     <>
       <div className={classes.container}>
         <div className={classes.container__header}>
-          <div className={classes.container__header_search}>
-            <FontAwesomeIcon icon={faMagnifyingGlass} className={classes.ic} />
-            <input type="text" id="inputSearch" placeholder="Tìm kiếm..." className={classes.text_input} />
-          </div>
+          <SearchBar placeholder="Tìm kiếm..." onChange={(keyword) => console.log(keyword)} />
         </div>
 
         {/* Table Header */}
@@ -127,11 +137,17 @@ export default function Reports() {
                   <td style={{ width: '15%' }}>{row.date}</td>
                   <td style={{ width: '10%' }}>
                     <button className={classes.btn_info}>
-                      <FontAwesomeIcon icon={faInfo} />
+                      <div className={classes.icon_container}>
+                        <FontAwesomeIcon icon={faInfo} />
+                      </div>
                     </button>
-                    <button className={classes.btn_detail}>
-                      <FontAwesomeIcon icon={faEye} />
-                    </button>
+                    <a href={`/reports/detail/${row.id}`}>
+                      <button className={classes.btn_detail}>
+                        <div className={classes.icon_container}>
+                          <FontAwesomeIcon icon={faEye} />
+                        </div>
+                      </button>
+                    </a>
                   </td>
                 </tr>
               ))}

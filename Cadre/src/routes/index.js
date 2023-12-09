@@ -12,6 +12,7 @@ import SendPointRequest from '../pages/SendPointRequest/SendPointRequest';
 import AdSpots from '../pages/WardAndDistrict/AdSpots';
 import Licenses from '../pages/WardAndDistrict/Licenses';
 import Reports from '../pages/WardAndDistrict/Reports';
+import ReportsDetail from '../pages/WardAndDistrict/Reports/ReportsDetail';
 
 const Navigation = () => {
   const authenticated = true;
@@ -36,6 +37,9 @@ const Navigation = () => {
         </Route>
         <Route element={<Layout />}>
           <Route path="/reports" name="reports" element={<Reports />} />
+        </Route>
+        <Route element={<Layout />}>
+          <Route path="/reports/detail/:id" name="reports-detail" element={<ReportsDetail />} />
         </Route>
         <Route element={<Layout />}>
           <Route path="/licenses" name="licenses" element={<Licenses />} />
