@@ -61,17 +61,17 @@
 .medium {
   height: 34px;
   line-height: 34px;
-  font-size: 15px;
+  font-size: 20px;
 }
 
 .medium .icon-left {
   height: 26px;
-  padding: 0 10px;
+  padding-right: 10px;
 }
 
 .medium .icon-right {
   height: 26px;
-  padding: 0 10px;
+  padding-left: 10px;
 }
 
 .small {
@@ -95,15 +95,14 @@
 }
 
 .outlineBtn {
-  border: 1px solid #b05e27;
-  color: #b05e27;
+  border: 1px solid #0a6971;
+  color: #0a6971;
   font-weight: 500;
 }
 
 .primary {
-  background-color: #b05e27;
+  background-color: #0a6971;
   color: #fff;
-  font-size: 16px;
 }
 
 .redLinear {
