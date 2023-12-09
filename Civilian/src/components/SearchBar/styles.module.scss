@@ -1,0 +1,31 @@
+.container {
+    display: flex;
+    align-items: center;
+    height: 37px;
+    border-radius: 20px;
+    border: 1px solid #b9b3b3;
+    padding: 1rem;
+    margin-bottom: 2px;
+    background-color: white;
+    box-shadow: -3px 3px 5px 0px rgba(0,0,0,0.2);
+    -webkit-box-shadow: -3px 3px 5px 0px rgba(0,0,0,0.2);
+    -moz-box-shadow: -3px 3px 5px 0px rgba(0,0,0,0.2);
+    
+    &-primary {
+      width: 34rem;
+    }
+
+    .ic {
+      font-size: 1.5rem;
+      margin-right: 7px;
+      color: #8a8787;
+    }
+
+    .text_input {
+      width: 100%;
+      height: 100%;
+      border: none;
+      outline: none;
+    }
+}
+

@@ -21,6 +21,7 @@ const ButtonCT = (props) => {
         primary,
         redLinear,
         greenLinear,
+        redWarning,
 
         className,
 

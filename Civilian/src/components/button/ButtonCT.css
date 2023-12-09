@@ -115,3 +115,25 @@
   color: #fff;
   background-image: linear-gradient(90deg, #79B14D, rgba(93, 193, 151, 0.8));
 }
+
+.redWarning {
+  color: #DC5A5A;
+  background-color: white;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.notPlanned {
+  color: #EC9126;
+  background-color: white;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.borderRadius7 {
+  border-radius: 0.7rem;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
