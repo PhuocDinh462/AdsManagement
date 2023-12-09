@@ -13,6 +13,11 @@ $fontColor: #333;
 .first-row {
   display: flex;
   justify-content: space-between;
+
+  .title-input {
+    width: calc(48% - 10px); // Điều chỉnh chiều rộng và khoảng cách giữa các ô input
+    box-sizing: border-box; // Đảm bảo chiều rộng bao gồm cả padding và border
+  }
 }
 
 .title-input {
@@ -37,3 +42,63 @@ $fontColor: #333;
     }
   }
 }
+
+.custom-button {
+  background-color: #95e1d3; /* Màu nền xanh lá cây */
+  color: white; /* Màu chữ trắng */
+  padding: 16px 48px; /* Kích thước padding */
+  font-size: 18px; /* Kích thước chữ */
+  cursor: pointer; /* Chuyển đổi con trỏ khi di chuột vào nút */
+  border: none; /* Không có đường viền */
+  border-radius: 4px; /* Góc bo tròn */
+  font-weight: 700;
+  width: 100%;
+  margin-bottom: 12px;
+
+  &:hover {
+    opacity: 0.7;
+  }
+  &:disabled {
+    background-color: #cccccc; /* Màu nền xám cho nút bị vô hiệu hóa */
+    cursor: not-allowed; /* Con trỏ không cho sự kiện không hoạt động */
+  }
+}
+
+.wrapper-handle {
+  display: flex;
+  justify-content: flex-end;
+  .update-button {
+    background-color: #95e1d3; /* Màu nền xanh lá cây */
+    color: white; /* Màu chữ trắng */
+    padding: 16px 48px; /* Kích thước padding */
+    font-size: 18px; /* Kích thước chữ */
+    cursor: pointer; /* Chuyển đổi con trỏ khi di chuột vào nút */
+    border: none; /* Không có đường viền */
+    border-radius: 4px; /* Góc bo tròn */
+    font-weight: 700;
+    width: 30%;
+    margin-bottom: 12px;
+
+    &:hover {
+      opacity: 0.7;
+    }
+    margin-left: 24px;
+  }
+  .cancel-button {
+    background-color: #cccccc; /* Màu nền xanh lá cây */
+    color: white; /* Màu chữ trắng */
+    padding: 16px 48px; /* Kích thước padding */
+    font-size: 18px; /* Kích thước chữ */
+    cursor: pointer; /* Chuyển đổi con trỏ khi di chuột vào nút */
+    border: none; /* Không có đường viền */
+    border-radius: 4px; /* Góc bo tròn */
+    font-weight: 700;
+    width: 30%;
+    margin-bottom: 12px;
+
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+}
+
