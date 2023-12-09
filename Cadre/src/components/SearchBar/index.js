@@ -18,7 +18,7 @@ export default function SearchBar(props) {
         id="inputSearch"
         placeholder={placeholder}
         className={classes.text_input}
-        onChange={(e) => handleOnChange(e.target.value)}
+        onChange={(e) => (onChange ? handleOnChange(e.target.value) : {})}
       />
     </div>
   );
