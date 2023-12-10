@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { memo } from 'react';
 import classes from './ItemSide.module.scss';
+import { NavLink } from 'react-router-dom';
 
-const ItemSide = ({ item, isSelected, onItemClick }) => {
+const ItemSide = ({ item }) => {
+  console.log('first');
   return (
-    <div className={`${classes.item} ${isSelected ? classes.selectedItem : ''}`} onClick={() => onItemClick(item.id)}>
+    <NavLink className={({ isActive }) => (isActive ? classes.active : classes.item)} to={item.path}>
       <div className={classes.item__title}>{item.title}</div>
-    </div>
+    </NavLink>
   );
 };
 
-export default ItemSide;
+export default memo(ItemSide);
+

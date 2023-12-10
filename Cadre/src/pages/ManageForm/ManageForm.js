@@ -50,7 +50,7 @@ const ManageForm = () => {
   });
 
   return (
-    <div>
+    <div className={classes.container_wrap}>
       <HeaderTable title={'Danh sách các loại hình'} />
       <div className={classes.container}>
         {/* Tab Filter */}

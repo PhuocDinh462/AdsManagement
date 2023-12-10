@@ -13,6 +13,7 @@ import AdSpots from '../pages/WardAndDistrict/AdSpots';
 import Licenses from '../pages/WardAndDistrict/Licenses';
 import Reports from '../pages/WardAndDistrict/Reports';
 import ReportsDetail from '../pages/WardAndDistrict/Reports/ReportsDetail';
+import ManageForm from '../pages/ManageForm/ManageForm';
 
 const Navigation = () => {
   const authenticated = true;
@@ -20,13 +21,13 @@ const Navigation = () => {
     <main>
       <Routes>
         <Route element={<Layout />}>
-          <Route path="/" name="home" element={<Home />} />
+          <Route path="/district-ward" name="district ward" element={<ManageDistrictWard />} />
+          <Route path="/form" name="form" element={<ManageForm />} />
+        </Route>
+
+        {/* <Route element={<Layout />}>
         </Route>
         <Route element={<Layout />}>
-          <Route path="/infor" name="infor" element={<Infor />} />
-        </Route>
-        <Route element={<Layout />}>
-          <Route path="/send-board-request" name="board-request" element={<SendBoardRequest />} />
         </Route>
         <Route element={<Layout />}>
           <Route path="/send-point-request" name="point-request" element={<SendPointRequest />} />
@@ -43,7 +44,7 @@ const Navigation = () => {
         </Route>
         <Route element={<Layout />}>
           <Route path="/licenses" name="licenses" element={<Licenses />} />
-        </Route>
+        </Route> */}
 
         <Route path="*" name="notFound" element={<Navigate to="/" />} />
       </Routes>
@@ -52,3 +53,4 @@ const Navigation = () => {
 };
 
 export default Navigation;
+

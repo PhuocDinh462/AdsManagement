@@ -116,7 +116,7 @@ const ManageDistrictWard = () => {
   });
 
   return (
-    <div>
+    <div className={classes.container_wrap}>
       <HeaderTable title={'Danh sách quận, phường'} />
       <div className={classes.container}>
         {/* Tab Filter */}
@@ -186,3 +186,4 @@ const ManageDistrictWard = () => {
 };
 
 export default ManageDistrictWard;
+
