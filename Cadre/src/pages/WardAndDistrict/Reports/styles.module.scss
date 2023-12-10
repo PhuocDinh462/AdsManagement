@@ -1,7 +1,9 @@
 @import '/src/styles/colors.scss';
 
-:root {
-  --height: 5rem;
+$row_height: 5rem;
+
+.main_container {
+  width: 100%;
 }
 
 .container {
@@ -21,7 +23,7 @@
       border-collapse: collapse;
 
       &_thead {
-        height: var(--height);
+        height: $row_height;
         background-color: #e3e7f2;
         color: $text_900;
       }
@@ -37,7 +39,7 @@
       border-collapse: collapse;
 
       &_row {
-        height: var(--height);
+        height: $row_height;
 
         &:nth-child(even) {
           background-color: #f6f7f9;

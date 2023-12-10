@@ -9,7 +9,7 @@ const Layout = () => {
     <div className="">
       <NavBar />
       <div style={{ display: 'flex' }}>
-        <SideBars />
+        {/* <SideBars /> */}
         <Outlet />
       </div>
     </div>
@@ -19,4 +19,3 @@ const Layout = () => {
 Layout.propTypes = {};
 
 export default Layout;
-

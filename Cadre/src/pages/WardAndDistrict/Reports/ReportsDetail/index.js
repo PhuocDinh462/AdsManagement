@@ -2,14 +2,21 @@ import classes from './styles.module.scss';
 import SearchBar from '~components/SearchBar';
 import {
   faArrowLeft,
+  faArrowRight,
   faLocationDot,
   faCircleInfo,
   faAngleUp,
   faAngleDown,
   faAngleLeft,
+  faUser,
+  faPhone,
+  faEnvelope,
+  faFlag,
+  faFile,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
+import { IconTextBtn } from '~components/button';
 
 export default function ReportsDetail() {
   const [data, setData] = useState([
@@ -23,13 +30,13 @@ export default function ReportsDetail() {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid quidem nobis, modi ducimus impedit itaque facilis nihil enim molestias possimus officiis aspernatur aperiam quam voluptatem nam quos dignissimos voluptate expedita.',
     },
     {
-      username: 'Nguyễn Văn A',
-      phone: '0123456789',
-      email: 'nva@gmail.com',
-      reportedObject: 'Bảng quảng cáo',
+      username: 'Trần Văn B',
+      phone: '0987654321',
+      email: 'tvb@gmail.com',
+      reportedObject: 'Địa điểm',
       reportType: 'Tố giác sai phạm',
       reportContent:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid quidem nobis, modi ducimus impedit itaque facilis nihil enim molestias possimus officiis aspernatur aperiam quam voluptatem nam quos dignissimos voluptate expedita.',
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.',
     },
     {
       username: 'Nguyễn Văn A',
@@ -41,13 +48,13 @@ export default function ReportsDetail() {
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid quidem nobis, modi ducimus impedit itaque facilis nihil enim molestias possimus officiis aspernatur aperiam quam voluptatem nam quos dignissimos voluptate expedita.',
     },
     {
-      username: 'Nguyễn Văn A',
-      phone: '0123456789',
-      email: 'nva@gmail.com',
-      reportedObject: 'Bảng quảng cáo',
+      username: 'Trần Văn B',
+      phone: '0987654321',
+      email: 'tvb@gmail.com',
+      reportedObject: 'Địa điểm',
       reportType: 'Tố giác sai phạm',
       reportContent:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid quidem nobis, modi ducimus impedit itaque facilis nihil enim molestias possimus officiis aspernatur aperiam quam voluptatem nam quos dignissimos voluptate expedita.',
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.',
     },
   ]);
 
@@ -113,6 +120,67 @@ export default function ReportsDetail() {
             </div>
           ))}
         </dir>
+      </div>
+
+      <div className={classes.content_container}>
+        <div className={classes.title}>
+          Chi tiết báo cáo tại 15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM
+        </div>
+
+        <div className={classes.userInfo_container}>
+          <table style={{ width: '100%' }}>
+            <tbody>
+              <tr>
+                <td className={classes.userInfo_col}>
+                  <div className={classes.itemInfo}>
+                    <FontAwesomeIcon icon={faUser} />
+                    <dir className={classes.itemInfo__text}>
+                      {'Người báo cáo: ' + data[currentReportIndex].username}
+                    </dir>
+                  </div>
+                </td>
+                <td className={classes.userInfo_col}>
+                  <div className={classes.itemInfo}>
+                    <FontAwesomeIcon icon={faFlag} />
+                    <dir className={classes.itemInfo__text}>
+                      {'Đối tượng bị báo cáo: ' + data[currentReportIndex].reportedObject}
+                    </dir>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td className={classes.userInfo_col}>
+                  <div className={classes.itemInfo}>
+                    <FontAwesomeIcon icon={faPhone} />
+                    <dir className={classes.itemInfo__text}>{'Số điện thoại: ' + data[currentReportIndex].phone}</dir>
+                  </div>
+                </td>
+                <td className={classes.userInfo_col}>
+                  <div className={classes.itemInfo}>
+                    <FontAwesomeIcon icon={faFile} />
+                    <dir className={classes.itemInfo__text}>
+                      {'Hình thức báo cáo: ' + data[currentReportIndex].reportType}
+                    </dir>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td className={classes.userInfo_col}>
+                  <div className={classes.itemInfo}>
+                    <FontAwesomeIcon icon={faEnvelope} />
+                    <dir className={classes.itemInfo__text}>{'Email: ' + data[currentReportIndex].email}</dir>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div className={classes.reportContent_container}>{data[currentReportIndex].reportContent}</div>
+
+        <div className={classes.processBtn}>
+          <IconTextBtn label="Xử lý" rightIc={faArrowRight} onClick={() => console.log('Xử lý')} />
+        </div>
       </div>
     </div>
   );

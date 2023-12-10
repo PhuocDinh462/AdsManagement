@@ -91,3 +91,54 @@
     }
   }
 }
+
+.content_container {
+  margin: 1.5rem 5rem;
+
+  .title {
+    font-size: 2.3rem;
+    font-weight: bold;
+    color: $text_800;
+  }
+
+  .userInfo_container {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    border: 1.5px solid $text_500;
+    border-radius: 10px;
+    font-size: 1.8rem;
+    color: $text_600;
+    font-weight: 600;
+    padding: 1rem;
+
+    .itemInfo {
+      display: flex;
+      align-items: center;
+      margin: 1rem;
+
+      &__text {
+        margin-left: 1rem;
+      }
+    }
+
+    .userInfo_col {
+      width: 50%;
+    }
+  }
+
+  .reportContent_container {
+    margin-top: 3rem;
+    min-height: 50vh;
+    border: 1.5px solid $text_500;
+    border-radius: 10px;
+    padding: 2rem;
+    font-size: 1.7rem;
+  }
+
+  .processBtn {
+    display: flex;
+    justify-content: right;
+    margin-top: 2rem;
+  }
+}

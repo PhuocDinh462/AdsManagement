@@ -102,7 +102,7 @@ export default function Reports() {
   }, [pageSize, currentPage, data]);
 
   return (
-    <>
+    <div className={classes.main_container}>
       <div className={classes.container}>
         <div className={classes.container__header}>
           <div className={classes.searchBar_container}>
@@ -166,6 +166,6 @@ export default function Reports() {
           onPageChange={(page) => setCurrentPage(page)}
         />
       </div>
-    </>
+    </div>
   );
 }

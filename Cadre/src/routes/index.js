@@ -25,10 +25,8 @@ const Navigation = () => {
           <Route path="/form" name="form" element={<ManageForm />} />
         </Route>
 
-        {/* <Route element={<Layout />}>
-        </Route>
-        <Route element={<Layout />}>
-        </Route>
+        <Route element={<Layout />}></Route>
+        <Route element={<Layout />}></Route>
         <Route element={<Layout />}>
           <Route path="/send-point-request" name="point-request" element={<SendPointRequest />} />
         </Route>
@@ -44,7 +42,7 @@ const Navigation = () => {
         </Route>
         <Route element={<Layout />}>
           <Route path="/licenses" name="licenses" element={<Licenses />} />
-        </Route> */}
+        </Route>
 
         <Route path="*" name="notFound" element={<Navigate to="/" />} />
       </Routes>
@@ -53,4 +51,3 @@ const Navigation = () => {
 };
 
 export default Navigation;
-
