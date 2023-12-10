@@ -1,17 +1,20 @@
 @import '/src/styles/colors.scss';
 
-:root {
-  --height: 5rem;
+$row_height: 5rem;
+
+.main_container {
+  width: 100%;
 }
 
 .container {
   background: #ffffff;
-  height: calc(100vh - 14rem);
+  height: calc(100vh - 14rem + 2px);
   display: flex;
   flex-direction: column;
   padding: 10px 20px;
   margin: 1rem;
   border-radius: 10px;
+  border: 1px solid $text_300;
 
   .table__header {
     &_wrap {
@@ -21,7 +24,7 @@
       border-collapse: collapse;
 
       &_thead {
-        height: var(--height);
+        height: $row_height;
         background-color: #e3e7f2;
         color: $text_900;
       }
@@ -37,7 +40,7 @@
       border-collapse: collapse;
 
       &_row {
-        height: var(--height);
+        height: $row_height;
 
         &:nth-child(even) {
           background-color: #f6f7f9;

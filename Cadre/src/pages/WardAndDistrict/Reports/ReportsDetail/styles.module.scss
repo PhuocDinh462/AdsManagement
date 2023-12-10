@@ -1,5 +1,9 @@
 @import '/src/styles/colors.scss';
 
+body {
+  overflow: hidden;
+}
+
 .main_container {
   display: flex;
 }
@@ -30,6 +34,15 @@
   }
 
   .reports_container {
+    max-height: calc(100vh - 15rem);
+    overflow-y: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
     .report_item {
       -webkit-user-select: none;
       user-select: none;
@@ -89,5 +102,58 @@
       opacity: 0.2;
       pointer-events: none;
     }
+  }
+}
+
+.content_container {
+  padding: 1.5rem 5rem;
+  max-height: calc(100vh - 6rem);
+  overflow-y: auto;
+
+  .title {
+    font-size: 2.3rem;
+    font-weight: bold;
+    color: $text_800;
+  }
+
+  .userInfo_container {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    border: 1.5px solid $text_500;
+    border-radius: 10px;
+    font-size: 1.8rem;
+    color: $text_600;
+    font-weight: 600;
+    padding: 1rem;
+
+    .itemInfo {
+      display: flex;
+      align-items: center;
+      margin: 1rem;
+
+      &__text {
+        margin-left: 1rem;
+      }
+    }
+
+    .userInfo_col {
+      width: 50%;
+    }
+  }
+
+  .reportContent_container {
+    margin-top: 3rem;
+    min-height: 50vh;
+    border: 1.5px solid $text_500;
+    border-radius: 10px;
+    padding: 2rem;
+    font-size: 1.7rem;
+  }
+
+  .processBtn {
+    display: flex;
+    justify-content: right;
+    margin: 2rem 0;
   }
 }

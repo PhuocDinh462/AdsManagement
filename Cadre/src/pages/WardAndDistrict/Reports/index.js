@@ -10,86 +10,74 @@ export default function Reports() {
     {
       id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
-      reportedObject: 'Bảng quảng cáo',
       numberOfReports: 2,
-      date: '12/07/2023',
+      latestReport: '12/07/2023',
     },
     {
       id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
-      reportedObject: 'Địa điểm',
       numberOfReports: 1,
-      date: '12/07/2023',
+      latestReport: '12/07/2023',
     },
     {
       id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
-      reportedObject: 'Bảng quảng cáo',
       numberOfReports: 2,
-      date: '12/07/2023',
+      latestReport: '12/07/2023',
     },
     {
       id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
-      reportedObject: 'Địa điểm',
       numberOfReports: 1,
-      date: '12/07/2023',
+      latestReport: '12/07/2023',
     },
     {
       id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
-      reportedObject: 'Bảng quảng cáo',
       numberOfReports: 2,
-      date: '12/07/2023',
+      latestReport: '12/07/2023',
     },
     {
       id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
-      reportedObject: 'Địa điểm',
       numberOfReports: 1,
-      date: '12/07/2023',
+      latestReport: '12/07/2023',
     },
     {
       id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
-      reportedObject: 'Bảng quảng cáo',
       numberOfReports: 2,
-      date: '12/07/2023',
+      latestReport: '12/07/2023',
     },
     {
       id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
-      reportedObject: 'Địa điểm',
       numberOfReports: 1,
-      date: '12/07/2023',
+      latestReport: '12/07/2023',
     },
     {
       id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
-      reportedObject: 'Bảng quảng cáo',
       numberOfReports: 2,
-      date: '12/07/2023',
+      latestReport: '12/07/2023',
     },
     {
       id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
-      reportedObject: 'Địa điểm',
       numberOfReports: 1,
-      date: '12/07/2023',
+      latestReport: '12/07/2023',
     },
     {
       id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
-      reportedObject: 'Bảng quảng cáo',
       numberOfReports: 2,
-      date: '12/07/2023',
+      latestReport: '12/07/2023',
     },
     {
       id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
-      reportedObject: 'Địa điểm',
       numberOfReports: 1,
-      date: '12/07/2023',
+      latestReport: '12/07/2023',
     },
   ]);
 
@@ -102,7 +90,7 @@ export default function Reports() {
   }, [pageSize, currentPage, data]);
 
   return (
-    <>
+    <div className={classes.main_container}>
       <div className={classes.container}>
         <div className={classes.container__header}>
           <div className={classes.searchBar_container}>
@@ -116,10 +104,9 @@ export default function Reports() {
             <thead className={classes.table__header_wrap_thead}>
               <tr>
                 <th style={{ width: '5%' }}>STT</th>
-                <th style={{ width: '40%' }}>Địa chỉ</th>
-                <th style={{ width: '20%' }}>Đối tượng bị báo cáo</th>
-                <th style={{ width: '10%' }}>Số đơn báo cáo</th>
-                <th style={{ width: '15%' }}>Ngày báo cáo gần nhất</th>
+                <th style={{ width: '50%' }}>Địa chỉ</th>
+                <th style={{ width: '15%' }}>Số đơn báo cáo</th>
+                <th style={{ width: '20%' }}>Ngày báo cáo gần nhất</th>
                 <th style={{ width: '10%' }}>Công cụ</th>
               </tr>
             </thead>
@@ -133,10 +120,9 @@ export default function Reports() {
               {currentTableData.map((row, rowIndex) => (
                 <tr className={classes.table__body_wrap_row} key={rowIndex}>
                   <td style={{ width: '5%' }}>{rowIndex + 1}</td>
-                  <td style={{ width: '40%' }}>{row.address}</td>
-                  <td style={{ width: '20%' }}>{row.reportedObject}</td>
-                  <td style={{ width: '10%' }}>{row.numberOfReports}</td>
-                  <td style={{ width: '15%' }}>{row.date}</td>
+                  <td style={{ width: '50%' }}>{row.address}</td>
+                  <td style={{ width: '15%' }}>{row.numberOfReports}</td>
+                  <td style={{ width: '20%' }}>{row.latestReport}</td>
                   <td style={{ width: '10%' }}>
                     <button className={classes.btn_info}>
                       <div className={classes.icon_container}>
@@ -166,6 +152,6 @@ export default function Reports() {
           onPageChange={(page) => setCurrentPage(page)}
         />
       </div>
-    </>
+    </div>
   );
 }

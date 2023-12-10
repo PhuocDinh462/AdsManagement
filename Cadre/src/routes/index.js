@@ -21,6 +21,9 @@ const Navigation = () => {
   return (
     <main>
       <Routes>
+        {/* Chỗ này để trang home khi mới vào hay trang gốc (T đang để ManageForm để demo) */}
+        <Route path="/" name="form" element={<ManageForm />} />
+
         {/* Layout dành cho trang có sidebar và có thanh navbar */}
         <Route element={<Layout />}>
           <Route path="/district-ward" name="district ward" element={<ManageDistrictWard />} />

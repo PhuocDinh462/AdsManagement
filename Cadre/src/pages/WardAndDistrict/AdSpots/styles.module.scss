@@ -1,1 +1,119 @@
 @import '/src/styles/colors.scss';
+
+$row_height: 5rem;
+
+.main_container {
+  width: 100%;
+}
+
+.container {
+  background: #ffffff;
+  height: calc(100vh - 14rem + 2px);
+  display: flex;
+  flex-direction: column;
+  padding: 10px 20px;
+  margin: 1rem;
+  border-radius: 10px;
+  border: 1px solid $text_300;
+
+  .table__header {
+    &_wrap {
+      width: 100%;
+      text-align: center;
+      font-family: Arial, Helvetica, sans-serif;
+      border-collapse: collapse;
+
+      &_thead {
+        height: $row_height;
+        background-color: #e3e7f2;
+        color: $text_900;
+      }
+    }
+  }
+
+  .table__body {
+    overflow-y: auto;
+    &_wrap {
+      width: 100%;
+      text-align: center;
+      font-family: Arial, Helvetica, sans-serif;
+      border-collapse: collapse;
+
+      &_row {
+        height: $row_height;
+
+        &:nth-child(even) {
+          background-color: #f6f7f9;
+        }
+
+        .icon_container {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .btn_info,
+        .btn_detail {
+          width: 40px;
+          height: 40px;
+          border-radius: 1rem;
+          border: none;
+          font-size: 1.7rem;
+
+          transition: all 0.3s ease;
+        }
+
+        .btn_detail {
+          background-color: #bee4ff;
+          color: #308ffe;
+
+          &:hover {
+            background-color: #308ffe;
+            color: #fff;
+          }
+        }
+
+        .btn_info {
+          margin-right: 8px;
+          background-color: #dbf4f1;
+          color: #4ca89b;
+
+          &:hover {
+            color: #fff;
+            background-color: #4ca89b;
+          }
+        }
+      }
+    }
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 1rem;
+    margin-top: 5px;
+    border-bottom: $text_300 solid 1px;
+
+    .searchBar_container {
+      margin-bottom: 1rem;
+    }
+  }
+}
+
+.paginationBar_container {
+  margin-top: 0.6rem;
+  display: flex;
+  justify-content: center;
+}
+
+.isPlanned {
+  font-style: italic;
+  text-transform: uppercase;
+  color: #ff5454;
+  font-weight: bold;
+
+  &--true {
+    color: #00ae46;
+  }
+}
