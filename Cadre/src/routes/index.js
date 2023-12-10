@@ -14,18 +14,35 @@ import Licenses from '../pages/WardAndDistrict/Licenses';
 import Reports from '../pages/WardAndDistrict/Reports';
 import ReportsDetail from '../pages/WardAndDistrict/Reports/ReportsDetail';
 import ManageForm from '../pages/ManageForm/ManageForm';
+import LayoutNavBar from '../layouts/layoutNavBar';
 
 const Navigation = () => {
   const authenticated = true;
   return (
     <main>
       <Routes>
+        {/* Layout dành cho trang có sidebar và có thanh navbar */}
         <Route element={<Layout />}>
           <Route path="/district-ward" name="district ward" element={<ManageDistrictWard />} />
           <Route path="/form" name="form" element={<ManageForm />} />
         </Route>
 
-        {/* <Route element={<Layout />}>
+        {/* Layout dành cho trang không có sidebar, chỉ có thanh navbar */}
+        <Route element={<LayoutNavBar />}>
+          <Route path="/licenses" name="licenses" element={<Licenses />} />
+          <Route path="/reports" name="reports" element={<Reports />} />
+        </Route>
+
+        <Route path="*" name="notFound" element={<Navigate to="/" />} />
+      </Routes>
+    </main>
+  );
+};
+
+export default Navigation;
+
+{
+  /* <Route element={<Layout />}>
         </Route>
         <Route element={<Layout />}>
         </Route>
@@ -44,13 +61,6 @@ const Navigation = () => {
         </Route>
         <Route element={<Layout />}>
           <Route path="/licenses" name="licenses" element={<Licenses />} />
-        </Route> */}
-
-        <Route path="*" name="notFound" element={<Navigate to="/" />} />
-      </Routes>
-    </main>
-  );
-};
-
-export default Navigation;
+        </Route> */
+}
 
