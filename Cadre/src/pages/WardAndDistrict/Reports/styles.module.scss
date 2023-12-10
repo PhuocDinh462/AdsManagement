@@ -8,12 +8,13 @@ $row_height: 5rem;
 
 .container {
   background: #ffffff;
-  height: calc(100vh - 14rem);
+  height: calc(100vh - 14rem + 2px);
   display: flex;
   flex-direction: column;
   padding: 10px 20px;
   margin: 1rem;
   border-radius: 10px;
+  border: 1px solid $text_300;
 
   .table__header {
     &_wrap {
