@@ -31,6 +31,79 @@ const ManageForm = () => {
       img: 'Jane Doe',
       type: 'Hình thức báo cáo',
     },
+    {
+      stt: 1,
+      content: 'Quận 4',
+      img: 'Jane Doe',
+      type: 'Hình quảng cáo',
+    },
+    {
+      stt: 1,
+      content: 'Quận 4',
+      img: 'Jane Doe',
+      type: 'Hình thức báo cáo',
+    },
+    {
+      stt: 1,
+      content: 'Quận 4',
+      img: 'Jane Doe',
+      type: 'Hình quảng cáo',
+    },
+    {
+      stt: 1,
+      content: 'Quận 4',
+      img: 'Jane Doe',
+      type: 'Hình thức báo cáo',
+    },
+    {
+      stt: 1,
+      content: 'Quận 4',
+      img: 'Jane Doe',
+      type: 'Hình quảng cáo',
+    },
+    {
+      stt: 1,
+      content: 'Quận 4',
+      img: 'Jane Doe',
+      type: 'Hình thức báo cáo',
+    },
+    {
+      stt: 1,
+      content: 'Quận 4',
+      img: 'Jane Doe',
+      type: 'Hình quảng cáo',
+    },
+    {
+      stt: 1,
+      content: 'Quận 4',
+      img: 'Jane Doe',
+      type: 'Hình thức báo cáo',
+    },
+    {
+      stt: 1,
+      content: 'Quận 4',
+      img: 'Jane Doe',
+      type: 'Hình quảng cáo',
+    },
+    {
+      stt: 1,
+      content: 'Quận 4',
+      img: 'Jane Doe',
+      type: 'Hình thức báo cáo',
+    },
+    {
+      stt: 1,
+      content: 'Quận 4',
+      img: 'Jane Doe',
+      type: 'Hình quảng cáo',
+    },
+    {
+      stt: 1,
+      content: 'Quận 4',
+      img: 'Jane Doe',
+      type: 'Hình thức báo cáo',
+    },
+
     // Thêm dữ liệu khác
   ];
 
@@ -92,7 +165,7 @@ const ManageForm = () => {
             <tbody>
               {data.map((row, rowIndex) => (
                 <tr className={classes.table__body_wrap_row} key={rowIndex}>
-                  <td style={{ width: '5%' }}>{row.stt}</td>
+                  <td style={{ width: '5%' }}>{rowIndex + 1}</td>
                   <td style={{ width: '40%' }}>{row.content}</td>
                   <td style={{ width: '20%' }}>{row.type}</td>
                   <td style={{ width: '15%' }}>

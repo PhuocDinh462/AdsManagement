@@ -1,10 +1,9 @@
 .container_wrap {
-  width: 90%;
+  width: 100%;
   padding: 0 20px;
-  height: calc(100vh - 200px);
-
   .container {
     background: #ffffff;
+    height: calc(100vh - 200px);
     display: flex;
     flex-direction: column;
     padding: 0 20px;
@@ -86,7 +85,7 @@
       &_filter {
         display: flex;
         flex-direction: row;
-        gap: 15px;
+        gap: 20px;
         font-weight: 600;
         font-family: Arial, Helvetica, sans-serif;
       }

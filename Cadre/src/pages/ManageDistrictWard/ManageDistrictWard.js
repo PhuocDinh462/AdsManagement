@@ -97,6 +97,42 @@ const ManageDistrictWard = () => {
       level: 'Quận',
       editButton: 'Edit',
     },
+    {
+      stt: 3,
+      area: 'Quận 3',
+      managerName: 'Jane Doe',
+      email: 'jane@example.com',
+      phoneNumber: '987654321',
+      level: 'Phường',
+      editButton: 'Edit',
+    },
+    {
+      stt: 4,
+      area: 'Quận 4',
+      managerName: 'Jane Doe',
+      email: 'jane@example.com',
+      phoneNumber: '987654321',
+      level: 'Quận',
+      editButton: 'Edit',
+    },
+    {
+      stt: 3,
+      area: 'Quận 3',
+      managerName: 'Jane Doe',
+      email: 'jane@example.com',
+      phoneNumber: '987654321',
+      level: 'Phường',
+      editButton: 'Edit',
+    },
+    {
+      stt: 4,
+      area: 'Quận 4',
+      managerName: 'Jane Doe',
+      email: 'jane@example.com',
+      phoneNumber: '987654321',
+      level: 'Quận',
+      editButton: 'Edit',
+    },
     // Thêm dữ liệu khác
   ];
 
@@ -161,7 +197,7 @@ const ManageDistrictWard = () => {
             <tbody>
               {data.map((row, rowIndex) => (
                 <tr className={classes.table__body_wrap_row} key={rowIndex}>
-                  <td style={{ width: '5%' }}>{row.stt}</td>
+                  <td style={{ width: '5%' }}>{rowIndex + 1}</td>
                   <td style={{ width: '10%' }}>{row.area}</td>
                   <td style={{ width: '20%' }}>{row.managerName}</td>
                   <td style={{ width: '20%' }}>{row.email}</td>
