@@ -16,6 +16,7 @@ import {
   faHourglassStart,
   faCheck,
   faDiagramProject,
+  faBan,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
@@ -186,6 +187,27 @@ export default function ReportsDetail() {
   ]);
 
   const [currentReportIndex, setCurrentReportIndex] = useState(0);
+  const [filteredData, setFilteredData] = useState(data);
+
+  const handleFilter = (keyword) => {
+    if (!keyword) setFilteredData(data);
+    else
+      setFilteredData(
+        data.filter((item) => {
+          const keywordLc = keyword.toLowerCase();
+
+          return (
+            item.username.toLowerCase().includes(keywordLc) ||
+            item.phone.toLowerCase().includes(keywordLc) ||
+            item.email.toLowerCase().includes(keywordLc) ||
+            item.reportType.toLowerCase().includes(keywordLc) ||
+            item.reportedObject.toLowerCase().includes(keywordLc) ||
+            item.status.toLowerCase().includes(keywordLc)
+          );
+        })
+      );
+    setCurrentReportIndex(0);
+  };
 
   return (
     <div className={classes.main_container}>
@@ -194,14 +216,18 @@ export default function ReportsDetail() {
           <a href="/reports" className={[classes.back_btn, classes.btn].join(' ')}>
             <FontAwesomeIcon icon={faArrowLeft} />
           </a>
-          <SearchBar placeholder="Tìm kiếm..." width="20rem" onChange={(keyword) => console.log(keyword)} />
+          <SearchBar placeholder="Tìm kiếm..." width="20rem" onChange={(keyword) => handleFilter(keyword)} />
         </div>
 
         <div className={classes.nav_btn_container}>
-          <div className={[classes.nav_btn, classes.btn].join(' ')}>
+          <div
+            className={[classes.nav_btn, classes.btn, filteredData.length == 0 && classes['btn--disabled']].join(' ')}
+          >
             <FontAwesomeIcon icon={faLocationDot} />
           </div>
-          <div className={[classes.nav_btn, classes.btn].join(' ')}>
+          <div
+            className={[classes.nav_btn, classes.btn, filteredData.length == 0 && classes['btn--disabled']].join(' ')}
+          >
             <FontAwesomeIcon icon={faCircleInfo} />
           </div>
           <div
@@ -214,7 +240,7 @@ export default function ReportsDetail() {
             className={[
               classes.nav_btn,
               classes.btn,
-              currentReportIndex >= data.length - 1 && classes['btn--disabled'],
+              currentReportIndex >= filteredData.length - 1 && classes['btn--disabled'],
             ].join(' ')}
             onClick={() => setCurrentReportIndex(currentReportIndex + 1)}
           >
@@ -223,7 +249,7 @@ export default function ReportsDetail() {
         </div>
 
         <dir className={classes.reports_container}>
-          {data.map((item, index) => (
+          {filteredData.map((item, index) => (
             <div className={classes.report_item} key={index} onClick={() => setCurrentReportIndex(index)}>
               <dir className={classes.divider} />
               <div className={classes.username}>
@@ -254,83 +280,102 @@ export default function ReportsDetail() {
           Chi tiết báo cáo tại 15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM
         </div>
 
-        <div className={classes.userInfo_container}>
-          <table style={{ width: '100%' }}>
-            <tbody>
-              <tr>
-                <td className={classes.userInfo_col}>
-                  <div className={classes.itemInfo}>
-                    <FontAwesomeIcon icon={faUser} />
-                    <dir className={classes.itemInfo__text}>
-                      {'Người báo cáo: ' + data[currentReportIndex].username}
-                    </dir>
-                  </div>
-                </td>
-                <td className={classes.userInfo_col}>
-                  <div className={classes.itemInfo}>
-                    <FontAwesomeIcon icon={faFlag} />
-                    <dir className={classes.itemInfo__text}>
-                      {'Đối tượng bị báo cáo: ' + data[currentReportIndex].reportedObject}
-                    </dir>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td className={classes.userInfo_col}>
-                  <div className={classes.itemInfo}>
-                    <FontAwesomeIcon icon={faPhone} />
-                    <dir className={classes.itemInfo__text}>{'Số điện thoại: ' + data[currentReportIndex].phone}</dir>
-                  </div>
-                </td>
-                <td className={classes.userInfo_col}>
-                  <div className={classes.itemInfo}>
-                    <FontAwesomeIcon icon={faFile} />
-                    <dir className={classes.itemInfo__text}>
-                      {'Hình thức báo cáo: ' + data[currentReportIndex].reportType}
-                    </dir>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td className={classes.userInfo_col}>
-                  <div className={classes.itemInfo}>
-                    <FontAwesomeIcon icon={faEnvelope} />
-                    <dir className={classes.itemInfo__text}>{'Email: ' + data[currentReportIndex].email}</dir>
-                  </div>
-                </td>
-                <td className={classes.userInfo_col}>
-                  <div className={classes.itemInfo}>
-                    <FontAwesomeIcon icon={faDiagramProject} />
-                    <dir className={classes.itemInfo__text}>{'Trạng thái: ' + data[currentReportIndex].status}</dir>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        {filteredData.length > 0 ? (
+          <>
+            <div className={classes.userInfo_container}>
+              <table style={{ width: '100%' }}>
+                <tbody>
+                  <tr>
+                    <td className={classes.userInfo_col}>
+                      <div className={classes.itemInfo}>
+                        <FontAwesomeIcon icon={faUser} />
+                        <dir className={classes.itemInfo__text}>
+                          {'Người báo cáo: ' + filteredData[currentReportIndex]?.username}
+                        </dir>
+                      </div>
+                    </td>
+                    <td className={classes.userInfo_col}>
+                      <div className={classes.itemInfo}>
+                        <FontAwesomeIcon icon={faFlag} />
+                        <dir className={classes.itemInfo__text}>
+                          {'Đối tượng bị báo cáo: ' + filteredData[currentReportIndex]?.reportedObject}
+                        </dir>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className={classes.userInfo_col}>
+                      <div className={classes.itemInfo}>
+                        <FontAwesomeIcon icon={faPhone} />
+                        <dir className={classes.itemInfo__text}>
+                          {'Số điện thoại: ' + filteredData[currentReportIndex]?.phone}
+                        </dir>
+                      </div>
+                    </td>
+                    <td className={classes.userInfo_col}>
+                      <div className={classes.itemInfo}>
+                        <FontAwesomeIcon icon={faFile} />
+                        <dir className={classes.itemInfo__text}>
+                          {'Hình thức báo cáo: ' + filteredData[currentReportIndex]?.reportType}
+                        </dir>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className={classes.userInfo_col}>
+                      <div className={classes.itemInfo}>
+                        <FontAwesomeIcon icon={faEnvelope} />
+                        <dir className={classes.itemInfo__text}>
+                          {'Email: ' + filteredData[currentReportIndex]?.email}
+                        </dir>
+                      </div>
+                    </td>
+                    <td className={classes.userInfo_col}>
+                      <div className={classes.itemInfo}>
+                        <FontAwesomeIcon icon={faDiagramProject} />
+                        <dir className={classes.itemInfo__text}>
+                          {'Trạng thái: ' + filteredData[currentReportIndex]?.status}
+                        </dir>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
 
-        <div className={classes.reportContent_container}>{data[currentReportIndex].reportContent}</div>
+            <div className={classes.reportContent_container}>{filteredData[currentReportIndex]?.reportContent}</div>
 
-        <div className={classes.processBtn}>
-          <IconTextBtn
-            label={
-              data[currentReportIndex].status !== 'Đang xử lý' && data[currentReportIndex].status !== 'Đã xử lý'
-                ? 'Xử lý'
-                : data[currentReportIndex].status
-            }
-            rightIc={
-              data[currentReportIndex].status === 'Đang xử lý'
-                ? faHourglassStart
-                : data[currentReportIndex].status === 'Đã xử lý'
-                ? faCheck
-                : faArrowRight
-            }
-            disabled={
-              data[currentReportIndex].status === 'Đang xử lý' || data[currentReportIndex].status === 'Đã xử lý'
-            }
-            onClick={() => console.log('Xử lý')}
-          />
-        </div>
+            <div className={classes.processBtn}>
+              <IconTextBtn
+                label={
+                  filteredData[currentReportIndex]?.status !== 'Đang xử lý' &&
+                  filteredData[currentReportIndex]?.status !== 'Đã xử lý'
+                    ? 'Xử lý'
+                    : filteredData[currentReportIndex]?.status
+                }
+                rightIc={
+                  filteredData[currentReportIndex]?.status === 'Đang xử lý'
+                    ? faHourglassStart
+                    : filteredData[currentReportIndex]?.status === 'Đã xử lý'
+                    ? faCheck
+                    : faArrowRight
+                }
+                disabled={
+                  filteredData[currentReportIndex]?.status === 'Đang xử lý' ||
+                  filteredData[currentReportIndex]?.status === 'Đã xử lý'
+                }
+                onClick={() => console.log('Xử lý')}
+              />
+            </div>
+          </>
+        ) : (
+          <div className={classes.noData}>
+            <div className={classes.noData__ic}>
+              <FontAwesomeIcon icon={faBan} />
+            </div>
+            <h1 className={classes.noData__text}>Không có dữ liệu</h1>
+          </div>
+        )}
       </div>
     </div>
   );
