@@ -18,15 +18,23 @@
   position: absolute;
   bottom: 2rem;
   right: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
 
   &__ic {
     font-size: 3rem;
     color: $text_500;
+    margin-top: 1rem;
     cursor: pointer;
-    transition: opacity 0.2s;
+    transition: all 0.2s;
 
-    &:hover {
+    &:not(&--active):hover {
       opacity: 0.8;
+    }
+
+    &--active {
+      color: #109fac;
     }
   }
 }
