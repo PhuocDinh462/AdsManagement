@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 
-import Home from '../pages/home/Home';
+// import Home from '../pages/home/Home';
 import NotFound from '../pages/notFound';
 import Layout from './../layouts/index';
 import ManageDistrictWard from '../pages/ManageDistrictWard/ManageDistrictWard';
@@ -9,6 +9,7 @@ import Infor from '../pages/Infor/Infor';
 import SendBoardRequest from '../pages/SendBoardRequest/SendBoardRequest';
 import SendPointRequest from '../pages/SendPointRequest/SendPointRequest';
 
+import WardAndDistrictHomeHome from '../pages/WardAndDistrict/Home';
 import AdSpots from '../pages/WardAndDistrict/AdSpots';
 import Licenses from '../pages/WardAndDistrict/Licenses';
 import Reports from '../pages/WardAndDistrict/Reports';
@@ -33,6 +34,7 @@ const Navigation = () => {
 
         {/* Layout dành cho trang không có sidebar, chỉ có thanh navbar */}
         <Route element={<LayoutNavBar />}>
+          <Route path="/home" name="home" element={<WardAndDistrictHomeHome />} />
           <Route path="/create-account" name="create account" element={<CreateAccount />} />
           <Route path="/advertising-spots" name="advertising-spots" element={<AdSpots />} />
           <Route path="/licenses" name="licenses" element={<Licenses />} />
@@ -70,4 +72,3 @@ export default Navigation;
           <Route path="/licenses" name="licenses" element={<Licenses />} />
         </Route> */
 }
-
