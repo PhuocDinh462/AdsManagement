@@ -12,4 +12,3 @@ const LayoutNavBar = () => {
 };
 
 export default LayoutNavBar;
-
