@@ -15,6 +15,7 @@ import Reports from '../pages/WardAndDistrict/Reports';
 import ReportsDetail from '../pages/WardAndDistrict/Reports/ReportsDetail';
 import ManageForm from '../pages/ManageForm/ManageForm';
 import LayoutNavBar from '../layouts/layoutNavBar';
+import CreateAccount from '../pages/createAccount/CreateAccount';
 
 const Navigation = () => {
   const authenticated = true;
@@ -32,7 +33,7 @@ const Navigation = () => {
 
         {/* Layout dành cho trang không có sidebar, chỉ có thanh navbar */}
         <Route element={<LayoutNavBar />}>
-          <Route path="/licenses" name="licenses" element={<Licenses />} />
+          <Route path="/create-account" name="create account" element={<CreateAccount />} />
           <Route path="/reports" name="reports" element={<Reports />} />
         </Route>
 

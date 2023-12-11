@@ -1,0 +1,119 @@
+.container {
+  display: flex;
+  margin: 10px 0;
+  flex-direction: column;
+  align-items: center;
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    &_title {
+      color: #0a6971;
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 600;
+      font-size: 30px;
+    }
+
+    &_logo {
+      width: 230px;
+      height: auto;
+    }
+  }
+
+  &__body {
+    // background-color: #fff;
+    width: 100%;
+    height: calc(100vh);
+
+    .form {
+      width: 100%;
+      height: 100%;
+      display: flex;
+    }
+    &_left,
+    &_right {
+      flex: 1;
+      .form_input {
+        display: flex;
+        flex-direction: column;
+        padding: 10px 40px;
+
+        .input_label {
+          color: #0a6971;
+          font-family: Arial, Helvetica, sans-serif;
+          font-weight: 600;
+          margin-bottom: 8px;
+          font-size: 18px;
+        }
+
+        .input_area {
+          font-family: Arial, Helvetica, sans-serif;
+          display: block;
+          border-radius: 5px;
+          font-size: 16px;
+          background: white;
+          width: 100%;
+          border: 0;
+          padding: 10px 10px;
+          border: #0a6971 solid 1px;
+        }
+
+        .wrap_pass {
+          display: flex;
+          align-items: center;
+          position: relative;
+          .input_pass {
+            font-family: Arial, Helvetica, sans-serif;
+            display: block;
+            border-radius: 5px;
+            font-size: 16px;
+            background: white;
+            width: 100%;
+            border: 0;
+            padding: 10px 10px;
+            border: #0a6971 solid 1px;
+          }
+
+          .icon_show {
+            color: #0a6971;
+            position: absolute;
+            right: 10px;
+          }
+        }
+      }
+    }
+
+    &_right {
+      // background-color: yellow;
+      flex: 1;
+      .wrap {
+        font-family: Arial, Helvetica, sans-serif;
+        font-weight: 600;
+        font-size: 18px;
+        display: flex;
+        flex-direction: column;
+        padding: 10px 40px;
+
+        .title {
+          margin-bottom: 8px;
+          color: #0a6971;
+        }
+
+        select {
+          font-family: Arial, Helvetica, sans-serif;
+          display: block;
+          border-radius: 5px;
+          font-size: 16px;
+          background: white;
+          width: 100%;
+          border: 0;
+          padding: 10px 10px;
+          border: #0a6971 solid 1px;
+        }
+      }
+    }
+  }
+}
+
