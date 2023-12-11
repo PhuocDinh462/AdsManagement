@@ -34,7 +34,10 @@ const Navigation = () => {
         {/* Layout dành cho trang không có sidebar, chỉ có thanh navbar */}
         <Route element={<LayoutNavBar />}>
           <Route path="/create-account" name="create account" element={<CreateAccount />} />
+          <Route path="/advertising-spots" name="advertising-spots" element={<AdSpots />} />
+          <Route path="/licenses" name="licenses" element={<Licenses />} />
           <Route path="/reports" name="reports" element={<Reports />} />
+          <Route path="/reports/detail/:id" name="reports-detail" element={<ReportsDetail />} />
         </Route>
 
         <Route path="*" name="notFound" element={<Navigate to="/" />} />

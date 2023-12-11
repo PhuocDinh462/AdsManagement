@@ -326,9 +326,7 @@ export default function ReportsDetail() {
                 : faArrowRight
             }
             disabled={
-              data[currentReportIndex].status !== 'Đang xử lý' && data[currentReportIndex].status !== 'Đã xử lý'
-                ? false
-                : true
+              data[currentReportIndex].status === 'Đang xử lý' || data[currentReportIndex].status === 'Đã xử lý'
             }
             onClick={() => console.log('Xử lý')}
           />

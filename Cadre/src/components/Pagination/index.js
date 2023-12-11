@@ -1,10 +1,9 @@
 import React from 'react';
-import classnames from 'classnames';
-import { usePagination, DOTS } from './usePagination';
-import './styles.scss';
+import { usePagination, DOTS } from './hook/usePagination';
+import classes from './styles.module.scss';
 
 const Pagination = (props) => {
-  const { onPageChange, totalCount, siblingCount = 1, currentPage, pageSize, className } = props;
+  const { onPageChange, totalCount, siblingCount = 1, currentPage, pageSize } = props;
 
   const paginationRange = usePagination({
     currentPage,
@@ -28,21 +27,19 @@ const Pagination = (props) => {
 
   let lastPage = paginationRange[paginationRange.length - 1];
   return (
-    <ul className={classnames('pagination-container', { [className]: className })}>
+    <ul className={classes.pagination_container}>
       {/* Left navigation arrow */}
       <li
-        className={classnames('pagination-item', {
-          disabled: currentPage === 1,
-        })}
+        className={[classes.pagination_item, currentPage === 1 && classes['pagination_item--disabled']].join(' ')}
         onClick={onPrevious}
       >
-        <div className="arrow left" />
+        <div className={[classes.arrow, classes.arrow__left].join(' ')} />
       </li>
       {paginationRange.map((pageNumber, index) => {
         // If the pageItem is a DOT, render the DOTS unicode character
         if (pageNumber === DOTS) {
           return (
-            <li key={index} className="pagination-item dots">
+            <li key={index} className={[classes.pagination_item, classes.dots].join(' ')}>
               &#8230;
             </li>
           );
@@ -52,9 +49,10 @@ const Pagination = (props) => {
         return (
           <li
             key={index}
-            className={classnames('pagination-item', {
-              selected: pageNumber === currentPage,
-            })}
+            className={[
+              classes.pagination_item,
+              pageNumber === currentPage && classes['pagination_item--selected'],
+            ].join(' ')}
             onClick={() => onPageChange(pageNumber)}
           >
             {pageNumber}
@@ -63,12 +61,12 @@ const Pagination = (props) => {
       })}
       {/*  Right Navigation arrow */}
       <li
-        className={classnames('pagination-item', {
-          disabled: currentPage === lastPage,
-        })}
+        className={[classes.pagination_item, currentPage === lastPage && classes['pagination_item--disabled']].join(
+          ' '
+        )}
         onClick={onNext}
       >
-        <div className="arrow right" />
+        <div className={[classes.arrow, classes.arrow__right].join(' ')} />
       </li>
     </ul>
   );
