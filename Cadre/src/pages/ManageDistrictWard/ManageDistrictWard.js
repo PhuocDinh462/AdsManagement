@@ -4,140 +4,142 @@ import classes from './ManageDistrictWard.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { faPlus, faClose, faTrash, faPen } from '@fortawesome/free-solid-svg-icons';
+import ModalAdd from './components/ModalAdd';
+import Modal from '../../components/Modal/Modal';
+const initialData = [
+  {
+    stt: 1,
+    area: 'Quận 1',
+    managerName: 'John Doe',
+    email: 'john@example.com',
+    phoneNumber: '123456789',
+    level: 'Quận',
+    editButton: 'Edit',
+  },
+  {
+    stt: 2,
+    area: 'Quận 2',
+    managerName: 'Jane Doe',
+    email: 'jane@example.com',
+    phoneNumber: '987654321',
+    level: 'Quận',
+    editButton: 'Edit',
+  },
+  {
+    stt: 3,
+    area: 'Quận 3',
+    managerName: 'Jane Doe',
+    email: 'jane@example.com',
+    phoneNumber: '987654321',
+    level: 'Phường',
+    editButton: 'Edit',
+  },
+  {
+    stt: 4,
+    area: 'Quận 4',
+    managerName: 'Jane Doe',
+    email: 'jane@example.com',
+    phoneNumber: '987654321',
+    level: 'Quận',
+    editButton: 'Edit',
+  },
+  {
+    stt: 3,
+    area: 'Quận 3',
+    managerName: 'Jane Doe',
+    email: 'jane@example.com',
+    phoneNumber: '987654321',
+    level: 'Phường',
+    editButton: 'Edit',
+  },
+  {
+    stt: 4,
+    area: 'Quận 4',
+    managerName: 'Jane Doe',
+    email: 'jane@example.com',
+    phoneNumber: '987654321',
+    level: 'Quận',
+    editButton: 'Edit',
+  },
+  {
+    stt: 3,
+    area: 'Quận 3',
+    managerName: 'Jane Doe',
+    email: 'jane@example.com',
+    phoneNumber: '987654321',
+    level: 'Phường',
+    editButton: 'Edit',
+  },
+  {
+    stt: 4,
+    area: 'Quận 4',
+    managerName: 'Jane Doe',
+    email: 'jane@example.com',
+    phoneNumber: '987654321',
+    level: 'Quận',
+    editButton: 'Edit',
+  },
+  {
+    stt: 3,
+    area: 'Quận 3',
+    managerName: 'Jane Doe',
+    email: 'jane@example.com',
+    phoneNumber: '987654321',
+    level: 'Phường',
+    editButton: 'Edit',
+  },
+  {
+    stt: 4,
+    area: 'Quận 4',
+    managerName: 'Jane Doe',
+    email: 'jane@example.com',
+    phoneNumber: '987654321',
+    level: 'Quận',
+    editButton: 'Edit',
+  },
+  {
+    stt: 3,
+    area: 'Quận 3',
+    managerName: 'Jane Doe',
+    email: 'jane@example.com',
+    phoneNumber: '987654321',
+    level: 'Phường',
+    editButton: 'Edit',
+  },
+  {
+    stt: 4,
+    area: 'Quận 4',
+    managerName: 'Jane Doe',
+    email: 'jane@example.com',
+    phoneNumber: '987654321',
+    level: 'Quận',
+    editButton: 'Edit',
+  },
+  {
+    stt: 3,
+    area: 'Quận 3',
+    managerName: 'Jane Doe',
+    email: 'jane@example.com',
+    phoneNumber: '987654321',
+    level: 'Phường',
+    editButton: 'Edit',
+  },
+  {
+    stt: 4,
+    area: 'Quận 4',
+    managerName: 'Jane Doe',
+    email: 'jane@example.com',
+    phoneNumber: '987654321',
+    level: 'Quận',
+    editButton: 'Edit',
+  },
+  // Thêm dữ liệu khác
+];
 
 const ManageDistrictWard = () => {
-  const initialData = [
-    {
-      stt: 1,
-      area: 'Quận 1',
-      managerName: 'John Doe',
-      email: 'john@example.com',
-      phoneNumber: '123456789',
-      level: 'Quận',
-      editButton: 'Edit',
-    },
-    {
-      stt: 2,
-      area: 'Quận 2',
-      managerName: 'Jane Doe',
-      email: 'jane@example.com',
-      phoneNumber: '987654321',
-      level: 'Quận',
-      editButton: 'Edit',
-    },
-    {
-      stt: 3,
-      area: 'Quận 3',
-      managerName: 'Jane Doe',
-      email: 'jane@example.com',
-      phoneNumber: '987654321',
-      level: 'Phường',
-      editButton: 'Edit',
-    },
-    {
-      stt: 4,
-      area: 'Quận 4',
-      managerName: 'Jane Doe',
-      email: 'jane@example.com',
-      phoneNumber: '987654321',
-      level: 'Quận',
-      editButton: 'Edit',
-    },
-    {
-      stt: 3,
-      area: 'Quận 3',
-      managerName: 'Jane Doe',
-      email: 'jane@example.com',
-      phoneNumber: '987654321',
-      level: 'Phường',
-      editButton: 'Edit',
-    },
-    {
-      stt: 4,
-      area: 'Quận 4',
-      managerName: 'Jane Doe',
-      email: 'jane@example.com',
-      phoneNumber: '987654321',
-      level: 'Quận',
-      editButton: 'Edit',
-    },
-    {
-      stt: 3,
-      area: 'Quận 3',
-      managerName: 'Jane Doe',
-      email: 'jane@example.com',
-      phoneNumber: '987654321',
-      level: 'Phường',
-      editButton: 'Edit',
-    },
-    {
-      stt: 4,
-      area: 'Quận 4',
-      managerName: 'Jane Doe',
-      email: 'jane@example.com',
-      phoneNumber: '987654321',
-      level: 'Quận',
-      editButton: 'Edit',
-    },
-    {
-      stt: 3,
-      area: 'Quận 3',
-      managerName: 'Jane Doe',
-      email: 'jane@example.com',
-      phoneNumber: '987654321',
-      level: 'Phường',
-      editButton: 'Edit',
-    },
-    {
-      stt: 4,
-      area: 'Quận 4',
-      managerName: 'Jane Doe',
-      email: 'jane@example.com',
-      phoneNumber: '987654321',
-      level: 'Quận',
-      editButton: 'Edit',
-    },
-    {
-      stt: 3,
-      area: 'Quận 3',
-      managerName: 'Jane Doe',
-      email: 'jane@example.com',
-      phoneNumber: '987654321',
-      level: 'Phường',
-      editButton: 'Edit',
-    },
-    {
-      stt: 4,
-      area: 'Quận 4',
-      managerName: 'Jane Doe',
-      email: 'jane@example.com',
-      phoneNumber: '987654321',
-      level: 'Quận',
-      editButton: 'Edit',
-    },
-    {
-      stt: 3,
-      area: 'Quận 3',
-      managerName: 'Jane Doe',
-      email: 'jane@example.com',
-      phoneNumber: '987654321',
-      level: 'Phường',
-      editButton: 'Edit',
-    },
-    {
-      stt: 4,
-      area: 'Quận 4',
-      managerName: 'Jane Doe',
-      email: 'jane@example.com',
-      phoneNumber: '987654321',
-      level: 'Quận',
-      editButton: 'Edit',
-    },
-    // Thêm dữ liệu khác
-  ];
-
   const [data, setData] = useState(initialData);
   const [selectedFilter, setSelectedFilter] = useState('All');
+  const [isModalOpen, setModalOpen] = useState(false);
 
   const handleFilterChange = (level) => {
     const filteredData = level === 'All' ? initialData : initialData.filter((item) => item.level === level);
@@ -151,9 +153,23 @@ const ManageDistrictWard = () => {
     cursor: 'pointer',
   });
 
+  const handleAddClick = () => {
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
   return (
     <div className={classes.container_wrap}>
-      <HeaderTable title={'Danh sách quận, phường'} />
+      <div className={classes.header}>
+        <p className={classes.header__title}>Danh sách quận, phường</p>
+        <div className={classes.header__buttonAdd} onClick={handleAddClick}>
+          <FontAwesomeIcon icon={faPlus} />
+          <p className={classes.add}>Thêm</p>
+        </div>
+      </div>
       <div className={classes.container}>
         {/* Tab Filter */}
         <div className={classes.container__header}>
@@ -217,6 +233,12 @@ const ManageDistrictWard = () => {
           </table>
         </div>
       </div>
+
+      {isModalOpen && (
+        <Modal onClose={handleCloseModal}>
+          <ModalAdd />
+        </Modal>
+      )}
     </div>
   );
 };

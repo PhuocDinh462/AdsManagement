@@ -23,6 +23,12 @@
     display: flex;
     justify-content: center;
     gap: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+
+    &:hover {
+      background-color: #068f9b;
+    }
 
     .add {
       font-weight: 600;
@@ -32,3 +38,4 @@
     }
   }
 }
+
