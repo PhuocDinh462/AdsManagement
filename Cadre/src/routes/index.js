@@ -15,6 +15,8 @@ import Licenses from '../pages/WardAndDistrict/Licenses';
 import Reports from '../pages/WardAndDistrict/Reports';
 import ReportsDetail from '../pages/WardAndDistrict/Reports/ReportsDetail';
 import ManageForm from '../pages/ManageForm/ManageForm';
+import LoginPage from '../pages/Login'
+import ForgotPassword from '../pages/ForgotPassword'
 import LayoutNavBar from '../layouts/layoutNavBar';
 import CreateAccount from '../pages/createAccount/CreateAccount';
 
@@ -25,6 +27,8 @@ const Navigation = () => {
       <Routes>
         {/* Chỗ này để trang home khi mới vào hay trang gốc (T đang để ManageForm để demo) */}
         <Route path="/" name="form" element={<ManageForm />} />
+        <Route path="/login" name="login" element={<LoginPage />} />
+        <Route path="/forgot" name="forgot" element={<ForgotPassword />} />
 
         {/* Layout dành cho trang có sidebar và có thanh navbar */}
         <Route element={<Layout />}>
