@@ -39,6 +39,9 @@ const Navigation = () => {
           <Route path="/advertising-spots" name="advertising-spots" element={<AdSpots />} />
           <Route path="/licenses" name="licenses" element={<Licenses />} />
           <Route path="/reports" name="reports" element={<Reports />} />
+          <Route path="/infor" name="infor" element={<Infor />} />
+          <Route path="/board-request" name="board-request" element={<SendBoardRequest />} />
+          <Route path="/point-request" name="point-request" element={<SendPointRequest />} />
           <Route path="/reports/detail/:id" name="reports-detail" element={<ReportsDetail />} />
         </Route>
 

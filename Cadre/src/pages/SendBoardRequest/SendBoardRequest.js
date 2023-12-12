@@ -9,8 +9,6 @@ import FormBoard from './components/FormBoard';
 const SendBoardRequest = () => {
   return (
     <>
-      <div>Header</div>
-
       <div className={classes.wrapper}>
         <div className={classes['wrapper-left']}>
           <div className={classes['header-left']}>
