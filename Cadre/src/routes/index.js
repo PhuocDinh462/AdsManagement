@@ -72,3 +72,4 @@ export default Navigation;
           <Route path="/licenses" name="licenses" element={<Licenses />} />
         </Route> */
 }
+
