@@ -3,6 +3,7 @@ import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
 import FilterDropdown from '~components/Dropdown/FilterDropdown';
+import GoongAutoComplete from '~components/GoongAutoComplete';
 
 export default function Home() {
   const [filterActive, setFilterActive] = useState(false);
@@ -19,6 +20,10 @@ export default function Home() {
         >
           <FontAwesomeIcon icon={faFilter} />
         </div>
+      </div>
+
+      <div className={classes.search}>
+        <GoongAutoComplete apiKey={process.env.REACT_APP_GOONG_APIKEY} placeholder="Tìm kiếm theo địa chỉ" />
       </div>
     </div>
   );
