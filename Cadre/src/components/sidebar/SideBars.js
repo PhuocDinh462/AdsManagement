@@ -18,12 +18,12 @@ const data = [
   {
     id: 3,
     title: 'Các điểm đặt quảng cáo',
-    path: '/ads-form1',
+    path: '/ads-location',
   },
   {
     id: 4,
     title: 'Các bảng quảng cáo',
-    path: '/ads-board2',
+    path: '/ads',
   },
   {
     id: 5,
@@ -54,4 +54,3 @@ const SideBars = () => {
 };
 
 export default SideBars;
-

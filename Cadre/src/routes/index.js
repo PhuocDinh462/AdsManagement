@@ -15,10 +15,12 @@ import Licenses from '../pages/WardAndDistrict/Licenses';
 import Reports from '../pages/WardAndDistrict/Reports';
 import ReportsDetail from '../pages/WardAndDistrict/Reports/ReportsDetail';
 import ManageForm from '../pages/ManageForm/ManageForm';
-import LoginPage from '../pages/Login'
-import ForgotPassword from '../pages/ForgotPassword'
+import LoginPage from '../pages/Login';
+import ForgotPassword from '../pages/ForgotPassword';
 import LayoutNavBar from '../layouts/layoutNavBar';
 import CreateAccount from '../pages/createAccount/CreateAccount';
+import ManageAdLocation from '../pages/ManageAdLocation/ManageAdLocation';
+import ManageAd from '../pages/ManageAd/ManageAd';
 
 const Navigation = () => {
   const authenticated = true;
@@ -34,6 +36,8 @@ const Navigation = () => {
         <Route element={<Layout />}>
           <Route path="/district-ward" name="district ward" element={<ManageDistrictWard />} />
           <Route path="/form" name="form" element={<ManageForm />} />
+          <Route path="/ads-location" name="ads-location" element={<ManageAdLocation />} />
+          <Route path="/ads" name="ads" element={<ManageAd />} />
         </Route>
 
         {/* Layout dành cho trang không có sidebar, chỉ có thanh navbar */}
@@ -79,4 +83,3 @@ export default Navigation;
           <Route path="/licenses" name="licenses" element={<Licenses />} />
         </Route> */
 }
-
