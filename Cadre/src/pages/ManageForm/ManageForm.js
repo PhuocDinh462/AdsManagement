@@ -4,111 +4,115 @@ import classes from './ManageForm.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { faPlus, faClose, faTrash, faPen } from '@fortawesome/free-solid-svg-icons';
+import ModalAdd from './components/ModalAdd';
+import Modal from '~/src/components/Modal/Modal';
+import ModalUpdate from './components/ModalUpdate';
+const initialData = [
+  {
+    stt: 1,
+    content: 'Quận 4',
+    img: 'Jane Doe',
+    type: 'Hình quảng cáo',
+  },
+  {
+    stt: 1,
+    content: 'Quận 4',
+    img: 'Jane Doe',
+    type: 'Hình thức báo cáo',
+  },
+  {
+    stt: 1,
+    content: 'Quận 4',
+    img: 'Jane Doe',
+    type: 'Hình quảng cáo',
+  },
+  {
+    stt: 1,
+    content: 'Quận 4',
+    img: 'Jane Doe',
+    type: 'Hình thức báo cáo',
+  },
+  {
+    stt: 1,
+    content: 'Quận 4',
+    img: 'Jane Doe',
+    type: 'Hình quảng cáo',
+  },
+  {
+    stt: 1,
+    content: 'Quận 4',
+    img: 'Jane Doe',
+    type: 'Hình thức báo cáo',
+  },
+  {
+    stt: 1,
+    content: 'Quận 4',
+    img: 'Jane Doe',
+    type: 'Hình quảng cáo',
+  },
+  {
+    stt: 1,
+    content: 'Quận 4',
+    img: 'Jane Doe',
+    type: 'Hình thức báo cáo',
+  },
+  {
+    stt: 1,
+    content: 'Quận 4',
+    img: 'Jane Doe',
+    type: 'Hình quảng cáo',
+  },
+  {
+    stt: 1,
+    content: 'Quận 4',
+    img: 'Jane Doe',
+    type: 'Hình thức báo cáo',
+  },
+  {
+    stt: 1,
+    content: 'Quận 4',
+    img: 'Jane Doe',
+    type: 'Hình quảng cáo',
+  },
+  {
+    stt: 1,
+    content: 'Quận 4',
+    img: 'Jane Doe',
+    type: 'Hình thức báo cáo',
+  },
+  {
+    stt: 1,
+    content: 'Quận 4',
+    img: 'Jane Doe',
+    type: 'Hình quảng cáo',
+  },
+  {
+    stt: 1,
+    content: 'Quận 4',
+    img: 'Jane Doe',
+    type: 'Hình thức báo cáo',
+  },
+  {
+    stt: 1,
+    content: 'Quận 4',
+    img: 'Jane Doe',
+    type: 'Hình quảng cáo',
+  },
+  {
+    stt: 1,
+    content: 'Quận 4',
+    img: 'Jane Doe',
+    type: 'Hình thức báo cáo',
+  },
 
+  // Thêm dữ liệu khác
+];
 const ManageForm = () => {
-  const initialData = [
-    {
-      stt: 1,
-      content: 'Quận 4',
-      img: 'Jane Doe',
-      type: 'Hình quảng cáo',
-    },
-    {
-      stt: 1,
-      content: 'Quận 4',
-      img: 'Jane Doe',
-      type: 'Hình thức báo cáo',
-    },
-    {
-      stt: 1,
-      content: 'Quận 4',
-      img: 'Jane Doe',
-      type: 'Hình quảng cáo',
-    },
-    {
-      stt: 1,
-      content: 'Quận 4',
-      img: 'Jane Doe',
-      type: 'Hình thức báo cáo',
-    },
-    {
-      stt: 1,
-      content: 'Quận 4',
-      img: 'Jane Doe',
-      type: 'Hình quảng cáo',
-    },
-    {
-      stt: 1,
-      content: 'Quận 4',
-      img: 'Jane Doe',
-      type: 'Hình thức báo cáo',
-    },
-    {
-      stt: 1,
-      content: 'Quận 4',
-      img: 'Jane Doe',
-      type: 'Hình quảng cáo',
-    },
-    {
-      stt: 1,
-      content: 'Quận 4',
-      img: 'Jane Doe',
-      type: 'Hình thức báo cáo',
-    },
-    {
-      stt: 1,
-      content: 'Quận 4',
-      img: 'Jane Doe',
-      type: 'Hình quảng cáo',
-    },
-    {
-      stt: 1,
-      content: 'Quận 4',
-      img: 'Jane Doe',
-      type: 'Hình thức báo cáo',
-    },
-    {
-      stt: 1,
-      content: 'Quận 4',
-      img: 'Jane Doe',
-      type: 'Hình quảng cáo',
-    },
-    {
-      stt: 1,
-      content: 'Quận 4',
-      img: 'Jane Doe',
-      type: 'Hình thức báo cáo',
-    },
-    {
-      stt: 1,
-      content: 'Quận 4',
-      img: 'Jane Doe',
-      type: 'Hình quảng cáo',
-    },
-    {
-      stt: 1,
-      content: 'Quận 4',
-      img: 'Jane Doe',
-      type: 'Hình thức báo cáo',
-    },
-    {
-      stt: 1,
-      content: 'Quận 4',
-      img: 'Jane Doe',
-      type: 'Hình quảng cáo',
-    },
-    {
-      stt: 1,
-      content: 'Quận 4',
-      img: 'Jane Doe',
-      type: 'Hình thức báo cáo',
-    },
-
-    // Thêm dữ liệu khác
-  ];
-
   const [data, setData] = useState(initialData);
   const [selectedFilter, setSelectedFilter] = useState('Tất cả');
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [selectedRowData, setSelectedRowData] = useState(null);
+  const [modalType, setModalType] = useState(null);
 
   const handleFilterChange = (type) => {
     const filteredData = type === 'Tất cả' ? initialData : initialData.filter((item) => item.type === type);
@@ -122,9 +126,31 @@ const ManageForm = () => {
     cursor: 'pointer',
   });
 
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
+  const handleAddClick = () => {
+    setSelectedRowData(null);
+    setModalType('add');
+    setModalOpen(true);
+  };
+
+  const handleEditClick = (rowData) => {
+    setSelectedRowData(rowData);
+    setModalType('update');
+    setModalOpen(true);
+  };
+
   return (
     <div className={classes.container_wrap}>
-      <HeaderTable title={'Danh sách các loại hình'} />
+      <div className={classes.header}>
+        <p className={classes.header__title}>Danh sách loại hình quảng cáo và hình thức báo cáo</p>
+        <div className={classes.header__buttonAdd} onClick={handleAddClick}>
+          <FontAwesomeIcon icon={faPlus} />
+          <p className={classes.add}>Thêm</p>
+        </div>
+      </div>
       <div className={classes.container}>
         {/* Tab Filter */}
         <div className={classes.container__header}>
@@ -172,7 +198,7 @@ const ManageForm = () => {
                     <button className={classes.btn_trash}>
                       <FontAwesomeIcon icon={faTrash} />
                     </button>
-                    <button className={classes.btn_pen}>
+                    <button onClick={() => handleEditClick(row)} className={classes.btn_pen}>
                       <FontAwesomeIcon icon={faPen} />
                     </button>
                   </td>
@@ -182,6 +208,16 @@ const ManageForm = () => {
           </table>
         </div>
       </div>
+
+      {isModalOpen && (
+        <Modal onClose={handleCloseModal}>
+          {modalType === 'add' ? (
+            <ModalAdd onClose={handleCloseModal} />
+          ) : modalType === 'update' ? (
+            <ModalUpdate data={selectedRowData} onClose={handleCloseModal} />
+          ) : null}
+        </Modal>
+      )}
     </div>
   );
 };

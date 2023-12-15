@@ -9,8 +9,6 @@ import FormPoint from './components/FormPoint';
 const SendPointRequest = () => {
   return (
     <>
-      <div>Header</div>
-
       <div className={classes.wrapper}>
         <div className={classes['wrapper-left']}>
           <div className={classes['header-left']}>

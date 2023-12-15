@@ -9,8 +9,6 @@ import Form from './components/Form';
 const Infor = () => {
   return (
     <>
-      <div>Header</div>
-
       <div className={classes.wrapper}>
         <div className={classes['wrapper-user']}>
           <div className={classes['header-user']}>

@@ -6,6 +6,81 @@
 
     &-map {
         z-index: 0;
+
+        .geo {
+            display: flex;
+            justify-content: space-between;
+            width: 100vw;
+            height: 100vh;
+
+            &__map {
+                padding: 20px;
+                flex: 1;
+            }
+
+            &__info {
+                width: 340px;
+                height: calc(100vh - 60px);
+                background-color: white;
+                box-shadow: -2px 0px 4px 0px rgba(0, 0, 0, 0.25);
+                padding: 20px;
+
+                h4 {
+                    padding-bottom: 6px;
+                }
+
+                p {
+                    padding: 2px;
+                }
+
+                input {
+                    font-size: 1.4rem;
+                    border: 1px solid #ccc;
+                    padding: 6px;
+                    width: 100%;
+                    margin-bottom: 10px;
+                }
+
+                div {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    margin-top: 1rem;
+
+                    button {
+                        position: relative;
+                        display: flex;
+                        align-items: center;
+                        border: 1px solid #ccc;
+                        padding: 0.4rem 0.8rem;
+                        border-radius: 0.6rem;
+
+                        .geo__img {
+                            position: absolute;
+                            top: calc(-2rem);
+                            left: calc(-2rem);
+                            width: 4rem;
+                            height: 4rem;
+                        }
+
+                        img {
+                            width: 4rem;
+                            height: 4rem;
+                        }
+                        p {
+                        }
+                    }
+                    button:first-child {
+                        margin-left: 0.4rem;
+                        margin-right: 1rem;
+                    }
+                    button:last-child {
+                        margin-left: 1rem;
+                        margin-right: -0.4rem;
+                    }
+                }
+            }
+        }
     }
 
     &-head {
@@ -14,16 +89,16 @@
         left: 30px;
         z-index: 10;
     }
-    
-    &-block{
+
+    &-block {
         position: absolute;
-        height: 8rem;
-        width: 40rem;
+        // height: 8rem;
+        // width: 40rem;
         z-index: 2;
         background-color: white;
-        box-shadow: 0 .1rem .1rem 0 #969696;
+        box-shadow: 0 0.1rem 0.1rem 0 #969696;
     }
-    
+
     &-inf {
         position: absolute;
         top: 0;
@@ -31,17 +106,18 @@
         width: 40rem;
         height: 100vh;
         z-index: 1;
+        background-color: #ffffff;
 
         &-content {
             padding: 0 3rem;
             height: 100%;
             width: 100%;
             overflow: auto;
-            box-shadow: 4px 0px 5px 0px rgba(0,0,0,0.1);
-            -webkit-box-shadow: 4px 0px 5px 0px rgba(0,0,0,0.1);
-            -moz-box-shadow: 4px 0px 5px 0px rgba(0,0,0,0.1);
+            box-shadow: 4px 0px 5px 0px rgba(0, 0, 0, 0.1);
+            -webkit-box-shadow: 4px 0px 5px 0px rgba(0, 0, 0, 0.1);
+            -moz-box-shadow: 4px 0px 5px 0px rgba(0, 0, 0, 0.1);
 
-            &-items{
+            &-items {
                 margin-top: 10rem;
                 /* ===== Scrollbar CSS ===== */
                 /* Firefox */
@@ -67,7 +143,6 @@
             }
 
             &-table {
-                
                 &-show-img {
                     padding-bottom: 9rem;
                     margin-top: 45vh;
@@ -80,20 +155,17 @@
             }
         }
 
-        &-imgAds{
+        &-imgAds {
             position: absolute;
             width: 40rem;
             text-align: center;
             background-color: white;
             padding-bottom: 2vh;
-            box-shadow: 0 .1rem .1rem 0 #969696;
-
+            box-shadow: 0 0.1rem 0.1rem 0 #969696;
 
             img {
                 height: 40vh;
             }
         }
     }
-
 }
-

@@ -10,7 +10,7 @@ const categories = [
   {
     name: 'Trang chủ',
     icon: faHouse,
-    path: '/',
+    path: '/home',
   },
   {
     name: 'Điểm đặt',
@@ -68,4 +68,3 @@ export default function NavBar(props) {
     </div>
   );
 }
-

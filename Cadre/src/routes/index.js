@@ -15,8 +15,12 @@ import Licenses from '../pages/WardAndDistrict/Licenses';
 import Reports from '../pages/WardAndDistrict/Reports';
 import ReportsDetail from '../pages/WardAndDistrict/Reports/ReportsDetail';
 import ManageForm from '../pages/ManageForm/ManageForm';
+import LoginPage from '../pages/Login';
+import ForgotPassword from '../pages/ForgotPassword';
 import LayoutNavBar from '../layouts/layoutNavBar';
 import CreateAccount from '../pages/createAccount/CreateAccount';
+import ManageAdLocation from '../pages/ManageAdLocation/ManageAdLocation';
+import ManageAd from '../pages/ManageAd/ManageAd';
 
 const Navigation = () => {
   const authenticated = true;
@@ -25,13 +29,16 @@ const Navigation = () => {
       <Routes>
         {/* Chỗ này để trang home khi mới vào hay trang gốc (T đang để ManageForm để demo) */}
         <Route path="/" name="form" element={<ManageForm />} />
+        <Route path="/login" name="login" element={<LoginPage />} />
+        <Route path="/forgot" name="forgot" element={<ForgotPassword />} />
 
         {/* Layout dành cho trang có sidebar và có thanh navbar */}
         <Route element={<Layout />}>
           <Route path="/district-ward" name="district ward" element={<ManageDistrictWard />} />
           <Route path="/form" name="form" element={<ManageForm />} />
 
-          {/*  */}
+          <Route path="/ads-location" name="ads-location" element={<ManageAdLocation />} />
+          <Route path="/ads" name="ads" element={<ManageAd />} />
         </Route>
 
         {/* Layout dành cho trang không có sidebar, chỉ có thanh navbar */}
@@ -41,6 +48,9 @@ const Navigation = () => {
           <Route path="/advertising-spots" name="advertising-spots" element={<AdSpots />} />
           <Route path="/licenses" name="licenses" element={<Licenses />} />
           <Route path="/reports" name="reports" element={<Reports />} />
+          <Route path="/infor" name="infor" element={<Infor />} />
+          <Route path="/board-request" name="board-request" element={<SendBoardRequest />} />
+          <Route path="/point-request" name="point-request" element={<SendPointRequest />} />
           <Route path="/reports/detail/:id" name="reports-detail" element={<ReportsDetail />} />
         </Route>
 

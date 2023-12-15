@@ -1,10 +1,12 @@
 const mysql = require("mysql2");
+const dotenv = require("dotenv");
+dotenv.config({});
 
 const connection = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "tanvinhktqn0201@",
-  database: "sys",
+  password: process.env.PASSWORD,
+  database: process.env.DB,
 });
 
 connection.connect((err) => {

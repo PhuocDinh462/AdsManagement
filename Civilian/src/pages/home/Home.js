@@ -1,13 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import classes from './Home.module.scss';
 import SearchBar from '~/src/components/SearchBar';
 import CardInfor from './CardInfor';
 import InforTable from './InforTable';
+import ic_position from '../../assets/svg/address.svg';
+import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 
 const infoAds = {
     PANEL: 'Panel',
     TABLE: 'Table;',
+};
+
+const containerStyle = {
+    width: '100%',
+    height: '100%',
 };
 
 const Home = () => {
@@ -17,9 +24,57 @@ const Home = () => {
     // When table have the infomation
     const isHaveInfor = false;
 
+    const { isLoaded } = useJsApiLoader({
+        googleMapsApiKey: 'AIzaSyCohMvErQCqXsDMlgUpubswjsYD4iPXn4k',
+        id: 'google-map-script',
+        language: 'vi',
+        region: 'vn',
+    });
+
+    const customMarkerIcon = {
+        url: ic_position,
+        scaledSize: isLoaded ? new window.google.maps.Size(36, 36) : null,
+    };
+
+    const [geocode, setGeocode] = useState({ lat: 37.7749, lng: -122.4194 });
+
+    const onLoad = React.useCallback(function callback(mapInstance) {
+        setGeocode(mapInstance.center.toJSON());
+    }, []);
+
+    const handleMapClickPosition = (event) => {
+        setGeocode({
+            lat: event.latLng.lat(),
+            lng: event.latLng.lng(),
+        });
+    };
+
+    useEffect(() => {
+        // Additional logic if needed when the geocode changes
+    }, [geocode]);
+
     return (
         <div className={classes.container__home}>
-            <div className={classes['container__home-map']}>{/* Map */}</div>
+            <div className={classes['container__home-map']}>
+                <div className={classes.geo}>
+                    <div className={classes.geo__map}>
+                        {isLoaded ? (
+                            <GoogleMap
+                                style={{ cursor: 'default !important' }}
+                                mapContainerStyle={containerStyle}
+                                center={geocode}
+                                zoom={10}
+                                onLoad={onLoad}
+                                onClick={handleMapClickPosition}
+                            >
+                                <Marker position={geocode} icon={customMarkerIcon} />
+                            </GoogleMap>
+                        ) : (
+                            <>Loading...</>
+                        )}
+                    </div>
+                </div>
+            </div>
             <div className={classes['container__home-head']}>
                 <SearchBar />
             </div>

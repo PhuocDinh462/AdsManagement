@@ -1,0 +1,14 @@
+@import '/src/styles/colors.scss';
+
+.main_container {
+  width: 100%;
+}
+
+.ic_container {
+  position: absolute;
+  z-index: 1;
+  top: 1.3rem;
+  left: 1.5rem;
+  color: $text_700;
+  font-size: 1.7rem;
+}
