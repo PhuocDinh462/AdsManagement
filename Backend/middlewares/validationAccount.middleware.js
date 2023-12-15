@@ -1,6 +1,6 @@
 const Yup = require('yup')
 const validationAccount = async (req, res, next) => {
-    const { username, password, email, phone, user_type } = req.body;
+    const { username, password, email, phone, dob, user_type } = req.body;
     try {
         // Định nghĩa schema validation
         const validationSchema = Yup.object({
@@ -10,6 +10,7 @@ const validationAccount = async (req, res, next) => {
             phone: Yup.string()
                 .matches(/^(84|0[3|5|7|8|9])+([0-9]{8})\b$/, 'Invalid phone number')
                 .required('Phone is required'),
+            dob: Yup.date().required('Date of birth is required'), // Kiểm tra ngày sinh
             user_type: Yup.string().oneOf(['ward', 'district', 'department'], 'Invalid user type').required('User type is required'),
         });
 
@@ -19,6 +20,7 @@ const validationAccount = async (req, res, next) => {
             password,
             email,
             phone,
+            dob,
             user_type,
         });
 

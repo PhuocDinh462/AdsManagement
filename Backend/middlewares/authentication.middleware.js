@@ -1,6 +1,5 @@
 
 const jwt = require("jsonwebtoken");
-const connection = require("../server");
 
 const auth = async (req, res, next) => {
     const authHeader = req.headers.authorization;
@@ -9,7 +8,7 @@ const auth = async (req, res, next) => {
     }
     const accessToken = authHeader.split(" ")[1];
     try {
-        const payload = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
+        const payload = jwt.verify(accessToken, process.env.SECRET_KEY);
         req.user = { ...payload };
         next();
     } catch (error) {

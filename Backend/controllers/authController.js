@@ -4,9 +4,9 @@ const bcrypt = require("bcrypt");
 const generateToken = require("../utils/generateToken");
 
 const createAccount = catchAsync(async (req, res, next) => {
-    const { username, password, email, phone, user_type } = req.body;
+    const { username, password, email, phone, dob, user_type } = req.body;
 
-    const insertAcc = "insert into user (username, password, email, phone, user_type) values (?,?,?,?,?)";
+    const insertAcc = "insert into user (username, password, email, phone,dob, user_type) values (?,?,?,?,?,?)";
 
     const stringToHash = password;
 
@@ -15,11 +15,11 @@ const createAccount = catchAsync(async (req, res, next) => {
             console.error(err);
         }
 
-        connection.query(insertAcc, [username, hashPassword, email, phone, user_type], (error, result) => {
+        connection.query(insertAcc, [username, hashPassword, email, phone, dob, user_type], (error, result) => {
             if (error) {
                 console.error("Error executing query: " + error.stack);
                 return res.status(401).json({
-                    error: "email unavailable...",
+                    error: "Invalid Information.",
                 });
             }
             const account = {
@@ -27,6 +27,7 @@ const createAccount = catchAsync(async (req, res, next) => {
                 email,
                 hashPassword,
                 phone,
+                dob,
                 user_type,
             }
             res.status(200).json({
