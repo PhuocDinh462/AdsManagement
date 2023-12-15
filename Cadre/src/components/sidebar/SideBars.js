@@ -54,4 +54,3 @@ const SideBars = () => {
 };
 
 export default SideBars;
-

@@ -30,6 +30,8 @@ const Navigation = () => {
         <Route element={<Layout />}>
           <Route path="/district-ward" name="district ward" element={<ManageDistrictWard />} />
           <Route path="/form" name="form" element={<ManageForm />} />
+
+          {/*  */}
         </Route>
 
         {/* Layout dành cho trang không có sidebar, chỉ có thanh navbar */}
@@ -72,4 +74,3 @@ export default Navigation;
           <Route path="/licenses" name="licenses" element={<Licenses />} />
         </Route> */
 }
-
