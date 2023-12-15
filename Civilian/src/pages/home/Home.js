@@ -12,10 +12,10 @@ const infoAds = {
 
 const Home = () => {
     const [listInforPosition, setListInforPosition] = useState([{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }]);
-    const [showInfo, setShowInfo] = useState({ show: true, info: infoAds.PANEL });
+    const [showInfo, setShowInfo] = useState({ show: true, info: infoAds.TABLE });
 
     // When table have the infomation
-    const isHaveInfor = true;
+    const isHaveInfor = false;
 
     return (
         <div className={classes.container__home}>
