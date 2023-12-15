@@ -1,0 +1,47 @@
+@import '/src/styles/colors.scss';
+
+$width: 38rem;
+$slideTime: 0.5s;
+
+.main_container {
+  position: absolute;
+  top: 6rem;
+  background-color: white;
+  border-right: 1px solid $text_300;
+  width: $width;
+  height: calc(100vh - 6rem);
+  z-index: 1;
+}
+
+.slideIn {
+  animation: slide_left_in $slideTime cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.slideOut {
+  animation: slide_left_out $slideTime cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.collapse_btn {
+  position: relative;
+  top: 32rem;
+  left: 38rem;
+  width: fit-content;
+}
+
+@keyframes slide_left_in {
+  0% {
+    transform: translateX(-$width);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide_left_out {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-$width);
+  }
+}

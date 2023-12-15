@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
 import FilterDropdown from '~components/Dropdown/FilterDropdown';
 import GoongAutoComplete from '~components/GoongAutoComplete';
+import SpotInfoSidebar from '~components/SpotInfoSidebar';
 
 export default function Home() {
   const [filterActive, setFilterActive] = useState(false);
@@ -25,6 +26,8 @@ export default function Home() {
       <div className={classes.search}>
         <GoongAutoComplete apiKey={process.env.REACT_APP_GOONG_APIKEY} placeholder="Tìm kiếm theo địa chỉ" />
       </div>
+
+      <SpotInfoSidebar />
     </div>
   );
 }
