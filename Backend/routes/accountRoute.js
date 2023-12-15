@@ -1,12 +1,12 @@
 const express = require("express");
 const accountController = require("../controllers/accountController");
-const validationAccount = require("../middlewares/validationAccount.middleware")
+const validationUpdate = require("../middlewares/validationUpdateAccount.middleware")
 
 const router = express.Router();
 
 router.get("/get_infor", accountController.getInforAccount);
-router.patch("/update_account", accountController.updateAccountInfor);
-router.patch("/change_password", accountController.changePassword)
+router.patch("/update_account", validationUpdate.AccountInfor, accountController.updateAccountInfor);
+router.patch("/change_password", validationUpdate.AccountPassword, accountController.changePassword)
 
 
 module.exports = router;

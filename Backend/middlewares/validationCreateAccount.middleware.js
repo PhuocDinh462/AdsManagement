@@ -1,5 +1,5 @@
 const Yup = require('yup')
-const validationAccount = async (req, res, next) => {
+const validationCreateAccount = async (req, res, next) => {
     const { username, password, email, phone, dob, user_type } = req.body;
     try {
         // Định nghĩa schema validation
@@ -32,4 +32,4 @@ const validationAccount = async (req, res, next) => {
     }
 };
 
-module.exports = validationAccount;
+module.exports = validationCreateAccount;
