@@ -120,17 +120,17 @@ const createOTP = async (req, res) => {
     const { email } = req.body;
     if (!email) {
         res
-            .status(StatusCodes.BAD_REQUEST)
+            .status(400)
             .json({ msg: "Please provide an email" });
     } else {
         const OTP = await sendMail(7, email);
         if (!OTP) {
             res
-                .status(StatusCodes.BAD_REQUEST)
+                .status(400)
                 .json({ msg: "Sending gmail fail!!!" });
         } else {
-            OTP_token = jwt.sign({ OTP }, process.env.JWT_SECRET, {
-                expiresIn: process.env.JWT_LIFETIME,
+            OTP_token = jwt.sign({ OTP }, process.env.SECRET_KEY, {
+                expiresIn: process.env.OTP_LIFETIME,
             });
             res.status(200).json({ otpVerify: OTP_token });
         }
