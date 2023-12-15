@@ -89,4 +89,51 @@ const changePassword = catchAsync(async (req, res, next) => {
     );
 });
 
+
+const forgotPassword = async (req, res) => {
+    const { email, password, repassword, otp, otpVerify } = req.body;
+    if (otpVerify) {
+        if (!email || !password || !repassword || !otp) {
+            throw new BadRequestError("Please provide name,email, password and otp");
+        } else if (password !== repassword) {
+            throw new BadRequestError("Password and Repassword must be same");
+        } else {
+            //Hashing password
+            const salt = await bcrypt.genSalt(10);
+            const passwordHashed = await bcrypt.hash(password, salt);
+            const updatePassword = {
+                password: passwordHashed,
+            };
+            const OTP_verify = jwt.verify(otpVerify, process.env.JWT_SECRET);
+            if (OTP_verify.OTP === otp) {
+                //handle change password
+            } else {
+                res.status(400).json({ msg: "Incorrect OTP" });
+            }
+        }
+    } else {
+        throw new BadRequestError("OTP does not exist");
+    }
+};
+// {{URL}}/auth/otp
+const createOTP = async (req, res) => {
+    const { email } = req.body;
+    if (!email) {
+        res
+            .status(StatusCodes.BAD_REQUEST)
+            .json({ msg: "Please provide an email" });
+    } else {
+        const OTP = await sendMail(7, email);
+        if (!OTP) {
+            res
+                .status(StatusCodes.BAD_REQUEST)
+                .json({ msg: "Sending gmail fail!!!" });
+        } else {
+            OTP_token = jwt.sign({ OTP }, process.env.JWT_SECRET, {
+                expiresIn: process.env.JWT_LIFETIME,
+            });
+            res.status(200).json({ otpVerify: OTP_token });
+        }
+    }
+};
 module.exports = { getInforAccount, updateAccountInfor, changePassword };
