@@ -48,7 +48,7 @@ const login = catchAsync(async (req, res, next) => {
     }
 
     connection.query(
-        `select * from users where email = ?`,
+        `select * from user where email = ?`,
         email,
         (err, results) => {
             if (err) {
@@ -59,35 +59,15 @@ const login = catchAsync(async (req, res, next) => {
             if (!results[0] || !bcrypt.compareSync(password, results[0].password))
                 return res.status(401).json({
                     status: "fail",
-                    msg: "Invalid Creadential!",
+                    msg: "Invalid Credential!",
                 });
 
-            const accessToken = generateToken.accessToken(email);
-            const refreshToken = generateToken.refreshToken(email);
-            connection.query("select * from `users` where `email` = ?", [email], (err, account) => {
-                if (err) {
-                    console.error("Error executing query: " + err.stack);
-                    return res.status(500).json({ error: "Database error" });
-                }
-
-                connection.query(
-                    `update users set access_token = ?, refresh_token = ? where email = ?`,
-                    [accessToken, refreshToken, email],
-                    (err, results) => {
-                        if (err) {
-                            console.error("Error executing query: " + err.stack);
-                            return res.status(500).json({ error: "Database error" });
-                        }
-
-                        res.status(200).json({
-                            status: "success",
-                            access_token: accessToken,
-                            refresh_token: refreshToken,
-                            account: account[0],
-                        });
-                    }
-                );
-            })
+            const accessToken = generateToken.accessToken(results[0]);
+            res.status(200).json({
+                status: "success",
+                user_id: results[0].user_id,
+                token: accessToken,
+            });
 
         }
     );
