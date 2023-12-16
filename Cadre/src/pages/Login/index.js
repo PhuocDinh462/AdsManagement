@@ -1,70 +1,54 @@
-// import React, { useState, useEffect } from 'react';
-// import { Link, useNavigate } from 'react-router-dom';
-// import { Backdrop, CircularProgress } from '@mui/material';
-
-// 
-// import classes from './Login.module.scss';
-// import Swal from 'sweetalert2';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useFormik } from 'formik';
+import * as Yup from 'yup'; // Để thực hiện validation
 
 import request from '../../utils/request';
 import classes from './Login.module.scss';
 import Images from '../../assets/images';
 import Swal from 'sweetalert2';
-export default function LoginPage() {
 
+const LoginPage = () => {
     const loginNavigate = useNavigate();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [currentUser, setCurrentUser] = useState(() => {
-        const storageUserState = JSON.parse(localStorage.getItem('user-state'));
-        return storageUserState;
+
+    const formik = useFormik({
+        initialValues: {
+            email: '',
+            password: '',
+        },
+        validationSchema: Yup.object({
+            email: Yup.string().email('Email không hợp lệ').required('Vui lòng nhập email của bạn'),
+            password: Yup.string().required('Vui lòng nhập mật khẩu của bạn'),
+        }),
+        onSubmit: async (values, { setSubmitting }) => {
+            try {
+                const response = await request.post('auth/login', values);
+                localStorage.setItem('user-state', true);
+                localStorage.setItem('user_id', response.data.user_id);
+                localStorage.setItem('token', response.data.token);
+                setSubmitting(false);
+
+                Swal.fire({
+                    title: 'Đăng nhập thành công!',
+                    icon: 'success',
+                    confirmButtonText: 'Hoàn tất',
+                    width: '50rem',
+                });
+
+                loginNavigate('/');
+            } catch (error) {
+                console.log(error);
+                setSubmitting(false);
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Email hoặc mật khẩu của bạn không đúng!',
+                    width: '50rem',
+                });
+            }
+        },
     });
-
-    useEffect(() => {
-        if (currentUser) loginNavigate('/');
-    }, [currentUser]);
-
-    async function handleSubmit(e) {
-        e.preventDefault();
-        // if (email && password) {
-        //     const objLogin = {
-        //         email: email,
-        //         password: password,
-        //     };
-
-        //     setIsLoading(true);
-        //     try {
-        //         const response = await request.post('users/sign_in', objLogin);
-        //         setLocalItem('user-state', true)
-        //         setLocalObject('user', response.data.data)
-        //         setLocalItem('token', response.data.data.token)
-        //         setCurrentUser(true);
-        //         Swal.fire({
-        //             title: 'Đăng nhập thành công!',
-        //             icon: 'success',
-        //             confirmButtonText: 'Hoàn tất',
-        //             width: '50rem',
-        //         });
-        //     } catch (error) {
-        //         Swal.fire({
-        //             icon: 'error',
-        //             title: 'Lỗi',
-        //             text: 'Email hoặc mật khẩu của bạn không đúng!',
-        //             width: '50rem',
-        //         });
-        //     }
-        // }
-        // else {
-        //     Swal.fire({
-        //         icon: 'error',
-        //         title: 'Lỗi',
-        //         text: 'Vui lòng nhập đầy đủ email và mật khẩu của bạn',
-        //         width: '50rem',
-        //     });
-        // }
-    }
 
     return (
         <div className={classes.wrapper}>
@@ -73,38 +57,47 @@ export default function LoginPage() {
             </div>
             <div className={classes.wrapper__form}>
                 <h2>Đăng nhập</h2>
-                <form action="/" onSubmit={handleSubmit}>
+                <form onSubmit={formik.handleSubmit}>
                     <p>
                         <input
                             type="text"
-                            name="first__name"
+                            name="email"
                             placeholder="Nhập email của bạn"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            value={formik.values.email}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
                         />
+                        {formik.touched.email && formik.errors.email && (
+                            <div className={classes.error}>{formik.errors.email}</div>
+                        )}
                     </p>
                     <p>
                         <input
                             type="password"
                             name="password"
                             placeholder="Nhập mật khẩu của bạn"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            value={formik.values.password}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
                         />
+                        {formik.touched.password && formik.errors.password && (
+                            <div className={classes.error}>{formik.errors.password}</div>
+                        )}
                         <br />
                         <br />
                         <Link to="/forgot">
-                            <label className="right-label">Quên mật khẩu?</label>
+                            <label className={classes['right-label']}>Quên mật khẩu?</label>
                         </Link>
                     </p>
                     <p>
-                        <button id={classes.sub__btn} type="submit">
+                        <button id={classes.sub__btn} type="submit" disabled={formik.isSubmitting}>
                             Đăng nhập
                         </button>
                     </p>
                 </form>
-
             </div>
         </div>
     );
-}
+};
+
+export default LoginPage;

@@ -28,6 +28,11 @@
         padding: 1rem;
         display: block;
         margin: auto;
+        .error {
+          margin-top: 6px;
+          font-weight: 700;
+          color: red;
+        }
         input {
           min-width: 50%;
           padding: 1rem 1rem;
@@ -44,8 +49,9 @@
           margin-top: 3px;
           padding-right: 2px;
         }
+
         label {
-          padding-left: 30rem;
+          padding-left: 35rem;
           color: #0a6971;
           font-weight: bold;
         }
@@ -79,10 +85,6 @@
       }
     }
   }
-}
-
-.error__password {
-  margin-left: 19.2rem;
 }
 
 .error__rewrite__password {
