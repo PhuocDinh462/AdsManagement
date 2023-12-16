@@ -94,6 +94,10 @@
   border-radius: 40px;
 }
 
+.borderRadius5 {
+  border-radius: 5px;
+}
+
 .outlineBtn {
   border: 1px solid #0a6971;
   color: #0a6971;
@@ -103,6 +107,12 @@
 .primary {
   background-color: #0a6971;
   color: #fff;
+}
+
+.secondary {
+  color: white;
+  background-color: #000;
+  cursor: default;
 }
 
 .redLinear {

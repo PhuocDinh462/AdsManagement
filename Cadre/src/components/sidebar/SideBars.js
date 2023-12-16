@@ -33,12 +33,12 @@ const data = [
   {
     id: 6,
     title: 'Danh sách & xét duyệt',
-    path: '/ads-form4',
+    path: '/license',
   },
   {
     id: 7,
     title: 'Thống kê báo cáo & xử lý',
-    path: '/ads-form5',
+    path: '/report-stats',
   },
 ];
 const SideBars = () => {
