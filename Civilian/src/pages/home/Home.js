@@ -17,6 +17,11 @@ const containerStyle = {
     height: '100%',
 };
 
+const coordinatesList = [
+    { id: 1, lat: 37.7749, lng: -122.4194 },
+    { id: 2, lat: 34.0522, lng: -118.2437 },
+];
+
 const Home = () => {
     const [listInforPosition, setListInforPosition] = useState([{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }]);
     const [showInfo, setShowInfo] = useState({ show: true, info: infoAds.TABLE });
@@ -25,7 +30,7 @@ const Home = () => {
     const isHaveInfor = false;
 
     const { isLoaded } = useJsApiLoader({
-        googleMapsApiKey: 'AIzaSyCohMvErQCqXsDMlgUpubswjsYD4iPXn4k',
+        googleMapsApiKey: 'AIzaSyBxWEpG38Jm2lo2OEe3RDjjVBgGRxwF_ow',
         id: 'google-map-script',
         language: 'vi',
         region: 'vn',
@@ -53,6 +58,15 @@ const Home = () => {
         // Additional logic if needed when the geocode changes
     }, [geocode]);
 
+    const onMarkerLoad = (marker) => {
+        // handle marker load event
+    };
+
+    const onMarkerClick = (id) => {
+        // handle marker click event based on ID or other identifier
+        console.log(`Marker ${id} clicked!`);
+    };
+
     return (
         <div className={classes.container__home}>
             <div className={classes['container__home-map']}>
@@ -68,6 +82,15 @@ const Home = () => {
                                 onClick={handleMapClickPosition}
                             >
                                 <Marker position={geocode} icon={customMarkerIcon} />
+
+                                {coordinatesList.map((coordinate) => (
+                                    <Marker
+                                        key={coordinate.id}
+                                        position={{ lat: coordinate.lat, lng: coordinate.lng }}
+                                        onLoad={onMarkerLoad}
+                                        onClick={() => onMarkerClick(coordinate.id)}
+                                    />
+                                ))}
                             </GoogleMap>
                         ) : (
                             <>Loading...</>
