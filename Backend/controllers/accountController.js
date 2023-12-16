@@ -136,4 +136,4 @@ const createOTP = async (req, res) => {
         }
     }
 };
-module.exports = { getInforAccount, updateAccountInfor, changePassword };
+module.exports = { getInforAccount, updateAccountInfor, changePassword, forgotPassword, createOTP };
