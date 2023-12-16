@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import classes from './Form.module.scss';
 import request from '../../../../utils/request'
+import Swal from 'sweetalert2';
+
 // Chuyển đổi sang đối tượng Date
 const formatDate = (date) => {
   const dateObject = new Date(date);
@@ -70,10 +72,21 @@ const Form = (props) => {
       const response = await request.patch(`account/update_account`, params, {
         headers: headers,
       });
-      console.log(response.data.account)
       setUser(response.data.account);
+      Swal.fire({
+        title: 'Cập nhật thông tin tài khoản thành công',
+        icon: 'success',
+        confirmButtonText: 'Hoàn tất',
+        width: '50rem',
+      });
+
     } catch (error) {
-      console.error('Error Update account', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Lỗi',
+        text: 'Cập nhật thất bại',
+        width: '50rem',
+      });
     }
     setEditState(false)
   }
