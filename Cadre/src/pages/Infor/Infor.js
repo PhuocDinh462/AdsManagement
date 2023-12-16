@@ -1,12 +1,35 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import classes from './Infor.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock, faUser } from '@fortawesome/free-solid-svg-icons';
 import Button from './components/Button';
 import Form from './components/Form';
+import request from '../../utils/request';
 
 const Infor = () => {
+  const [user, setUser] = useState({})
+
+  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
+  const fetchUserInfor = async () => {
+
+    try {
+      const response = await request.get(`account/get_infor`, {
+        headers: headers,
+      });
+      setUser(response.data.user);
+    } catch (error) {
+      console.error('Error fetching surfaces:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserInfor();
+  }, []);
+
   return (
     <>
       <div className={classes.wrapper}>
@@ -22,7 +45,7 @@ const Infor = () => {
               </div>
             </div>
             <div className={classes['username-container']}>
-              <div className={classes['username']}>Nguyen Van A</div>
+              <div className={classes['username']}>{user.username}</div>
             </div>
           </div>
 
@@ -45,7 +68,7 @@ const Infor = () => {
             </div>
 
             <div className={classes['container-manage-account']}>
-              <Form />
+              <Form user={user} setUser={setUser} />
             </div>
 
             <div className={classes['footer-manage-account']}></div>
