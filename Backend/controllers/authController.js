@@ -2,6 +2,7 @@ const catchAsync = require("../utils/catchAsync");
 const connection = require("../server"); // Sử dụng module quản lý kết nối cơ sở dữ liệu
 const bcrypt = require("bcrypt");
 const generateToken = require("../utils/generateToken");
+const jwt = require("jsonwebtoken");
 
 const createAccount = catchAsync(async (req, res, next) => {
     const { username, password, email, phone, dob, user_type } = req.body;
@@ -74,5 +75,42 @@ const login = catchAsync(async (req, res, next) => {
     );
 });
 
+const forgotPassword = async (req, res) => {
+    const { email, new_password, otp, otp_verify } = req.body;
+    if (otp_verify) {
+        if (!email || !new_password || !otp) {
+            throw new BadRequestError("Please provide name,email, new_password and otp");
+        } else {
+            //Hashing password
+            const salt = await bcrypt.genSalt(10);
+            const passwordHashed = await bcrypt.hash(new_password, salt);
 
-module.exports = { createAccount, login };
+            const OTP_verify = jwt.verify(otp_verify, process.env.SECRET_KEY);
+            if (OTP_verify.OTP === otp) {
+                //handle change password
+                connection.query(
+                    "UPDATE user SET password = ? WHERE email = ?",
+                    [passwordHashed, email],
+                    (err, results) => {
+                        if (err) {
+                            console.error("Error executing query: " + err.stack);
+                            return res.status(500).json({ error: "Database error" });
+                        }
+                        res.status(200).json({
+                            status: "Success",
+                            message: "Change password success"
+                        });
+
+                    }
+                );
+
+            } else {
+                res.status(400).json({ msg: "Incorrect OTP" });
+            }
+        }
+    } else {
+        throw new BadRequestError("OTP does not exist");
+    }
+};
+
+module.exports = { createAccount, login, forgotPassword };

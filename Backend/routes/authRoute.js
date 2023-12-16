@@ -5,6 +5,7 @@ const validationCreateAccount = require("../middlewares/validationCreateAccount.
 const router = express.Router();
 
 router.post("/send_otp", emailController.createOTP);
+router.patch("/forgot_password", authController.forgotPassword);
 router.post("/create", validationCreateAccount, authController.createAccount);
 router.post("/login", authController.login);
 

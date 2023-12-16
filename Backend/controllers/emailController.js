@@ -4,7 +4,6 @@ const connection = require("../server"); // Sử dụng module quản lý kết 
 
 const catchAsync = require("../utils/catchAsync");
 
-// {{URL}}/auth/otp
 const createOTP = async (req, res) => {
     const { email } = req.body;
     if (!email) {
