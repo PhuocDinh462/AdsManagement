@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import classes from './Form.module.scss';
-const originalDate = "2002-01-01 00:00:00";
-
+import request from '../../../../utils/request'
 // Chuyển đổi sang đối tượng Date
 const formatDate = (date) => {
   const dateObject = new Date(date);
@@ -25,7 +24,7 @@ const userInfo = {
 }
 const Form = (props) => {
   // Khởi tạo trạng thái cho các thông tin
-  const { user, setUser } = props
+  const { user, setUser, headers } = props
   const inputPhone = useRef();
   const inputDob = useRef();
   const inputEmail = useRef();
@@ -60,8 +59,22 @@ const Form = (props) => {
         break;
     }
   };
-  const handleEditState = () => {
-
+  const handleEditState = async () => {
+    const params = {
+      username: fullName,
+      phone: phone,
+      dob: dob,
+      email: email,
+    }
+    try {
+      const response = await request.patch(`account/update_account`, params, {
+        headers: headers,
+      });
+      console.log(response.data.account)
+      setUser(response.data.account);
+    } catch (error) {
+      console.error('Error Update account', error);
+    }
     setEditState(false)
   }
   useEffect(() => {
@@ -70,6 +83,11 @@ const Form = (props) => {
       inputDob.current.value = formatDate(user.dob)
       inputEmail.current.value = user.email
       inputFullName.current.value = user.username
+
+      setFullName(user.username)
+      setPhone(user.phone)
+      setDob(formatDate(user.dob))
+      setEmail(user.email)
     }
   }, [editState, user])
 

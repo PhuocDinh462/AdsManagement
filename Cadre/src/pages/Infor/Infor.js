@@ -68,7 +68,7 @@ const Infor = () => {
             </div>
 
             <div className={classes['container-manage-account']}>
-              <Form user={user} setUser={setUser} />
+              <Form user={user} setUser={setUser} headers={headers} />
             </div>
 
             <div className={classes['footer-manage-account']}></div>
