@@ -12,7 +12,7 @@ dotenv.config({ path: "./config.env" });
 
 const port = process.env.PORT;
 
-app.use(morgan("combined"));
+// app.use(morgan("combined"));
 app.use(cors(corsOptions));
 app.use(express.json());
 

@@ -5,12 +5,21 @@ const bcrypt = require("bcrypt");
 const moment = require('moment');
 
 const getInforAccount = catchAsync(async (req, res, next) => {
-    const localDate = moment.utc(req.user.dob).local();
-    req.user.dob = localDate.format('YYYY-MM-DD HH:mm:ss')
-    res.status(200).json({
-        status: "success",
-        user: req.user,
-    });
+
+    connection.query(
+        `select * from user where user_id = ?`,
+        req.user.user_id,
+        (err, results) => {
+            const localDate = moment.utc(results[0].dob).local();
+            results[0].dob = localDate.format('YYYY-MM-DD HH:mm:ss')
+            res.status(200).json({
+                status: "success",
+                user: results[0],
+            });
+
+        }
+    );
+
 })
 const updateAccountInfor = catchAsync(async (req, res, next) => {
     const { username, email, phone, dob } = req.body;
@@ -36,9 +45,7 @@ const updateAccountInfor = catchAsync(async (req, res, next) => {
                 res.status(200).json({
                     status: "Success",
                     message: "update account infor success",
-                    data: {
-                        data: selectResults[0], // Lấy phần tử đầu tiên trong mảng selectResults
-                    },
+                    account: selectResults[0],
                 });
             });
         }

@@ -79,7 +79,8 @@ const forgotPassword = async (req, res) => {
     const { email, new_password, otp, otp_verify } = req.body;
     if (otp_verify) {
         if (!email || !new_password || !otp) {
-            throw new BadRequestError("Please provide name,email, new_password and otp");
+            return res.status(200).json({ message: "Please provide name,email, new_password and otp" });
+
         } else {
             //Hashing password
             const salt = await bcrypt.genSalt(10);
@@ -105,11 +106,11 @@ const forgotPassword = async (req, res) => {
                 );
 
             } else {
-                res.status(400).json({ msg: "Incorrect OTP" });
+                res.status(200).json({ message: "Incorrect OTP" });
             }
         }
     } else {
-        throw new BadRequestError("OTP does not exist");
+        res.status(400).json({ message: "OTP does not exist" });
     }
 };
 
