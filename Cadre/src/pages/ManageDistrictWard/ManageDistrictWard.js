@@ -1,148 +1,75 @@
-import React, { useState } from 'react';
-import HeaderTable from '../../components/headerTable/HeaderTable';
+import React, { useEffect, useState } from 'react';
 import classes from './ManageDistrictWard.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { faPlus, faClose, faTrash, faPen } from '@fortawesome/free-solid-svg-icons';
 import ModalAdd from './components/ModalAdd';
 import Modal from '../../components/Modal/Modal';
-const initialData = [
-  {
-    stt: 1,
-    area: 'Quận 1',
-    managerName: 'John Doe',
-    email: 'john@example.com',
-    phoneNumber: '123456789',
-    level: 'Quận',
-    editButton: 'Edit',
-  },
-  {
-    stt: 2,
-    area: 'Quận 2',
-    managerName: 'Jane Doe',
-    email: 'jane@example.com',
-    phoneNumber: '987654321',
-    level: 'Quận',
-    editButton: 'Edit',
-  },
-  {
-    stt: 3,
-    area: 'Quận 3',
-    managerName: 'Jane Doe',
-    email: 'jane@example.com',
-    phoneNumber: '987654321',
-    level: 'Phường',
-    editButton: 'Edit',
-  },
-  {
-    stt: 4,
-    area: 'Quận 4',
-    managerName: 'Jane Doe',
-    email: 'jane@example.com',
-    phoneNumber: '987654321',
-    level: 'Quận',
-    editButton: 'Edit',
-  },
-  {
-    stt: 3,
-    area: 'Quận 3',
-    managerName: 'Jane Doe',
-    email: 'jane@example.com',
-    phoneNumber: '987654321',
-    level: 'Phường',
-    editButton: 'Edit',
-  },
-  {
-    stt: 4,
-    area: 'Quận 4',
-    managerName: 'Jane Doe',
-    email: 'jane@example.com',
-    phoneNumber: '987654321',
-    level: 'Quận',
-    editButton: 'Edit',
-  },
-  {
-    stt: 3,
-    area: 'Quận 3',
-    managerName: 'Jane Doe',
-    email: 'jane@example.com',
-    phoneNumber: '987654321',
-    level: 'Phường',
-    editButton: 'Edit',
-  },
-  {
-    stt: 4,
-    area: 'Quận 4',
-    managerName: 'Jane Doe',
-    email: 'jane@example.com',
-    phoneNumber: '987654321',
-    level: 'Quận',
-    editButton: 'Edit',
-  },
-  {
-    stt: 3,
-    area: 'Quận 3',
-    managerName: 'Jane Doe',
-    email: 'jane@example.com',
-    phoneNumber: '987654321',
-    level: 'Phường',
-    editButton: 'Edit',
-  },
-  {
-    stt: 4,
-    area: 'Quận 4',
-    managerName: 'Jane Doe',
-    email: 'jane@example.com',
-    phoneNumber: '987654321',
-    level: 'Quận',
-    editButton: 'Edit',
-  },
-  {
-    stt: 3,
-    area: 'Quận 3',
-    managerName: 'Jane Doe',
-    email: 'jane@example.com',
-    phoneNumber: '987654321',
-    level: 'Phường',
-    editButton: 'Edit',
-  },
-  {
-    stt: 4,
-    area: 'Quận 4',
-    managerName: 'Jane Doe',
-    email: 'jane@example.com',
-    phoneNumber: '987654321',
-    level: 'Quận',
-    editButton: 'Edit',
-  },
-  {
-    stt: 3,
-    area: 'Quận 3',
-    managerName: 'Jane Doe',
-    email: 'jane@example.com',
-    phoneNumber: '987654321',
-    level: 'Phường',
-    editButton: 'Edit',
-  },
-  {
-    stt: 4,
-    area: 'Quận 4',
-    managerName: 'Jane Doe',
-    email: 'jane@example.com',
-    phoneNumber: '987654321',
-    level: 'Quận',
-    editButton: 'Edit',
-  },
-  // Thêm dữ liệu khác
-];
+import { axiosClient } from '../../api/axios';
+import ModalUpdate from './components/ModalUpdate';
 
 const ManageDistrictWard = () => {
-  const [data, setData] = useState(initialData);
+  const [data, setData] = useState([]);
+  const [originalData, setOriginalData] = useState();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [isModalOpen, setModalOpen] = useState(false);
+  const [modalType, setModalType] = useState(null);
+  const [selectedRowData, setSelectedRowData] = useState(null);
+
+  const fetchData = async () => {
+    try {
+      const response = await axiosClient.get('/cadre');
+
+      const convertedData = response.reduce((accumulator, district) => {
+        const districtManager = district.districtManager || {};
+        const districtInfo = {
+          id: district.districtId,
+          area: district.districtName,
+          managerName: districtManager.name || 'Unknown',
+          email: districtManager.email || 'Unknown',
+          phoneNumber: districtManager.phone || 'Unknown',
+          level: 'Quận',
+        };
+
+        const wardInfoArray = district.wards.map((ward) => {
+          const wardManager = ward.manager || {};
+          return {
+            id: ward.id,
+            area: ward.name,
+            managerName: wardManager.name || 'Unknown',
+            district_id: district.districtId,
+            district_name: district.districtName,
+            email: wardManager.email || 'Unknown',
+            phoneNumber: wardManager.phone || 'Unknown',
+            level: 'Phường',
+          };
+        });
+
+        return [...accumulator, districtInfo, ...wardInfoArray];
+      }, []);
+
+      setData(convertedData);
+      setOriginalData(convertedData);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const updateDataAfterAdd = async (newData) => {
+    await fetchData();
+    setModalOpen(false);
+  };
 
   const handleFilterChange = (level) => {
-    const filteredData = level === 'All' ? initialData : initialData.filter((item) => item.level === level);
+    const filteredData = level === 'All' ? originalData : originalData.filter((item) => item.level === level);
     setData(filteredData);
     setSelectedFilter(level);
   };
@@ -154,6 +81,14 @@ const ManageDistrictWard = () => {
   });
 
   const handleAddClick = () => {
+    setSelectedRowData(null);
+    setModalType('add');
+    setModalOpen(true);
+  };
+
+  const handleEditClick = (rowData) => {
+    setSelectedRowData(rowData);
+    setModalType('update');
     setModalOpen(true);
   };
 
@@ -196,10 +131,10 @@ const ManageDistrictWard = () => {
             <thead className={classes.table__header_wrap_thead}>
               <tr>
                 <th style={{ width: '5%' }}>STT</th>
-                <th style={{ width: '10%' }}>Khu vực</th>
+                <th style={{ width: '20%' }}>Khu vực</th>
                 <th style={{ width: '20%' }}>Tên cán bộ quản lý</th>
-                <th style={{ width: '20%' }}>Email</th>
-                <th style={{ width: '20%' }}>Số điện thoại</th>
+                <th style={{ width: '15%' }}>Email</th>
+                <th style={{ width: '15%' }}>Số điện thoại</th>
                 <th style={{ width: '10%' }}>Cấp</th>
                 <th style={{ width: '15%' }}>Chỉnh sửa</th>
               </tr>
@@ -214,16 +149,16 @@ const ManageDistrictWard = () => {
               {data.map((row, rowIndex) => (
                 <tr className={classes.table__body_wrap_row} key={rowIndex}>
                   <td style={{ width: '5%' }}>{rowIndex + 1}</td>
-                  <td style={{ width: '10%' }}>{row.area}</td>
+                  <td style={{ width: '20%' }}>{row.area}</td>
                   <td style={{ width: '20%' }}>{row.managerName}</td>
-                  <td style={{ width: '20%' }}>{row.email}</td>
-                  <td style={{ width: '20%' }}>{row.phoneNumber}</td>
+                  <td style={{ width: '15%' }}>{row.email}</td>
+                  <td style={{ width: '15%' }}>{row.phoneNumber}</td>
                   <td style={{ width: '10%' }}>{row.level}</td>
                   <td style={{ width: '15%' }}>
                     <button className={classes.btn_trash}>
                       <FontAwesomeIcon icon={faTrash} />
                     </button>
-                    <button className={classes.btn_pen}>
+                    <button onClick={() => handleEditClick(row)} className={classes.btn_pen}>
                       <FontAwesomeIcon icon={faPen} />
                     </button>
                   </td>
@@ -236,7 +171,11 @@ const ManageDistrictWard = () => {
 
       {isModalOpen && (
         <Modal onClose={handleCloseModal}>
-          <ModalAdd />
+          {modalType === 'add' ? (
+            <ModalAdd onClose={updateDataAfterAdd} />
+          ) : modalType === 'update' ? (
+            <ModalUpdate data={selectedRowData} onClose={handleCloseModal} />
+          ) : null}
         </Modal>
       )}
     </div>

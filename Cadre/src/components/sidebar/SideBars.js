@@ -42,7 +42,6 @@ const data = [
   },
 ];
 const SideBars = () => {
-  console.log(1324356);
   return (
     <div className={classes.sidebar}>
       <p className={classes.sidebar__title}>Quản lý</p>
@@ -54,3 +53,4 @@ const SideBars = () => {
 };
 
 export default SideBars;
+
