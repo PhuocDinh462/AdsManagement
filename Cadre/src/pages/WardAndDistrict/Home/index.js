@@ -7,6 +7,7 @@ import GoongAutoComplete from '~components/GoongAutoComplete';
 import SpotInfoSidebar from '~components/SpotInfoSidebar';
 import { GoogleMap, useJsApiLoader, Marker, Polygon } from '@react-google-maps/api';
 import { colors } from '~styles/colors';
+import { AdSpotNormal } from '~assets/markers';
 
 const containerStyle = {
   width: '100%',
@@ -40,13 +41,37 @@ export default function Home() {
 
   const [displayMarker, setDisplayMarker] = useState(false);
   const [marker, setMarker] = useState();
+
   const handleMapClick = (event) => {
     setDisplayMarker(!displayMarker);
+    setCollapseSidebar(false);
     setMarker({
       lat: event.latLng.lat(),
       lng: event.latLng.lng(),
     });
   };
+
+  const handleMarkerClick = (_marker) => {
+    setDisplayMarker(true);
+    setCollapseSidebar(false);
+    setMarker({
+      lat: _marker.lat,
+      lng: _marker.lng,
+    });
+  };
+
+  const adSpots = [
+    {
+      lat: 10.762619,
+      lng: 106.684431,
+      location_type: 'Đất công nghiệp/Công viên/Hành lang an toàn giao thông',
+      advertising_type: 'Cổ động chính trị',
+      image_url: 'https://panoquangcao.net/wp-content/uploads/2020/09/bien-quang-cao-tren-duong-cao-toc-2.jpg',
+      is_planning: true,
+    },
+  ];
+
+  const iconSize = 20;
 
   return (
     <div className={classes.main_container}>
@@ -76,6 +101,19 @@ export default function Home() {
               }}
             />
             {displayMarker && <Marker position={marker} />}
+            {adSpots.map((item, index) => (
+              <Marker
+                key={index}
+                position={item}
+                icon={{
+                  url: AdSpotNormal,
+                  scaledSize: isLoaded ? new window.google.maps.Size(iconSize, iconSize) : null,
+                  anchor: new google.maps.Point(iconSize / 2, iconSize / 2),
+                  origin: new google.maps.Point(0, 0),
+                }}
+                onClick={() => handleMarkerClick(item)}
+              />
+            ))}
           </GoogleMap>
         ) : (
           <>Loading...</>
