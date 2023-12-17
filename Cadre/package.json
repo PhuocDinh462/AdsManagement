@@ -12,6 +12,7 @@
     "@goongmaps/goong-geocoder-react": "^0.1.1",
     "@goongmaps/goong-map-react": "^1.1.2",
     "@mui/material": "^5.15.0",
+    "@react-google-maps/api": "^2.19.2",
     "@reduxjs/toolkit": "^1.9.7",
     "axios": "^1.6.0",
     "font-awesome": "^4.7.0",
