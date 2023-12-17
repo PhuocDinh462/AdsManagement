@@ -1,12 +1,14 @@
 import classes from './styles.module.scss';
 import CollapseBtn from './CollapseBtn';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { faQuestionCircle, faFlag, faCircleCheck, faCircleXmark } from '@fortawesome/free-regular-svg-icons';
 import { faAngleLeft, faAngleRight, faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { noImage } from '~assets/imgs/Imgs';
+import axios from 'axios';
 
-export default function SpotInfoSidebar() {
+export default function SpotInfoSidebar(props) {
+  const { spotCoord, setCollapse } = props;
   const [status, setStatus] = useState(true);
   const isPlanned = true;
 
@@ -41,6 +43,26 @@ export default function SpotInfoSidebar() {
   ];
 
   const [currentAdsIndex, setCurrentAdsIndex] = useState(0);
+
+  const [spotName, setSpotName] = useState();
+  const [spotAddress, setSpotAddress] = useState();
+
+  useEffect(() => {
+    (async () => {
+      await axios
+        .get(
+          `https://rsapi.goong.io/Geocode?latlng=${spotCoord.lat},${spotCoord.lng}&api_key=${process.env.REACT_APP_GOONG_APIKEY}`
+        )
+        .then((res) => {
+          const data = res.data.results;
+          setSpotName(data[0]?.name);
+          setSpotAddress(data[0]?.address);
+        })
+        .catch((error) => {
+          console.log('Get spot info error: ', error);
+        });
+    })();
+  }, []);
 
   return (
     <div className={[classes.main_container, status ? classes.slideIn : classes.slideOut].join(' ')}>
@@ -134,8 +156,8 @@ export default function SpotInfoSidebar() {
           </div>
           <div className={classes.text}>
             <div className={classes.title}>Thông tin địa điểm</div>
-            <div className={classes.spot_name}>Quân Chủng Hải Quân - Trung Tâm Văn Phòng Thương Mại Hải Quân</div>
-            <div className={classes.spot_detail}>15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM</div>
+            <div className={classes.spot_name}>{spotName}</div>
+            <div className={classes.spot_detail}>{spotAddress}</div>
 
             <div className={classes.reportAndPlan}>
               <div className={classes.report}>
@@ -156,7 +178,13 @@ export default function SpotInfoSidebar() {
         </div>
       </div>
 
-      <div className={classes.collapse_btn} onClick={() => setStatus(!status)}>
+      <div
+        className={classes.collapse_btn}
+        onClick={() => {
+          setCollapse && setCollapse(status);
+          setStatus(!status);
+        }}
+      >
         <CollapseBtn status={status} />
       </div>
     </div>
