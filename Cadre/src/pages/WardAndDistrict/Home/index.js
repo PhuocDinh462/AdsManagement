@@ -46,7 +46,7 @@ export default function Home() {
     <div className={classes.main_container}>
       <div className={classes.map_container}>
         {isLoaded ? (
-          <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={10} onLoad={onLoad} onUnmount={onUnmount}>
+          <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={15} onLoad={onLoad} onUnmount={onUnmount}>
             {/* Child components, such as markers, info windows, etc. */}
             <></>
           </GoogleMap>
