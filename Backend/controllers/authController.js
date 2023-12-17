@@ -24,6 +24,7 @@ const createAccount = catchAsync(async (req, res, next) => {
                 });
             }
             const account = {
+                user_id: result.insertId,
                 username,
                 email,
                 hashPassword,

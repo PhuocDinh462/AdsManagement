@@ -5,6 +5,7 @@ const cors = require("cors");
 const corsOptions = require("./configs/corsOptions.js");
 const authRoute = require("./routes/authRoute.js");
 const accountRoute = require("./routes/accountRoute.js");
+const googleRoute = require("./routes/googleRoute.js");
 const authenticateUser = require("./middlewares/authentication.middleware.js")
 
 const app = express();
@@ -16,7 +17,7 @@ const port = process.env.PORT;
 app.use(cors(corsOptions));
 app.use(express.json());
 
-
+app.use("/", googleRoute)
 app.use("/auth", authRoute)
 app.use("/account", authenticateUser, accountRoute)
 

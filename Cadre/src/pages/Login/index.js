@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup'; // Để thực hiện validation
@@ -7,6 +7,7 @@ import request from '../../utils/request';
 import classes from './Login.module.scss';
 import Images from '../../assets/images';
 import Swal from 'sweetalert2';
+import getGoogleOAuthURL from '~/src/utils/getGoogleUrl';
 
 const LoginPage = () => {
     const loginNavigate = useNavigate();
@@ -95,6 +96,7 @@ const LoginPage = () => {
                         </button>
                     </p>
                 </form>
+                <a href={getGoogleOAuthURL()}>Login with google</a>
             </div>
         </div>
     );
