@@ -148,7 +148,7 @@ export default function Home() {
         <GoongAutoComplete
           apiKey={process.env.REACT_APP_GOONG_APIKEY}
           placeholder="Tìm kiếm theo địa chỉ"
-          bgColor={displayMarker && !collapseSidebar && 'rgba(255,255,255,.8)'}
+          collapseSidebar={!displayMarker || collapseSidebar}
         />
       </div>
 
