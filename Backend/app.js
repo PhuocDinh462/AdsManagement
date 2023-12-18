@@ -7,6 +7,7 @@ const accountRoute = require('./routes/accountRoute.js');
 const cardeRoute = require('./routes/cardeRoute.js');
 const authenticateUser = require('./middlewares/authentication.middleware.js');
 const googleRoute = require('./routes/googleRoute.js');
+const wardRoute = require('./routes/wardRoute.js');
 
 const app = express();
 dotenv.config({ path: './config.env' });
@@ -20,8 +21,8 @@ app.use('/', googleRoute);
 app.use('/auth', authRoute);
 app.use('/account', authenticateUser, accountRoute);
 app.use('/cadre', cardeRoute);
+app.use('/ward', wardRoute);
 
 app.listen(port, () => {
   console.log(`Server app listening on port ${port}`);
 });
-
