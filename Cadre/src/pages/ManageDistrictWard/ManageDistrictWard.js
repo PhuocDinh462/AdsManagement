@@ -21,6 +21,7 @@ const ManageDistrictWard = () => {
   const fetchData = async () => {
     try {
       const response = await axiosClient.get('/cadre');
+      console.log(response);
 
       const convertedData = response.reduce((accumulator, district) => {
         const districtManager = district.districtManager || {};

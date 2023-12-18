@@ -7,7 +7,7 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default function GoongAutoComplete(props) {
-  const { apiKey, onChange, defaultInputValue, placeholder } = props;
+  const { apiKey, onChange, defaultInputValue, placeholder, bgColor } = props;
   const [options, setOptions] = useState();
   const [loading, setLoading] = useState(false);
 
@@ -61,6 +61,7 @@ export default function GoongAutoComplete(props) {
             paddingLeft: '3rem',
             borderRadius: '100rem',
             fontSize: '1.5rem',
+            backgroundColor: bgColor || 'white',
             borderColor: state.isFocused ? borderColorFocus : borderColor,
             boxShadow: state.isFocused ? `0 0 0 .5px ${borderColorFocus}` : 'none',
             '&:hover': {

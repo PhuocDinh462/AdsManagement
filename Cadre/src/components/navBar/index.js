@@ -32,8 +32,8 @@ const categories = [
 export default function NavBar(props) {
   const location = useLocation();
   const currentPath = '/' + location.pathname.split('/')[1];
-
   const [activeAccountDropdown, setActiveAccountDropdown] = useState(false);
+  const { hideCategories } = props;
 
   return (
     <div className={classes.main_container}>
@@ -42,15 +42,16 @@ export default function NavBar(props) {
           <img src={logo} className={classes.logo} />
         </a>
 
-        {categories.map((item, index) => (
-          <NavBarItem
-            key={index}
-            name={item.name}
-            icon={item.icon}
-            path={item.path}
-            active={currentPath === item.path}
-          />
-        ))}
+        {!hideCategories &&
+          categories.map((item, index) => (
+            <NavBarItem
+              key={index}
+              name={item.name}
+              icon={item.icon}
+              path={item.path}
+              active={currentPath === item.path}
+            />
+          ))}
       </div>
 
       <div className={classes.avatar_container}>

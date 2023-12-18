@@ -21,6 +21,8 @@ import LayoutNavBar from '../layouts/layoutNavBar';
 import CreateAccount from '../pages/createAccount/CreateAccount';
 import ManageAdLocation from '../pages/ManageAdLocation/ManageAdLocation';
 import ManageAd from '../pages/ManageAd/ManageAd';
+import ManageLicensing from '../pages/ManageLicensing';
+import ReportStats from '../pages/ReportStats';
 
 const Navigation = () => {
   const authenticated = true;
@@ -36,8 +38,12 @@ const Navigation = () => {
         <Route element={<Layout />}>
           <Route path="/district-ward" name="district ward" element={<ManageDistrictWard />} />
           <Route path="/form" name="form" element={<ManageForm />} />
+
           <Route path="/ads-location" name="ads-location" element={<ManageAdLocation />} />
           <Route path="/ads" name="ads" element={<ManageAd />} />
+
+          <Route path="/license" name="manage license" element={<ManageLicensing />} />
+          <Route path="/report-stats" name="report stats" element={<ReportStats />} />
         </Route>
 
         {/* Layout dành cho trang không có sidebar, chỉ có thanh navbar */}

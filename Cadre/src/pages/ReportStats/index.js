@@ -3,36 +3,28 @@ import React, { useState } from 'react';
 import classes from './style.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
-import LicenseDetails from './LicenseDetails';
+import ReportDetails from './ReportDetails';
 const initialData = [
   {
     id: 1,
-    company: 'HCMUS',
-    img: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
+    date: '12/10/2022',
+    email: 'abc@gmail.com',
     address: '135 THD, Quận 1, P. Cầu Ông Lãnh, TP HCM',
-    numOfDate: '300',
-    status: { type: 1, content: 'Đã Cấp Phép' },
+    typeReport: 'Tố giác sai phạm',
+    status: { type: 1, content: 'Đã Xử Lý' },
   },
   {
     id: 2,
-    company: 'HCMUS',
-    img: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
+    date: '12/10/2022',
+    email: 'abc@gmail.com',
     address: '135 THD, Quận 1, P. Cầu Ông Lãnh, TP HCM',
-    numOfDate: '300',
-    status: { type: 2, content: 'Chưa Cấp Phép' },
-  },
-  {
-    id: 3,
-    company: 'HCMUS',
-    img: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
-    address: '135 THD, Quận 1, P. Cầu Ông Lãnh, TP HCM',
-    numOfDate: '300',
-    status: { type: 3, content: 'Đã Hủy' },
+    typeReport: 'Tố giác sai phạm',
+    status: { type: 2, content: 'Đang Xử Lý' },
   },
 
   // Thêm dữ liệu khác
 ];
-const ManageLicensing = () => {
+const ReportStats = () => {
   const [data, setData] = useState(initialData);
   const [isOpenDetails, setIsOpenDetails] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState(0);
@@ -59,7 +51,7 @@ const ManageLicensing = () => {
   return (
     <div className={classes.container__wrap}>
       <div className={classes.container__wrap_header}>
-        <p>Danh sách yêu cầu cấp phép quảng cáo</p>
+        <p>Thống kê báo cáo và xử lý</p>
       </div>
 
       <div className={classes.container}>
@@ -70,13 +62,10 @@ const ManageLicensing = () => {
               Tất cả
             </div>
             <div onClick={() => handleFilterChange(1)} style={getFilterStyle(1)}>
-              Chưa cấp phép
+              Đang xử lý
             </div>
             <div onClick={() => handleFilterChange(2)} style={getFilterStyle(2)}>
-              Đã cấp phép
-            </div>{' '}
-            <div onClick={() => handleFilterChange(3)} style={getFilterStyle(3)}>
-              Đã hủy
+              Đã xử lý
             </div>
           </div>
           {/* Tab Search */}
@@ -92,11 +81,10 @@ const ManageLicensing = () => {
             <thead className={classes.table__header_wrap_thead}>
               <tr>
                 <th style={{ width: '5%' }}>STT</th>
-                <th style={{ width: '15%' }}>Công ty</th>
-                <th style={{ width: '15%' }}>Ảnh minh họa</th>
-                <th style={{ width: '30%' }}>Địa chỉ đặt</th>
-                <th style={{ width: '15%' }}>Thời hạn đăng ký</th>
-                <th style={{ width: '15%' }}>Trạng thái</th>
+                <th style={{ width: '15%' }}>Thời điểm gửi</th>
+                <th style={{ width: '25%' }}>Email người gửi</th>
+                <th style={{ width: '35%' }}>Loại báo cáo</th>
+                <th style={{ width: '20%' }}>Trạng thái</th>
               </tr>
             </thead>
           </table>
@@ -109,13 +97,10 @@ const ManageLicensing = () => {
               {data.map((row, rowIndex) => (
                 <tr className={classes.table__body_wrap_row} key={row.id} onClick={() => handleOpenModalDetails(row)}>
                   <td style={{ width: '5%' }}>{rowIndex + 1}</td>
-                  <td style={{ width: '15%' }}>{row.company}</td>
-                  <td style={{ width: '15%' }}>
-                    <img src={row.img} alt="none" />
-                  </td>
-                  <td style={{ width: '30%' }}>{row.address}</td>
-                  <td style={{ width: '15%' }}>{row.numOfDate}</td>
-                  <td style={{ width: '15%' }}>
+                  <td style={{ width: '15%' }}>{row.date}</td>
+                  <td style={{ width: '25%' }}>{row.email}</td>
+                  <td style={{ width: '35%' }}>{row.typeReport}</td>
+                  <td style={{ width: '20%' }}>
                     <div
                       className={` ${classes.status} ${
                         row.status.type === 1
@@ -134,9 +119,9 @@ const ManageLicensing = () => {
           </table>
         </div>
       </div>
-      {isOpenDetails && <LicenseDetails handleCloseModal={handleCloseModal} />}
+      {isOpenDetails && <ReportDetails handleCloseModal={handleCloseModal} />}
     </div>
   );
 };
 
-export default ManageLicensing;
+export default ReportStats;
