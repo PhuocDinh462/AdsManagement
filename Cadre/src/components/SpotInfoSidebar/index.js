@@ -62,7 +62,7 @@ export default function SpotInfoSidebar(props) {
           console.log('Get spot info error: ', error);
         });
     })();
-  }, []);
+  }, [spotCoord]);
 
   return (
     <div className={[classes.main_container, status ? classes.slideIn : classes.slideOut].join(' ')}>
