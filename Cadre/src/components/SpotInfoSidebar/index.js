@@ -78,7 +78,7 @@ export default function SpotInfoSidebar(props) {
             </div>
             <div className={classes.text}>
               <div className={classes.title}>Thông tin bảng quảng cáo</div>
-              {ads.length > 0 ? (
+              {adSpot?.boards?.length > 0 ? (
                 <>
                   <div className={classes.type}>{ads[currentAdsIndex].adType}</div>
                   <div className={classes.detail}>
