@@ -96,7 +96,14 @@ const LoginPage = () => {
                         </button>
                     </p>
                 </form>
-                <a href={getGoogleOAuthURL()}>Login with google</a>
+                <a href={getGoogleOAuthURL()} className={classes['login-button']}>
+
+                    <img src={Images.googleImage} alt="Google Logo" className={classes['google-logo']} />
+                    <div className={classes['right-content']}>
+                        <span>Đăng nhập với tài khoản Google</span>
+                    </div>
+                </a>
+                {/* <a href={getGoogleOAuthURL()}>Login with google</a> */}
             </div>
         </div>
     );
