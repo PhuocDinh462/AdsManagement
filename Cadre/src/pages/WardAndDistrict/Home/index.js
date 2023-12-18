@@ -41,6 +41,7 @@ export default function Home() {
 
   const [displayMarker, setDisplayMarker] = useState(false);
   const [marker, setMarker] = useState();
+  const [currentAdSpot, setCurrentAdSpot] = useState(null);
 
   const handleMapClick = (event) => {
     setDisplayMarker(!displayMarker);
@@ -49,6 +50,7 @@ export default function Home() {
       lat: event.latLng.lat(),
       lng: event.latLng.lng(),
     });
+    setCurrentAdSpot(null);
   };
 
   const handleMarkerClick = (_marker) => {
@@ -58,6 +60,7 @@ export default function Home() {
       lat: _marker.lat,
       lng: _marker.lng,
     });
+    setCurrentAdSpot(_marker);
   };
 
   const adSpots = [
@@ -66,8 +69,19 @@ export default function Home() {
       lng: 106.684431,
       location_type: 'Đất công nghiệp/Công viên/Hành lang an toàn giao thông',
       advertising_type: 'Cổ động chính trị',
-      image_url: 'https://panoquangcao.net/wp-content/uploads/2020/09/bien-quang-cao-tren-duong-cao-toc-2.jpg',
       is_planning: true,
+      boards: [
+        {
+          image_url: 'https://panoquangcao.net/wp-content/uploads/2020/09/bien-quang-cao-tren-duong-cao-toc-2.jpg',
+          form_ad: '2.5m x 1.2m',
+          reports: 0,
+        },
+        {
+          image_url: 'https://chuinoxvang.com/upload/images/bang-hieu-pano1.jpg',
+          form_ad: '3.2m x 1.6m',
+          reports: 2,
+        },
+      ],
     },
   ];
 
@@ -130,7 +144,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className={classes.search} onClick={() => console.log(collapseSidebar)}>
+      <div className={classes.search}>
         <GoongAutoComplete
           apiKey={process.env.REACT_APP_GOONG_APIKEY}
           placeholder="Tìm kiếm theo địa chỉ"
@@ -138,7 +152,7 @@ export default function Home() {
         />
       </div>
 
-      {displayMarker && <SpotInfoSidebar spotCoord={marker} setCollapse={setCollapseSidebar} />}
+      {displayMarker && <SpotInfoSidebar spotCoord={marker} adSpot={currentAdSpot} setCollapse={setCollapseSidebar} />}
     </div>
   );
 }

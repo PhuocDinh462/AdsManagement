@@ -8,9 +8,8 @@ import { noImage } from '~assets/imgs/Imgs';
 import axios from 'axios';
 
 export default function SpotInfoSidebar(props) {
-  const { spotCoord, setCollapse } = props;
+  const { spotCoord, adSpot, setCollapse } = props;
   const [status, setStatus] = useState(true);
-  const isPlanned = true;
 
   const ads = [
     {
@@ -68,7 +67,10 @@ export default function SpotInfoSidebar(props) {
     <div className={[classes.main_container, status ? classes.slideIn : classes.slideOut].join(' ')}>
       <div className={classes.body}>
         <div className={classes.adInfo}>
-          <img className={classes.img} src={ads.length > 0 ? ads[currentAdsIndex].img : noImage} />
+          <img
+            className={classes.img}
+            src={adSpot?.boards?.length > 0 ? adSpot?.boards[currentAdsIndex].image_url : noImage}
+          />
 
           <div className={classes.content}>
             <div className={[classes.ic, classes.ad_ic].join(' ')}>
@@ -81,25 +83,25 @@ export default function SpotInfoSidebar(props) {
                   <div className={classes.type}>{ads[currentAdsIndex].adType}</div>
                   <div className={classes.detail}>
                     <span className={classes.label}>Kích thước: </span>
-                    {ads[currentAdsIndex].size}
+                    {adSpot?.boards[currentAdsIndex].form_ad}
                   </div>
                   <div className={classes.detail}>
                     <span className={classes.label}>Số lượng: </span>
-                    {ads[currentAdsIndex].qty}
+                    {adSpot?.boards && `1 trụ/${adSpot?.boards?.length} bảng`}
                   </div>
                   <div className={classes.detail}>
                     <span className={classes.label}>Hình thức: </span>
-                    {ads[currentAdsIndex].format}
+                    {adSpot?.advertising_type}
                   </div>
                   <div className={classes.detail}>
                     <span className={classes.label}>Phân loại: </span>
-                    {ads[currentAdsIndex].spotType}
+                    {adSpot?.location_type}
                   </div>
 
                   <div
                     className={[
                       classes.report,
-                      ads[currentAdsIndex].reports > 0 && classes['report--haveReports'],
+                      adSpot?.boards[currentAdsIndex].reports > 0 && classes['report--haveReports'],
                     ].join(' ')}
                   >
                     <div className={classes.report__ic}>
@@ -120,7 +122,7 @@ export default function SpotInfoSidebar(props) {
           </div>
 
           <div className={classes.pagination}>
-            {ads.length > 1 ? (
+            {adSpot?.boards.length > 1 ? (
               <>
                 <div className={classes.pagination__divider} />
                 <div
@@ -132,11 +134,11 @@ export default function SpotInfoSidebar(props) {
                 >
                   <FontAwesomeIcon icon={faAngleLeft} />
                 </div>
-                <div className={classes.pagination__number}>{`${currentAdsIndex + 1}/${ads.length}`}</div>
+                <div className={classes.pagination__number}>{`${currentAdsIndex + 1}/${adSpot?.boards.length}`}</div>
                 <div
                   className={[
                     classes.pagination__btn,
-                    currentAdsIndex >= ads.length - 1 && classes['pagination__btn--disabled'],
+                    currentAdsIndex >= adSpot?.boards.length - 1 && classes['pagination__btn--disabled'],
                   ].join(' ')}
                   onClick={() => setCurrentAdsIndex(currentAdsIndex + 1)}
                 >
@@ -167,11 +169,11 @@ export default function SpotInfoSidebar(props) {
                 <div className={classes.report__text}>0 báo cáo</div>
               </div>
 
-              <div className={[classes.plan, !isPlanned && classes['plan--notPlanned']].join(' ')}>
+              <div className={[classes.plan, !adSpot?.is_planning && classes['plan--notPlanned']].join(' ')}>
                 <div className={classes.plan__ic}>
-                  <FontAwesomeIcon icon={isPlanned ? faCircleCheck : faCircleXmark} />
+                  <FontAwesomeIcon icon={adSpot?.is_planning ? faCircleCheck : faCircleXmark} />
                 </div>
-                <div className={classes.plan__text}>{(isPlanned ? 'Đã' : 'Chưa') + ' quy hoạch'}</div>
+                <div className={classes.plan__text}>{(adSpot?.is_planning ? 'Đã' : 'Chưa') + ' quy hoạch'}</div>
               </div>
             </div>
           </div>
