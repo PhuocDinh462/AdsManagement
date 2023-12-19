@@ -148,6 +148,7 @@ export default function Home() {
         setMarker(coord);
         setDisplayMarker(true);
         setCollapseSidebar(false);
+        setCurrentAdSpot(null);
       })
       .catch((error) => {
         console.log('Get place detail error: ', error);
