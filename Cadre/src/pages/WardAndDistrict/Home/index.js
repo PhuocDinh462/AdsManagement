@@ -7,7 +7,14 @@ import GoongAutoComplete from '~components/GoongAutoComplete';
 import SpotInfoSidebar from '~components/SpotInfoSidebar';
 import { GoogleMap, useJsApiLoader, Marker, Polygon } from '@react-google-maps/api';
 import { colors } from '~styles/colors';
-import { AdSpotNormal } from '~assets/markers';
+import {
+  AdSpotPlanned,
+  AdSpotNotPlan,
+  AdSpotBeReported,
+  AdSpotSolvedReport,
+  SpotBeReported,
+  SpotSolvedReport,
+} from '~assets/markers';
 
 const containerStyle = {
   width: '100%',
@@ -87,6 +94,12 @@ export default function Home() {
 
   const iconSize = 20;
 
+  const selectIcon = (spot) => {
+    if (spot.boards.some((element) => element.reports > 0)) return AdSpotBeReported;
+    else if (!spot.is_planning) return AdSpotNotPlan;
+    else return AdSpotPlanned;
+  };
+
   return (
     <div className={classes.main_container}>
       <div className={classes.map_container}>
@@ -101,6 +114,7 @@ export default function Home() {
               disableDoubleClickZoom: true,
               draggableCursor: 'default',
               clickableIcons: false,
+              streetViewControl: false,
             }}
             onClick={handleMapClick}
           >
@@ -114,13 +128,13 @@ export default function Home() {
                 clickable: false,
               }}
             />
-            {displayMarker && <Marker position={marker} />}
+            {displayMarker && <Marker position={marker} clickable={false} />}
             {adSpots.map((item, index) => (
               <Marker
                 key={index}
                 position={item}
                 icon={{
-                  url: AdSpotNormal,
+                  url: selectIcon(item),
                   scaledSize: isLoaded ? new window.google.maps.Size(iconSize, iconSize) : null,
                   anchor: new google.maps.Point(iconSize / 2, iconSize / 2),
                   origin: new google.maps.Point(0, 0),
