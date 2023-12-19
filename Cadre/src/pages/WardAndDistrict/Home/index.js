@@ -7,7 +7,14 @@ import GoongAutoComplete from '~components/GoongAutoComplete';
 import SpotInfoSidebar from '~components/SpotInfoSidebar';
 import { GoogleMap, useJsApiLoader, Marker, Polygon } from '@react-google-maps/api';
 import { colors } from '~styles/colors';
-import { AdSpotNormal } from '~assets/markers';
+import {
+  AdSpotPlanned,
+  AdSpotNotPlan,
+  AdSpotBeReported,
+  AdSpotSolvedReport,
+  SpotBeReported,
+  SpotSolvedReport,
+} from '~assets/markers';
 
 const containerStyle = {
   width: '100%',
@@ -41,6 +48,7 @@ export default function Home() {
 
   const [displayMarker, setDisplayMarker] = useState(false);
   const [marker, setMarker] = useState();
+  const [currentAdSpot, setCurrentAdSpot] = useState(null);
 
   const handleMapClick = (event) => {
     setDisplayMarker(!displayMarker);
@@ -49,6 +57,7 @@ export default function Home() {
       lat: event.latLng.lat(),
       lng: event.latLng.lng(),
     });
+    setCurrentAdSpot(null);
   };
 
   const handleMarkerClick = (_marker) => {
@@ -58,6 +67,7 @@ export default function Home() {
       lat: _marker.lat,
       lng: _marker.lng,
     });
+    setCurrentAdSpot(_marker);
   };
 
   const adSpots = [
@@ -66,12 +76,29 @@ export default function Home() {
       lng: 106.684431,
       location_type: 'Đất công nghiệp/Công viên/Hành lang an toàn giao thông',
       advertising_type: 'Cổ động chính trị',
-      image_url: 'https://panoquangcao.net/wp-content/uploads/2020/09/bien-quang-cao-tren-duong-cao-toc-2.jpg',
       is_planning: true,
+      boards: [
+        {
+          image_url: 'https://panoquangcao.net/wp-content/uploads/2020/09/bien-quang-cao-tren-duong-cao-toc-2.jpg',
+          form_ad: '2.5m x 1.2m',
+          reports: 0,
+        },
+        {
+          image_url: 'https://chuinoxvang.com/upload/images/bang-hieu-pano1.jpg',
+          form_ad: '3.2m x 1.6m',
+          reports: 2,
+        },
+      ],
     },
   ];
 
   const iconSize = 20;
+
+  const selectIcon = (spot) => {
+    if (spot.boards.some((element) => element.reports > 0)) return AdSpotBeReported;
+    else if (!spot.is_planning) return AdSpotNotPlan;
+    else return AdSpotPlanned;
+  };
 
   return (
     <div className={classes.main_container}>
@@ -87,6 +114,7 @@ export default function Home() {
               disableDoubleClickZoom: true,
               draggableCursor: 'default',
               clickableIcons: false,
+              streetViewControl: false,
             }}
             onClick={handleMapClick}
           >
@@ -100,13 +128,13 @@ export default function Home() {
                 clickable: false,
               }}
             />
-            {displayMarker && <Marker position={marker} />}
+            {displayMarker && <Marker position={marker} clickable={false} />}
             {adSpots.map((item, index) => (
               <Marker
                 key={index}
                 position={item}
                 icon={{
-                  url: AdSpotNormal,
+                  url: selectIcon(item),
                   scaledSize: isLoaded ? new window.google.maps.Size(iconSize, iconSize) : null,
                   anchor: new google.maps.Point(iconSize / 2, iconSize / 2),
                   origin: new google.maps.Point(0, 0),
@@ -130,15 +158,15 @@ export default function Home() {
         </div>
       </div>
 
-      <div className={classes.search} onClick={() => console.log(collapseSidebar)}>
+      <div className={classes.search}>
         <GoongAutoComplete
           apiKey={process.env.REACT_APP_GOONG_APIKEY}
           placeholder="Tìm kiếm theo địa chỉ"
-          bgColor={displayMarker && !collapseSidebar && 'rgba(255,255,255,.8)'}
+          collapseSidebar={!displayMarker || collapseSidebar}
         />
       </div>
 
-      {displayMarker && <SpotInfoSidebar spotCoord={marker} setCollapse={setCollapseSidebar} />}
+      {displayMarker && <SpotInfoSidebar spotCoord={marker} adSpot={currentAdSpot} setCollapse={setCollapseSidebar} />}
     </div>
   );
 }

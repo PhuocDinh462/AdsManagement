@@ -72,36 +72,37 @@ const findUser = async (googleUser) => {
                     const account = results[0];
                     resolve(account);
                 } else {
-                    const insertAcc = "INSERT INTO user (username, password, email, phone, dob, user_type) VALUES (?,?,?,?,?,?)";
-                    const salt = await bcrypt.genSalt(10);
-                    const passwordHashed = await bcrypt.hash("123456", salt);
+                    // const insertAcc = "INSERT INTO user (username, password, email, phone, dob, user_type) VALUES (?,?,?,?,?,?)";
+                    // const salt = await bcrypt.genSalt(10);
+                    // const passwordHashed = await bcrypt.hash("123456", salt);
 
-                    //DOB
-                    const currentDate = new Date();
-                    const year = currentDate.getFullYear();
-                    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-                    const day = String(currentDate.getDate()).padStart(2, '0');
-                    const dob = `${year}-${month}-${day}`;
+                    // //DOB
+                    // const currentDate = new Date();
+                    // const year = currentDate.getFullYear();
+                    // const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+                    // const day = String(currentDate.getDate()).padStart(2, '0');
+                    // const dob = `${year}-${month}-${day}`;
 
-                    const phone = null;
-                    const user_type = null;
+                    // const phone = null;
+                    // const user_type = null;
 
-                    connection.query(insertAcc, [name, passwordHashed, email, phone, dob, user_type], (error, result) => {
-                        if (error) {
-                            console.error("Error executing query: " + error.stack);
-                            reject(error);
-                        }
-                        connection.query(
-                            `select * from user where user_id = ?`,
-                            result.insertId,
-                            (err, results) => {
-                                const localDate = moment.utc(results[0].dob).local();
-                                results[0].dob = localDate.format('YYYY-MM-DD HH:mm:ss')
-                                resolve(results[0]);
-                            }
-                        );
+                    // connection.query(insertAcc, [name, passwordHashed, email, phone, dob, user_type], (error, result) => {
+                    //     if (error) {
+                    //         console.error("Error executing query: " + error.stack);
+                    //         reject(error);
+                    //     }
+                    //     connection.query(
+                    //         `select * from user where user_id = ?`,
+                    //         result.insertId,
+                    //         (err, results) => {
+                    //             const localDate = moment.utc(results[0].dob).local();
+                    //             results[0].dob = localDate.format('YYYY-MM-DD HH:mm:ss')
+                    //             resolve(results[0]);
+                    //         }
+                    //     );
 
-                    });
+                    // });
+                    resolve(null)
                 }
             }
         );
@@ -128,13 +129,17 @@ const googleOAuthHandler = catchAsync(async (req, res, next) => {
 
         // // upsert the user
         const user = await findUser(googleUser);
-        const accessToken = generateToken.accessToken(user);
+        if (user !== null) {
+            const accessToken = generateToken.accessToken(user);
 
-        // // redirect back to client
-        res.cookie('user_id', user.user_id);
-        res.cookie('token', accessToken);
-        res.cookie('user-state', true)
-        res.redirect("http://localhost:3000");
+            // // redirect back to client
+            res.cookie('user_id', user.user_id);
+            res.cookie('token', accessToken);
+            res.cookie('user-state', true)
+            res.redirect("http://localhost:3000");
+        } else {
+            res.redirect("http://localhost:3000/not_found");
+        }
     } catch (error) {
         console.error(error, "Failed to authorize Google user");
         // return res.redirect(`${config.get("origin")}/oauth/error`);
