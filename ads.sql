@@ -113,7 +113,6 @@ INSERT INTO advertisement_type (type_name) VALUES
 -- Tạo bảng AdvertisingBoards
 CREATE TABLE `advertising_board` (
   board_id INT auto_increment,
-  licensing_id INT,
   board_type_id INT,
   advertisement_content VARCHAR(255),
   advertisement_image_url VARCHAR(255),
