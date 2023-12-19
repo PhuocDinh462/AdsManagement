@@ -134,6 +134,12 @@ export default function Home() {
   };
 
   const handleSearch = async (place_id) => {
+    if (!place_id) {
+      setDisplayMarker(false);
+      setCollapseSidebar(true);
+      return;
+    }
+
     await axios
       .get(`https://rsapi.goong.io/geocode?place_id=${place_id}&api_key=${process.env.REACT_APP_GOONG_APIKEY}`)
       .then((res) => {
