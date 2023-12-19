@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import ButtonCT from '~/src/components/button/ButtonCT';
 
-const LicenseDetails = ({ handleCloseModal }) => {
+const LicenseDetails = ({ handleCloseModal, disabledButton }) => {
   return (
     <>
       <div className={classes.container}>
@@ -112,7 +112,7 @@ const LicenseDetails = ({ handleCloseModal }) => {
             </div>
           </div>
           <div className={`${classes.d_flex_end} ${classes.container__action}`}>
-            <ButtonCT borderRadius5 primary medium content="Cấp phép" />
+            <ButtonCT disabled={disabledButton} borderRadius5 primary medium content="Hủy yêu cầu" />
           </div>
         </div>
       </div>

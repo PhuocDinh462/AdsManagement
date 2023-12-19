@@ -44,8 +44,6 @@ const getAllDistrictWard = catchAsync(async (req, res, next) => {
       return;
     }
 
-    console.log(results);
-
     // Group the results by district
     const groupedResults = results.reduce((acc, result) => {
       const districtId = result.districtId;
@@ -89,8 +87,19 @@ const getAllDistrictWard = catchAsync(async (req, res, next) => {
 });
 
 const getDistricts = catchAsync(async (req, res, next) => {
-  console.log('vinh');
   const query = 'SELECT * FROM district';
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('Error executing query: ', err);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.json(results);
+  });
+});
+
+const getWards = catchAsync(async (req, res, next) => {
+  const query = 'SELECT * FROM ward';
   connection.query(query, (err, results) => {
     if (err) {
       console.error('Error executing query: ', err);
@@ -124,7 +133,6 @@ const createAddress = catchAsync(async (req, res, next) => {
           console.error('Error creating district:', error);
           res.status(500).json({ error: 'Internal Server Error' });
         } else {
-          console.log(results);
           res.status(201).json({ status: 'success', district_id: results.insertId, district_name: districtName });
         }
       });
@@ -164,6 +172,8 @@ const createAddress = catchAsync(async (req, res, next) => {
 
 const updateAddress = catchAsync(async (req, res, next) => {
   const { addressType, id, districtName, selectedDistrict, wardName } = req.body;
+  // console.log(req.body);
+  console.log('req.body');
 
   if (!id || !addressType) {
     return res.status(400).json({ error: 'Missing required information.' });
@@ -234,5 +244,5 @@ const deleteAddress = catchAsync(async (req, res, next) => {
   }
 });
 
-module.exports = { getAllDistrictWard, getDistricts, createAddress, updateAddress, deleteAddress };
+module.exports = { getAllDistrictWard, getDistricts, getWards, createAddress, updateAddress, deleteAddress };
 

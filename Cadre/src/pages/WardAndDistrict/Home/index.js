@@ -90,6 +90,39 @@ export default function Home() {
         },
       ],
     },
+    {
+      lat: 10.762499,
+      lng: 106.686613,
+      location_type: 'Đất công nghiệp/Công viên/Hành lang an toàn giao thông',
+      advertising_type: 'Cổ động chính trị',
+      is_planning: true,
+      boards: [
+        {
+          image_url: 'https://panoquangcao.net/wp-content/uploads/2020/09/bien-quang-cao-tren-duong-cao-toc-2.jpg',
+          form_ad: '2.5m x 1.2m',
+          reports: 0,
+        },
+        {
+          image_url: 'https://chuinoxvang.com/upload/images/bang-hieu-pano1.jpg',
+          form_ad: '3.2m x 1.6m',
+          reports: 0,
+        },
+      ],
+    },
+    {
+      lat: 10.765068,
+      lng: 106.687615,
+      location_type: 'Đất công nghiệp/Công viên/Hành lang an toàn giao thông',
+      advertising_type: 'Cổ động chính trị',
+      is_planning: false,
+      boards: [
+        {
+          image_url: 'https://chuinoxvang.com/upload/images/bang-hieu-pano1.jpg',
+          form_ad: '3.2m x 1.6m',
+          reports: 0,
+        },
+      ],
+    },
   ];
 
   const iconSize = 20;

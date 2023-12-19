@@ -1,7 +1,8 @@
+@import '/src/styles/colors.scss';
 
 .container__wrap {
     width: 100%;
-    padding: 0 20px;
+    padding: 10px;
 
     &_header {
         height: 58px;
@@ -19,10 +20,13 @@
     }
     .container {
       background: #ffffff;
-      height: calc(100vh - 200px);
       display: flex;
       flex-direction: column;
-      padding: 0 20px;
+      height: calc(100vh - 14rem + 2px);
+      padding: 10px 20px;
+
+      border-radius: 10px;
+      border: 1px solid $text_300;
   
       .table__header {
         &_wrap {
@@ -95,10 +99,9 @@
         display: flex;
         justify-content: space-between;
         align-items: flex-end;
-        margin-bottom: 15px;
-        margin-top: 10px;
-        padding: 0 20px;
-        border-bottom: #b9b3b3 solid 0.4px;
+        margin-bottom: 1rem;
+        margin-top: 5px;
+        border-bottom: $text_300 solid 1px;
 
         &_filter {
           display: flex;
@@ -106,33 +109,20 @@
           gap: 20px;
           font-weight: 600;
           font-family: Arial, Helvetica, sans-serif;
+          margin-right: 4rem;
         }
   
         &_search {
           display: flex;
-          align-items: center;
-          width: 190px;
-          height: 37px;
-          border-radius: 20px;
-          border: 1px solid #b9b3b3;
-          padding: 1rem;
-          margin-bottom: 2px;
-  
-          .ic {
-            font-size: 1.5rem;
-            margin-right: 7px;
-            color: #8a8787;
-          }
-  
-          .text_input {
-            width: 100%;
-            height: 100%;
-            border: none;
-            outline: none;
-          }
+          gap: 30px;
+          margin-bottom: 1rem;
         }
       }
     }
   }
   
-  
+.paginationBar_container {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}

@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import classes from './style.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import LicenseDetails from './LicenseDetails';
-import { Backdrop } from '@mui/material';
+import SearchBar from '~/src/components/SearchBar';
+import Pagination from '~/src/components/Pagination';
+import ButtonCT from '~/src/components/button/ButtonCT';
+import { ic_add } from '~/src/assets';
 const initialData = [
   {
     id: 1,
@@ -30,6 +33,78 @@ const initialData = [
     numOfDate: '300',
     status: { type: 3, content: 'Đã Hủy' },
   },
+  {
+    id: 4,
+    company: 'HCMUS',
+    img: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
+    address: '135 THD, Quận 1, P. Cầu Ông Lãnh, TP HCM',
+    numOfDate: '300',
+    status: { type: 3, content: 'Đã Hủy' },
+  },
+  {
+    id: 5,
+    company: 'HCMUS',
+    img: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
+    address: '135 THD, Quận 1, P. Cầu Ông Lãnh, TP HCM',
+    numOfDate: '300',
+    status: { type: 3, content: 'Đã Hủy' },
+  },
+  {
+    id: 6,
+    company: 'HCMUS',
+    img: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
+    address: '135 THD, Quận 1, P. Cầu Ông Lãnh, TP HCM',
+    numOfDate: '300',
+    status: { type: 3, content: 'Đã Hủy' },
+  },
+  {
+    id: 7,
+    company: 'HCMUS',
+    img: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
+    address: '135 THD, Quận 1, P. Cầu Ông Lãnh, TP HCM',
+    numOfDate: '300',
+    status: { type: 3, content: 'Đã Hủy' },
+  },
+  {
+    id: 8,
+    company: 'HCMUS',
+    img: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
+    address: '135 THD, Quận 1, P. Cầu Ông Lãnh, TP HCM',
+    numOfDate: '300',
+    status: { type: 3, content: 'Đã Hủy' },
+  },
+  {
+    id: 9,
+    company: 'HCMUS',
+    img: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
+    address: '135 THD, Quận 1, P. Cầu Ông Lãnh, TP HCM',
+    numOfDate: '300',
+    status: { type: 3, content: 'Đã Hủy' },
+  },
+  {
+    id: 10,
+    company: 'HCMUS',
+    img: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
+    address: '135 THD, Quận 1, P. Cầu Ông Lãnh, TP HCM',
+    numOfDate: '300',
+    status: { type: 3, content: 'Đã Hủy' },
+  },
+  {
+    id: 11,
+    company: 'HCMUS',
+    img: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
+    address: '135 THD, Quận 1, P. Cầu Ông Lãnh, TP HCM',
+    numOfDate: '300',
+    status: { type: 3, content: 'Đã Hủy' },
+  },
+  {
+    id: 12,
+    company: 'HCMUS',
+    img: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
+    address: '135 THD, Quận 1, P. Cầu Ông Lãnh, TP HCM',
+    numOfDate: '300',
+    status: { type: 3, content: 'Đã Hủy' },
+  },
 
   // Thêm dữ liệu khác
 ];
@@ -37,6 +112,14 @@ const Licenses = () => {
   const [data, setData] = useState(initialData);
   const [isOpenDetails, setIsOpenDetails] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState(0);
+
+  const pageSize = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+  const currentTableData = useMemo(() => {
+    const firstPageIndex = (currentPage - 1) * pageSize;
+    const lastPageIndex = firstPageIndex + pageSize;
+    return data.slice(firstPageIndex, lastPageIndex);
+  }, [pageSize, currentPage, data]);
 
   const handleOpenModalDetails = (data) => {
     setIsOpenDetails(true);
@@ -48,7 +131,7 @@ const Licenses = () => {
 
   const handleFilterChange = (type) => {
     const filteredData = type === 0 ? initialData : initialData.filter((item) => item.status.type === type);
-    setData(filteredData);
+    // setData(filteredData);
     setSelectedFilter(type);
   };
 
@@ -59,11 +142,14 @@ const Licenses = () => {
   });
   return (
     <div className={classes.container__wrap}>
-      <div className={classes.container__wrap_header}>
-        <p>Danh sách yêu cầu cấp phép quảng cáo</p>
-      </div>
       <div className={classes.container}>
         <div className={classes.container__header}>
+          {/* Tab Search */}
+          <div className={classes.container__header_search}>
+            <SearchBar placeholder="Tìm kiếm..." onChange={(keyword) => console.log(keyword)} />
+            <ButtonCT iconLeft={ic_add} borderRadius primary medium content="Tạo Yêu Cầu" />
+          </div>
+
           {/* Tab Filter */}
           <div className={classes.container__header_filter}>
             <div onClick={() => handleFilterChange(0)} style={getFilterStyle(0)}>
@@ -78,11 +164,6 @@ const Licenses = () => {
             <div onClick={() => handleFilterChange(3)} style={getFilterStyle(3)}>
               Đã hủy
             </div>
-          </div>
-          {/* Tab Search */}
-          <div className={classes.container__header_search}>
-            <FontAwesomeIcon icon={faMagnifyingGlass} className={classes.ic} />
-            <input status="text" id="inputSearch" placeholder="Tìm kiếm..." className={classes.text_input} />
           </div>
         </div>
 
@@ -106,7 +187,7 @@ const Licenses = () => {
         <div className={classes.table__body}>
           <table className={classes.table__body_wrap}>
             <tbody>
-              {data.map((row, rowIndex) => (
+              {currentTableData.map((row, rowIndex) => (
                 <tr className={classes.table__body_wrap_row} key={row.id} onClick={() => handleOpenModalDetails(row)}>
                   <td style={{ width: '5%' }}>{rowIndex + 1}</td>
                   <td style={{ width: '15%' }}>{row.company}</td>
@@ -134,9 +215,15 @@ const Licenses = () => {
           </table>
         </div>
       </div>
-      <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isOpenDetails}>
-        <LicenseDetails handleCloseModal={handleCloseModal} />
-      </Backdrop>
+      <div className={classes.paginationBar_container}>
+        <Pagination
+          currentPage={currentPage}
+          totalCount={data.length}
+          pageSize={pageSize}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
+      </div>
+      {isOpenDetails && <LicenseDetails disabledButton={true} handleCloseModal={handleCloseModal} />}
     </div>
   );
 };

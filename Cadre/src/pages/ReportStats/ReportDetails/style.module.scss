@@ -6,7 +6,7 @@
     height: 88vh;
     width: 70vw;
     background-color: white;
-    z-index: 6;
+    z-index: 102;
     border-radius: 5px;
 
     &__header {
@@ -106,7 +106,7 @@
     width: 100vw;
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.5);
-    z-index: 5;
+    z-index: 101;
 }
 
 .d_flex_center{ 

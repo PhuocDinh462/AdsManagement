@@ -1,16 +1,49 @@
 import React, { useState } from 'react';
+import Swal from 'sweetalert2';
+import { axiosClient } from '../../../api/axios';
 import classes from './ModalAdd.module.scss';
 
 const ModalUpdate = ({ data, onClose }) => {
   const [type, setType] = useState(data.type);
-  const [content, setContent] = useState(data.content);
+  const [content, setContent] = useState(data.typeName);
+  console.log(data);
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    // Thực hiện lưu dữ liệu vào cơ sở dữ liệu hoặc thực hiện các xử lý khác
-    console.log('Loại:', type);
-    console.log('Nội dung:', content);
-    onClose();
+    const dataUpdate = {
+      type: data.type,
+      id: data.typeId,
+      updatedValue: content,
+    };
+    console.log(dataUpdate);
+
+    try {
+      const response = await axiosClient.put('/cadre/updateForm', dataUpdate);
+
+      if (response.status === 'success') {
+        Swal.fire({
+          icon: 'success',
+          title: 'Cập nhật thành công!',
+          timer: 1500,
+          showConfirmButton: false,
+        });
+        onClose();
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Cập nhật thất bại!',
+          timer: 1500,
+          text: 'Có lỗi xảy ra khi cập nhật nội dung. Vui lòng thử lại.',
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Cập nhật thất bại!',
+        timer: 1500,
+        text: error,
+      });
+    }
   };
   return (
     <form onSubmit={handleSave}>
@@ -27,7 +60,7 @@ const ModalUpdate = ({ data, onClose }) => {
                 id="type-ads"
                 type="radio"
                 value="type"
-                checked={data.type === 'Hình quảng cáo'}
+                checked={data.type === 'advertisement'}
                 onChange={(e) => setType(e.target.value)}
               />
             </div>
@@ -39,7 +72,7 @@ const ModalUpdate = ({ data, onClose }) => {
                 id="type-report"
                 type="radio"
                 value="type"
-                checked={data.type === 'Hình thức báo cáo'}
+                checked={data.type === 'report'}
                 onChange={(e) => setType(e.target.value)}
               />
             </div>

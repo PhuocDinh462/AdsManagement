@@ -7,108 +7,11 @@ import { faPlus, faClose, faTrash, faPen } from '@fortawesome/free-solid-svg-ico
 import ModalAdd from './components/ModalAdd';
 import Modal from '~/src/components/Modal/Modal';
 import ModalUpdate from './components/ModalUpdate';
-const initialData = [
-  {
-    stt: 1,
-    content: 'Quận 4',
-    img: 'Jane Doe',
-    type: 'Hình quảng cáo',
-  },
-  {
-    stt: 1,
-    content: 'Quận 4',
-    img: 'Jane Doe',
-    type: 'Hình thức báo cáo',
-  },
-  {
-    stt: 1,
-    content: 'Quận 4',
-    img: 'Jane Doe',
-    type: 'Hình quảng cáo',
-  },
-  {
-    stt: 1,
-    content: 'Quận 4',
-    img: 'Jane Doe',
-    type: 'Hình thức báo cáo',
-  },
-  {
-    stt: 1,
-    content: 'Quận 4',
-    img: 'Jane Doe',
-    type: 'Hình quảng cáo',
-  },
-  {
-    stt: 1,
-    content: 'Quận 4',
-    img: 'Jane Doe',
-    type: 'Hình thức báo cáo',
-  },
-  {
-    stt: 1,
-    content: 'Quận 4',
-    img: 'Jane Doe',
-    type: 'Hình quảng cáo',
-  },
-  {
-    stt: 1,
-    content: 'Quận 4',
-    img: 'Jane Doe',
-    type: 'Hình thức báo cáo',
-  },
-  {
-    stt: 1,
-    content: 'Quận 4',
-    img: 'Jane Doe',
-    type: 'Hình quảng cáo',
-  },
-  {
-    stt: 1,
-    content: 'Quận 4',
-    img: 'Jane Doe',
-    type: 'Hình thức báo cáo',
-  },
-  {
-    stt: 1,
-    content: 'Quận 4',
-    img: 'Jane Doe',
-    type: 'Hình quảng cáo',
-  },
-  {
-    stt: 1,
-    content: 'Quận 4',
-    img: 'Jane Doe',
-    type: 'Hình thức báo cáo',
-  },
-  {
-    stt: 1,
-    content: 'Quận 4',
-    img: 'Jane Doe',
-    type: 'Hình quảng cáo',
-  },
-  {
-    stt: 1,
-    content: 'Quận 4',
-    img: 'Jane Doe',
-    type: 'Hình thức báo cáo',
-  },
-  {
-    stt: 1,
-    content: 'Quận 4',
-    img: 'Jane Doe',
-    type: 'Hình quảng cáo',
-  },
-  {
-    stt: 1,
-    content: 'Quận 4',
-    img: 'Jane Doe',
-    type: 'Hình thức báo cáo',
-  },
+import { axiosClient } from '../../api/axios';
+import Swal from 'sweetalert2';
 
-  // Thêm dữ liệu khác
-];
 function getCookie(cookieName) {
-  const name = cookieName + "=";
+  const name = cookieName + '=';
   const decodedCookie = decodeURIComponent(document.cookie);
   const cookieArray = decodedCookie.split(';');
 
@@ -129,19 +32,53 @@ function setLocalStorageFromCookie(keyName) {
   if (cookieValue) {
     document.cookie = `${keyName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
 
-    localStorage.removeItem(keyName)
+    localStorage.removeItem(keyName);
     localStorage.setItem(keyName, cookieValue);
   }
 }
+
 const ManageForm = () => {
-  const [data, setData] = useState(initialData);
+  const [data, setData] = useState([]);
+  const [originalData, setOriginalData] = useState();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [selectedFilter, setSelectedFilter] = useState('Tất cả');
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [modalType, setModalType] = useState(null);
 
+  const fetchData = async () => {
+    try {
+      const response = await axiosClient.get('/cadre/form');
+      setData(response);
+      setOriginalData(response);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const updateDataAfterAdd = async (newData) => {
+    await fetchData();
+    setModalOpen(false);
+  };
+
   const handleFilterChange = (type) => {
-    const filteredData = type === 'Tất cả' ? initialData : initialData.filter((item) => item.type === type);
+    let filteredData;
+
+    if (type === 'Tất cả') {
+      filteredData = originalData;
+    } else if (type === 'Hình quảng cáo') {
+      filteredData = originalData.filter((item) => item.type === 'advertisement');
+    } else if (type === 'Hình thức báo cáo') {
+      filteredData = originalData.filter((item) => item.type === 'report');
+    }
+
     setData(filteredData);
     setSelectedFilter(type);
   };
@@ -169,10 +106,50 @@ const ManageForm = () => {
   };
 
   useEffect(() => {
-    setLocalStorageFromCookie('user-state')
-    setLocalStorageFromCookie('user_id')
-    setLocalStorageFromCookie('token')
-  }, [])
+    setLocalStorageFromCookie('user-state');
+    setLocalStorageFromCookie('user_id');
+    setLocalStorageFromCookie('token');
+  }, []);
+
+  const handleDeleteClick = async (row) => {
+    const confirmResult = await Swal.fire({
+      title: 'Xác nhận xóa',
+      text: 'Bạn có chắc muốn xóa?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Xóa',
+      cancelButtonText: 'Hủy',
+    });
+    if (confirmResult.isConfirmed) {
+      try {
+        const response = await axiosClient.delete('cadre/deleteForm', { data: { type: row.type, id: row.typeId } });
+
+        if (response.status === 'success') {
+          Swal.fire({
+            icon: 'success',
+            title: 'Xóa thành công!',
+            text: 'Đã xóa thành công.',
+          });
+          fetchData();
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Xóa thất bại!',
+            text: 'Có lỗi xảy ra khi xóa. Vui lòng thử lại.',
+          });
+          console.error('Failed to delete element');
+        }
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Xóa thất bại!',
+        });
+        console.error('Error deleting element: ', error);
+      }
+    }
+  };
 
   return (
     <div className={classes.container_wrap}>
@@ -224,10 +201,10 @@ const ManageForm = () => {
               {data.map((row, rowIndex) => (
                 <tr className={classes.table__body_wrap_row} key={rowIndex}>
                   <td style={{ width: '5%' }}>{rowIndex + 1}</td>
-                  <td style={{ width: '40%' }}>{row.content}</td>
-                  <td style={{ width: '20%' }}>{row.type}</td>
+                  <td style={{ width: '40%' }}>{row.typeName}</td>
+                  <td style={{ width: '20%' }}>{row.type === 'report' ? 'Hình thức báo cáo' : 'Hình quảng cáo'}</td>
                   <td style={{ width: '15%' }}>
-                    <button className={classes.btn_trash}>
+                    <button className={classes.btn_trash} onClick={() => handleDeleteClick(row)}>
                       <FontAwesomeIcon icon={faTrash} />
                     </button>
                     <button onClick={() => handleEditClick(row)} className={classes.btn_pen}>
@@ -244,9 +221,9 @@ const ManageForm = () => {
       {isModalOpen && (
         <Modal onClose={handleCloseModal}>
           {modalType === 'add' ? (
-            <ModalAdd onClose={handleCloseModal} />
+            <ModalAdd onClose={updateDataAfterAdd} />
           ) : modalType === 'update' ? (
-            <ModalUpdate data={selectedRowData} onClose={handleCloseModal} />
+            <ModalUpdate data={selectedRowData} onClose={updateDataAfterAdd} />
           ) : null}
         </Modal>
       )}
