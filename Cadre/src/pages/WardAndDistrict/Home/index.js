@@ -7,6 +7,7 @@ import GoongAutoComplete from '~components/GoongAutoComplete';
 import SpotInfoSidebar from '~components/SpotInfoSidebar';
 import { GoogleMap, useJsApiLoader, Marker, Polygon } from '@react-google-maps/api';
 import { colors } from '~styles/colors';
+import axios from 'axios';
 import {
   AdSpotPlanned,
   AdSpotNotPlan,
@@ -21,14 +22,13 @@ const containerStyle = {
   height: '100%',
 };
 
-const center = {
-  lat: 10.763781,
-  lng: 106.684918,
-};
-
 export default function Home() {
   const [filterActive, setFilterActive] = useState(false);
   const [collapseSidebar, setCollapseSidebar] = useState(false);
+  const [center, setCenter] = useState({
+    lat: 10.763781,
+    lng: 106.684918,
+  });
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
@@ -133,6 +133,21 @@ export default function Home() {
     else return AdSpotPlanned;
   };
 
+  const handleSearch = async (place_id) => {
+    await axios
+      .get(`https://rsapi.goong.io/geocode?place_id=${place_id}&api_key=${process.env.REACT_APP_GOONG_APIKEY}`)
+      .then((res) => {
+        const coord = res.data.results[0].geometry.location;
+        setCenter(coord);
+        setMarker(coord);
+        setDisplayMarker(true);
+        setCollapseSidebar(false);
+      })
+      .catch((error) => {
+        console.log('Get place detail error: ', error);
+      });
+  };
+
   return (
     <div className={classes.main_container}>
       <div className={classes.map_container}>
@@ -196,6 +211,7 @@ export default function Home() {
           apiKey={process.env.REACT_APP_GOONG_APIKEY}
           placeholder="Tìm kiếm theo địa chỉ"
           collapseSidebar={!displayMarker || collapseSidebar}
+          onChange={(place_id) => handleSearch(place_id)}
         />
       </div>
 

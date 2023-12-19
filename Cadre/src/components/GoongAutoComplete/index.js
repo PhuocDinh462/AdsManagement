@@ -20,10 +20,12 @@ export default function GoongAutoComplete(props) {
       setLoading(true);
       const response = await fetch(url);
       const data = await response.json();
-      console.log('🚀 ~ file: index.js:24 ~ placeSearch ~ data:', data);
-
       if (data?.predictions?.length > 0) {
-        const data2options = data.predictions.map((item) => ({ value: item.description, label: item.description }));
+        const data2options = data.predictions.map((item) => ({
+          value: item.description,
+          label: item.description,
+          place_id: item.place_id,
+        }));
         setOptions(data2options);
       }
     } catch (error) {
@@ -50,7 +52,7 @@ export default function GoongAutoComplete(props) {
         defaultInputValue={defaultInputValue}
         options={options}
         onInputChange={handleInputChange}
-        onChange={onChange}
+        onChange={(e) => e && onChange(e.place_id)}
         placeholder={placeholder || ''}
         styles={{
           control: (base, state) => ({
