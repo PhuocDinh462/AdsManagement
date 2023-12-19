@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import HeaderTable from '../../components/headerTable/HeaderTable';
 import classes from './ManageAdLocation.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -6,44 +6,55 @@ import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { faPlus, faClose, faTrashCan, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import DetailsAdLocation from './components/DetailsAdLocation/DetailsAdLocation';
 import UpdateAdLocation from './components/UpdateAdLocation/UpdateAdLocation';
+import { axiosClient } from '../../api/axios';
+import Swal from 'sweetalert2';
+import Modal from '~/src/components/Modal/Modal';
+import AddAdLocation from './components/AddAdLocation/AddAdLocation';
 
 const ManageAdLocation = () => {
-  const initialData = [
-    {
-      stt: 1,
-      content: 'Đồng Khởi - Nguyễn Du',
-      area: 'Phường Bến Nghé, Quận 1',
-      img: 'Jane Doe',
-      status: 'Đã quy hoạch',
-    },
-    {
-      stt: 1,
-      content: 'Đồng Khởi - Nguyễn Du',
-      area: 'Phường Bến Nghé, Quận 1',
-      img: 'Jane Doe',
-      status: 'Chưa quy hoạch',
-    },
-    {
-      stt: 1,
-      content: 'Đồng Khởi - Nguyễn Du',
-      area: 'Phường Bến Nghé, Quận 1',
-      img: 'Jane Doe',
-      status: 'Đã quy hoạch',
-    },
-    {
-      stt: 1,
-      content: 'Đồng Khởi - Nguyễn Du',
-      area: 'Phường Bến Nghé, Quận 1',
-      img: 'Jane Doe',
-      status: 'Chưa quy hoạch',
-    },
-    // Thêm dữ liệu khác
-  ];
-
-  const [data, setData] = useState(initialData);
-  const [selectedFilter, setSelectedFilter] = useState('Tất cả');
+  const [data, setData] = useState([]);
+  const [originalData, setOriginalData] = useState();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [isOpenUpdate, setIsOpenUpdate] = useState(false);
   const [isOpenDetails, setIsOpenDetails] = useState(false);
+  const [selectedRowData, setSelectedRowData] = useState(null);
+  const [isModalOpen, setModalOpen] = useState(false);
+
+  const fetchData = async () => {
+    try {
+      const response = await axiosClient.get('/cadre/adsPoint');
+      setData(response);
+      setOriginalData(response);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const updateDataAfterAdd = async (newData) => {
+    await fetchData();
+    setModalOpen(false);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
+  const handleAddClick = () => {
+    setSelectedRowData(null);
+    setModalOpen(true);
+  };
+
+  const handleEditClick = (rowData) => {
+    setSelectedRowData(rowData);
+    setModalOpen(true);
+  };
 
   const handleFilterChange = (status) => {
     const filteredData = status === 'Tất cả' ? initialData : initialData.filter((item) => item.status === status);
@@ -59,7 +70,13 @@ const ManageAdLocation = () => {
 
   return (
     <div className={classes.container__wrap}>
-      <HeaderTable title={'Danh sách các điểm đặt quảng cáo'} />
+      <div className={classes.header}>
+        <p className={classes.header__title}>Danh sách các điểm đặt quảng cáo</p>
+        <div className={classes.header__buttonAdd} onClick={handleAddClick}>
+          <FontAwesomeIcon icon={faPlus} />
+          <p className={classes.add}>Thêm</p>
+        </div>
+      </div>
 
       <div className={classes.container}>
         {/* Tab Search */}
@@ -77,7 +94,7 @@ const ManageAdLocation = () => {
               <tr>
                 <th style={{ width: '5%' }}>STT</th>
                 <th style={{ width: '30%' }}>Địa chỉ</th>
-                <th style={{ width: '30%' }}>Điểm đặt</th>
+                <th style={{ width: '30%' }}>Loại vị trí</th>
                 <th style={{ width: '25%' }}>Trạng thái</th>
                 <th style={{ width: '10%' }}>Chỉnh sửa</th>
               </tr>
@@ -97,11 +114,11 @@ const ManageAdLocation = () => {
                     setIsOpenDetails(true);
                   }}
                 >
-                  <td style={{ width: '5%' }}>{row.stt}</td>
-                  <td style={{ width: '30%' }}>{row.content}</td>
-                  <td style={{ width: '30%' }}>{row.area}</td>
-                  <td style={{ width: '25%', color: row.status === 'Đã quy hoạch' ? '#2A591E' : '#EF1414' }}>
-                    {row.status}
+                  <td style={{ width: '5%' }}>{rowIndex + 1}</td>
+                  <td style={{ width: '30%' }}>{row.address}</td>
+                  <td style={{ width: '30%' }}>{row.location_type}</td>
+                  <td style={{ width: '25%', color: row.is_planning === 1 ? '#2A591E' : '#EF1414' }}>
+                    {row.is_planning === 1 ? 'Đã quy hoạch' : 'Chưa quy hoạch'}
                   </td>
                   <td style={{ width: '10%' }}>
                     <button className={classes.btn_trash}>
@@ -137,8 +154,15 @@ const ManageAdLocation = () => {
           }}
         />
       )}
+
+      {isModalOpen && (
+        <Modal onClose={handleCloseModal}>
+          <AddAdLocation onClose={updateDataAfterAdd} />
+        </Modal>
+      )}
     </div>
   );
 };
 
 export default ManageAdLocation;
+

@@ -7,6 +7,7 @@ import ModalAdd from './components/ModalAdd';
 import Modal from '../../components/Modal/Modal';
 import { axiosClient } from '../../api/axios';
 import ModalUpdate from './components/ModalUpdate';
+import Swal from 'sweetalert2';
 
 const ManageDistrictWard = () => {
   const [data, setData] = useState([]);
@@ -21,16 +22,15 @@ const ManageDistrictWard = () => {
   const fetchData = async () => {
     try {
       const response = await axiosClient.get('/cadre');
-      console.log(response);
 
       const convertedData = response.reduce((accumulator, district) => {
         const districtManager = district.districtManager || {};
         const districtInfo = {
           id: district.districtId,
           area: district.districtName,
-          managerName: districtManager.name || 'Unknown',
-          email: districtManager.email || 'Unknown',
-          phoneNumber: districtManager.phone || 'Unknown',
+          managerName: districtManager.name || '',
+          email: districtManager.email || '',
+          phoneNumber: districtManager.phone || '',
           level: 'Quận',
         };
 
@@ -39,11 +39,11 @@ const ManageDistrictWard = () => {
           return {
             id: ward.id,
             area: ward.name,
-            managerName: wardManager.name || 'Unknown',
+            managerName: wardManager.name || '',
             district_id: district.districtId,
             district_name: district.districtName,
-            email: wardManager.email || 'Unknown',
-            phoneNumber: wardManager.phone || 'Unknown',
+            email: wardManager.email || '',
+            phoneNumber: wardManager.phone || '',
             level: 'Phường',
           };
         });
@@ -95,6 +95,50 @@ const ManageDistrictWard = () => {
 
   const handleCloseModal = () => {
     setModalOpen(false);
+  };
+
+  const handleDeleteClick = async (id, type) => {
+    const confirmResult = await Swal.fire({
+      title: 'Xác nhận xóa',
+      text: 'Bạn có chắc muốn xóa?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Xóa',
+      cancelButtonText: 'Hủy',
+    });
+
+    if (confirmResult.isConfirmed) {
+      try {
+        const response = await axiosClient.delete('/cadre/deleteAddress', {
+          data: { id, type },
+        });
+
+        if (response.status === 'success') {
+          // Update local state after successful delete
+          Swal.fire({
+            icon: 'success',
+            title: 'Xóa thành công!',
+            text: 'Đã xóa thành công.',
+          });
+          fetchData();
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Xóa thất bại!',
+            text: 'Có lỗi xảy ra khi xóa. Vui lòng thử lại.',
+          });
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Xóa thất bại!',
+          text: 'Có lỗi xảy ra khi xóa. Vui lòng thử lại.',
+        });
+      }
+    }
   };
 
   return (
@@ -156,7 +200,10 @@ const ManageDistrictWard = () => {
                   <td style={{ width: '15%' }}>{row.phoneNumber}</td>
                   <td style={{ width: '10%' }}>{row.level}</td>
                   <td style={{ width: '15%' }}>
-                    <button className={classes.btn_trash}>
+                    <button
+                      onClick={() => handleDeleteClick(row.id, row.level === 'Phường' ? 'ward' : 'district')}
+                      className={classes.btn_trash}
+                    >
                       <FontAwesomeIcon icon={faTrash} />
                     </button>
                     <button onClick={() => handleEditClick(row)} className={classes.btn_pen}>
@@ -175,7 +222,7 @@ const ManageDistrictWard = () => {
           {modalType === 'add' ? (
             <ModalAdd onClose={updateDataAfterAdd} />
           ) : modalType === 'update' ? (
-            <ModalUpdate data={selectedRowData} onClose={handleCloseModal} />
+            <ModalUpdate data={selectedRowData} onClose={updateDataAfterAdd} />
           ) : null}
         </Modal>
       )}

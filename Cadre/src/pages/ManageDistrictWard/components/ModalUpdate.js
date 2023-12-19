@@ -9,8 +9,6 @@ const ModalUpdate = ({ onClose, data }) => {
   const [selectedDistrict, setSelectedDistrict] = useState(data.level === 'Quận' ? data.id : data.district_id);
   const [wardName, setWardName] = useState(data.level === 'Phường' ? data.area : '');
   const [districts, setDistricts] = useState([]);
-  // console.log(data.district_name);
-  // console.log(data);
 
   useEffect(() => {
     axiosClient
@@ -45,7 +43,7 @@ const ModalUpdate = ({ onClose, data }) => {
             districtName,
           };
     // Kiểm tra nếu là quận và tên quận không được để trống
-    if (data.addressType === 'district' && !data.districtName) {
+    if (requestData.addressType === 'district' && !requestData.districtName) {
       Swal.fire({
         icon: 'warning',
         title: 'Vui lòng nhập tên quận.',
@@ -53,9 +51,8 @@ const ModalUpdate = ({ onClose, data }) => {
       });
       return;
     }
-
     // Kiểm tra nếu là phường và tên phường không được để trống
-    if (data.addressType === 'ward' && !data.wardName) {
+    if (requestData.addressType === 'ward' && !requestData.wardName) {
       Swal.fire({
         icon: 'warning',
         title: 'Vui lòng nhập tên phường.',
@@ -64,13 +61,12 @@ const ModalUpdate = ({ onClose, data }) => {
       return;
     }
     try {
-      // const response = await axiosClient.post('/cadre/updateAddress', data);
-      console.log(requestData);
+      const response = await axiosClient.put('/cadre/updateAddress', requestData);
 
       if (response.status === 'success') {
         Swal.fire({
           icon: 'success',
-          title: 'Thêm thành công!',
+          title: 'Cập nhật thành công!',
           timer: 1500,
           showConfirmButton: false,
         });
@@ -79,7 +75,7 @@ const ModalUpdate = ({ onClose, data }) => {
       } else {
         Swal.fire({
           icon: 'error',
-          title: 'Thêm thất bại!',
+          title: 'Cập nhật thất bại!',
           timer: 1500,
           text: 'Có lỗi xảy ra khi thêm địa chỉ. Vui lòng thử lại.',
         });
@@ -90,7 +86,7 @@ const ModalUpdate = ({ onClose, data }) => {
       console.error('Error:', error);
       Swal.fire({
         icon: 'error',
-        title: 'Thêm thất bại!',
+        title: 'Cập nhật thất bại!',
         timer: 1500,
         text: 'Có lỗi xảy ra khi thêm địa chỉ. Vui lòng thử lại.',
       });

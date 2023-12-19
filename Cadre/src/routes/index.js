@@ -30,8 +30,7 @@ const Navigation = () => {
     <main>
       <Routes>
         {/* Chỗ này để trang home khi mới vào hay trang gốc (T đang để ManageForm để demo) */}
-        <Route path="/" name="form" element={<ManageForm />} />
-        <Route path="/login" name="login" element={<LoginPage />} />
+        <Route path="/" name="login" element={<LoginPage />} />
         <Route path="/forgot" name="forgot" element={<ForgotPassword />} />
 
         {/* Layout dành cho trang có sidebar và có thanh navbar */}
@@ -67,25 +66,3 @@ const Navigation = () => {
 
 export default Navigation;
 
-{
-  /* <Route element={<Layout />}>
-        </Route>
-        <Route element={<Layout />}>
-        </Route>
-        <Route element={<Layout />}>
-          <Route path="/send-point-request" name="point-request" element={<SendPointRequest />} />
-        </Route>
-
-        <Route element={<Layout />}>
-          <Route path="/advertising-spots" name="advertising-spots" element={<AdSpots />} />
-        </Route>
-        <Route element={<Layout />}>
-          <Route path="/reports" name="reports" element={<Reports />} />
-        </Route>
-        <Route element={<Layout />}>
-          <Route path="/reports/detail/:id" name="reports-detail" element={<ReportsDetail />} />
-        </Route>
-        <Route element={<Layout />}>
-          <Route path="/licenses" name="licenses" element={<Licenses />} />
-        </Route> */
-}

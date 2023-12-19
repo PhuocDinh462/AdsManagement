@@ -1,11 +1,26 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { faPlus, faClose, faTrashCan, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import classes from './AddAdLocation.module.scss';
+import { axiosClient } from '../../../../api/axios';
+import Swal from 'sweetalert2';
 
 const AddAdLocation = (props) => {
   const [indexCur, setIndexCur] = useState(1);
+  const [wards, setWards] = useState([]);
+
+  useEffect(() => {
+    axiosClient
+      .get('cadre/wards')
+      .then((response) => {
+        setWards(response);
+        console.log(response);
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+      });
+  }, []);
 
   return (
     <div className={classes.adding__overlay}>
@@ -92,3 +107,4 @@ const AddAdLocation = (props) => {
 };
 
 export default AddAdLocation;
+
