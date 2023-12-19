@@ -2,13 +2,12 @@ import React from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 
 // import Home from '../pages/home/Home';
-import NotFound from '../pages/notFound';
 import Layout from './../layouts/index';
 import ManageDistrictWard from '../pages/ManageDistrictWard/ManageDistrictWard';
 import Infor from '../pages/Infor/Infor';
 import SendBoardRequest from '../pages/SendBoardRequest/SendBoardRequest';
 import SendPointRequest from '../pages/SendPointRequest/SendPointRequest';
-
+import NotFoundPage from '../pages/NotFoundPage';
 import WardAndDistrictHomeHome from '../pages/WardAndDistrict/Home';
 import AdSpots from '../pages/WardAndDistrict/AdSpots';
 import Licenses from '../pages/WardAndDistrict/Licenses';
@@ -33,6 +32,7 @@ const Navigation = () => {
         <Route path="/" name="form" element={<ManageForm />} />
         <Route path="/login" name="login" element={<LoginPage />} />
         <Route path="/forgot" name="forgot" element={<ForgotPassword />} />
+        <Route path="/not_found" name="not_found" element={<NotFoundPage />} />
 
         {/* Layout dành cho trang có sidebar và có thanh navbar */}
         <Route element={<Layout />}>
