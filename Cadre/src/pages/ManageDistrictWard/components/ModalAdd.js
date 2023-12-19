@@ -1,11 +1,26 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import classes from './ModalAdd.module.scss';
+import { axiosClient } from '../../../api/axios';
+import Swal from 'sweetalert2';
 
 const ModalAdd = ({ onClose }) => {
   const [addressType, setAddressType] = useState('district');
   const [districtName, setDistrictName] = useState('');
-  const [selectedDistrict, setSelectedDistrict] = useState('quan 1');
+  const [selectedDistrict, setSelectedDistrict] = useState();
   const [wardName, setWardName] = useState('');
+  const [districts, setDistricts] = useState([]);
+
+  useEffect(() => {
+    axiosClient
+      .get('cadre/districts')
+      .then((response) => {
+        setDistricts(response);
+        console.log(response);
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+      });
+  }, []);
 
   const handleTypeChange = (type) => {
     setAddressType(type);
@@ -16,16 +31,67 @@ const ModalAdd = ({ onClose }) => {
     setSelectedDistrict(district);
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    // Thực hiện lưu dữ liệu vào cơ sở dữ liệu hoặc thực hiện các xử lý khác
-    console.log('Loại địa chỉ:', addressType);
-    console.log('Tên quận:', districtName);
-    console.log('Quận được chọn:', selectedDistrict);
-    console.log('Tên phường:', wardName);
 
-    // Sau khi lưu xong, đóng modal
-    // onClose();
+    const data = {
+      addressType,
+      districtName,
+      selectedDistrict,
+      wardName,
+    };
+
+    // Kiểm tra nếu là quận và tên quận không được để trống
+    if (data.addressType === 'district' && !data.districtName) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Vui lòng nhập tên quận.',
+        timer: 1500,
+      });
+      return;
+    }
+
+    // Kiểm tra nếu là phường và tên phường không được để trống
+    if (data.addressType === 'ward' && !data.wardName) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Vui lòng nhập tên phường.',
+        timer: 1500,
+      });
+      return;
+    }
+    try {
+      const response = await axiosClient.post('/cadre/createAddress', data);
+      console.log(data);
+
+      if (response.status === 'success') {
+        Swal.fire({
+          icon: 'success',
+          title: 'Thêm thành công!',
+          timer: 1500,
+          showConfirmButton: false,
+        });
+
+        onClose();
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Thêm thất bại!',
+          timer: 1500,
+          text: 'Có lỗi xảy ra khi thêm địa chỉ. Vui lòng thử lại.',
+        });
+      }
+
+      onClose();
+    } catch (error) {
+      console.error('Error:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Thêm thất bại!',
+        timer: 1500,
+        text: 'Có lỗi xảy ra khi thêm địa chỉ. Vui lòng thử lại.',
+      });
+    }
   };
 
   return (
@@ -87,13 +153,17 @@ const ModalAdd = ({ onClose }) => {
               <select
                 id="select_district"
                 className={classes.input_area}
-                value={selectedDistrict}
+                value={selectedDistrict || ''}
                 onChange={(e) => handleDistrictChange(e.target.value)}
               >
-                {/* Option cho danh sách quận */}
-                <option value="quan1">Quận 1</option>
-                <option value="quan2">Quận 2</option>
-                {/* Thêm các quận khác nếu cần */}
+                <option value="" disabled>
+                  Chọn quận
+                </option>
+                {districts.map((district) => (
+                  <option key={district.district_id} value={district.district_id}>
+                    {district.district_name}
+                  </option>
+                ))}
               </select>
             </div>
             <div className={classes.ward}>

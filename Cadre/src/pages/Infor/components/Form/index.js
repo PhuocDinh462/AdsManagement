@@ -1,26 +1,41 @@
 import React, { useEffect, useRef, useState } from 'react';
 import classes from './Form.module.scss';
+import request from '../../../../utils/request'
+import Swal from 'sweetalert2';
 
-const userInfor = {
+// Chuyển đổi sang đối tượng Date
+const formatDate = (date) => {
+  const dateObject = new Date(date);
+
+  // Lấy các thành phần ngày, tháng và năm
+  const year = dateObject.getFullYear();
+  const month = String(dateObject.getMonth() + 1).padStart(2, '0'); // Tháng bắt đầu từ 0
+  const day = String(dateObject.getDate()).padStart(2, '0');
+
+  // Tạo chuỗi mới theo định dạng "yyyy-MM-dd"
+  const formattedDate = `${year}-${month}-${day}`;
+  return formattedDate;
+}
+
+const userInfo = {
   phone: "0388888888",
   dob: '2002-04-30',
   email: 'something@gmail.com',
   name: 'Nguyen Van A',
   address: '123 Dương Thị Mười',
 }
-const Form = () => {
+const Form = (props) => {
   // Khởi tạo trạng thái cho các thông tin
+  const { user, setUser, headers } = props
   const inputPhone = useRef();
   const inputDob = useRef();
   const inputEmail = useRef();
   const inputFullName = useRef();
-  const inputAddress = useRef();
 
   const [phone, setPhone] = useState('');
   const [dob, setDob] = useState('');
   const [email, setEmail] = useState('');
   const [fullName, setFullName] = useState('');
-  const [address, setAddress] = useState('');
 
   const [editState, setEditState] = useState(false);
 
@@ -42,65 +57,87 @@ const Form = () => {
       case 'fullName':
         setFullName(value);
         break;
-      case 'address':
-        setAddress(value);
-        break;
       default:
         break;
     }
   };
-  const handleEditState = () => {
+  const handleEditState = async () => {
+    const params = {
+      username: fullName,
+      phone: phone,
+      dob: dob,
+      email: email,
+    }
+    try {
+      const response = await request.patch(`account/update_account`, params, {
+        headers: headers,
+      });
+      setUser(response.data.account);
+      Swal.fire({
+        title: 'Cập nhật thông tin tài khoản thành công',
+        icon: 'success',
+        confirmButtonText: 'Hoàn tất',
+        width: '50rem',
+      });
 
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Lỗi',
+        text: 'Cập nhật thất bại',
+        width: '50rem',
+      });
+    }
     setEditState(false)
   }
   useEffect(() => {
-    inputPhone.current.value = userInfor.phone
-    inputDob.current.value = userInfor.dob
-    inputEmail.current.value = userInfor.email
-    inputFullName.current.value = userInfor.name
-    inputAddress.current.value = userInfor.address
+    if (user) {
+      inputPhone.current.value = user.phone
+      inputDob.current.value = formatDate(user.dob)
+      inputEmail.current.value = user.email
+      inputFullName.current.value = user.username
 
-    setPhone(userInfor.phone)
-    setDob(userInfor.dob)
-    setEmail(userInfor.email)
-    setFullName(userInfor.name)
-    setAddress(userInfor.address)
-  }, [editState])
+      setFullName(user.username)
+      setPhone(user.phone)
+      setDob(formatDate(user.dob))
+      setEmail(user.email)
+    }
+  }, [editState, user])
+
+  useEffect(() => {
+
+  }, [user])
 
   return (
     <div>
+
       <div className={classes['first-row']}>
         <label className={classes['title-input']}>
           Điện thoại liên lạc:
-          <input type="tel" name="phone" readOnly={!editState} ref={inputPhone} value={phone} onChange={handleChange} />
+          <input type="tel" name="phone" readOnly={!editState} ref={inputPhone} onChange={handleChange} />
         </label>
 
         <label className={classes['title-input']}>
           Ngày sinh:
-          <input type="date" name="dob" readOnly={!editState} ref={inputDob} value={dob} onChange={handleChange} />
+          <input type="date" name="dob" readOnly={!editState} ref={inputDob} onChange={handleChange} />
         </label>
       </div>
 
       <div className={classes['second-row']}>
         <label className={classes['title-input']}>
           Email:
-          <input type="email" name="email" readOnly={!editState} ref={inputEmail} value={email} onChange={handleChange} />
+          <input type="email" name="email" readOnly={!editState} ref={inputEmail} onChange={handleChange} />
         </label>
       </div>
 
       <div className={classes['third-row']}>
         <label className={classes['title-input']}>
           Họ và Tên:
-          <input type="text" name="fullName" readOnly={!editState} ref={inputFullName} value={fullName} onChange={handleChange} />
+          <input type="text" name="fullName" readOnly={!editState} ref={inputFullName} onChange={handleChange} />
         </label>
       </div>
 
-      <div className={classes['fourth-row']}>
-        <label className={classes['title-input']}>
-          Địa chỉ:
-          <input type="text" name="address" readOnly={!editState} ref={inputAddress} value={address} onChange={handleChange} />
-        </label>
-      </div>
+
       {editState ? (
         <div className={classes['wrapper-handle']}>
           <button className={classes['cancel-button']} type="button" onClick={() => setEditState(false)}>Huỷ</button>

@@ -1,8 +1,14 @@
 import classes from './styles.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle, faSignOut } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router';
 
 export default function AccountDropdown() {
+  const navigate = useNavigate()
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate('/login')
+  }
   return (
     <div className={classes.main_container}>
       <div className={classes.item_container}>
@@ -12,7 +18,7 @@ export default function AccountDropdown() {
 
       <div className={classes.divider} />
 
-      <div className={classes.item_container}>
+      <div className={classes.item_container} onClick={handleLogout}>
         <FontAwesomeIcon icon={faSignOut} className={classes.item_logout_icon} />
         <div className={classes.item_logout_name}>Đăng xuất</div>
       </div>

@@ -2,13 +2,12 @@ import React from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 
 // import Home from '../pages/home/Home';
-import NotFound from '../pages/notFound';
 import Layout from './../layouts/index';
 import ManageDistrictWard from '../pages/ManageDistrictWard/ManageDistrictWard';
 import Infor from '../pages/Infor/Infor';
 import SendBoardRequest from '../pages/SendBoardRequest/SendBoardRequest';
 import SendPointRequest from '../pages/SendPointRequest/SendPointRequest';
-
+import NotFoundPage from '../pages/NotFoundPage';
 import WardAndDistrictHomeHome from '../pages/WardAndDistrict/Home';
 import AdSpots from '../pages/WardAndDistrict/AdSpots';
 import Licenses from '../pages/WardAndDistrict/Licenses';
@@ -21,7 +20,7 @@ import LayoutNavBar from '../layouts/layoutNavBar';
 import CreateAccount from '../pages/createAccount/CreateAccount';
 import ManageAdLocation from '../pages/ManageAdLocation/ManageAdLocation';
 import ManageAd from '../pages/ManageAd/ManageAd';
-import ManageLicensing from '../pages/ManageLicensing';
+import ActionLicense from '../pages/ActionLicense';
 import ReportStats from '../pages/ReportStats';
 
 const Navigation = () => {
@@ -33,6 +32,7 @@ const Navigation = () => {
         <Route path="/" name="form" element={<ManageForm />} />
         <Route path="/login" name="login" element={<LoginPage />} />
         <Route path="/forgot" name="forgot" element={<ForgotPassword />} />
+        <Route path="/not_found" name="not_found" element={<NotFoundPage />} />
 
         {/* Layout dành cho trang có sidebar và có thanh navbar */}
         <Route element={<Layout />}>
@@ -42,7 +42,7 @@ const Navigation = () => {
           <Route path="/ads-location" name="ads-location" element={<ManageAdLocation />} />
           <Route path="/ads" name="ads" element={<ManageAd />} />
 
-          <Route path="/license" name="manage license" element={<ManageLicensing />} />
+          <Route path="/action-license" name="manage license" element={<ActionLicense />} />
           <Route path="/report-stats" name="report stats" element={<ReportStats />} />
         </Route>
 
@@ -51,7 +51,7 @@ const Navigation = () => {
           <Route path="/home" name="home" element={<WardAndDistrictHomeHome />} />
           <Route path="/create-account" name="create account" element={<CreateAccount />} />
           <Route path="/advertising-spots" name="advertising-spots" element={<AdSpots />} />
-          <Route path="/licenses" name="licenses" element={<Licenses />} />
+          <Route path="/manage-license" name="licenses" element={<Licenses />} />
           <Route path="/reports" name="reports" element={<Reports />} />
           <Route path="/infor" name="infor" element={<Infor />} />
           <Route path="/board-request" name="board-request" element={<SendBoardRequest />} />

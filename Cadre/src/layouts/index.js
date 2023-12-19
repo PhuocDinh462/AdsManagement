@@ -7,7 +7,7 @@ import SideBars from '../components/sidebar/SideBars';
 const Layout = () => {
   return (
     <div className="">
-      <NavBar />
+      <NavBar hideCategories />
       <div style={{ display: 'flex' }}>
         <SideBars />
         <Outlet />
@@ -19,4 +19,3 @@ const Layout = () => {
 Layout.propTypes = {};
 
 export default Layout;
-

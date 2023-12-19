@@ -7,7 +7,7 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default function GoongAutoComplete(props) {
-  const { apiKey, onChange, defaultInputValue, placeholder } = props;
+  const { apiKey, onChange, defaultInputValue, placeholder, collapseSidebar } = props;
   const [options, setOptions] = useState();
   const [loading, setLoading] = useState(false);
 
@@ -16,20 +16,18 @@ export default function GoongAutoComplete(props) {
 
   const placeSearch = async (input) => {
     try {
-      const url = `https://rsapi.goong.io/Place/AutoComplete?api_key=${apiKey}&input=${encodeURIComponent(input)}
-      }`;
+      const url = `https://rsapi.goong.io/Place/AutoComplete?api_key=${apiKey}&input=${encodeURIComponent(input)}`;
       setLoading(true);
       const response = await fetch(url);
       const data = await response.json();
+      console.log('🚀 ~ file: index.js:24 ~ placeSearch ~ data:', data);
 
       if (data?.predictions?.length > 0) {
         const data2options = data.predictions.map((item) => ({ value: item.description, label: item.description }));
         setOptions(data2options);
-      } else {
-        console.error('No results found.');
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Goong auto complete error:', error);
       throw error;
     } finally {
       setLoading(false);
@@ -61,6 +59,7 @@ export default function GoongAutoComplete(props) {
             paddingLeft: '3rem',
             borderRadius: '100rem',
             fontSize: '1.5rem',
+            backgroundColor: collapseSidebar || state.isFocused ? 'white' : 'rgba(255,255,255,.8)',
             borderColor: state.isFocused ? borderColorFocus : borderColor,
             boxShadow: state.isFocused ? `0 0 0 .5px ${borderColorFocus}` : 'none',
             '&:hover': {

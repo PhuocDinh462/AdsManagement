@@ -40,3 +40,4 @@ const axiosPrivate = axios.create({
 });
 
 export { axiosClient, axiosPrivate };
+

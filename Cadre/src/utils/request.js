@@ -1,5 +1,5 @@
 import axios from 'axios';
 
-const request = axios.create({ baseURL: `http://localhost:${process.env.port}/api/` });
-
+const port = process.env.BACKEND_PORT || 5001; // Sử dụng 5001 nếu không có PORT được đặt
+const request = axios.create({ baseURL: `http://localhost:${port}` });
 export default request;

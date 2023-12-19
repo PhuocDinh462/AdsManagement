@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import HeaderTable from '../../components/headerTable/HeaderTable';
 import classes from './ManageForm.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -107,6 +107,32 @@ const initialData = [
 
   // Thêm dữ liệu khác
 ];
+function getCookie(cookieName) {
+  const name = cookieName + "=";
+  const decodedCookie = decodeURIComponent(document.cookie);
+  const cookieArray = decodedCookie.split(';');
+
+  for (let i = 0; i < cookieArray.length; i++) {
+    let cookie = cookieArray[i].trim();
+    if (cookie.indexOf(name) === 0) {
+      return cookie.substring(name.length, cookie.length);
+    }
+  }
+
+  return null;
+}
+
+// Set giá trị vào localStorage từ cookie
+function setLocalStorageFromCookie(keyName) {
+  const cookieValue = getCookie(keyName);
+
+  if (cookieValue) {
+    document.cookie = `${keyName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+
+    localStorage.removeItem(keyName)
+    localStorage.setItem(keyName, cookieValue);
+  }
+}
 const ManageForm = () => {
   const [data, setData] = useState(initialData);
   const [selectedFilter, setSelectedFilter] = useState('Tất cả');
@@ -141,6 +167,12 @@ const ManageForm = () => {
     setModalType('update');
     setModalOpen(true);
   };
+
+  useEffect(() => {
+    setLocalStorageFromCookie('user-state')
+    setLocalStorageFromCookie('user_id')
+    setLocalStorageFromCookie('token')
+  }, [])
 
   return (
     <div className={classes.container_wrap}>

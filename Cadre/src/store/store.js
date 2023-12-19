@@ -1,12 +1,24 @@
 import { configureStore } from '@reduxjs/toolkit';
-import photoReducer from './reducers/photoSlice';
+import rootSlice from './reducers';
+import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
 
-const rootReducer = {
-  photos: photoReducer,
+const persistConfig = {
+  key: 'root',
+  storage,
 };
 
-const store = configureStore({
-  reducer: rootReducer,
-});
+const persistedReducer = persistReducer(persistConfig, rootSlice);
 
-export default store;
+const store = configureStore({
+  reducer: { root: persistedReducer },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
+});
+const persistor = persistStore(store);
+
+export { store, persistor };
