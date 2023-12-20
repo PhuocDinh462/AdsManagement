@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import classes from './Form.module.scss';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import request from '~/src/utils/request';
+import Swal from 'sweetalert2';
 
 const locationOptions = ["Đất công/Công viên/Hành lang an toàn giao thông", "Đất tư nhân/Nhà ở riêng lẻ", "Trung tâm thương mại", "Chợ", "Cây xăng", "Nhà chờ xe buýt"]
 
 const FormPoint = () => {
+  const pointNavigate = useNavigate();
   const user_type = localStorage.getItem('user_type');
   const { point_id } = useParams();
   const [pointInfor, setPointInfor] = useState({})
@@ -40,13 +42,44 @@ const FormPoint = () => {
       location_type: '',
       isPlanning: true,
       reason: '',
+      edit_status: 'pending'
     },
     validationSchema: Yup.object({
       requestTime: Yup.string().required('Vui lòng chọn thời điểm xin chỉnh sửa'),
       reason: Yup.string().required('Vui lòng nhập lý do chỉnh sửa')
     }),
-    onSubmit: (values) => {
-      console.log('Form submitted:', values);
+    onSubmit: async (values, { setSubmitting }) => {
+      try {
+        const params = {
+          location_type: values.location_type,
+          is_planning: values.isPlanning,
+          image_url: values.imageURL,
+          point_id: point_id,
+          edit_status: "pending",
+          request_time: values.requestTime,
+          reason: values.reason
+        }
+        console.log()
+        await request.post('edit_point/create', params, { headers: headers });
+
+        setSubmitting(false);
+        Swal.fire({
+          title: 'Tạo yêu cầu chỉnh sửa thành công',
+          icon: 'success',
+          confirmButtonText: 'Hoàn tất',
+          width: '50rem',
+        });
+        pointNavigate('/advertising-spots')
+      } catch (error) {
+        console.log(error);
+        setSubmitting(false);
+
+        Swal.fire({
+          icon: 'error',
+          title: 'Lỗi khi tạo yêu cầu chỉnh sửa',
+          width: '50rem',
+        });
+      }
     },
   });
   useEffect(() => {
@@ -57,8 +90,9 @@ const FormPoint = () => {
       address: 'Some Address',
       imageURL: pointInfor.image_url,
       location_type: pointInfor.location_type,
-      isPlanning: pointInfor.is_planning ? true : false,
+      isPlanning: pointInfor.is_planning > 0 ? true : false,
       reason: '',
+      edit_status: 'pending'
     });
   }, [pointInfor]);
 
@@ -114,8 +148,8 @@ const FormPoint = () => {
         <label className={classes['title-input']}>
           Tình trạng:
           <select name="isPlanning" value={formik.values.isPlanning} onChange={formik.handleChange}>
-            <option value={true}>Đã Quy Hoạch</option>
-            <option value={false}>Chưa Quy Hoạch</option>
+            <option value={1}>Đã Quy Hoạch</option>
+            <option value={2}>Chưa Quy Hoạch</option>
           </select>
         </label>
       </div>
@@ -130,7 +164,7 @@ const FormPoint = () => {
         </label>
       </div>
 
-      <button className={classes['custom-button']} type="submit">
+      <button className={classes['custom-button']} type="submit" disabled={formik.isSubmitting}>
         Submit Form
       </button>
     </form>

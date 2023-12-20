@@ -3,10 +3,12 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import classes from './Form.module.scss';
 import request from '~/src/utils/request';
-import { useParams } from 'react-router';
-const test = '12321312'
+import { useNavigate, useParams } from 'react-router';
+import Swal from 'sweetalert2';
+
 const boardOptions = ["Cổ động chính trị", "Quảng cáo thương mại", "Xã hội hoá"];
 const FormBoard = () => {
+  const boardNavigate = useNavigate()
   const user_type = localStorage.getItem('user_type');
   const { board_id } = useParams();
   const [boardTypes, setBoardTypes] = useState([])
@@ -46,12 +48,13 @@ const FormBoard = () => {
       officer: user_type,
       requestTime: '',
       address: 'Some Address',
-      boardType: boardInfor.board_type_id,
-      imageURL: boardInfor.advertisement_image_url,
-      width: boardInfor.width,
-      height: boardInfor.height,
-      content: test,
+      boardType: '',
+      imageURL: '',
+      width: '',
+      height: '',
+      content: '',
       reason: '',
+      edit_status: 'pending'
     },
     validationSchema: Yup.object({
       requestTime: Yup.string().required('Thời điểm là bắt buộc'),
@@ -68,11 +71,41 @@ const FormBoard = () => {
       reason: Yup.string().required('Vui lòng nhập lý do'),
       // Add more validation rules as needed
     }),
-    onSubmit: (values) => {
-      console.log('Form submitted:', values);
+    onSubmit: async (values, { setSubmitting }) => {
+      try {
+        const params = {
+          board_id: board_id,
+          board_type_id: values.boardType,
+          edit_status: values.edit_status,
+          advertisement_content: values.content,
+          advertisement_image_url: values.imageURL,
+          request_time: values.requestTime,
+          reason: values.reason,
+          width: values.width,
+          height: values.height
+        }
+        await request.post('edit_board/create', params, { headers: headers });
+
+        setSubmitting(false);
+        Swal.fire({
+          title: 'Tạo yêu cầu chỉnh sửa thành công',
+          icon: 'success',
+          confirmButtonText: 'Hoàn tất',
+          width: '50rem',
+        });
+        boardNavigate('/advertising-spots')
+      } catch (error) {
+        console.log(error);
+        setSubmitting(false);
+
+        Swal.fire({
+          icon: 'error',
+          title: 'Lỗi khi tạo yêu cầu chỉnh sửa',
+          width: '50rem',
+        });
+      }
     },
   });
-
   useEffect(() => {
     // Update form values when boardInfor changes
     formik.setValues({
@@ -85,6 +118,7 @@ const FormBoard = () => {
       height: boardInfor.height,
       content: boardInfor.advertisement_content,
       reason: '',
+      edit_status: 'pending'
     });
   }, [boardInfor]);
   const handleFileChange = (e) => {
@@ -177,7 +211,7 @@ const FormBoard = () => {
         </label>
       </div>
 
-      <button className={classes['custom-button']} type="submit">
+      <button className={classes['custom-button']} type="submit" disabled={formik.isSubmitting}>
         Submit Form
       </button>
     </form>

@@ -3,7 +3,6 @@ const connection = require("../server"); // Sử dụng module quản lý kết 
 
 const getInforPoint = catchAsync(async (req, res, next) => {
     const { id } = req.params;
-    console.log(id);
     connection.query(
         `select * from advertising_point where point_id = ?`,
         id,
