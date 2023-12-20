@@ -1,10 +1,10 @@
 const express = require("express");
 const editPointRequestController = require("../controllers/editPointRequestController");
 
-
+const requestEditValidation = require("../middlewares/validation/validationEditRequest.middleware")
 const router = express.Router();
 
-router.post("/create", editPointRequestController.createEditPointRequest)
+router.post("/create", requestEditValidation.PointRequest, editPointRequestController.createEditPointRequest)
 
 
 module.exports = router;

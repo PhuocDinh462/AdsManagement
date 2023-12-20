@@ -1,5 +1,18 @@
 use wnc_project;
 
+DROP TABLE IF EXISTS `edit_request_point`;
+DROP TABLE IF EXISTS `edit_request_board`;
+DROP TABLE IF EXISTS `licensing_request`;
+DROP TABLE IF EXISTS `report`;
+DROP TABLE IF EXISTS `advertising_board`;
+DROP TABLE IF EXISTS `advertisement_type`;
+DROP TABLE IF EXISTS `detail`;
+DROP TABLE IF EXISTS `report_type`;
+DROP TABLE IF EXISTS `advertising_point`;
+DROP TABLE IF EXISTS `contract`;
+DROP TABLE IF EXISTS `ward`;
+DROP TABLE IF EXISTS `district`;
+DROP TABLE IF EXISTS `user`;
 
 -- Tạo bảng User
 CREATE TABLE `user` (
@@ -153,7 +166,7 @@ CREATE TABLE `licensing_request` (
   licensing_id INT auto_increment,
   advertisement_content VARCHAR(255),
   advertisement_image_url VARCHAR(255),
-  request_time TIMESTAMP,
+  request_time DATETIME,
   `status` varchar(255) NOT null,
   rejection_reason VARCHAR(255),
   user_id INT,
@@ -177,7 +190,7 @@ CREATE TABLE `edit_request_board` (
   edit_status varchar(255),
   advertisement_content VARCHAR(255),
   advertisement_image_url VARCHAR(255),
-  request_time TIMESTAMP,
+  request_time DATETIME,
   reason VARCHAR(255),
   width FLOAT,
   height FLOAT,
@@ -197,7 +210,7 @@ CREATE TABLE `edit_request_point` (
   image_url VARCHAR(255),
   point_id INT,
   edit_status varchar(255),
-  request_time TIMESTAMP,
+  request_time DATETIME,
   reason VARCHAR(255),
   created_by INT,
   created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -206,6 +219,101 @@ CREATE TABLE `edit_request_point` (
   FOREIGN KEY (created_by) REFERENCES `user`(user_id),
   FOREIGN KEY (`point_id`) REFERENCES `advertising_point`(`point_id`)
 );
+
+-- Insert sample data into the `user` table
+INSERT INTO `user` (username, `password`, email, phone, dob, user_type, created_by, updated_by)
+VALUES
+  ('admin', 'admin123', 'admin@example.com', '123456789', '1990-01-01', 'admin', NULL, NULL),
+  ('manager1', 'manager123', 'manager1@example.com', '987654321', '1985-05-15', 'manager', 1, 1),
+  ('manager2', 'manager456', 'manager2@example.com', '654321987', '1988-09-22', 'manager', 1, 1);
+  -- Add more users as needed;
+
+-- Insert sample data into the `district` table
+INSERT INTO `district` (district_name, manager_id)
+VALUES
+  ('District A', 2),
+  ('District B', 3);
+  -- Add more districts as needed;
+
+-- Insert sample data into the `ward` table
+INSERT INTO `ward` (ward_name, district_id, manager_id)
+VALUES
+  ('Ward 1', 1, 2),
+  ('Ward 2', 1, 2),
+  ('Ward 3', 2, 3);
+  -- Add more wards as needed;
+
+-- Insert sample data into the `contract` table
+INSERT INTO `contract` (company_name, company_email, company_phone, company_address, start_date, end_date, representative)
+VALUES
+  ('ABC Company', 'abc@example.com', '123456789', '123 Main St', '2023-01-01', '2023-12-31', 'John Doe'),
+  ('XYZ Company', 'xyz@example.com', '987654321', '456 Oak St', '2023-02-01', '2023-11-30', 'Jane Smith');
+  -- Add more contracts as needed;
+
+-- Insert sample data into the `advertising_point` table
+INSERT INTO `advertising_point` (location_type, image_url, `lat`, `lng`, is_planning, ward_id)
+VALUES
+  ('Park', 'park_image.jpg', 10.12345, 20.54321, true, 1),
+  ('Shopping Mall', 'mall_image.jpg', 15.67890, 25.09876, false, 2);
+  -- Add more advertising points as needed;
+
+-- Insert sample data into the `report_type` table
+INSERT INTO `report_type` (report_type_name)
+VALUES
+  ('Complaint'),
+  ('Suggestion');
+  -- Add more report types as needed;
+
+-- Insert sample data into the `detail` table
+INSERT INTO `detail` (report_content, image_url_1, image_url_2, width, height)
+VALUES
+  ('Details for report 1', 'image1.jpg', 'image2.jpg', 800, 600),
+  ('Details for report 2', 'image3.jpg', 'image4.jpg', 1024, 768);
+  -- Add more details as needed;
+
+-- Insert sample data into the `advertisement_type` table
+INSERT INTO `advertisement_type` (type_name)
+VALUES
+  ('Hiflex Wall Board'),
+  ('LED Wall Display');
+  -- Add more advertisement types as needed;
+
+-- Insert sample data into the `advertising_board` table
+INSERT INTO `advertising_board` (board_type_id, advertisement_content, advertisement_image_url, width, height, point_id)
+VALUES
+  (1, 'Ad content 1', 'ad_image1.jpg', 800, 600, 1),
+  (2, 'Ad content 2', 'ad_image2.jpg', 1024, 768, 2);
+  -- Add more advertising boards as needed;
+
+-- Insert sample data into the `report` table
+INSERT INTO `report` (report_time, processing_info, fullname_rp, email_rp, phone_rp, status, detail_id, report_type_id, point_id, board_id)
+VALUES
+  ('2023-03-15', 'Processing...', 'John Doe', 'john@example.com', '123456789', 'Pending', 1, 1, 1, NULL),
+  ('2023-03-20', 'Processed', 'Jane Smith', 'jane@example.com', '987654321', 'Approved', 2, 2, NULL, 2);
+  -- Add more reports as needed;
+
+-- Insert sample data into the `licensing_request` table
+INSERT INTO `licensing_request` (advertisement_content, advertisement_image_url, request_time, `status`, rejection_reason, user_id, point_id, width, height, contract_id, report_id)
+VALUES
+  ('Ad content request 1', 'request_image1.jpg', '2023-04-01', 'Pending', NULL, 1, 1, 800, 600, 1, NULL),
+  ('Ad content request 2', 'request_image2.jpg', '2023-04-05', 'Approved', NULL, 2, 2, 1024, 768, 2, NULL);
+  -- Add more licensing requests as needed;
+
+-- Insert sample data into the `edit_request_board` table
+INSERT INTO `edit_request_board` (board_id, board_type_id, edit_status, advertisement_content, advertisement_image_url, request_time, reason, width, height, created_by)
+VALUES
+  (1, 1, 'Pending', 'Edited content 1', 'edited_image1.jpg', '2023-05-01', 'Content update', 800, 600, 1),
+  (2, 2, 'Approved', 'Edited content 2', 'edited_image2.jpg', '2023-05-05', 'Image enhancement', 1024, 768, 2);
+  -- Add more edit requests for boards as needed;
+
+-- Insert sample data into the `edit_request_point` table
+-- Chèn dữ liệu mẫu vào bảng `edit_request_point`
+INSERT INTO `edit_request_point` (location_type, is_planning, image_url, point_id, edit_status, request_time, reason, created_by)
+VALUES
+  ('Updated Park', false, 'updated_park_image.jpg', 1, 'Pending', '2023-06-01', 'Park renovation', 1),
+  ('Revised Mall', true, 'revised_mall_image.jpg', 2, 'Approved', '2023-06-05', 'Planning update', 2);
+-- Đảm bảo rằng các giá trị sử dụng trong cột created_by tồn tại trong bảng user
+
 
 
 
