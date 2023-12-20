@@ -14,9 +14,9 @@ const NotFoundPage = () => {
     return (
         <div className={classes['error-container']}>
             <div className={classes["error-message"]}>
-                <h1>404</h1>
-                <p>Not Found</p>
-                <p>Sorry, Can Not Found This User In System</p>
+                <h1 className={classes.status}>404</h1>
+                <p className={classes.response}>Not Found</p>
+                <p className={classes.message}>Sorry, Can Not Found This User In System</p>
             </div>
         </div>
     );
