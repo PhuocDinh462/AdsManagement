@@ -17,6 +17,7 @@ import {
   SpotSolvedReport,
 } from '~assets/markers';
 import setLocalStorageFromCookie from '~/src/utils/setLocalStorageFromCookie';
+import { axiosRequest } from '~/src/api/axios';
 
 const containerStyle = {
   width: '100%',
@@ -77,67 +78,73 @@ export default function Home() {
     setCurrentAdSpot(_marker);
   };
 
-  const adSpots = [
-    {
-      lat: 10.762619,
-      lng: 106.684431,
-      location_type: 'Đất công nghiệp/Công viên/Hành lang an toàn giao thông',
-      advertising_type: 'Cổ động chính trị',
-      is_planning: true,
-      boards: [
-        {
-          image_url: 'https://panoquangcao.net/wp-content/uploads/2020/09/bien-quang-cao-tren-duong-cao-toc-2.jpg',
-          form_ad: '2.5m x 1.2m',
-          reports: 0,
-        },
-        {
-          image_url: 'https://chuinoxvang.com/upload/images/bang-hieu-pano1.jpg',
-          form_ad: '3.2m x 1.6m',
-          reports: 2,
-        },
-      ],
-    },
-    {
-      lat: 10.762499,
-      lng: 106.686613,
-      location_type: 'Đất công nghiệp/Công viên/Hành lang an toàn giao thông',
-      advertising_type: 'Cổ động chính trị',
-      is_planning: true,
-      boards: [
-        {
-          image_url: 'https://panoquangcao.net/wp-content/uploads/2020/09/bien-quang-cao-tren-duong-cao-toc-2.jpg',
-          form_ad: '2.5m x 1.2m',
-          reports: 0,
-        },
-        {
-          image_url: 'https://chuinoxvang.com/upload/images/bang-hieu-pano1.jpg',
-          form_ad: '3.2m x 1.6m',
-          reports: 0,
-        },
-      ],
-    },
-    {
-      lat: 10.765068,
-      lng: 106.687615,
-      location_type: 'Đất công nghiệp/Công viên/Hành lang an toàn giao thông',
-      advertising_type: 'Cổ động chính trị',
-      is_planning: false,
-      boards: [
-        {
-          image_url: 'https://chuinoxvang.com/upload/images/bang-hieu-pano1.jpg',
-          form_ad: '3.2m x 1.6m',
-          reports: 0,
-        },
-      ],
-    },
-  ];
+  // const adSpots = [
+  //   {
+  //     lat: 10.762619,
+  //     lng: 106.684431,
+  //     location_type: 'Đất công nghiệp/Công viên/Hành lang an toàn giao thông',
+  //     advertising_type: 'Cổ động chính trị',
+  //     is_planning: true,
+  //     boards: [
+  //       {
+  //         image_url: 'https://panoquangcao.net/wp-content/uploads/2020/09/bien-quang-cao-tren-duong-cao-toc-2.jpg',
+  //         form_ad: '2.5m x 1.2m',
+  //         reports: 0,
+  //       },
+  //       {
+  //         image_url: 'https://chuinoxvang.com/upload/images/bang-hieu-pano1.jpg',
+  //         form_ad: '3.2m x 1.6m',
+  //         reports: 2,
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     lat: 10.762499,
+  //     lng: 106.686613,
+  //     location_type: 'Đất công nghiệp/Công viên/Hành lang an toàn giao thông',
+  //     advertising_type: 'Cổ động chính trị',
+  //     is_planning: true,
+  //     boards: [
+  //       {
+  //         image_url: 'https://panoquangcao.net/wp-content/uploads/2020/09/bien-quang-cao-tren-duong-cao-toc-2.jpg',
+  //         form_ad: '2.5m x 1.2m',
+  //         reports: 0,
+  //       },
+  //       {
+  //         image_url: 'https://chuinoxvang.com/upload/images/bang-hieu-pano1.jpg',
+  //         form_ad: '3.2m x 1.6m',
+  //         reports: 0,
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     lat: 10.765068,
+  //     lng: 106.687615,
+  //     location_type: 'Đất công nghiệp/Công viên/Hành lang an toàn giao thông',
+  //     advertising_type: 'Cổ động chính trị',
+  //     is_planning: false,
+  //     boards: [
+  //       {
+  //         image_url: 'https://chuinoxvang.com/upload/images/bang-hieu-pano1.jpg',
+  //         form_ad: '3.2m x 1.6m',
+  //         reports: 0,
+  //       },
+  //     ],
+  //   },
+  // ];
 
   const iconSize = 20;
 
   const selectIcon = (spot) => {
-    if (spot.boards.some((element) => element.reports > 0)) return AdSpotBeReported;
-    else if (!spot.is_planning) return AdSpotNotPlan;
-    else return AdSpotPlanned;
+    if (spot.numberOfBoards > 0) {
+      if (spot.reportStatus === 'noReport' && spot.is_planning) return AdSpotPlanned;
+      else if (spot.reportStatus === 'noReport' && !spot.is_planning) return AdSpotNotPlan;
+      else if (spot.reportStatus === 'noProcess') return AdSpotBeReported;
+      else if (spot.reportStatus === 'Processed') return AdSpotSolvedReport;
+    } else {
+      if (spot.reportStatus === 'noProcess') return SpotBeReported;
+      else return SpotSolvedReport;
+    }
   };
 
   const handleSearch = async (place_id) => {
@@ -162,6 +169,26 @@ export default function Home() {
       });
   };
 
+  const [loading, setLoading] = useState(false);
+  const [adSpots, setAdSpots] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      await axiosRequest
+        .get(`ward/getAdSpotsByWardId/1`)
+        .then((res) => {
+          setAdSpots(res.data.data);
+        })
+        .catch((error) => {
+          console.log('Get spots error: ', error);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    })();
+  }, []);
+
   return (
     <div className={classes.main_container}>
       <div className={classes.map_container}>
@@ -177,6 +204,7 @@ export default function Home() {
               draggableCursor: 'default',
               clickableIcons: false,
               streetViewControl: false,
+              mapTypeControl: false,
             }}
             onClick={handleMapClick}
           >
@@ -191,19 +219,20 @@ export default function Home() {
               }}
             />
             {displayMarker && <Marker position={marker} clickable={false} />}
-            {adSpots.map((item, index) => (
-              <Marker
-                key={index}
-                position={item}
-                icon={{
-                  url: selectIcon(item),
-                  scaledSize: isLoaded ? new window.google.maps.Size(iconSize, iconSize) : null,
-                  anchor: new google.maps.Point(iconSize / 2, iconSize / 2),
-                  origin: new google.maps.Point(0, 0),
-                }}
-                onClick={() => handleMarkerClick(item)}
-              />
-            ))}
+            {!loading &&
+              adSpots.map((item) => (
+                <Marker
+                  key={item.point_id}
+                  position={{ lat: item.lat, lng: item.lng }}
+                  icon={{
+                    url: selectIcon(item),
+                    scaledSize: isLoaded ? new window.google.maps.Size(iconSize, iconSize) : null,
+                    anchor: new google.maps.Point(iconSize / 2, iconSize / 2),
+                    origin: new google.maps.Point(0, 0),
+                  }}
+                  // onClick={() => handleMarkerClick(item)}
+                />
+              ))}
           </GoogleMap>
         ) : (
           <>Loading...</>
