@@ -141,9 +141,9 @@ const googleOAuthHandler = catchAsync(async (req, res, next) => {
             if (user.user_type === 'department') {
                 res.redirect("http://localhost:3000/district-ward");
             } else if (user.user_type === 'ward') {
-                res.redirect("http://localhost:3000");
+                res.redirect("http://localhost:3000/home");
             } else if (user.user_type === 'district') {
-                res.redirect("http://localhost:3000");
+                res.redirect("http://localhost:3000/home");
 
             }
         } else {

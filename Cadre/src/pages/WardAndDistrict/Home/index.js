@@ -1,7 +1,7 @@
 import classes from './styles.module.scss';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import FilterDropdown from '~components/Dropdown/FilterDropdown';
 import GoongAutoComplete from '~components/GoongAutoComplete';
 import SpotInfoSidebar from '~components/SpotInfoSidebar';
@@ -16,6 +16,7 @@ import {
   SpotBeReported,
   SpotSolvedReport,
 } from '~assets/markers';
+import setLocalStorageFromCookie from '~/src/utils/setLocalStorageFromCookie';
 
 const containerStyle = {
   width: '100%',
@@ -50,6 +51,12 @@ export default function Home() {
   const [marker, setMarker] = useState();
   const [currentAdSpot, setCurrentAdSpot] = useState(null);
 
+  useEffect(() => {
+    setLocalStorageFromCookie('user-state');
+    setLocalStorageFromCookie('user_type');
+    setLocalStorageFromCookie('user_id');
+    setLocalStorageFromCookie('token');
+  }, []);
   const handleMapClick = (event) => {
     setDisplayMarker(!displayMarker);
     setCollapseSidebar(false);

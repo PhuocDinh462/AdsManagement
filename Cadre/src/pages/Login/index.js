@@ -24,8 +24,10 @@ const LoginPage = () => {
         onSubmit: async (values, { setSubmitting }) => {
             try {
                 const response = await request.post('auth/login', values);
+                const user_type = response.data.user_type;
                 localStorage.setItem('user-state', true);
                 localStorage.setItem('user_id', response.data.user_id);
+                localStorage.setItem('user_type', user_type);
                 localStorage.setItem('token', response.data.token);
                 setSubmitting(false);
 
@@ -35,8 +37,15 @@ const LoginPage = () => {
                     confirmButtonText: 'Hoàn tất',
                     width: '50rem',
                 });
+                if (user_type === 'department') {
+                    loginNavigate('/district-ward');
+                } else if (user_type === 'ward') {
+                    loginNavigate('/home');
 
-                loginNavigate('/');
+                } else if (user_type === 'district') {
+                    loginNavigate('/home');
+
+                }
             } catch (error) {
                 console.log(error);
                 setSubmitting(false);
