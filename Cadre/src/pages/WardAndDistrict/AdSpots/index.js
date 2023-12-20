@@ -4,65 +4,78 @@ import { faPencil, faEye } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Pagination from '~components/Pagination';
 import SearchBar from '~components/SearchBar';
+import { Link } from 'react-router-dom';
 
 export default function AdSpots() {
   const [data, setData] = useState([
     {
+      id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
       spotType: 'Công viên',
       isPlanned: true,
     },
     {
+      id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
       spotType: 'Công viên',
       isPlanned: false,
     },
     {
+      id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
       spotType: 'Công viên',
       isPlanned: true,
     },
     {
+      id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
       spotType: 'Công viên',
       isPlanned: false,
     },
     {
+      id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
       spotType: 'Công viên',
       isPlanned: true,
     },
     {
+      id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
       spotType: 'Công viên',
       isPlanned: false,
     },
     {
+      id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
       spotType: 'Công viên',
       isPlanned: true,
     },
     {
+      id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
       spotType: 'Công viên',
       isPlanned: false,
     },
     {
+      id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
       spotType: 'Công viên',
       isPlanned: true,
     },
     {
+      id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
       spotType: 'Công viên',
       isPlanned: false,
     },
     {
+      id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
       spotType: 'Công viên',
       isPlanned: true,
     },
     {
+      id: 1,
       address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
       spotType: 'Công viên',
       isPlanned: false,
@@ -118,15 +131,20 @@ export default function AdSpots() {
                   </td>
                   <td style={{ width: '10%' }}>
                     <button className={classes.btn_info}>
-                      <div className={classes.icon_container}>
-                        <FontAwesomeIcon icon={faPencil} />
-                      </div>
+                      <Link to={`/point-request/${row.id}`}>
+                        <div className={classes.icon_container}>
+                          <FontAwesomeIcon icon={faPencil} />
+                        </div>
+                      </Link>
                     </button>
-                    <button className={classes.btn_detail}>
-                      <div className={classes.icon_container}>
-                        <FontAwesomeIcon icon={faEye} />
-                      </div>
-                    </button>
+                    <Link to={`/advertising-spots/${row.id}`}>
+                      <button className={classes.btn_detail}>
+                        <div className={classes.icon_container}>
+                          <FontAwesomeIcon icon={faEye} />
+                        </div>
+                      </button>
+                    </Link>
+
                   </td>
                 </tr>
               ))}
