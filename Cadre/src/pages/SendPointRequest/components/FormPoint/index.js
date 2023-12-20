@@ -1,97 +1,105 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 import classes from './Form.module.scss';
+import localStorage from 'redux-persist/es/storage';
 
-const Form = () => {
-  const [officer, setOfficer] = useState('');
-  const [timestamp, setTimestamp] = useState('');
-  const [location, setLocation] = useState('');
-  const [positionType, setPositionType] = useState(null);
-  const [status, setStatus] = useState('');
-  const [regionType, setRegionType] = useState('');
-  const [reason, setReason] = useState('');
+const locationOptions = ["Đất công/Công viên/Hành lang an toàn giao thông", "Đất tư nhân/Nhà ở riêng lẻ", "Trung tâm thương mại", "Chợ", "Cây xăng", "Nhà chờ xe buýt"]
 
+const FormPoint = () => {
+  const user_type = localStorage.getItem('user_type');
 
-
-  const handleSubmit = () => {
-    // Xử lý nộp form - bạn có thể thực hiện các hành động cần thiết ở đây
-    console.log("Form submitted:", {
-      officer,
-      timestamp,
-      location,
-      image,
-      size,
-      advertisementType,
-      regionType,
-      content,
-      reason,
-    });
-  };
+  const formik = useFormik({
+    initialValues: {
+      officer: user_type,
+      requestTime: '',
+      address: 'Some Address',
+      imageURL: '',
+      location_type: '',
+      isPlanning: true,
+      reason: '',
+    },
+    validationSchema: Yup.object({
+      requestTime: Yup.string().required('Vui lòng chọn thời điểm xin chỉnh sửa'),
+      reason: Yup.string().required('Vui lòng nhập lý do chỉnh sửa')
+    }),
+    onSubmit: (values) => {
+      console.log('Form submitted:', values);
+    },
+  });
 
   return (
-    <div>
+    <form onSubmit={formik.handleSubmit}>
       <div className={classes['first-row']}>
         <label className={classes['title-input']}>
           Cán bộ:
-          <select name="officer" value={officer} onChange={(e) => setOfficer(e.target.value)}>
-            <option value="phuong">Phường</option>
-            <option value="quan">Quận</option>
+          <select name="officer" value={formik.values.officer} readOnly>
+            <option value="ward">Phường</option>
+            <option value="district">Quận</option>
           </select>
         </label>
         <label className={classes['title-input']}>
           Thời điểm:
-          <input type="date" name="timestamp" value={timestamp} onChange={(e) => setTimestamp(e.target.value)} />
+          <input type="date" name="requestTime" value={formik.values.requestTime} onChange={formik.handleChange} />
+          {formik.touched.requestTime && formik.errors.requestTime ? (
+            <div className={classes.error}>{formik.errors.requestTime}</div>
+          ) : null}
         </label>
       </div>
 
       <div className={classes['second-row']}>
         <label className={classes['title-input']}>
           Địa chỉ:
-          <input type="text" name="location" value={location} onChange={(e) => setLocation(e.target.value)} />
+          <input type="text" name="address" value={formik.values.address} readOnly />
         </label>
       </div>
 
       <div className={classes['third-row']}>
         <label className={classes['title-input']}>
-          Khu vực:
-          <select name="regionType" value={regionType} onChange={(e) => setRegionType(e.target.value)}>
-            <option value="option1">Option 1</option>
-            <option value="option2">Option 2</option>
-          </select>
+          Hình ảnh 1:
+          <input type="file" accept="image/*" name="image" onChange={(e) => formik.setFieldValue('imageURL', e.target.files[0])} />
+
         </label>
       </div>
 
       <div className={classes['fourth-row']}>
         <label className={classes['title-input']}>
-          Loại địa điểm:
-          <select name="positionType" value={positionType} onChange={(e) => setPositionType(e.target.value)}>
-            <option value="option1">Option 1</option>
-            <option value="option2">Option 2</option>
+          Loại vị trí:
+          <select name="location_type" value={formik.values.location_type} onChange={formik.handleChange}>
+            <option value="" disabled hidden>Chọn loại địa điểm</option>
+            {locationOptions.map((location, index) => (
+              <option key={index} value={location}>{location}</option>
+            ))}
           </select>
+
         </label>
       </div>
 
       <div className={classes['fifth-row']}>
         <label className={classes['title-input']}>
           Tình trạng:
-          <select name="status" value={status} onChange={(e) => setStatus(e.target.value)}>
-            <option value="option1">Option 1</option>
-            <option value="option2">Option 2</option>
+          <select name="isPlanning" value={formik.values.isPlanning} onChange={formik.handleChange}>
+            <option value={true}>Đã Quy Hoạch</option>
+            <option value={false}>Chưa Quy Hoạch</option>
           </select>
         </label>
-
       </div>
 
       <div className={classes['sixth-row']}>
         <label className={classes['title-input']}>
           Lý do:
-          <textarea name="reason" value={reason} onChange={(e) => setReason(e.target.value)} />
+          <textarea name="reason" value={formik.values.reason} onChange={formik.handleChange} />
+          {formik.touched.reason && formik.errors.reason ? (
+            <div className={classes.error}>{formik.errors.reason}</div>
+          ) : null}
         </label>
       </div>
 
-      {/* Nút Submit Form */}
-      <button className={classes['custom-button']} type="button" onClick={handleSubmit}>Submit Form</button>
-    </div>
+      <button className={classes['custom-button']} type="submit">
+        Submit Form
+      </button>
+    </form>
   );
 };
 
-export default Form;
+export default FormPoint;

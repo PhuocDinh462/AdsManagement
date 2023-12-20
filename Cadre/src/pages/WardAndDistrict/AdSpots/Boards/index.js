@@ -34,7 +34,7 @@ export default function Boards() {
       height: 2.2,
       board_type_id: 2,
       username: 'Nguyễn Văn A',
-      advertisement_image_url: 'abcdefghzxcvzx',
+      advertisement_image_url: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
       advertisement_content: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.
       Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.
       Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.
@@ -50,7 +50,7 @@ export default function Boards() {
       width: 2.5,
       height: 3.2,
       board_type_id: 1,
-      advertisement_image_url: 'abcdefghzxcvzx',
+      advertisement_image_url: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
       advertisement_content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.',
 
     },
@@ -59,7 +59,7 @@ export default function Boards() {
       width: 2.5,
       height: 4.2,
       board_type_id: 0,
-      advertisement_image_url: 'abcdefghzxcvzx',
+      advertisement_image_url: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
       advertisement_content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.',
 
     }
@@ -189,7 +189,8 @@ export default function Boards() {
                         <FontAwesomeIcon icon={faFile} />
                         <span> Hình ảnh:</span>
                         <dir className={classes.itemInfo__text}>
-                          <img src={images.googleImage} alt="Image Board" className={classes['board_image']} />
+                          {/* <img src={images.googleImage} alt="Image Board" className={classes['board_image']} /> */}
+                          <img src={filteredData[currentReportIndex]?.advertisement_image_url} alt="Image Board" className={classes['board_image']} />
 
                         </dir>
                       </div>
