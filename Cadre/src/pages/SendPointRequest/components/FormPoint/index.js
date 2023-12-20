@@ -1,13 +1,35 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import classes from './Form.module.scss';
-import localStorage from 'redux-persist/es/storage';
+import { useParams } from 'react-router';
+import request from '~/src/utils/request';
 
 const locationOptions = ["Đất công/Công viên/Hành lang an toàn giao thông", "Đất tư nhân/Nhà ở riêng lẻ", "Trung tâm thương mại", "Chợ", "Cây xăng", "Nhà chờ xe buýt"]
 
 const FormPoint = () => {
   const user_type = localStorage.getItem('user_type');
+  const { point_id } = useParams();
+  const [pointInfor, setPointInfor] = useState({})
+
+
+  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
+
+  const fetchPointInfor = async () => {
+
+    try {
+      const response = await request.get(`point/get_point/${point_id}`, { headers: headers });
+      setPointInfor(response.data.point);
+    } catch (error) {
+      console.error('Error fetching surfaces:', error);
+    }
+  }
+  useEffect(() => {
+    fetchPointInfor();
+  }, [])
 
   const formik = useFormik({
     initialValues: {
@@ -27,6 +49,19 @@ const FormPoint = () => {
       console.log('Form submitted:', values);
     },
   });
+  useEffect(() => {
+    // Update form values when boardInfor changes
+    formik.setValues({
+      officer: user_type,
+      requestTime: '',
+      address: 'Some Address',
+      imageURL: pointInfor.image_url,
+      location_type: pointInfor.location_type,
+      isPlanning: pointInfor.is_planning ? true : false,
+      reason: '',
+    });
+  }, [pointInfor]);
+
 
   return (
     <form onSubmit={formik.handleSubmit}>

@@ -5,6 +5,7 @@ const requestEditValidation = require("../middlewares/validation/validationEditR
 const router = express.Router();
 
 router.post("/create", requestEditValidation.PointRequest, editPointRequestController.createEditPointRequest)
+router.get("/get_point_request/:id", editPointRequestController.getInforEditPointRequest)
 
 
 module.exports = router;

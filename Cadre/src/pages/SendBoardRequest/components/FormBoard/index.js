@@ -1,24 +1,56 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import classes from './Form.module.scss';
-import localStorage from 'redux-persist/es/storage';
-
+import request from '~/src/utils/request';
+import { useParams } from 'react-router';
+const test = '12321312'
 const boardOptions = ["Cổ động chính trị", "Quảng cáo thương mại", "Xã hội hoá"];
-
 const FormBoard = () => {
   const user_type = localStorage.getItem('user_type');
+  const { board_id } = useParams();
+  const [boardTypes, setBoardTypes] = useState([])
+  const [boardInfor, setBoardInfor] = useState({})
+
+
+  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
+
+  const fetchBoardTypes = async () => {
+
+    try {
+      const response = await request.get(`board_type`);
+      setBoardTypes(response.data.board_types);
+    } catch (error) {
+      console.error('Error fetching surfaces:', error)
+    }
+  };
+  const fetchBoardInfor = async () => {
+
+    try {
+      const response = await request.get(`board/get_board/${board_id}`, { headers: headers });
+      setBoardInfor(response.data.board);
+    } catch (error) {
+      console.error('Error fetching surfaces:', error);
+    }
+  }
+  useEffect(() => {
+    fetchBoardTypes();
+    fetchBoardInfor();
+  }, [])
 
   const formik = useFormik({
     initialValues: {
       officer: user_type,
       requestTime: '',
       address: 'Some Address',
-      boardType: '',
-      imageURL: null,
-      width: '',
-      height: '',
-      content: '',
+      boardType: boardInfor.board_type_id,
+      imageURL: boardInfor.advertisement_image_url,
+      width: boardInfor.width,
+      height: boardInfor.height,
+      content: test,
       reason: '',
     },
     validationSchema: Yup.object({
@@ -41,6 +73,20 @@ const FormBoard = () => {
     },
   });
 
+  useEffect(() => {
+    // Update form values when boardInfor changes
+    formik.setValues({
+      officer: user_type,
+      requestTime: '',
+      address: 'Some Address',
+      boardType: boardInfor.board_type_id,
+      imageURL: boardInfor.advertisement_image_url,
+      width: boardInfor.width,
+      height: boardInfor.height,
+      content: boardInfor.advertisement_content,
+      reason: '',
+    });
+  }, [boardInfor]);
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     formik.setFieldValue('imageURL', selectedFile);
@@ -51,7 +97,7 @@ const FormBoard = () => {
       <div className={classes['first-row']}>
         <label className={classes['title-input']}>
           Cán bộ:
-          <select name="officer" value={formik.values.officer} readOnly>
+          <select name="officer" value={formik.values.officer} disabled>
             <option value="ward">Phường</option>
             <option value="district">Quận</option>
           </select>
@@ -69,17 +115,17 @@ const FormBoard = () => {
       <div className={classes['second-row']}>
         <label className={classes['title-input']}>
           Địa chỉ:
-          <input type="text" name="address" value={formik.values.address} />
+          <input type="text" name="address" value={formik.values.address} readOnly />
         </label>
       </div>
 
       <div className={classes['third-row']}>
         <label className={classes['title-input']}>
           Hình thức quảng cáo:
-          <select name="boardType" value={formik.values.boardType} onChange={formik.handleChange}>
-            {boardOptions.map((board, index) => (
-              <option key={index} value={board}>
-                {board}
+          <select name="boardType" defaultValue={formik.values.boardType} onChange={formik.handleChange}>
+            {boardTypes.map((board) => (
+              <option key={board.board_type_id} value={board.board_type_id}>
+                {board.type_name}
               </option>
             ))}
           </select>
