@@ -1,5 +1,6 @@
 import classes from './styles.module.scss';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
+import { faCircleQuestion } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react';
 import FilterDropdown from '~components/Dropdown/FilterDropdown';
@@ -18,6 +19,7 @@ import {
 } from '~assets/markers';
 import setLocalStorageFromCookie from '~/src/utils/setLocalStorageFromCookie';
 import { axiosRequest } from '~/src/api/axios';
+import AnnotationDropdown from '~components/Dropdown/AnnotationDropdown';
 
 const containerStyle = {
   width: '100%',
@@ -26,6 +28,7 @@ const containerStyle = {
 
 export default function Home() {
   const [filterActive, setFilterActive] = useState(false);
+  const [annotationActive, setAnnotationActive] = useState(false);
   const [collapseSidebar, setCollapseSidebar] = useState(false);
   const [center, setCenter] = useState({
     lat: 10.763781,
@@ -77,19 +80,9 @@ export default function Home() {
     });
 
     setCurrentSpotId(_marker.point_id);
-
-    // await axiosRequest
-    //   .get(`ward/getInfoByPointId/${_marker.point_id}`)
-    //   .then((res) => {
-    //     // setCurrentAdSpot(res.data.data);
-    //     console.log(res.data.data.spotInfo);
-    //   })
-    //   .catch((error) => {
-    //     console.log('Get info error: ', error);
-    //   });
   };
 
-  const iconSize = 20;
+  const iconSize = 25;
 
   const selectIcon = (spot) => {
     if (spot.numberOfBoards > 0) {
@@ -145,6 +138,12 @@ export default function Home() {
     })();
   }, []);
 
+  // Filter
+  const [noReportStatus, setNoReportStatus] = useState(true);
+  const [beReportedStatus, setBeReportedStatus] = useState(true);
+  const [plannedStatus, setPlannedStatus] = useState(true);
+  const [notPlanStatus, setNotPlanStatus] = useState(true);
+
   return (
     <div className={classes.main_container}>
       <div className={classes.map_container}>
@@ -174,21 +173,27 @@ export default function Home() {
                 clickable: false,
               }}
             />
-            {displayMarker && <Marker position={marker} clickable={false} />}
+            {displayMarker && <Marker position={marker} clickable={false} zIndex={1} />}
             {!loading &&
-              adSpots.map((item) => (
-                <Marker
-                  key={item.point_id}
-                  position={{ lat: item.lat, lng: item.lng }}
-                  icon={{
-                    url: selectIcon(item),
-                    scaledSize: isLoaded ? new window.google.maps.Size(iconSize, iconSize) : null,
-                    anchor: new google.maps.Point(iconSize / 2, iconSize / 2),
-                    origin: new google.maps.Point(0, 0),
-                  }}
-                  onClick={() => handleMarkerClick(item)}
-                />
-              ))}
+              adSpots
+                .filter((spot) => (!noReportStatus ? spot.reportStatus !== 'noReport' : true))
+                .filter((spot) => (!beReportedStatus ? spot.reportStatus === 'noReport' : true))
+                .filter((spot) => (!plannedStatus ? !spot.is_planning : true))
+                .filter((spot) => (!notPlanStatus ? spot.is_planning : true))
+                .map((item) => (
+                  <Marker
+                    key={item.point_id}
+                    position={{ lat: item.lat, lng: item.lng }}
+                    icon={{
+                      url: selectIcon(item),
+                      scaledSize: isLoaded ? new window.google.maps.Size(iconSize, iconSize) : null,
+                      anchor: new google.maps.Point(iconSize / 2, iconSize / 2),
+                      origin: new google.maps.Point(0, 0),
+                    }}
+                    onClick={() => handleMarkerClick(item)}
+                    zIndex={0}
+                  />
+                ))}
           </GoogleMap>
         ) : (
           <>Loading...</>
@@ -196,12 +201,29 @@ export default function Home() {
       </div>
 
       <div className={classes.filter}>
-        {filterActive && <FilterDropdown />}
         <div
           className={[classes.filter__ic, filterActive && classes['filter__ic--active']].join(' ')}
           onClick={() => setFilterActive(!filterActive)}
         >
           <FontAwesomeIcon icon={faFilter} />
+        </div>
+        {filterActive && (
+          <FilterDropdown
+            setNoReportStatus={setNoReportStatus}
+            setBeReportedStatus={setBeReportedStatus}
+            setPlannedStatus={setPlannedStatus}
+            setNotPlanStatus={setNotPlanStatus}
+          />
+        )}
+      </div>
+
+      <div className={classes.annotation}>
+        {annotationActive && <AnnotationDropdown />}
+        <div
+          className={[classes.annotation__ic, annotationActive && classes['annotation__ic--active']].join(' ')}
+          onClick={() => setAnnotationActive(!annotationActive)}
+        >
+          <FontAwesomeIcon icon={faCircleQuestion} />
         </div>
       </div>
 
