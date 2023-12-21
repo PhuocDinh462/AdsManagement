@@ -176,10 +176,13 @@ export default function Home() {
             {displayMarker && <Marker position={marker} clickable={false} zIndex={1} />}
             {!loading &&
               adSpots
-                .filter((spot) => (!noReportStatus ? spot.reportStatus !== 'noReport' : true))
-                .filter((spot) => (!beReportedStatus ? spot.reportStatus === 'noReport' : true))
-                .filter((spot) => (!plannedStatus ? !spot.is_planning : true))
-                .filter((spot) => (!notPlanStatus ? spot.is_planning : true))
+                .filter(
+                  (spot) =>
+                    (!noReportStatus ? spot.reportStatus !== 'noReport' : true) &&
+                    (!beReportedStatus ? spot.reportStatus === 'noReport' : true) &&
+                    (!plannedStatus ? !spot.is_planning : true) &&
+                    (!notPlanStatus ? spot.is_planning : true)
+                )
                 .map((item) => (
                   <Marker
                     key={item.point_id}
