@@ -122,3 +122,4 @@ const LicenseDetails = ({ handleCloseModal }) => {
 };
 
 export default LicenseDetails;
+
