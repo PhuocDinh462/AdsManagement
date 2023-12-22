@@ -154,18 +154,21 @@ const ManageAdLocation = () => {
       </div>
       {isOpenUpdate && (
         <UpdateAdLocation
+          data={selectedRowData}
           onClose={() => {
             setIsOpenUpdate(false);
           }}
         />
       )}
       {isOpenDetails && (
-        <DetailsAdLocation
-          data={selectedRowData}
-          onClose={() => {
-            setIsOpenDetails(false);
-          }}
-        />
+        <Modal onClose={handleCloseModal}>
+          <DetailsAdLocation
+            data={selectedRowData}
+            onClose={() => {
+              setIsOpenDetails(false);
+            }}
+          />
+        </Modal>
       )}
 
       {isModalOpen && (
