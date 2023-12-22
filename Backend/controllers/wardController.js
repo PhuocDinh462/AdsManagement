@@ -125,4 +125,181 @@ const getAdBoardsBySpotId = catchAsync(async (req, res, next) => {
   });
 });
 
-module.exports = { getAdSpotsByWardId, getInfoByPointId, getAdBoardsBySpotId };
+const getReportListsByWardId = catchAsync(async (req, res, next) => {
+  connection.query('SELECT * FROM advertising_point where ward_id = ?', [req.params.id], (err, results) => {
+    if (err) {
+      console.error('Error executing query: ', err);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    const spots = results;
+
+    connection.query('SELECT * FROM advertising_board', (err, results) => {
+      if (err) {
+        console.error('Error executing query: ', err);
+        res.status(500).send('Internal Server Error');
+        return;
+      }
+      const boards = results;
+
+      connection.query('SELECT * FROM report', async (err, results) => {
+        if (err) {
+          console.error('Error executing query: ', err);
+          res.status(500).send('Internal Server Error');
+          return;
+        }
+        const reports = results;
+
+        const spotReports = spots
+          .map((spot) => ({
+            ...spot,
+            spotReports: reports.filter((report) => report.point_id === spot.point_id),
+          }))
+          .map((spot) => ({
+            ...spot,
+            idBoardOfThis: boards.filter((board) => board.point_id === spot.point_id).map((board) => board.board_id),
+          }))
+          .map((spot) => ({
+            ...spot,
+            boardReports: reports.filter((report) => spot.idBoardOfThis.includes(report.board_id)),
+          }))
+          .map((spot) => ({
+            ...spot,
+            allReports: [...spot.spotReports, ...spot.boardReports],
+          }));
+
+        const filteredSpots = spotReports
+          .filter((spot) => spot.allReports.length > 0)
+          .map((spot) => ({
+            point_id: spot.point_id,
+            lat: spot.lat,
+            lng: spot.lng,
+            numberOfReports: spot.allReports.length,
+            lastReport: spot.allReports.map((report) => report.created_at).sort((a, b) => new Date(b) - new Date(a))[0],
+          }));
+
+        const finalData = await Promise.all(
+          filteredSpots.map(async (spot) => {
+            const url = `https://rsapi.goong.io/Geocode?latlng=${spot.lat},${spot.lng}&api_key=${process.env.GOONG_APIKEY}`;
+            const response = await fetch(url);
+            const data = await response.json();
+
+            return {
+              point_id: spot.point_id,
+              address: data?.error ? null : data.results[0].formatted_address,
+              numberOfReports: spot.numberOfReports,
+              latestReport: spot.lastReport,
+            };
+          })
+        );
+
+        res.status(200).json({
+          status: 'success',
+          data: finalData,
+        });
+      });
+    });
+  });
+});
+
+const getReportDetailsByPointId = catchAsync(async (req, res, next) => {
+  connection.query('SELECT * FROM advertising_point where point_id = ?', [req.params.id], (err, results) => {
+    if (err) {
+      console.error('Error executing query: ', err);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    const spot = results;
+
+    connection.query('SELECT * FROM advertising_board where point_id = ?', [req.params.id], (err, results) => {
+      if (err) {
+        console.error('Error executing query: ', err);
+        res.status(500).send('Internal Server Error');
+        return;
+      }
+      const boards = results;
+
+      connection.query(
+        'SELECT * FROM report rp JOIN detail dt ON rp.detail_id = dt.detail_id JOIN report_type rt ON rp.report_type_id = rt.report_type_id',
+        async (err, results) => {
+          if (err) {
+            console.error('Error executing query: ', err);
+            res.status(500).send('Internal Server Error');
+            return;
+          }
+          const reports = results;
+
+          const spotReports = spot
+            .map((spot) => ({
+              ...spot,
+              spotReports: reports.filter((report) => report.point_id === spot.point_id),
+            }))
+            .map((spot) => ({
+              ...spot,
+              idBoardOfThis: boards.filter((board) => board.point_id === spot.point_id).map((board) => board.board_id),
+            }))
+            .map((spot) => ({
+              ...spot,
+              boardReports: reports.filter((report) => spot.idBoardOfThis.includes(report.board_id)),
+            }))
+            .map((spot) => ({
+              ...spot,
+              allReports: [...spot.spotReports, ...spot.boardReports],
+            }));
+
+          const filteredSpots = spotReports
+            .filter((spot) => spot.allReports.length > 0)
+            .map((spot) => ({
+              point_id: spot.point_id,
+              lat: spot.lat,
+              lng: spot.lng,
+              reports: spot.allReports.map((report) => {
+                const { image_url_1, image_url_2, ...restReport } = report;
+
+                return {
+                  ...restReport,
+                  reportedObject: report.point_id ? 'Địa điểm' : 'Bảng quảng cáo',
+                  image_urls: [report.image_url_1, report.image_url_2],
+                  status:
+                    report.status === 'Pending'
+                      ? 'Chờ xử lý'
+                      : report.status === 'Processing'
+                      ? 'Đang xử lý'
+                      : report.status === 'Processed'
+                      ? 'Đã xử lý'
+                      : 'Không được chấp nhận',
+                };
+              }),
+            }));
+
+          const finalData = await Promise.all(
+            filteredSpots.map(async (spot) => {
+              const url = `https://rsapi.goong.io/Geocode?latlng=${spot.lat},${spot.lng}&api_key=${process.env.GOONG_APIKEY}`;
+              const response = await fetch(url);
+              const data = await response.json();
+
+              return {
+                point_id: spot.point_id,
+                address: data?.error ? null : data.results[0].formatted_address,
+                reports: spot.reports,
+              };
+            })
+          );
+
+          res.status(200).json({
+            status: 'success',
+            data: finalData[0],
+          });
+        }
+      );
+    });
+  });
+});
+
+module.exports = {
+  getAdSpotsByWardId,
+  getInfoByPointId,
+  getAdBoardsBySpotId,
+  getReportListsByWardId,
+  getReportDetailsByPointId,
+};
