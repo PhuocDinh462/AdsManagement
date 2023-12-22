@@ -11,7 +11,19 @@ import getGoogleOAuthURL from '~/src/utils/getGoogleUrl';
 
 const LoginPage = () => {
     const loginNavigate = useNavigate();
+    useEffect(() => {
+        const user_type = localStorage.getItem('user_type')
+        console.log(user_type)
+        if (user_type === 'department') {
+            loginNavigate('/district-ward');
+        } else if (user_type === 'ward') {
+            loginNavigate('/home');
 
+        } else if (user_type === 'district') {
+            loginNavigate('/home');
+
+        }
+    }, [])
     const formik = useFormik({
         initialValues: {
             email: '',
