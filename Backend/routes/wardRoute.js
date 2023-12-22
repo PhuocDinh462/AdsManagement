@@ -6,5 +6,6 @@ router.get('/getAdSpotsByWardId/:id', wardController.getAdSpotsByWardId);
 router.get('/getInfoByPointId/:id', wardController.getInfoByPointId);
 router.get('/getAdBoardsBySpotId/:id', wardController.getAdBoardsBySpotId);
 router.get('/getReportListsByWardId/:id', wardController.getReportListsByWardId);
+router.get('/getReportDetailsByPointId/:id', wardController.getReportDetailsByPointId);
 
 module.exports = router;

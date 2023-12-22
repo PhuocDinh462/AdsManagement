@@ -20,12 +20,15 @@ import {
   faPaperclip,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { IconTextBtn } from '~components/button';
 import { Backdrop } from '@mui/material';
 import ImageModal from './ImageModal';
+import { useParams } from 'react-router-dom';
+import { axiosRequest } from '~/src/api/axios';
 
 export default function ReportsDetail() {
+  const { id } = useParams();
   const [data, setData] = useState([
     {
       username: 'Nguyễn Văn A',
@@ -77,22 +80,37 @@ export default function ReportsDetail() {
   ]);
 
   const [currentReportIndex, setCurrentReportIndex] = useState(0);
-  const [filteredData, setFilteredData] = useState(data);
+  const [filteredData, setFilteredData] = useState([]);
   const [showImage, setShowImage] = useState(false);
   const [imageModalUrl, setImageModalUrl] = useState();
 
+  useEffect(() => {
+    (async () => {
+      await axiosRequest
+        .get(`ward/getReportDetailsByPointId/${id}`)
+        .then((res) => {
+          const data = res.data.data;
+          setData(data);
+          setFilteredData(data.reports);
+        })
+        .catch((error) => {
+          console.log('Get spots error: ', error);
+        });
+    })();
+  }, []);
+
   const handleFilter = (keyword) => {
-    if (!keyword) setFilteredData(data);
+    if (!keyword) setFilteredData(data.reports);
     else
       setFilteredData(
-        data.filter((item) => {
+        data.reports.filter((item) => {
           const keywordLc = keyword.toLowerCase();
 
           return (
-            item.username.toLowerCase().includes(keywordLc) ||
-            item.phone.toLowerCase().includes(keywordLc) ||
-            item.email.toLowerCase().includes(keywordLc) ||
-            item.reportType.toLowerCase().includes(keywordLc) ||
+            item.fullname_rp.toLowerCase().includes(keywordLc) ||
+            item.phone_rp.toLowerCase().includes(keywordLc) ||
+            item.email_rp.toLowerCase().includes(keywordLc) ||
+            item.report_type_name.toLowerCase().includes(keywordLc) ||
             item.reportedObject.toLowerCase().includes(keywordLc) ||
             item.status.toLowerCase().includes(keywordLc)
           );
@@ -113,12 +131,12 @@ export default function ReportsDetail() {
 
         <div className={classes.nav_btn_container}>
           <div
-            className={[classes.nav_btn, classes.btn, filteredData.length == 0 && classes['btn--disabled']].join(' ')}
+            className={[classes.nav_btn, classes.btn, filteredData?.length == 0 && classes['btn--disabled']].join(' ')}
           >
             <FontAwesomeIcon icon={faLocationDot} />
           </div>
           <div
-            className={[classes.nav_btn, classes.btn, filteredData.length == 0 && classes['btn--disabled']].join(' ')}
+            className={[classes.nav_btn, classes.btn, filteredData?.length == 0 && classes['btn--disabled']].join(' ')}
           >
             <FontAwesomeIcon icon={faCircleInfo} />
           </div>
@@ -132,7 +150,7 @@ export default function ReportsDetail() {
             className={[
               classes.nav_btn,
               classes.btn,
-              currentReportIndex >= filteredData.length - 1 && classes['btn--disabled'],
+              currentReportIndex >= filteredData?.length - 1 && classes['btn--disabled'],
             ].join(' ')}
             onClick={() => setCurrentReportIndex(currentReportIndex + 1)}
           >
@@ -141,7 +159,7 @@ export default function ReportsDetail() {
         </div>
 
         <dir className={classes.reports_container}>
-          {filteredData.map((item, index) => (
+          {filteredData?.map((item, index) => (
             <div className={classes.report_item} key={index} onClick={() => setCurrentReportIndex(index)}>
               <dir className={classes.divider} />
               <div className={classes.username}>
@@ -151,7 +169,7 @@ export default function ReportsDetail() {
                     currentReportIndex === index && classes['username__text--active'],
                   ].join(' ')}
                 >
-                  {index + 1 + '. ' + item.username}
+                  {index + 1 + '. ' + item.fullname_rp}
                 </div>
                 <div
                   className={[
@@ -168,9 +186,7 @@ export default function ReportsDetail() {
       </div>
 
       <div className={classes.content_container}>
-        <div className={classes.title}>
-          Chi tiết báo cáo tại 15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM
-        </div>
+        <div className={classes.title}>Chi tiết báo cáo tại {data.address}</div>
 
         {filteredData.length > 0 ? (
           <>
@@ -182,7 +198,7 @@ export default function ReportsDetail() {
                       <div className={classes.itemInfo}>
                         <FontAwesomeIcon icon={faUser} />
                         <dir className={classes.itemInfo__text}>
-                          {'Người báo cáo: ' + filteredData[currentReportIndex]?.username}
+                          {'Người báo cáo: ' + filteredData[currentReportIndex]?.fullname_rp}
                         </dir>
                       </div>
                     </td>
@@ -200,7 +216,7 @@ export default function ReportsDetail() {
                       <div className={classes.itemInfo}>
                         <FontAwesomeIcon icon={faPhone} />
                         <dir className={classes.itemInfo__text}>
-                          {'Số điện thoại: ' + filteredData[currentReportIndex]?.phone}
+                          {'Số điện thoại: ' + filteredData[currentReportIndex]?.phone_rp}
                         </dir>
                       </div>
                     </td>
@@ -208,7 +224,7 @@ export default function ReportsDetail() {
                       <div className={classes.itemInfo}>
                         <FontAwesomeIcon icon={faFile} />
                         <dir className={classes.itemInfo__text}>
-                          {'Hình thức báo cáo: ' + filteredData[currentReportIndex]?.reportType}
+                          {'Hình thức báo cáo: ' + filteredData[currentReportIndex]?.report_type_name}
                         </dir>
                       </div>
                     </td>
@@ -218,7 +234,7 @@ export default function ReportsDetail() {
                       <div className={classes.itemInfo}>
                         <FontAwesomeIcon icon={faEnvelope} />
                         <dir className={classes.itemInfo__text}>
-                          {'Email: ' + filteredData[currentReportIndex]?.email}
+                          {'Email: ' + filteredData[currentReportIndex]?.email_rp}
                         </dir>
                       </div>
                     </td>
@@ -236,9 +252,9 @@ export default function ReportsDetail() {
             </div>
 
             <div className={classes.reportContent_container}>
-              <div>{filteredData[currentReportIndex]?.reportContent}</div>
+              <div>{filteredData[currentReportIndex]?.report_content}</div>
 
-              {data[currentReportIndex].image_urls.length > 0 && (
+              {filteredData[currentReportIndex]?.image_urls.length > 0 && (
                 <div className={classes.attach_container}>
                   <div className={classes.attach}>
                     <div className={classes.attach__ic}>
@@ -247,7 +263,7 @@ export default function ReportsDetail() {
                     <div className={classes.attach__title}>Đính kèm:</div>
                   </div>
                   <div className={classes.img_container}>
-                    {data[currentReportIndex].image_urls.map((image_url, index) => (
+                    {filteredData[currentReportIndex]?.image_urls.map((image_url, index) => (
                       <img
                         className={classes.img}
                         key={index}
