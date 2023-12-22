@@ -9,9 +9,12 @@ export default function AccountDropdown() {
     localStorage.clear();
     navigate('/login')
   }
+  const handleSeeInfor = () => {
+    navigate('/infor')
+  }
   return (
     <div className={classes.main_container}>
-      <div className={classes.item_container}>
+      <div className={classes.item_container} onClick={handleSeeInfor}>
         <FontAwesomeIcon icon={faInfoCircle} className={classes.item_info_icon} />
         <div className={classes.item_info_name}>Thông tin tài khoản</div>
       </div>
