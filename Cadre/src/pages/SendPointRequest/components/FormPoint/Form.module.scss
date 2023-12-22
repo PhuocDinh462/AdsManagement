@@ -9,7 +9,7 @@ $fontColor: #333;
 .sixth-row,
 .seventh-row,
 .form-row {
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 }
 
 .first-row {
@@ -24,7 +24,7 @@ $fontColor: #333;
 
 .title-input {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   font-weight: bold;
   color: #bdc3c7;
 
@@ -44,6 +44,10 @@ $fontColor: #333;
     &:focus {
       border-color: #000;
     }
+  }
+  .error {
+    margin-top: 6px;
+    color: red;
   }
 
   select {

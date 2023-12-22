@@ -6,7 +6,7 @@
 .sixth-row,
 .seventh-row,
 .form-row {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .first-row,
@@ -43,6 +43,10 @@
     &:focus {
       border-color: #000;
     }
+  }
+  .error {
+    color: red;
+    margin-top: 4px;
   }
 
   select {

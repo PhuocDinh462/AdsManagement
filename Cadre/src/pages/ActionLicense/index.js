@@ -4,7 +4,6 @@ import classes from './style.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import LicenseDetails from './LicenseDetails';
-import Backdrop from '@mui/material/Backdrop';
 const initialData = [
   {
     id: 1,
@@ -33,7 +32,7 @@ const initialData = [
 
   // Thêm dữ liệu khác
 ];
-const ManageLicensing = () => {
+const ActionLicense = () => {
   const [data, setData] = useState(initialData);
   const [isOpenDetails, setIsOpenDetails] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState(0);
@@ -135,14 +134,9 @@ const ManageLicensing = () => {
           </table>
         </div>
       </div>
-      {
-        <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isOpenDetails}>
-          <LicenseDetails handleCloseModal={handleCloseModal} />
-        </Backdrop>
-      }
+      {isOpenDetails && <LicenseDetails handleCloseModal={handleCloseModal} />}
     </div>
   );
 };
 
-export default ManageLicensing;
-
+export default ActionLicense;

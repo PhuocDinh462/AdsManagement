@@ -17,6 +17,9 @@ router.put('/updateForm', cadreFormController.updateForm);
 router.delete('/deleteForm', cadreFormController.deleteForm);
 
 router.get('/adsPoint', cadreAdsPointController.getAllAdsPoint);
+router.post('/addAdsPoint', cadreAdsPointController.addAdsPoint);
+router.put('/updateAdsPoint', cadreAdsPointController.updateAdsPoint);
+router.delete('/deleteAdsPoint', cadreAdsPointController.deleteAdsPoint);
 
 module.exports = router;
 

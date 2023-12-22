@@ -22,7 +22,7 @@ const navbarCategories = [
   {
     name: 'Cấp phép',
     icon: faFileContract,
-    path: '/licenses',
+    path: '/manage-license',
   },
 ];
 

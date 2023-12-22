@@ -33,7 +33,7 @@ const data = [
   {
     id: 6,
     title: 'Danh sách & xét duyệt',
-    path: '/license',
+    path: '/action-license',
   },
   {
     id: 7,
@@ -53,4 +53,3 @@ const SideBars = () => {
 };
 
 export default SideBars;
-
