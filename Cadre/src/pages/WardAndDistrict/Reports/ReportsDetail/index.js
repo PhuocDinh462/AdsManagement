@@ -42,7 +42,10 @@ export default function ReportsDetail() {
   const [showProcessModal, setShowProcessModal] = useState(false);
   const [showStatusModal, setShowStatusModal] = useState(false);
 
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
+    setLoading(true);
     (async () => {
       await axiosRequest
         .get(`ward/getReportDetailsByPointId/${id}`)
@@ -55,6 +58,9 @@ export default function ReportsDetail() {
         })
         .catch((error) => {
           console.log('Get spots error: ', error);
+        })
+        .finally(() => {
+          setLoading(false);
         });
     })();
   }, []);
@@ -158,128 +164,130 @@ export default function ReportsDetail() {
         </dir>
       </div>
 
-      <div className={classes.content_container}>
-        <div className={classes.title}>Chi tiết báo cáo tại {data.address}</div>
+      {!loading && (
+        <div className={classes.content_container}>
+          <div className={classes.title}>Chi tiết báo cáo tại {data.address}</div>
 
-        {filteredData.length > 0 ? (
-          <>
-            <div className={classes.userInfo_container}>
-              <table style={{ width: '100%' }}>
-                <tbody>
-                  <tr>
-                    <td className={classes.userInfo_col}>
-                      <div className={classes.itemInfo}>
-                        <FontAwesomeIcon icon={faUser} />
-                        <dir className={classes.itemInfo__text}>
-                          {'Người báo cáo: ' + filteredData[currentReportIndex]?.fullname_rp}
-                        </dir>
-                      </div>
-                    </td>
-                    <td className={classes.userInfo_col}>
-                      <div className={classes.itemInfo}>
-                        <FontAwesomeIcon icon={faFlag} />
-                        <dir className={classes.itemInfo__text}>
-                          {'Đối tượng bị báo cáo: ' + filteredData[currentReportIndex]?.reportedObject}
-                        </dir>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className={classes.userInfo_col}>
-                      <div className={classes.itemInfo}>
-                        <FontAwesomeIcon icon={faPhone} />
-                        <dir className={classes.itemInfo__text}>
-                          {'Số điện thoại: ' + filteredData[currentReportIndex]?.phone_rp}
-                        </dir>
-                      </div>
-                    </td>
-                    <td className={classes.userInfo_col}>
-                      <div className={classes.itemInfo}>
-                        <FontAwesomeIcon icon={faFile} />
-                        <dir className={classes.itemInfo__text}>
-                          {'Hình thức báo cáo: ' + filteredData[currentReportIndex]?.report_type_name}
-                        </dir>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className={classes.userInfo_col}>
-                      <div className={classes.itemInfo}>
-                        <FontAwesomeIcon icon={faEnvelope} />
-                        <dir className={classes.itemInfo__text}>
-                          {'Email: ' + filteredData[currentReportIndex]?.email_rp}
-                        </dir>
-                      </div>
-                    </td>
-                    <td className={classes.userInfo_col}>
-                      <div className={classes.itemInfo}>
-                        <FontAwesomeIcon icon={faDiagramProject} />
-                        <dir className={classes.itemInfo__text}>
-                          {'Trạng thái: ' + filteredData[currentReportIndex]?.status}
-                        </dir>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+          {filteredData.length > 0 ? (
+            <>
+              <div className={classes.userInfo_container}>
+                <table style={{ width: '100%' }}>
+                  <tbody>
+                    <tr>
+                      <td className={classes.userInfo_col}>
+                        <div className={classes.itemInfo}>
+                          <FontAwesomeIcon icon={faUser} />
+                          <dir className={classes.itemInfo__text}>
+                            {'Người báo cáo: ' + filteredData[currentReportIndex]?.fullname_rp}
+                          </dir>
+                        </div>
+                      </td>
+                      <td className={classes.userInfo_col}>
+                        <div className={classes.itemInfo}>
+                          <FontAwesomeIcon icon={faFlag} />
+                          <dir className={classes.itemInfo__text}>
+                            {'Đối tượng bị báo cáo: ' + filteredData[currentReportIndex]?.reportedObject}
+                          </dir>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className={classes.userInfo_col}>
+                        <div className={classes.itemInfo}>
+                          <FontAwesomeIcon icon={faPhone} />
+                          <dir className={classes.itemInfo__text}>
+                            {'Số điện thoại: ' + filteredData[currentReportIndex]?.phone_rp}
+                          </dir>
+                        </div>
+                      </td>
+                      <td className={classes.userInfo_col}>
+                        <div className={classes.itemInfo}>
+                          <FontAwesomeIcon icon={faFile} />
+                          <dir className={classes.itemInfo__text}>
+                            {'Hình thức báo cáo: ' + filteredData[currentReportIndex]?.report_type_name}
+                          </dir>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className={classes.userInfo_col}>
+                        <div className={classes.itemInfo}>
+                          <FontAwesomeIcon icon={faEnvelope} />
+                          <dir className={classes.itemInfo__text}>
+                            {'Email: ' + filteredData[currentReportIndex]?.email_rp}
+                          </dir>
+                        </div>
+                      </td>
+                      <td className={classes.userInfo_col}>
+                        <div className={classes.itemInfo}>
+                          <FontAwesomeIcon icon={faDiagramProject} />
+                          <dir className={classes.itemInfo__text}>
+                            {'Trạng thái: ' + filteredData[currentReportIndex]?.status}
+                          </dir>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
 
-            <div className={classes.reportContent_container}>
-              <div>{filteredData[currentReportIndex]?.report_content}</div>
+              <div className={classes.reportContent_container}>
+                <div>{filteredData[currentReportIndex]?.report_content}</div>
 
-              {filteredData[currentReportIndex]?.image_urls.length > 0 && (
-                <div className={classes.attach_container}>
-                  <div className={classes.attach}>
-                    <div className={classes.attach__ic}>
-                      <FontAwesomeIcon icon={faPaperclip} />
+                {filteredData[currentReportIndex]?.image_urls.length > 0 && (
+                  <div className={classes.attach_container}>
+                    <div className={classes.attach}>
+                      <div className={classes.attach__ic}>
+                        <FontAwesomeIcon icon={faPaperclip} />
+                      </div>
+                      <div className={classes.attach__title}>Đính kèm:</div>
                     </div>
-                    <div className={classes.attach__title}>Đính kèm:</div>
+                    <div className={classes.img_container}>
+                      {filteredData[currentReportIndex]?.image_urls.map((image_url, index) => (
+                        <img
+                          className={classes.img}
+                          key={index}
+                          src={image_url}
+                          onClick={() => {
+                            setImageModalUrl(image_url);
+                            setShowImageModal(true);
+                          }}
+                        />
+                      ))}
+                    </div>
                   </div>
-                  <div className={classes.img_container}>
-                    {filteredData[currentReportIndex]?.image_urls.map((image_url, index) => (
-                      <img
-                        className={classes.img}
-                        key={index}
-                        src={image_url}
-                        onClick={() => {
-                          setImageModalUrl(image_url);
-                          setShowImageModal(true);
-                        }}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
 
-            <div className={classes.btn}>
-              <div className={classes.btn__item}>
-                <IconTextBtn
-                  label="Trạng thái"
-                  width={150}
-                  rightIc={faDiagramProject}
-                  onClick={() => setShowStatusModal(true)}
-                />
+              <div className={classes.btn}>
+                <div className={classes.btn__item}>
+                  <IconTextBtn
+                    label="Trạng thái"
+                    width={150}
+                    rightIc={faDiagramProject}
+                    onClick={() => setShowStatusModal(true)}
+                  />
+                </div>
+                <div className={classes.btn__item}>
+                  <IconTextBtn
+                    label="Gửi mail"
+                    width={150}
+                    rightIc={faPaperPlane}
+                    onClick={() => setShowProcessModal(true)}
+                  />
+                </div>
               </div>
-              <div className={classes.btn__item}>
-                <IconTextBtn
-                  label="Gửi mail"
-                  width={150}
-                  rightIc={faPaperPlane}
-                  onClick={() => setShowProcessModal(true)}
-                />
+            </>
+          ) : (
+            <div className={classes.noData}>
+              <div className={classes.noData__ic}>
+                <FontAwesomeIcon icon={faBan} />
               </div>
+              <h1 className={classes.noData__text}>Không có dữ liệu</h1>
             </div>
-          </>
-        ) : (
-          <div className={classes.noData}>
-            <div className={classes.noData__ic}>
-              <FontAwesomeIcon icon={faBan} />
-            </div>
-            <h1 className={classes.noData__text}>Không có dữ liệu</h1>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
 
       <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={showImageModal}>
         <ImageModal setActive={setShowImageModal} image_url={imageModalUrl} />

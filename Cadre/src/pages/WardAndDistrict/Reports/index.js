@@ -6,11 +6,16 @@ import Pagination from '~components/Pagination';
 import SearchBar from '~components/SearchBar';
 import { axiosRequest } from '~/src/api/axios';
 import { format } from 'date-fns';
+import { useDispatch } from 'react-redux';
+import { setReportIndex } from '~/src/store/reducers';
+import { useNavigate } from 'react-router';
 
 export default function Reports() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [filteredData, setFilterData] = useState(data);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -99,13 +104,17 @@ export default function Reports() {
                           <FontAwesomeIcon icon={faInfo} />
                         </div>
                       </button>
-                      <a href={`/reports/detail/${row.point_id}`}>
-                        <button className={classes.btn_detail}>
-                          <div className={classes.icon_container}>
-                            <FontAwesomeIcon icon={faEye} />
-                          </div>
-                        </button>
-                      </a>
+                      <button
+                        className={classes.btn_detail}
+                        onClick={() => {
+                          dispatch(setReportIndex(0));
+                          navigate(`/reports/detail/${row.point_id}`);
+                        }}
+                      >
+                        <div className={classes.icon_container}>
+                          <FontAwesomeIcon icon={faEye} />
+                        </div>
+                      </button>
                     </td>
                   </tr>
                 ))}
