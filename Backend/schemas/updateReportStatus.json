@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {},
+    "status": {
+      "type": "string",
+      "enum": ["Pending", "Processing", "Processed"]
+    }
+  },
+  "required": ["id", "status"],
+  "additionalProperties": false
+}

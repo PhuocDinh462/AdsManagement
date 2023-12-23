@@ -18,6 +18,7 @@ import {
   faDiagramProject,
   faBan,
   faPaperclip,
+  faPaperPlane,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState, useEffect } from 'react';
@@ -25,6 +26,7 @@ import { IconTextBtn } from '~components/button';
 import { Backdrop } from '@mui/material';
 import ImageModal from './Modals/ImageModal';
 import ProcessModal from './Modals/ProcessModal';
+import StatusModal from './Modals/StatusModal';
 import { useParams } from 'react-router-dom';
 import { axiosRequest } from '~/src/api/axios';
 
@@ -37,6 +39,7 @@ export default function ReportsDetail() {
   const [showImageModal, setShowImageModal] = useState(false);
   const [imageModalUrl, setImageModalUrl] = useState();
   const [showProcessModal, setShowProcessModal] = useState(false);
+  const [showStatusModal, setShowStatusModal] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -233,27 +236,23 @@ export default function ReportsDetail() {
               )}
             </div>
 
-            <div className={classes.processBtn}>
-              <IconTextBtn
-                label={
-                  filteredData[currentReportIndex]?.status !== 'Đang xử lý' &&
-                  filteredData[currentReportIndex]?.status !== 'Đã xử lý'
-                    ? 'Xử lý'
-                    : filteredData[currentReportIndex]?.status
-                }
-                rightIc={
-                  filteredData[currentReportIndex]?.status === 'Đang xử lý'
-                    ? faHourglassStart
-                    : filteredData[currentReportIndex]?.status === 'Đã xử lý'
-                    ? faCheck
-                    : faArrowRight
-                }
-                disabled={
-                  filteredData[currentReportIndex]?.status === 'Đang xử lý' ||
-                  filteredData[currentReportIndex]?.status === 'Đã xử lý'
-                }
-                onClick={() => setShowProcessModal(true)}
-              />
+            <div className={classes.btn}>
+              <div className={classes.btn__item}>
+                <IconTextBtn
+                  label="Trạng thái"
+                  width={150}
+                  rightIc={faDiagramProject}
+                  onClick={() => setShowStatusModal(true)}
+                />
+              </div>
+              <div className={classes.btn__item}>
+                <IconTextBtn
+                  label="Gửi mail"
+                  width={150}
+                  rightIc={faPaperPlane}
+                  onClick={() => setShowProcessModal(true)}
+                />
+              </div>
             </div>
           </>
         ) : (
@@ -272,6 +271,10 @@ export default function ReportsDetail() {
 
       <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={showProcessModal}>
         <ProcessModal setActive={setShowProcessModal} email={filteredData[currentReportIndex]?.email_rp} />
+      </Backdrop>
+
+      <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={showStatusModal}>
+        <StatusModal setActive={setShowStatusModal} report_id={filteredData[currentReportIndex]?.report_id} />
       </Backdrop>
     </div>
   );

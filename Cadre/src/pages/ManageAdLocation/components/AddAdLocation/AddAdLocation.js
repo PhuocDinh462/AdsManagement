@@ -263,4 +263,3 @@ const AddAdLocation = ({ onClose }) => {
 };
 
 export default AddAdLocation;
-

@@ -32,9 +32,23 @@ export function ExampleComponentUseSocket() {
 
   const handleSocketUpdate = (message) => {
     setSomeState(message);
+    console.log(message);
   };
 
   useSocketSubscribe('update', handleSocketUpdate);
 
   return <div>{someState}</div>;
 }
+
+export function AlertNotification() {
+  const [someState, setSomeState] = useState('');
+
+  const handleSocketUpdate = (message) => {
+    alert(message);
+  };
+
+  useSocketSubscribe('update', handleSocketUpdate);
+
+  return <div>{someState}</div>;
+}
+
