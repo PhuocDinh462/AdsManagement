@@ -16,9 +16,9 @@ const getInforEditPointRequest = catchAsync(async (req, res, next) => {
 
 })
 const createEditPointRequest = catchAsync(async (req, res, next) => {
-    const { location_type, is_planning, image_url, point_id, edit_status, request_time, reason } = req.body;
-    const insertRequest = "INSERT INTO `edit_request_point` (location_type, is_planning, image_url, point_id, edit_status, request_time, reason, created_by) VALUES (?,?,?,?,?,?,?,?)"
-    connection.query(insertRequest, [location_type, is_planning, image_url, point_id, edit_status, request_time, reason, req.user.user_id], (error, result) => {
+    const { advertisement_type_id, location_type, is_planning, image_url, point_id, edit_status, request_time, reason } = req.body;
+    const insertRequest = "INSERT INTO `edit_request_point` (advertisement_type_id, location_type, is_planning, image_url, point_id, edit_status, request_time, reason, created_by) VALUES (?,?,?,?,?,?,?,?,?)"
+    connection.query(insertRequest, [advertisement_type_id, location_type, is_planning, image_url, point_id, edit_status, request_time, reason, req.user.user_id], (error, result) => {
         if (error) {
             console.error("Error executing query: " + error.stack);
             return res.status(401).json({
@@ -27,6 +27,7 @@ const createEditPointRequest = catchAsync(async (req, res, next) => {
         }
         const edit_request = {
             id: result.insertId,
+            advertisement_type_id,
             location_type,
             is_planning,
             image_url,
