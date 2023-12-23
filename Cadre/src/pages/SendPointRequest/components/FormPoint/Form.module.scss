@@ -9,7 +9,7 @@ $fontColor: #333;
 .sixth-row,
 .seventh-row,
 .form-row {
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .first-row {
@@ -62,7 +62,7 @@ $fontColor: #333;
   textarea {
     // Tùy chỉnh kiểu đầu xuống cho thẻ textarea
     resize: vertical; // Cho phép người dùng thay đổi kích thước theo chiều dọc
-    min-height: 150px; // Điều chỉnh chiều cao tối thiểu
+    min-height: 100px; // Điều chỉnh chiều cao tối thiểu
   }
 }
 

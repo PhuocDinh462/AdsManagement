@@ -8,11 +8,36 @@ import Swal from 'sweetalert2';
 
 const boardOptions = ["Cổ động chính trị", "Quảng cáo thương mại", "Xã hội hoá"];
 const FormBoard = () => {
+  const apiKey = 'AIzaSyAQxG3Ubdo-Nhf6tjGYmXhYDe3yr4vGeDw';
   const boardNavigate = useNavigate()
   const user_type = localStorage.getItem('user_type');
   const { board_id } = useParams();
   const [boardTypes, setBoardTypes] = useState([])
   const [boardInfor, setBoardInfor] = useState({})
+  const [pointInfor, setPointInfor] = useState({})
+  const [address, setAddress] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${pointInfor.lat},${pointInfor.lng}&key=${apiKey}`;
+        const response = await fetch(apiUrl);
+        const result = await response.json();
+
+        if (result.status === 'OK' && result.results.length > 0) {
+          const detailedAddress = result.results[0].formatted_address;
+          setAddress(detailedAddress);
+        } else {
+          setAddress('Không có địa chỉ được tìm thấy');
+        }
+      } catch (error) {
+        console.error('Lỗi khi lấy địa chỉ:', error);
+        setAddress('Lỗi khi lấy địa chỉ');
+      }
+    };
+
+    fetchData();
+  }, [pointInfor]);
 
 
   const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
@@ -26,28 +51,31 @@ const FormBoard = () => {
       const response = await request.get(`board_type`);
       setBoardTypes(response.data.board_types);
     } catch (error) {
-      console.error('Error fetching surfaces:', error)
+      console.error('Error fetching data:', error)
     }
   };
-  const fetchBoardInfor = async () => {
+  const fetchInfor = async () => {
 
     try {
-      const response = await request.get(`board/get_board/${board_id}`, { headers: headers });
-      setBoardInfor(response.data.board);
+      const responseBoard = await request.get(`board/get_board/${board_id}`, { headers: headers });
+      const responsePoint = await request.get(`point/get_point/${responseBoard.data.board.point_id}`, { headers: headers });
+      setBoardInfor(responseBoard.data.board);
+      setPointInfor(responsePoint.data.point)
     } catch (error) {
-      console.error('Error fetching surfaces:', error);
+      console.error('Error fetching data:', error);
     }
   }
+
   useEffect(() => {
     fetchBoardTypes();
-    fetchBoardInfor();
+    fetchInfor();
   }, [])
 
   const formik = useFormik({
     initialValues: {
       officer: user_type,
       requestTime: '',
-      address: 'Some Address',
+      address: address,
       boardType: '',
       imageURL: '',
       width: '',
@@ -107,11 +135,10 @@ const FormBoard = () => {
     },
   });
   useEffect(() => {
-    // Update form values when boardInfor changes
     formik.setValues({
       officer: user_type,
       requestTime: '',
-      address: 'Some Address',
+      address: address,
       boardType: boardInfor.board_type_id,
       imageURL: boardInfor.advertisement_image_url,
       width: boardInfor.width,
@@ -120,7 +147,7 @@ const FormBoard = () => {
       reason: '',
       edit_status: 'pending'
     });
-  }, [boardInfor]);
+  }, [address]);
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     formik.setFieldValue('imageURL', selectedFile);
@@ -139,7 +166,7 @@ const FormBoard = () => {
 
         <label className={classes['title-input']}>
           Thời điểm:
-          <input type="date" name="requestTime" value={formik.values.requestTime} onChange={formik.handleChange} />
+          <input type="date" name="requestTime" value={formik.values.requestTime || ''} onChange={formik.handleChange} />
           {formik.touched.requestTime && formik.errors.requestTime ? (
             <div className={classes.error}>{formik.errors.requestTime}</div>
           ) : null}
@@ -149,16 +176,16 @@ const FormBoard = () => {
       <div className={classes['second-row']}>
         <label className={classes['title-input']}>
           Địa chỉ:
-          <input type="text" name="address" value={formik.values.address} readOnly />
+          <input type="text" name="address" value={formik.values.address || ''} readOnly />
         </label>
       </div>
 
       <div className={classes['third-row']}>
         <label className={classes['title-input']}>
-          Hình thức quảng cáo:
-          <select name="boardType" defaultValue={formik.values.boardType} onChange={formik.handleChange}>
+          Loại bảng quảng cáo:
+          <select name="boardType" defaultValue={formik.values.boardType || ''} onChange={formik.handleChange}>
             {boardTypes.map((board) => (
-              <option key={board.board_type_id} value={board.board_type_id}>
+              <option key={board.board_type_id} value={board.board_type_id || ''}>
                 {board.type_name}
               </option>
             ))}
@@ -177,14 +204,14 @@ const FormBoard = () => {
       <div className={classes['fourth-row']}>
         <label className={classes['title-input']}>
           Chiều rộng:
-          <input type="number" step={0.01} name="width" value={formik.values.width} onChange={formik.handleChange} />
+          <input type="number" step={0.01} name="width" value={formik.values.width || ''} onChange={formik.handleChange} />
           {formik.touched.width && formik.errors.width ? (
             <div className={classes.error}>{formik.errors.width}</div>
           ) : null}
         </label>
         <label className={classes['title-input']}>
           Chiều cao:
-          <input type="number" step={0.01} name="height" value={formik.values.height} onChange={formik.handleChange} />
+          <input type="number" step={0.01} name="height" value={formik.values.height || ''} onChange={formik.handleChange} />
           {formik.touched.height && formik.errors.height ? (
             <div className={classes.error}>{formik.errors.height}</div>
           ) : null}
@@ -194,7 +221,7 @@ const FormBoard = () => {
       <div className={classes['sixth-row']}>
         <label className={classes['title-input']}>
           Nội dung:
-          <textarea name="content" value={formik.values.content} onChange={formik.handleChange} />
+          <textarea name="content" value={formik.values.content || ''} onChange={formik.handleChange} />
           {formik.touched.content && formik.errors.content ? (
             <div className={classes.error}>{formik.errors.content}</div>
           ) : null}
@@ -204,7 +231,7 @@ const FormBoard = () => {
       <div className={classes['seventh-row']}>
         <label className={classes['title-input']}>
           Lý do:
-          <textarea name="reason" value={formik.values.reason} onChange={formik.handleChange} />
+          <textarea name="reason" value={formik.values.reason || ''} onChange={formik.handleChange} />
           {formik.touched.reason && formik.errors.reason ? (
             <div className={classes.error}>{formik.errors.reason}</div>
           ) : null}

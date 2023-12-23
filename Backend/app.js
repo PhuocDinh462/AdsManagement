@@ -11,6 +11,7 @@ const wardRoute = require('./routes/wardRoute.js');
 const editBoardRoute = require('./routes/editBoardRequestRoute.js')
 const editPointRoute = require('./routes/editPointRequestRoute.js')
 const boardTypeRoute = require('./routes/boardTypeRoute.js')
+const advertisementTypeRoute = require('./routes/advertisementTypeRoute.js')
 const boardRoute = require('./routes/boardRoute.js')
 const pointRoute = require('./routes/pointRoute.js')
 
@@ -28,6 +29,7 @@ app.use('/point', authenticateUser, pointRoute)
 app.use('/edit_board', authenticateUser, editBoardRoute)
 app.use('/edit_point', authenticateUser, editPointRoute)
 app.use('/board_type', boardTypeRoute)
+app.use('/advertisement_type', advertisementTypeRoute)
 app.use('/auth', authRoute);
 app.use('/account', authenticateUser, accountRoute);
 app.use('/cadre', cadreRoute);

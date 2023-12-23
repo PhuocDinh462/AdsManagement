@@ -45,10 +45,11 @@ const locationOptions = [
     'Nhà chờ xe buýt',
 ];
 const PointRequest = async (req, res, next) => {
-    const { location_type, is_planning, image_url, point_id, edit_status, request_time, reason } = req.body;
+    const { advertisement_type_id, location_type, is_planning, image_url, point_id, edit_status, request_time, reason } = req.body;
     try {
         // Định nghĩa schema validation
         const validationSchema = Yup.object({
+            advertisement_type_id: Yup.number().positive().integer().required('Vui lòng nhập advertisement_type_id là số nguyên dương.'),
             location_type: Yup.string()
                 .required('Vui lòng nhập loại vị trí.')
                 .oneOf(locationOptions, 'Loại vị trí không hợp lệ.'),
@@ -62,6 +63,7 @@ const PointRequest = async (req, res, next) => {
 
         // Thực hiện validation
         await validationSchema.validate({
+            advertisement_type_id,
             location_type,
             is_planning,
             image_url,

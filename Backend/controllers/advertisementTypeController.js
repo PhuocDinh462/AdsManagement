@@ -4,7 +4,7 @@ const connection = require("../server"); // Sử dụng module quản lý kết 
 const getAll = catchAsync(async (req, res, next) => {
 
     connection.query(
-        `select * from board_type`,
+        `select * from advertisement_type`,
         (error, results) => {
             if (error) {
                 console.error("Error executing query: " + error.stack);
@@ -14,7 +14,7 @@ const getAll = catchAsync(async (req, res, next) => {
             }
             res.status(200).json({
                 status: "success",
-                board_types: results,
+                advertisement_types: results,
             });
 
         }
