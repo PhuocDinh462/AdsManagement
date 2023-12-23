@@ -6,11 +6,11 @@ import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 import { ic_warning, ic_infor } from '~/src/assets';
 import ButtonCT from '~/src/components/button/ButtonCT';
 
-const CardInfor = () => {
+const CardInfor = (props) => {
     return (
         <div className={classes.container__infor}>
             <div className={classes['container__infor-heading']}>
-                <h3>Trụ, cụm pano</h3>
+                <h3>Trụ, cụm pano {props.title}</h3>
                 <p>Đồng Khởi aaaaaaaaaa- Nguyễn Du (Sở Văn hóa và Thể thao)</p>
             </div>
             <div className={classes['container__infor-content']}>
@@ -34,7 +34,9 @@ const CardInfor = () => {
                 </ul>
             </div>
             <div className={classes['container__infor-action']}>
-                <ButtonCT iconLeft={ic_infor} />
+                <div onClick={() => props.onClickShowDetail()}>
+                    <ButtonCT iconLeft={ic_infor} />
+                </div>
                 <ButtonCT
                     content="Báo cáo vi phạm"
                     className={'borderRadius7 uppercase'}

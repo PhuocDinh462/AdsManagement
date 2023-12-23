@@ -14,8 +14,40 @@
             height: 100vh;
 
             &__map {
-                padding: 20px;
                 flex: 1;
+
+                .info {
+                    max-width: 28rem;
+
+                    &__title {
+                        font-size: 16px;
+                        font-weight: 500;
+                        margin-bottom: 0.6rem;
+                    }
+
+                    &__type,
+                    &__location {
+                        font-size: 16px;
+                        margin-bottom: 0.6rem;
+                    }
+                    div {
+                        display: flex;
+                        justify-content: space-between;
+                        margin-top: 1rem;
+
+                        .info__state {
+                            font-size: 16px;
+                            font-style: italic;
+                            font-weight: 600;
+                            color: #0a6971;
+                        }
+                        .info__report {
+                            font-size: 16px;
+                            color: red;
+                            cursor: pointer;
+                        }
+                    }
+                }
             }
 
             &__info {
@@ -85,9 +117,34 @@
 
     &-head {
         position: absolute;
-        top: 20px;
-        left: 30px;
+        top: 10px;
+        left: 10px;
         z-index: 10;
+    }
+
+    // &-list {
+    //     position: absolute;
+    //     top: 60px;
+    //     right: 10px;
+    //     z-index: 10;
+
+    //     .ic {
+    //         color: #fff;
+    //         font-size: 4rem;
+    //     }
+    // }
+
+    &-filter {
+        position: absolute;
+        top: 60px;
+        right: 10px;
+        z-index: 10;
+        cursor: pointer;
+
+        .ic {
+            color: #fff;
+            font-size: 4rem;
+        }
     }
 
     &-block {
@@ -107,6 +164,15 @@
         height: 100vh;
         z-index: 1;
         background-color: #ffffff;
+
+        .icon {
+            position: absolute;
+            top: 0;
+            right: 12px;
+            cursor: pointer;
+            font-size: 20px;
+            z-index: 100;
+        }
 
         &-content {
             padding: 0 3rem;
@@ -157,14 +223,15 @@
 
         &-imgAds {
             position: absolute;
-            width: 40rem;
+            // width: 40rem;
             text-align: center;
             background-color: white;
             padding-bottom: 2vh;
             box-shadow: 0 0.1rem 0.1rem 0 #969696;
 
             img {
-                height: 40vh;
+                width: calc(100% - 10px);
+                height: 100%;
             }
         }
     }
