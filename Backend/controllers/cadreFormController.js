@@ -3,25 +3,34 @@ const connection = require('../server');
 
 const getType = catchAsync(async (req, res, next) => {
   const query = `
-  SELECT
-    report_type_id AS typeId,
-    report_type_name AS typeName,
-    'report' AS type
-  FROM
-    report_type
+    SELECT
+      report_type_id AS typeId,
+      report_type_name AS typeName,
+      'report' AS type
+    FROM
+      report_type
 
-  UNION
+    UNION
 
-  SELECT
-    board_type_id AS typeId,
-    type_name AS typeName,
-    'advertisement' AS type
-  FROM
-    advertisement_type;
-`;
+    SELECT
+      board_type_id AS typeId,
+      type_name AS typeName,
+      'board' AS type
+    FROM
+      board_type
+
+    UNION
+
+    SELECT
+      advertisement_type_id AS typeId,
+      type_name AS typeName,
+      'advertisement' AS type
+    FROM
+      advertisement_type;
+  `;
+
   connection.query(query, (error, results) => {
     if (error) {
-      console.error('Error executing query: ', err);
       res.status(500).send('Internal Server Error');
       return;
     }
@@ -40,6 +49,10 @@ const addFormType = catchAsync(async (req, res, next) => {
     nameColumnName = 'report_type_name';
   } else if (type === 'advertisement') {
     tableName = 'advertisement_type';
+    idColumnName = 'advertisement_type_id';
+    nameColumnName = 'type_name';
+  } else if (type === 'board') {
+    tableName = 'board_type';
     idColumnName = 'board_type_id';
     nameColumnName = 'type_name';
   } else {
@@ -48,8 +61,8 @@ const addFormType = catchAsync(async (req, res, next) => {
 
   // Check if the typeName already exists in the database
   const checkDuplicateQuery = `
-  SELECT ${idColumnName} FROM ${tableName} WHERE ${nameColumnName} = ?;
-`;
+    SELECT ${idColumnName} FROM ${tableName} WHERE ${nameColumnName} = ?;
+  `;
 
   connection.query(checkDuplicateQuery, [typeName], (checkError, checkResults) => {
     if (checkError) {
@@ -64,8 +77,8 @@ const addFormType = catchAsync(async (req, res, next) => {
 
     // Proceed to insert if typeName is not a duplicate
     const insertQuery = `
-    INSERT INTO ${tableName} (${nameColumnName}) VALUES (?);
-  `;
+      INSERT INTO ${tableName} (${nameColumnName}) VALUES (?);
+    `;
 
     connection.query(insertQuery, [typeName], (insertError, results) => {
       if (insertError) {
@@ -90,6 +103,9 @@ const deleteForm = catchAsync(async (req, res, next) => {
     idColumnName = 'report_type_id';
   } else if (type === 'advertisement') {
     tableName = 'advertisement_type';
+    idColumnName = 'advertisement_type_id';
+  } else if (type === 'board') {
+    tableName = 'board_type';
     idColumnName = 'board_type_id';
   } else {
     return res.status(400).json({ error: 'Invalid type' });
@@ -115,20 +131,27 @@ const deleteForm = catchAsync(async (req, res, next) => {
 
 const updateForm = catchAsync(async (req, res, next) => {
   const { type, id, updatedValue } = req.body;
-  console.log(req.body);
 
   let tableName, idColumnName, valueColumnName;
 
-  if (type === 'report') {
-    tableName = 'report_type';
-    idColumnName = 'report_type_id';
-    valueColumnName = 'report_type_name';
-  } else if (type === 'advertisement') {
-    tableName = 'advertisement_type';
-    idColumnName = 'board_type_id';
-    valueColumnName = 'type_name';
-  } else {
-    return res.status(400).json({ error: 'Invalid type' });
+  switch (type) {
+    case 'report':
+      tableName = 'report_type';
+      idColumnName = 'report_type_id';
+      valueColumnName = 'report_type_name';
+      break;
+    case 'advertisement':
+      tableName = 'advertisement_type';
+      idColumnName = 'advertisement_type_id';
+      valueColumnName = 'type_name';
+      break;
+    case 'board':
+      tableName = 'board_type';
+      idColumnName = 'board_type_id';
+      valueColumnName = 'type_name';
+      break;
+    default:
+      return res.status(400).json({ error: 'Invalid type' });
   }
 
   const updateQuery = `

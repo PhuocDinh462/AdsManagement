@@ -10,8 +10,6 @@ import ModalUpdate from './components/ModalUpdate';
 import { axiosClient } from '../../api/axios';
 import Swal from 'sweetalert2';
 
-
-
 const ManageForm = () => {
   const [data, setData] = useState([]);
   const [originalData, setOriginalData] = useState();
@@ -48,10 +46,12 @@ const ManageForm = () => {
 
     if (type === 'Tất cả') {
       filteredData = originalData;
-    } else if (type === 'Hình quảng cáo') {
+    } else if (type === 'Hình thức quảng cáo') {
       filteredData = originalData.filter((item) => item.type === 'advertisement');
     } else if (type === 'Hình thức báo cáo') {
       filteredData = originalData.filter((item) => item.type === 'report');
+    } else if (type === 'Bảng') {
+      filteredData = originalData.filter((item) => item.type === 'board');
     }
 
     setData(filteredData);
@@ -79,8 +79,6 @@ const ManageForm = () => {
     setModalType('update');
     setModalOpen(true);
   };
-
-
 
   const handleDeleteClick = async (row) => {
     const confirmResult = await Swal.fire({
@@ -138,11 +136,17 @@ const ManageForm = () => {
             <div onClick={() => handleFilterChange('Tất cả')} style={getFilterStyle('Tất cả')}>
               Tất cả
             </div>
-            <div onClick={() => handleFilterChange('Hình quảng cáo')} style={getFilterStyle('Hình quảng cáo')}>
+            <div
+              onClick={() => handleFilterChange('Hình thức quảng cáo')}
+              style={getFilterStyle('Hình thức quảng cáo')}
+            >
               Các loại hình quảng cáo
             </div>
             <div onClick={() => handleFilterChange('Hình thức báo cáo')} style={getFilterStyle('Hình thức báo cáo')}>
               Các loại hình thức báo cáo
+            </div>
+            <div onClick={() => handleFilterChange('Bảng')} style={getFilterStyle('Bảng')}>
+              Các loại bảng
             </div>
           </div>
           <div className={classes.container__header_search}>
@@ -173,7 +177,12 @@ const ManageForm = () => {
                 <tr className={classes.table__body_wrap_row} key={rowIndex}>
                   <td style={{ width: '5%' }}>{rowIndex + 1}</td>
                   <td style={{ width: '40%' }}>{row.typeName}</td>
-                  <td style={{ width: '20%' }}>{row.type === 'report' ? 'Hình thức báo cáo' : 'Hình quảng cáo'}</td>
+                  <td style={{ width: '20%' }}>
+                    {row.type === 'report' && 'Hình thức báo cáo'}
+                    {row.type === 'advertisement' && 'Hình thức quảng cáo'}
+                    {row.type === 'board' && 'Loại bảng quảng cáo'}
+                  </td>
+
                   <td style={{ width: '15%' }}>
                     <button className={classes.btn_trash} onClick={() => handleDeleteClick(row)}>
                       <FontAwesomeIcon icon={faTrash} />

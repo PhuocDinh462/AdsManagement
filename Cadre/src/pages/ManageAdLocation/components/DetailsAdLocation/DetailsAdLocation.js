@@ -44,6 +44,17 @@ const DetailsAdLocation = ({ data, onClose }) => {
               {data.ward_name} - {data.district_name}
             </span>
           </li>
+
+          <li>
+            <strong>
+              Tọa độ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </strong>
+            :
+            <span>
+              {' '}
+              {data.lat},{data.lng}
+            </span>
+          </li>
           <li>
             <strong>
               Địa chỉ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -55,12 +66,18 @@ const DetailsAdLocation = ({ data, onClose }) => {
             {data.location_type}
           </li>
           <li>
-            <strong>Hình thức quảng cáo &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>: {data.form_ads}
+            <strong>Hình thức quảng cáo &nbsp;&nbsp;</strong>: {data.advertisement_type_name}
+          </li>
+          <li>
+            <strong>Trạng thái quy hoạch &nbsp;&nbsp;</strong>:{' '}
+            <span style={{ color: data.is_planning === 0 ? 'red' : 'green' }}>
+              {data.is_planning === 0 ? 'Chưa quy hoạch' : 'Đã quy hoạch'}
+            </span>
           </li>
           <li>
             <strong>Hình ảnh</strong>:
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '5px 0' }}>
-              <img src={data.image_url} alt="Preview" style={{ maxWidth: '300px', maxHeight: '250px' }} />
+              <img src={data.image_url} alt="Preview" style={{ maxWidth: '400px', maxHeight: '350px' }} />
             </div>
           </li>
         </ul>

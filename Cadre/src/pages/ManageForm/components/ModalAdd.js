@@ -93,6 +93,18 @@ const ModalAdd = ({ onClose }) => {
                 onChange={() => handleTypeChange('advertisement')}
               />
             </div>
+            <div>
+              <label className={classes.label_add} htmlFor="board-level">
+                Thêm loại bảng quảng cáo
+              </label>
+              <input
+                id="board-level"
+                type="radio"
+                value="board"
+                checked={formType === 'board'}
+                onChange={() => handleTypeChange('board')}
+              />
+            </div>
           </div>
         </div>
         <div className={classes.content_wrap}>

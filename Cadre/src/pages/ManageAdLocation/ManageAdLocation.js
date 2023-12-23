@@ -42,6 +42,11 @@ const ManageAdLocation = () => {
     setModalOpen(false);
   };
 
+  const updateDataAfterUpdate = async (newData) => {
+    await fetchData();
+    setIsOpenUpdate(false);
+  };
+
   const handleCloseModal = () => {
     setModalOpen(false);
   };
@@ -51,28 +56,51 @@ const ManageAdLocation = () => {
     setModalOpen(true);
   };
 
-  const handleEditClick = (rowData) => {
-    setSelectedRowData(rowData);
-    setModalOpen(true);
-  };
-
-  const handleFilterChange = (status) => {
-    const filteredData = status === 'Tất cả' ? initialData : initialData.filter((item) => item.status === status);
-    setData(filteredData);
-    setSelectedFilter(status);
-  };
-
-  const getFilterStyle = (filter) => ({
-    color: selectedFilter === filter ? '#0A6971' : '#2f2f2f',
-    borderBottom: selectedFilter === filter ? '2px solid #0A6971' : 'none',
-    cursor: 'pointer',
-  });
-
   const convertToDegrees = (decimalDegrees) => {
     const degrees = Math.floor(decimalDegrees);
     const minutes = Math.floor((decimalDegrees - degrees) * 60);
     const seconds = ((decimalDegrees - degrees - minutes / 60) * 3600).toFixed(2);
-    return `${degrees}° ${minutes}' ${seconds}"`;
+    return `${degrees}°${minutes}'${seconds}"`;
+  };
+
+  const handleDeleteClick = async (row) => {
+    const confirmResult = await Swal.fire({
+      title: 'Xác nhận xóa',
+      text: 'Bạn có chắc muốn xóa?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Xóa',
+      cancelButtonText: 'Hủy',
+    });
+    if (confirmResult.isConfirmed) {
+      try {
+        const response = await axiosClient.delete('cadre/deleteAdsPoint', { data: { point_id: row.point_id } });
+
+        if (response.status === 'success') {
+          Swal.fire({
+            icon: 'success',
+            title: 'Xóa thành công!',
+            text: 'Đã xóa thành công.',
+          });
+          fetchData();
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Xóa thất bại!',
+            text: 'Có lỗi xảy ra khi xóa. Vui lòng thử lại.',
+          });
+          console.error('Failed to delete element');
+        }
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Xóa thất bại!',
+        });
+        console.error('Error deleting element: ', error);
+      }
+    }
   };
 
   return (
@@ -125,7 +153,7 @@ const ManageAdLocation = () => {
                 >
                   <td style={{ width: '5%' }}>{rowIndex + 1}</td>
                   <td style={{ width: '20%' }}>
-                    {convertToDegrees(row.lat)} | {convertToDegrees(row.lng)}
+                    {convertToDegrees(row.lat)},{convertToDegrees(row.lng)}
                   </td>
                   <td style={{ width: '20%' }}>{row.ward_name}</td>
                   <td style={{ width: '20%' }}>{row.location_type}</td>
@@ -133,13 +161,20 @@ const ManageAdLocation = () => {
                     {row.is_planning === 1 ? 'Đã quy hoạch' : 'Chưa quy hoạch'}
                   </td>
                   <td style={{ width: '10%' }}>
-                    <button className={classes.btn_trash}>
+                    <button
+                      className={classes.btn_trash}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteClick(row);
+                      }}
+                    >
                       <FontAwesomeIcon icon={faTrashCan} className={classes.icon} />
                     </button>
                     <button
                       className={classes.btn_pen}
                       onClick={(e) => {
                         e.stopPropagation();
+                        setSelectedRowData(row);
                         setIsOpenUpdate(true);
                       }}
                     >
@@ -153,12 +188,14 @@ const ManageAdLocation = () => {
         </div>
       </div>
       {isOpenUpdate && (
-        <UpdateAdLocation
-          data={selectedRowData}
-          onClose={() => {
-            setIsOpenUpdate(false);
-          }}
-        />
+        <Modal onClose={handleCloseModal}>
+          <UpdateAdLocation
+            data={selectedRowData}
+            onClose={() => {
+              updateDataAfterUpdate();
+            }}
+          />
+        </Modal>
       )}
       {isOpenDetails && (
         <Modal onClose={handleCloseModal}>
