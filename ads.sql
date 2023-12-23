@@ -184,7 +184,6 @@ CREATE TABLE `licensing_request` (
   licensing_id INT auto_increment,
   advertisement_content VARCHAR(255),
   advertisement_image_url VARCHAR(255),
-  request_time DATETIME,
   `status` varchar(255) NOT null,
   rejection_reason VARCHAR(255),
   user_id INT,
@@ -208,7 +207,6 @@ CREATE TABLE `edit_request_board` (
   edit_status ENUM('pending', 'approved','canceled'),
   advertisement_content VARCHAR(255),
   advertisement_image_url VARCHAR(255),
-  request_time DATETIME,
   reason VARCHAR(255),
   width FLOAT,
   height FLOAT,
@@ -229,7 +227,6 @@ CREATE TABLE `edit_request_point` (
   is_planning BOOLEAN,
   image_url VARCHAR(255),
   edit_status ENUM('pending', 'approved','canceled'),
-  request_time DATETIME,
   reason VARCHAR(255),
   created_by INT,
   created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -244,23 +241,43 @@ CREATE TABLE `edit_request_point` (
 INSERT INTO `user` (username, `password`, email, phone, dob, user_type, created_by, updated_by)
 VALUES
   ('admin', 'admin123', 'admin@example.com', '123456789', '1990-01-01', 'admin', NULL, NULL),
-  ('manager1', 'manager123', 'manager1@example.com', '987654321', '1995-05-15', 'manager', 1, 1),
-  ('manager2', 'manager456', 'manager2@example.com', '987123456', '1998-10-20', 'manager', 1, 1),
-  ('user1', 'user123', 'user1@example.com', '111222333', '2000-03-05', 'user', 2, 2),
-  ('user2', 'user456', 'user2@example.com', '444555666', '2002-08-12', 'user', 2, 2);
+  ('Nguyen Van A', 'manager123', 'manager1@example.com', '987654321', '1995-05-15', 'manager', 1, 1),
+  ('Tran Anh B', 'manager456', 'manager2@example.com', '987123456', '1998-10-20', 'manager', 1, 1),
+  ('Tran Anh Phuong', 'manager456', 'anhphuong@example.com', '987123456', '1991-10-20', 'manager', 1, 1),
+  ('Tran Thi Hong', 'manager456', 'thihong@example.com', '987123456', '1998-10-20', 'manager', 1, 1),
+  ('Tran Hong', 'manager456', 'tranhong@example.com', '987123456', '1990-10-20', 'manager', 1, 1),
+  ('Tran Anh Hoang', 'manager456', 'anhhoang@example.com', '987123456', '1992-10-20', 'manager', 1, 1),
+  ('Tran Kim Hong', 'manager456', 'kimhong@example.com', '987123456', '1999-10-20', 'manager', 1, 1),
+  ('Tran Kim Phuong', 'manager456', 'kimphuong@example.com', '987123456', '1998-10-20', 'manager', 1, 1),
+  ('Tran Anh Thanh', 'manager456', 'anhthanh@example.com', '987123456', '1995-10-20', 'manager', 1, 1),
+  ('Tran Phi Long', 'manager456', 'philong@example.com', '987123456', '1998-10-20', 'manager', 1, 1),
+  ('Tran Anh Tuan', 'manager456', 'anhtuan@example.com', '987123456', '1998-11-20', 'manager', 1, 1),
+  ('Tran Y Nhu', 'manager456', 'ynhu@example.com', '987123456', '1992-10-21', 'manager', 1, 1),
+  ('Tran Tuan Anh', 'manager456', 'tuananh@example.com', '987123456', '1998-01-20', 'manager', 1, 1),
+  ('Nguyen Thien Toan', 'manager456', 'thientoan@example.com', '987123456', '1996-05-20', 'manager', 1, 1);
 
 -- Dữ liệu mẫu cho bảng District
 INSERT INTO `district` (district_name, manager_id)
 VALUES
-  ('District A', 2),
-  ('District B', 3);
+  ('Quận 5', 2),
+  ('Quận 8', 4),
+  ('Quận 1', 3);
 
 -- Dữ liệu mẫu cho bảng Ward
 INSERT INTO `ward` (ward_name, district_id, manager_id)
 VALUES
-  ('Ward 1', 1, 2),
-  ('Ward 2', 1, 2),
-  ('Ward 3', 2, 3);
+  ('Phường 1', 1, 5),
+  ('Phường 2', 1, 6),
+  ('Phường 3', 1, 7),
+  ('Phường 4', 1, 8),
+  ('Phường Bến Thành', 3, 9),
+  ('Phường Cô Giang', 3, 10),
+  ('Phường Cầu Kho', 3, 8),
+  ('Phường Bến Nghé', 3, 9), 
+  ('Phường 1', 2, 11),
+  ('Phường 2', 2, 11),
+  ('Phường 3', 2, 11),
+  ('Phường 4', 2, 11);
 
 -- Dữ liệu mẫu cho bảng BoardType và AdvertisementType
 -- (Đã có dữ liệu mẫu trong đoạn tạo bảng)
@@ -274,8 +291,10 @@ VALUES
 -- Dữ liệu mẫu cho bảng AdvertisingPoint
 INSERT INTO `advertising_point` (ward_id, advertisement_type_id, location_type, image_url, `lat`, `lng`, is_planning)
 VALUES
-  (1, 1, 'Đất công/Công viên/Hành lang an toàn giao thông', 'urlA.jpg', 10.0, 20.0, false),
-  (2, 2, 'Đất tư nhân/Nhà ở riêng lẻ', 'urlB.jpg', 15.0, 25.0, true);
+  (1, 1, 'Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2Fpexels-david-geib-3220846.jpgd31e8cb4-b0eb-4c79-8668-4dcb93005aa3?alt=media&token=38790acd-3bbb-43c4-a96f-4e888211153a', 10.774169935024586, 106.68138370731906, false),
+  (2, 3, 'Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Street-Column-Advertising-Mockup-PSD.jpege1e620af-64ec-466f-aa84-5d062a7341e7?alt=media&token=95e9ee75-1837-4a3b-b9fa-e8da8c113cb7', 10.774000776305687, 106.7003532360378, false),
+  (1, 1, 'Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2Fcoca.jpeg94004bd8-6df6-4c65-86ef-de2e60369249?alt=media&token=ee6ae96b-e063-4b77-bc26-b1b8333d44fc', 10.774000776305687, 106.7003532360378, false),
+  (2, 2, 'Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.771555801561192, 106.69241320726378, true);
 
 -- Dữ liệu mẫu cho bảng ReportType
 -- (Đã có dữ liệu mẫu trong đoạn tạo bảng)
@@ -299,22 +318,22 @@ VALUES
   ('2023-02-20', 'Processing B', 'Jane Doe', 'jane@example.com', '444555666', 'Approved', 2, 2, NULL, 1);
 
 -- Dữ liệu mẫu cho bảng LicensingRequest
-INSERT INTO `licensing_request` (advertisement_content, advertisement_image_url, request_time, `status`, rejection_reason, user_id, point_id, width, height, contract_id, report_id)
+INSERT INTO `licensing_request` (advertisement_content, advertisement_image_url, `status`, rejection_reason, user_id, point_id, width, height, contract_id, report_id)
 VALUES
-  ('License Content A', 'licenseImgA.jpg', '2023-01-10', 'Approved', NULL, 4, 1, 50.0, 60.0, 1, 1),
-  ('License Content B', 'licenseImgB.jpg', '2023-02-15', 'Pending', NULL, 5, 2, 55.0, 65.0, 2, 2);
+  ('License Content A', 'licenseImgA.jpg', 'Approved', NULL, 4, 1, 50.0, 60.0, 1, 1),
+  ('License Content B', 'licenseImgB.jpg', 'Pending', NULL, 5, 2, 55.0, 65.0, 2, 2);
 
 -- Dữ liệu mẫu cho bảng EditRequestBoard
-INSERT INTO `edit_request_board` (board_id, board_type_id, edit_status, advertisement_content, advertisement_image_url, request_time, reason, width, height, created_by)
+INSERT INTO `edit_request_board` (board_id, board_type_id, edit_status, advertisement_content, advertisement_image_url, reason, width, height, created_by)
 VALUES
-  (1, 1, 'pending', 'Edit Content A', 'editImgA.jpg', '2023-03-01', 'Change request A', 60.0, 70.0, 4),
-  (2, 2, 'approved', 'Edit Content B', 'editImgB.jpg', '2023-04-05', 'Change request B', 65.0, 75.0, 5);
+  (1, 1, 'pending', 'Edit Content A', 'editImgA.jpg', 'Change request A', 60.0, 70.0, 4),
+  (2, 2, 'approved', 'Edit Content B', 'editImgB.jpg', 'Change request B', 65.0, 75.0, 5);
 
 -- Dữ liệu mẫu cho bảng EditRequestPoint
-INSERT INTO `edit_request_point` (point_id, advertisement_type_id, location_type, is_planning, image_url, edit_status, request_time, reason, created_by)
+INSERT INTO `edit_request_point` (point_id, advertisement_type_id, location_type, is_planning, image_url, edit_status, reason, created_by)
 VALUES
-  (1, 1, 'Chợ', false, 'editPointImgA.jpg', 'pending', '2023-03-10', 'Change request A', 4),
-  (2, 2, 'Cây xăng', true, 'editPointImgB.jpg', 'approved', '2023-04-15', 'Change request B', 5);
+  (1, 1, 'Chợ', false, 'editPointImgA.jpg', 'pending', 'Change request A', 4),
+  (2, 2, 'Cây xăng', true, 'editPointImgB.jpg', 'approved', 'Change request B', 5);
 
 
 

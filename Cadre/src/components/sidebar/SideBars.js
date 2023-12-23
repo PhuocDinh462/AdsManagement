@@ -27,12 +27,12 @@ const data = [
   },
   {
     id: 5,
-    title: 'Xét duyệt các yêu cầu',
-    path: '/ads-form3',
+    title: 'Xét duyệt yêu cầu chỉnh sửa',
+    path: '/action-edit',
   },
   {
     id: 6,
-    title: 'Danh sách & xét duyệt',
+    title: 'Xét duyệt & Cấp phép',
     path: '/action-license',
   },
   {
@@ -53,3 +53,4 @@ const SideBars = () => {
 };
 
 export default SideBars;
+
