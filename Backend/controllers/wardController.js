@@ -297,6 +297,30 @@ const getReportDetailsByPointId = catchAsync(async (req, res, next) => {
   });
 });
 
+const updateReportStatus = catchAsync(async (req, res, next) => {
+  const { id, status } = req.body;
+
+  connection.query('update report set status = ? where report_id = ?', [status, id], (err, results) => {
+    if (err) {
+      console.error('Error executing query: ', err);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+
+    if (results.affectedRows === 0) res.status(401).json({ status: 'fail', msg: 'report_id is not exist' });
+
+    connection.query('select * from report where report_id = ?', [id], (err, results) => {
+      if (err) {
+        console.error('Error executing query: ', err);
+        res.status(500).send('Internal Server Error');
+        return;
+      }
+
+      res.status(200).json({ status: 'success', data: results });
+    });
+  });
+});
+
 const reportListsSocket = (server) => {
   const io = socketIO(server);
 
@@ -328,5 +352,6 @@ module.exports = {
   getAdBoardsBySpotId,
   getReportListsByWardId,
   getReportDetailsByPointId,
+  updateReportStatus,
   reportListsSocket,
 };

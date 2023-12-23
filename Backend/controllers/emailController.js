@@ -36,7 +36,7 @@ const createOTP = async (req, res) => {
 const replyReport = async (req, res) => {
   const { email, content } = req.body;
   if (!email) res.status(400).json({ msg: 'Please provide an email' });
-  if (!content) res.status(400).json({ msg: 'Content is blank' });
+  else if (!content) res.status(400).json({ msg: 'Content is blank' });
 
   const info = await emailService.sendMail(email, 'Báo cáo', content);
   if (!info) res.status(400).json({ msg: 'Sending mail fail' });
