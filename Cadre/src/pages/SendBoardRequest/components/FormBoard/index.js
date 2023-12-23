@@ -5,8 +5,11 @@ import classes from './Form.module.scss';
 import request from '~/src/utils/request';
 import { useNavigate, useParams } from 'react-router';
 import Swal from 'sweetalert2';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { storage } from '~/src/firebase';
+import { v4 } from 'uuid';
+import { Backdrop, CircularProgress } from '@mui/material';
 
-const boardOptions = ["Cổ động chính trị", "Quảng cáo thương mại", "Xã hội hoá"];
 const FormBoard = () => {
   const apiKey = 'AIzaSyAQxG3Ubdo-Nhf6tjGYmXhYDe3yr4vGeDw';
   const boardNavigate = useNavigate()
@@ -16,6 +19,8 @@ const FormBoard = () => {
   const [boardInfor, setBoardInfor] = useState({})
   const [pointInfor, setPointInfor] = useState({})
   const [address, setAddress] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [imageUploadUrl, setImageUploadUrl] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -106,7 +111,7 @@ const FormBoard = () => {
           board_type_id: values.boardType,
           edit_status: values.edit_status,
           advertisement_content: values.content,
-          advertisement_image_url: values.imageURL,
+          advertisement_image_url: imageUploadUrl,
           request_time: values.requestTime,
           reason: values.reason,
           width: values.width,
@@ -149,99 +154,128 @@ const FormBoard = () => {
     });
   }, [address]);
   const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    formik.setFieldValue('imageURL', selectedFile);
+    const file = e.target.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const imageRef = ref(storage, `images/${file.name + v4()}`);
+
+        try {
+          setLoading(true);
+
+          // Upload image to Firebase
+          await uploadBytes(imageRef, file);
+          // Get image URL
+          const imageUrl = await getDownloadURL(imageRef);
+          // Save URL to state or perform any desired actions
+          setImageUploadUrl(imageUrl);
+
+          setLoading(false);
+        } catch (error) {
+          console.error('Error uploading image:', error);
+        }
+      };
+
+      reader.readAsDataURL(file);
+    }
   };
 
+
   return (
-    <form onSubmit={formik.handleSubmit}>
-      <div className={classes['first-row']}>
-        <label className={classes['title-input']}>
-          Cán bộ:
-          <select name="officer" value={formik.values.officer} disabled>
-            <option value="ward">Phường</option>
-            <option value="district">Quận</option>
-          </select>
-        </label>
+    <>
+      <form onSubmit={formik.handleSubmit}>
+        <div className={classes['first-row']}>
+          <label className={classes['title-input']}>
+            Cán bộ:
+            <select name="officer" value={formik.values.officer} disabled>
+              <option value="ward">Phường</option>
+              <option value="district">Quận</option>
+            </select>
+          </label>
 
-        <label className={classes['title-input']}>
-          Thời điểm:
-          <input type="date" name="requestTime" value={formik.values.requestTime || ''} onChange={formik.handleChange} />
-          {formik.touched.requestTime && formik.errors.requestTime ? (
-            <div className={classes.error}>{formik.errors.requestTime}</div>
-          ) : null}
-        </label>
-      </div>
+          <label className={classes['title-input']}>
+            Thời điểm:
+            <input type="date" name="requestTime" value={formik.values.requestTime || ''} onChange={formik.handleChange} />
+            {formik.touched.requestTime && formik.errors.requestTime ? (
+              <div className={classes.error}>{formik.errors.requestTime}</div>
+            ) : null}
+          </label>
+        </div>
 
-      <div className={classes['second-row']}>
-        <label className={classes['title-input']}>
-          Địa chỉ:
-          <input type="text" name="address" value={formik.values.address || ''} readOnly />
-        </label>
-      </div>
+        <div className={classes['second-row']}>
+          <label className={classes['title-input']}>
+            Địa chỉ:
+            <input type="text" name="address" value={formik.values.address || ''} readOnly />
+          </label>
+        </div>
 
-      <div className={classes['third-row']}>
-        <label className={classes['title-input']}>
-          Loại bảng quảng cáo:
-          <select name="boardType" defaultValue={formik.values.boardType || ''} onChange={formik.handleChange}>
-            {boardTypes.map((board) => (
-              <option key={board.board_type_id} value={board.board_type_id || ''}>
-                {board.type_name}
-              </option>
-            ))}
-          </select>
-          {formik.touched.boardType && formik.errors.boardType ? (
-            <div className={classes.error}>{formik.errors.boardType}</div>
-          ) : null}
-        </label>
+        <div className={classes['third-row']}>
+          <label className={classes['title-input']}>
+            Loại bảng quảng cáo:
+            <select name="boardType" defaultValue={formik.values.boardType || ''} onChange={formik.handleChange}>
+              {boardTypes.map((board) => (
+                <option key={board.board_type_id} value={board.board_type_id || ''}>
+                  {board.type_name}
+                </option>
+              ))}
+            </select>
+            {formik.touched.boardType && formik.errors.boardType ? (
+              <div className={classes.error}>{formik.errors.boardType}</div>
+            ) : null}
+          </label>
 
-        <label className={classes['title-input']}>
-          Hình ảnh :
-          <input type="file" accept="image/*" name="imageURL" onChange={handleFileChange} />
-        </label>
-      </div>
+          <label className={classes['title-input']}>
+            Hình ảnh :
+            <input type="file" accept="image/*" name="imageURL" onChange={handleFileChange} />
+          </label>
+        </div>
 
-      <div className={classes['fourth-row']}>
-        <label className={classes['title-input']}>
-          Chiều rộng:
-          <input type="number" step={0.01} name="width" value={formik.values.width || ''} onChange={formik.handleChange} />
-          {formik.touched.width && formik.errors.width ? (
-            <div className={classes.error}>{formik.errors.width}</div>
-          ) : null}
-        </label>
-        <label className={classes['title-input']}>
-          Chiều cao:
-          <input type="number" step={0.01} name="height" value={formik.values.height || ''} onChange={formik.handleChange} />
-          {formik.touched.height && formik.errors.height ? (
-            <div className={classes.error}>{formik.errors.height}</div>
-          ) : null}
-        </label>
-      </div>
+        <div className={classes['fourth-row']}>
+          <label className={classes['title-input']}>
+            Chiều rộng:
+            <input type="number" step={0.01} name="width" value={formik.values.width || ''} onChange={formik.handleChange} />
+            {formik.touched.width && formik.errors.width ? (
+              <div className={classes.error}>{formik.errors.width}</div>
+            ) : null}
+          </label>
+          <label className={classes['title-input']}>
+            Chiều cao:
+            <input type="number" step={0.01} name="height" value={formik.values.height || ''} onChange={formik.handleChange} />
+            {formik.touched.height && formik.errors.height ? (
+              <div className={classes.error}>{formik.errors.height}</div>
+            ) : null}
+          </label>
+        </div>
 
-      <div className={classes['sixth-row']}>
-        <label className={classes['title-input']}>
-          Nội dung:
-          <textarea name="content" value={formik.values.content || ''} onChange={formik.handleChange} />
-          {formik.touched.content && formik.errors.content ? (
-            <div className={classes.error}>{formik.errors.content}</div>
-          ) : null}
-        </label>
-      </div>
+        <div className={classes['sixth-row']}>
+          <label className={classes['title-input']}>
+            Nội dung:
+            <textarea name="content" value={formik.values.content || ''} onChange={formik.handleChange} />
+            {formik.touched.content && formik.errors.content ? (
+              <div className={classes.error}>{formik.errors.content}</div>
+            ) : null}
+          </label>
+        </div>
 
-      <div className={classes['seventh-row']}>
-        <label className={classes['title-input']}>
-          Lý do:
-          <textarea name="reason" value={formik.values.reason || ''} onChange={formik.handleChange} />
-          {formik.touched.reason && formik.errors.reason ? (
-            <div className={classes.error}>{formik.errors.reason}</div>
-          ) : null}
-        </label>
-      </div>
+        <div className={classes['seventh-row']}>
+          <label className={classes['title-input']}>
+            Lý do:
+            <textarea name="reason" value={formik.values.reason || ''} onChange={formik.handleChange} />
+            {formik.touched.reason && formik.errors.reason ? (
+              <div className={classes.error}>{formik.errors.reason}</div>
+            ) : null}
+          </label>
+        </div>
 
-      <button className={classes['custom-button']} type="submit" disabled={formik.isSubmitting}>
-        Submit Form
-      </button>
-    </form>
+        <button className={classes['custom-button']} type="submit" disabled={formik.isSubmitting}>
+          Submit Form
+        </button>
+      </form>
+      <Backdrop sx={{ color: 'white', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    </>
   );
 };
 
