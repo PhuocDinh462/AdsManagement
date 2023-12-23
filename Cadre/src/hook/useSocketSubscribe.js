@@ -39,3 +39,16 @@ export function ExampleComponentUseSocket() {
 
   return <div>{someState}</div>;
 }
+
+export function AlertNotification() {
+  const [someState, setSomeState] = useState('');
+
+  const handleSocketUpdate = (message) => {
+    alert(message);
+  };
+
+  useSocketSubscribe('update', handleSocketUpdate);
+
+  return <div>{someState}</div>;
+}
+
