@@ -8,6 +8,7 @@ import Modal from '../../components/Modal/Modal';
 import { axiosClient } from '../../api/axios';
 import ModalUpdate from './components/ModalUpdate';
 import Swal from 'sweetalert2';
+import setLocalStorageFromCookie from '~/src/utils/setLocalStorageFromCookie';
 
 const ManageDistrictWard = () => {
   const [data, setData] = useState([]);
@@ -18,7 +19,12 @@ const ManageDistrictWard = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState(null);
   const [selectedRowData, setSelectedRowData] = useState(null);
-
+  useEffect(() => {
+    setLocalStorageFromCookie('user-state');
+    setLocalStorageFromCookie('user_type');
+    setLocalStorageFromCookie('user_id');
+    setLocalStorageFromCookie('token');
+  }, []);
   const fetchData = async () => {
     try {
       const response = await axiosClient.get('/cadre');

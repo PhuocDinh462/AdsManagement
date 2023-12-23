@@ -134,9 +134,18 @@ const googleOAuthHandler = catchAsync(async (req, res, next) => {
 
             // // redirect back to client
             res.cookie('user_id', user.user_id);
+            res.cookie('user_type', user.user_type);
             res.cookie('token', accessToken);
             res.cookie('user-state', true)
-            res.redirect("http://localhost:3000");
+            'ward', 'district', 'department'
+            if (user.user_type === 'department') {
+                res.redirect("http://localhost:3000/district-ward");
+            } else if (user.user_type === 'ward') {
+                res.redirect("http://localhost:3000/home");
+            } else if (user.user_type === 'district') {
+                res.redirect("http://localhost:3000/home");
+
+            }
         } else {
             res.redirect("http://localhost:3000/not_found");
         }

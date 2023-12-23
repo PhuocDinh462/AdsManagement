@@ -6,14 +6,16 @@ import { faAngleLeft, faAngleRight, faLocationDot } from '@fortawesome/free-soli
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { noImage } from '~assets/imgs/Imgs';
 import axios from 'axios';
+import { axiosRequest } from '~/src/api/axios';
 
 export default function SpotInfoSidebar(props) {
-  const { spotCoord, adSpot, setCollapse } = props;
+  const { spotCoord, spotId, setCollapse } = props;
   const [status, setStatus] = useState(true);
   const [currentAdsIndex, setCurrentAdsIndex] = useState(0);
   const [spotName, setSpotName] = useState();
   const [spotAddress, setSpotAddress] = useState();
   const [loading, setLoading] = useState(false);
+  const [currentInfo, setCurrentInfo] = useState();
 
   useEffect(() => {
     setLoading(true);
@@ -37,15 +39,31 @@ export default function SpotInfoSidebar(props) {
     })();
   }, [spotCoord]);
 
+  useEffect(() => {
+    if (!spotId) return;
+    (async () => {
+      setLoading(true);
+      await axiosRequest
+        .get(`ward/getInfoByPointId/${spotId}`)
+        .then((res) => {
+          const data = res.data.data;
+          setCurrentInfo(data);
+        })
+        .catch((error) => {
+          console.log('Get info error: ', error);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    })();
+  }, [spotId]);
+
   return (
     <div className={[classes.main_container, status ? classes.slideIn : classes.slideOut].join(' ')}>
       {!loading && (
         <div className={classes.body}>
           <div className={classes.adInfo}>
-            <img
-              className={classes.img}
-              src={adSpot?.boards?.length > 0 ? adSpot?.boards[currentAdsIndex]?.image_url : noImage}
-            />
+            <img className={classes.img} src={currentInfo?.spotInfo.image_url || noImage} />
 
             <div className={classes.content}>
               <div className={[classes.ic, classes.ad_ic].join(' ')}>
@@ -53,38 +71,38 @@ export default function SpotInfoSidebar(props) {
               </div>
               <div className={classes.text}>
                 <div className={classes.title}>Thông tin bảng quảng cáo</div>
-                {adSpot?.boards?.length > 0 ? (
+                {currentInfo?.boardInfo.length > 0 ? (
                   <>
-                    <div className={classes.type}>Trụ, cụm pano</div>
+                    <div className={classes.type}>{currentInfo?.boardInfo[currentAdsIndex].type_name}</div>
                     <div className={classes.detail}>
                       <span className={classes.label}>Kích thước: </span>
-                      {adSpot?.boards[currentAdsIndex]?.form_ad}
+                      {`${currentInfo?.boardInfo[currentAdsIndex].width} x ${currentInfo?.boardInfo[currentAdsIndex].height}`}
                     </div>
                     <div className={classes.detail}>
                       <span className={classes.label}>Số lượng: </span>
-                      {adSpot?.boards && `1 trụ/${adSpot?.boards?.length} bảng`}
+                      {currentInfo?.boardInfo.length > 0 && `1 trụ / ${currentInfo?.boardInfo.length} bảng`}
                     </div>
                     <div className={classes.detail}>
                       <span className={classes.label}>Hình thức: </span>
-                      {adSpot?.advertising_type}
+                      {currentInfo?.boardInfo[currentAdsIndex].advertisement_content}
                     </div>
                     <div className={classes.detail}>
                       <span className={classes.label}>Phân loại: </span>
-                      {adSpot?.location_type}
+                      {currentInfo?.spotInfo.location_type}
                     </div>
 
                     <div
                       className={[
                         classes.report,
-                        adSpot?.boards[currentAdsIndex]?.reports > 0 && classes['report--haveReports'],
+                        currentInfo?.boardInfo[currentAdsIndex].reports > 0 && classes['report--haveReports'],
                       ].join(' ')}
                     >
                       <div className={classes.report__ic}>
                         <FontAwesomeIcon icon={faFlag} />
                       </div>
-                      <div
-                        className={classes.report__text}
-                      >{`${adSpot?.boards[currentAdsIndex]?.reports} báo cáo`}</div>
+                      <div className={classes.report__text}>{`${
+                        currentInfo?.boardInfo[currentAdsIndex].reports | 0
+                      } báo cáo`}</div>
                     </div>
                   </>
                 ) : (
@@ -99,7 +117,7 @@ export default function SpotInfoSidebar(props) {
             </div>
 
             <div className={classes.pagination}>
-              {adSpot?.boards.length > 1 ? (
+              {currentInfo?.boardInfo.length > 1 ? (
                 <>
                   <div className={classes.pagination__divider} />
                   <div
@@ -111,11 +129,13 @@ export default function SpotInfoSidebar(props) {
                   >
                     <FontAwesomeIcon icon={faAngleLeft} />
                   </div>
-                  <div className={classes.pagination__number}>{`${currentAdsIndex + 1}/${adSpot?.boards.length}`}</div>
+                  <div className={classes.pagination__number}>{`${currentAdsIndex + 1}/${
+                    currentInfo?.boardInfo.length
+                  }`}</div>
                   <div
                     className={[
                       classes.pagination__btn,
-                      currentAdsIndex >= adSpot?.boards.length - 1 && classes['pagination__btn--disabled'],
+                      currentAdsIndex >= currentInfo?.boardInfo.length - 1 && classes['pagination__btn--disabled'],
                     ].join(' ')}
                     onClick={() => setCurrentAdsIndex(currentAdsIndex + 1)}
                   >
@@ -139,18 +159,28 @@ export default function SpotInfoSidebar(props) {
               <div className={classes.spot_detail}>{spotAddress}</div>
 
               <div className={classes.reportAndPlan}>
-                <div className={classes.report}>
+                <div
+                  className={[classes.report, currentInfo?.spotInfo.reports > 0 && classes['report--haveReports']].join(
+                    ' '
+                  )}
+                >
                   <div className={classes.report__ic}>
                     <FontAwesomeIcon icon={faFlag} />
                   </div>
-                  <div className={classes.report__text}>0 báo cáo</div>
+                  <div className={classes.report__text}>{`${currentInfo?.spotInfo.reports | 0} báo cáo`}</div>
                 </div>
 
-                <div className={[classes.plan, !adSpot?.is_planning && classes['plan--notPlanned']].join(' ')}>
+                <div
+                  className={[classes.plan, !currentInfo?.spotInfo.is_planning && classes['plan--notPlanned']].join(
+                    ' '
+                  )}
+                >
                   <div className={classes.plan__ic}>
-                    <FontAwesomeIcon icon={adSpot?.is_planning ? faCircleCheck : faCircleXmark} />
+                    <FontAwesomeIcon icon={currentInfo?.spotInfo.is_planning ? faCircleCheck : faCircleXmark} />
                   </div>
-                  <div className={classes.plan__text}>{(adSpot?.is_planning ? 'Đã' : 'Chưa') + ' quy hoạch'}</div>
+                  <div className={classes.plan__text}>
+                    {(currentInfo?.spotInfo.is_planning ? 'Đã' : 'Chưa') + ' quy hoạch'}
+                  </div>
                 </div>
               </div>
             </div>

@@ -52,7 +52,7 @@ export default function GoongAutoComplete(props) {
         defaultInputValue={defaultInputValue}
         options={options}
         onInputChange={handleInputChange}
-        onChange={(e) => e && onChange(e.place_id)}
+        onChange={(e) => onChange(e?.place_id)}
         placeholder={placeholder || ''}
         styles={{
           control: (base, state) => ({

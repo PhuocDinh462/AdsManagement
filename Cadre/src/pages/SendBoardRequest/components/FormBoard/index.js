@@ -1,120 +1,248 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 import classes from './Form.module.scss';
+import request from '~/src/utils/request';
+import { useNavigate, useParams } from 'react-router';
+import Swal from 'sweetalert2';
 
-const Form = () => {
-  const [officer, setOfficer] = useState('');
-  const [timestamp, setTimestamp] = useState('');
-  const [location, setLocation] = useState('');
-  const [image, setImage] = useState(null);
-  const [size, setSize] = useState('');
-  const [advertisementType, setAdvertisementType] = useState('');
-  const [regionType, setRegionType] = useState('');
-  const [content, setContent] = useState('');
-  const [reason, setReason] = useState('');
+const boardOptions = ["Cổ động chính trị", "Quảng cáo thương mại", "Xã hội hoá"];
+const FormBoard = () => {
+  const apiKey = 'AIzaSyAQxG3Ubdo-Nhf6tjGYmXhYDe3yr4vGeDw';
+  const boardNavigate = useNavigate()
+  const user_type = localStorage.getItem('user_type');
+  const { board_id } = useParams();
+  const [boardTypes, setBoardTypes] = useState([])
+  const [boardInfor, setBoardInfor] = useState({})
+  const [pointInfor, setPointInfor] = useState({})
+  const [address, setAddress] = useState(null);
 
-  const handleFileChange = (e) => {
-    // Xử lý khi người dùng chọn file hình ảnh
-    const selectedFile = e.target.files[0];
-    setImage(selectedFile);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${pointInfor.lat},${pointInfor.lng}&key=${apiKey}`;
+        const response = await fetch(apiUrl);
+        const result = await response.json();
+
+        if (result.status === 'OK' && result.results.length > 0) {
+          const detailedAddress = result.results[0].formatted_address;
+          setAddress(detailedAddress);
+        } else {
+          setAddress('Không có địa chỉ được tìm thấy');
+        }
+      } catch (error) {
+        console.error('Lỗi khi lấy địa chỉ:', error);
+        setAddress('Lỗi khi lấy địa chỉ');
+      }
+    };
+
+    fetchData();
+  }, [pointInfor]);
+
+
+  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
   };
 
-  const handleSubmit = () => {
-    // Xử lý nộp form - bạn có thể thực hiện các hành động cần thiết ở đây
-    console.log("Form submitted:", {
-      officer,
-      timestamp,
-      location,
-      image,
-      size,
-      advertisementType,
-      regionType,
-      content,
-      reason,
+  const fetchBoardTypes = async () => {
+
+    try {
+      const response = await request.get(`board_type`);
+      setBoardTypes(response.data.board_types);
+    } catch (error) {
+      console.error('Error fetching data:', error)
+    }
+  };
+  const fetchInfor = async () => {
+
+    try {
+      const responseBoard = await request.get(`board/get_board/${board_id}`, { headers: headers });
+      const responsePoint = await request.get(`point/get_point/${responseBoard.data.board.point_id}`, { headers: headers });
+      setBoardInfor(responseBoard.data.board);
+      setPointInfor(responsePoint.data.point)
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  }
+
+  useEffect(() => {
+    fetchBoardTypes();
+    fetchInfor();
+  }, [])
+
+  const formik = useFormik({
+    initialValues: {
+      officer: user_type,
+      requestTime: '',
+      address: address,
+      boardType: '',
+      imageURL: '',
+      width: '',
+      height: '',
+      content: '',
+      reason: '',
+      edit_status: 'pending'
+    },
+    validationSchema: Yup.object({
+      requestTime: Yup.string().required('Thời điểm là bắt buộc'),
+      boardType: Yup.string().required('Hình thức quảng cáo là bắt buộc'),
+      width: Yup.number()
+        .typeError('Vui lòng nhập một số')
+        .required('Vui lòng nhập kích thước phù hợp')
+        .min(0, 'Vui lòng nhập một số lớn hơn 0'),
+      height: Yup.number()
+        .typeError('Vui lòng nhập một số')
+        .required('Vui lòng nhập kích thước phù hợp')
+        .min(0, 'Vui lòng nhập một số lớn hơn 0'),
+      content: Yup.string().required('Nội dung không được để trống'),
+      reason: Yup.string().required('Vui lòng nhập lý do'),
+      // Add more validation rules as needed
+    }),
+    onSubmit: async (values, { setSubmitting }) => {
+      try {
+        const params = {
+          board_id: board_id,
+          board_type_id: values.boardType,
+          edit_status: values.edit_status,
+          advertisement_content: values.content,
+          advertisement_image_url: values.imageURL,
+          request_time: values.requestTime,
+          reason: values.reason,
+          width: values.width,
+          height: values.height
+        }
+        await request.post('edit_board/create', params, { headers: headers });
+
+        setSubmitting(false);
+        Swal.fire({
+          title: 'Tạo yêu cầu chỉnh sửa thành công',
+          icon: 'success',
+          confirmButtonText: 'Hoàn tất',
+          width: '50rem',
+        });
+        boardNavigate('/advertising-spots')
+      } catch (error) {
+        console.log(error);
+        setSubmitting(false);
+
+        Swal.fire({
+          icon: 'error',
+          title: 'Lỗi khi tạo yêu cầu chỉnh sửa',
+          width: '50rem',
+        });
+      }
+    },
+  });
+  useEffect(() => {
+    formik.setValues({
+      officer: user_type,
+      requestTime: '',
+      address: address,
+      boardType: boardInfor.board_type_id,
+      imageURL: boardInfor.advertisement_image_url,
+      width: boardInfor.width,
+      height: boardInfor.height,
+      content: boardInfor.advertisement_content,
+      reason: '',
+      edit_status: 'pending'
     });
+  }, [address]);
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    formik.setFieldValue('imageURL', selectedFile);
   };
 
   return (
-    <div>
+    <form onSubmit={formik.handleSubmit}>
       <div className={classes['first-row']}>
         <label className={classes['title-input']}>
           Cán bộ:
-          <select name="officer" value={officer} onChange={(e) => setOfficer(e.target.value)}>
-            <option value="phuong">Phường</option>
-            <option value="quan">Quận</option>
+          <select name="officer" value={formik.values.officer} disabled>
+            <option value="ward">Phường</option>
+            <option value="district">Quận</option>
           </select>
         </label>
 
-        {/* <label className={classes['title-input']}>
-                    Thời điểm:
-                    <input type="datetime-local" name="timestamp" value={timestamp} onChange={(e) => setTimestamp(e.target.value)} />
-                </label> */}
         <label className={classes['title-input']}>
           Thời điểm:
-          <input type="date" name="timestamp" value={timestamp} onChange={(e) => setTimestamp(e.target.value)} />
+          <input type="date" name="requestTime" value={formik.values.requestTime || ''} onChange={formik.handleChange} />
+          {formik.touched.requestTime && formik.errors.requestTime ? (
+            <div className={classes.error}>{formik.errors.requestTime}</div>
+          ) : null}
         </label>
       </div>
 
       <div className={classes['second-row']}>
         <label className={classes['title-input']}>
           Địa chỉ:
-          <input type="text" name="location" value={location} onChange={(e) => setLocation(e.target.value)} />
+          <input type="text" name="address" value={formik.values.address || ''} readOnly />
         </label>
       </div>
 
       <div className={classes['third-row']}>
         <label className={classes['title-input']}>
-          Hình ảnh 1:
-          <input type="file" accept="image/*" name="image" onChange={handleFileChange} />
+          Loại bảng quảng cáo:
+          <select name="boardType" defaultValue={formik.values.boardType || ''} onChange={formik.handleChange}>
+            {boardTypes.map((board) => (
+              <option key={board.board_type_id} value={board.board_type_id || ''}>
+                {board.type_name}
+              </option>
+            ))}
+          </select>
+          {formik.touched.boardType && formik.errors.boardType ? (
+            <div className={classes.error}>{formik.errors.boardType}</div>
+          ) : null}
         </label>
 
         <label className={classes['title-input']}>
-          Hình ảnh 2:
-          <input type="file" accept="image/*" name="image" onChange={handleFileChange} />
+          Hình ảnh :
+          <input type="file" accept="image/*" name="imageURL" onChange={handleFileChange} />
         </label>
       </div>
 
       <div className={classes['fourth-row']}>
         <label className={classes['title-input']}>
-          Kích thước:
-          <input type="text" name="size" value={size} onChange={(e) => setSize(e.target.value)} />
+          Chiều rộng:
+          <input type="number" step={0.01} name="width" value={formik.values.width || ''} onChange={formik.handleChange} />
+          {formik.touched.width && formik.errors.width ? (
+            <div className={classes.error}>{formik.errors.width}</div>
+          ) : null}
         </label>
         <label className={classes['title-input']}>
-          Hình thức quảng cáo:
-          <select name="advertisementType" value={advertisementType} onChange={(e) => setAdvertisementType(e.target.value)}>
-            <option value="option1">Option 1</option>
-            <option value="option2">Option 2</option>
-          </select>
-        </label>
-      </div>
-
-      <div className={classes['fifth-row']}>
-        <label className={classes['title-input']}>
-          Khu vực:
-          <select name="regionType" value={regionType} onChange={(e) => setRegionType(e.target.value)}>
-            <option value="option1">Option 1</option>
-            <option value="option2">Option 2</option>
-          </select>
+          Chiều cao:
+          <input type="number" step={0.01} name="height" value={formik.values.height || ''} onChange={formik.handleChange} />
+          {formik.touched.height && formik.errors.height ? (
+            <div className={classes.error}>{formik.errors.height}</div>
+          ) : null}
         </label>
       </div>
 
       <div className={classes['sixth-row']}>
         <label className={classes['title-input']}>
           Nội dung:
-          <textarea name="content" value={content} onChange={(e) => setContent(e.target.value)} />
+          <textarea name="content" value={formik.values.content || ''} onChange={formik.handleChange} />
+          {formik.touched.content && formik.errors.content ? (
+            <div className={classes.error}>{formik.errors.content}</div>
+          ) : null}
         </label>
       </div>
 
       <div className={classes['seventh-row']}>
         <label className={classes['title-input']}>
           Lý do:
-          <textarea name="reason" value={reason} onChange={(e) => setReason(e.target.value)} />
+          <textarea name="reason" value={formik.values.reason || ''} onChange={formik.handleChange} />
+          {formik.touched.reason && formik.errors.reason ? (
+            <div className={classes.error}>{formik.errors.reason}</div>
+          ) : null}
         </label>
       </div>
 
-      {/* Nút Submit Form */}
-      <button className={classes['custom-button']} type="button" onClick={handleSubmit}>Submit Form</button>
-    </div>
+      <button className={classes['custom-button']} type="submit" disabled={formik.isSubmitting}>
+        Submit Form
+      </button>
+    </form>
   );
 };
 
-export default Form;
+export default FormBoard;

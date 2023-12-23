@@ -56,7 +56,7 @@ $borderWidth: 1px;
 
 .adInfo {
   .img {
-    width: calc($width - $borderWidth);
+    width: $width;
     height: 20rem;
     object-fit: cover;
     border-bottom: $borderWidth solid $text_300;

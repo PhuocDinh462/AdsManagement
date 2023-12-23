@@ -8,7 +8,7 @@ import Infor from '../pages/Infor/Infor';
 import SendBoardRequest from '../pages/SendBoardRequest/SendBoardRequest';
 import SendPointRequest from '../pages/SendPointRequest/SendPointRequest';
 import NotFoundPage from '../pages/NotFoundPage';
-import WardAndDistrictHomeHome from '../pages/WardAndDistrict/Home';
+import WardAndDistrictHome from '../pages/WardAndDistrict/Home';
 import AdSpots from '../pages/WardAndDistrict/AdSpots';
 import Licenses from '../pages/WardAndDistrict/Licenses';
 import Reports from '../pages/WardAndDistrict/Reports';
@@ -22,6 +22,7 @@ import ManageAdLocation from '../pages/ManageAdLocation/ManageAdLocation';
 import ManageAd from '../pages/ManageAd/ManageAd';
 import ActionLicense from '../pages/ActionLicense';
 import ReportStats from '../pages/ReportStats';
+import Boards from '../pages/WardAndDistrict/AdSpots/Boards';
 
 const Navigation = () => {
   const authenticated = true;
@@ -47,14 +48,15 @@ const Navigation = () => {
 
         {/* Layout dành cho trang không có sidebar, chỉ có thanh navbar */}
         <Route element={<LayoutNavBar />}>
-          <Route path="/home" name="home" element={<WardAndDistrictHomeHome />} />
+          <Route path="/home" name="home" element={<WardAndDistrictHome />} />
           <Route path="/create-account" name="create account" element={<CreateAccount />} />
           <Route path="/advertising-spots" name="advertising-spots" element={<AdSpots />} />
+          <Route path="/advertising-spots/:id" name="advertising-spots/boards" element={<Boards />} />
           <Route path="/manage-license" name="licenses" element={<Licenses />} />
           <Route path="/reports" name="reports" element={<Reports />} />
           <Route path="/infor" name="infor" element={<Infor />} />
-          <Route path="/board-request" name="board-request" element={<SendBoardRequest />} />
-          <Route path="/point-request" name="point-request" element={<SendPointRequest />} />
+          <Route path="/board-request/:board_id" name="board-request" element={<SendBoardRequest />} />
+          <Route path="/point-request/:point_id" name="point-request" element={<SendPointRequest />} />
           <Route path="/reports/detail/:id" name="reports-detail" element={<ReportsDetail />} />
         </Route>
 

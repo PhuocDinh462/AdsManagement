@@ -39,5 +39,8 @@ const axiosPrivate = axios.create({
   },
 });
 
-export { axiosClient, axiosPrivate };
+const axiosRequest = axios.create({
+  baseURL: process.env.REACT_APP_API_ENDPOINT,
+});
 
+export { axiosClient, axiosPrivate, axiosRequest };
