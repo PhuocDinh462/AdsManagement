@@ -30,6 +30,8 @@ export default function StatusModal(props) {
           text: 'Cập nhật trạng thái thành công',
           width: '50rem',
           confirmButtonColor: colors.primary_300,
+        }).then(() => {
+          window.location.reload(false);
         });
       })
       .catch((error) => {

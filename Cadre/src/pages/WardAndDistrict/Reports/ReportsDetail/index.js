@@ -2,7 +2,6 @@ import classes from './styles.module.scss';
 import SearchBar from '~components/SearchBar';
 import {
   faArrowLeft,
-  faArrowRight,
   faLocationDot,
   faCircleInfo,
   faAngleUp,
@@ -13,8 +12,6 @@ import {
   faEnvelope,
   faFlag,
   faFile,
-  faHourglassStart,
-  faCheck,
   faDiagramProject,
   faBan,
   faPaperclip,
@@ -29,10 +26,14 @@ import ProcessModal from './Modals/ProcessModal';
 import StatusModal from './Modals/StatusModal';
 import { useParams } from 'react-router-dom';
 import { axiosRequest } from '~/src/api/axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { setReportIndex, selectReportIndex } from '~/src/store/reducers';
 
 export default function ReportsDetail() {
   const { id } = useParams();
   const [data, setData] = useState([]);
+  const dispatch = useDispatch();
+  const reportIndexStorage = useSelector(selectReportIndex);
 
   const [currentReportIndex, setCurrentReportIndex] = useState(0);
   const [filteredData, setFilteredData] = useState([]);
@@ -49,6 +50,8 @@ export default function ReportsDetail() {
           const data = res.data.data;
           setData(data);
           setFilteredData(data.reports);
+          if (reportIndexStorage < data.reports.length) setCurrentReportIndex(reportIndexStorage);
+          console.log(reportIndexStorage);
         })
         .catch((error) => {
           console.log('Get spots error: ', error);
@@ -99,7 +102,10 @@ export default function ReportsDetail() {
           </div>
           <div
             className={[classes.nav_btn, classes.btn, currentReportIndex <= 0 && classes['btn--disabled']].join(' ')}
-            onClick={() => setCurrentReportIndex(currentReportIndex - 1)}
+            onClick={() => {
+              setCurrentReportIndex(currentReportIndex - 1);
+              dispatch(setReportIndex(currentReportIndex - 1));
+            }}
           >
             <FontAwesomeIcon icon={faAngleUp} />
           </div>
@@ -109,7 +115,10 @@ export default function ReportsDetail() {
               classes.btn,
               currentReportIndex >= filteredData?.length - 1 && classes['btn--disabled'],
             ].join(' ')}
-            onClick={() => setCurrentReportIndex(currentReportIndex + 1)}
+            onClick={() => {
+              setCurrentReportIndex(currentReportIndex + 1);
+              dispatch(setReportIndex(currentReportIndex + 1));
+            }}
           >
             <FontAwesomeIcon icon={faAngleDown} />
           </div>
@@ -117,7 +126,14 @@ export default function ReportsDetail() {
 
         <dir className={classes.reports_container}>
           {filteredData?.map((item, index) => (
-            <div className={classes.report_item} key={index} onClick={() => setCurrentReportIndex(index)}>
+            <div
+              className={classes.report_item}
+              key={index}
+              onClick={() => {
+                setCurrentReportIndex(index);
+                dispatch(setReportIndex(index));
+              }}
+            >
               <dir className={classes.divider} />
               <div className={classes.username}>
                 <div
