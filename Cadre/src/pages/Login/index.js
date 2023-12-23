@@ -10,9 +10,18 @@ import Swal from 'sweetalert2';
 import getGoogleOAuthURL from '~/src/utils/getGoogleUrl';
 
 const LoginPage = () => {
-<<<<<<< HEAD
   const loginNavigate = useNavigate();
-
+  useEffect(() => {
+    const user_type = localStorage.getItem('user_type');
+    console.log(user_type);
+    if (user_type === 'department') {
+      loginNavigate('/district-ward');
+    } else if (user_type === 'ward') {
+      loginNavigate('/home');
+    } else if (user_type === 'district') {
+      loginNavigate('/home');
+    }
+  }, []);
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -25,8 +34,10 @@ const LoginPage = () => {
     onSubmit: async (values, { setSubmitting }) => {
       try {
         const response = await request.post('auth/login', values);
+        const user_type = response.data.user_type;
         localStorage.setItem('user-state', true);
         localStorage.setItem('user_id', response.data.user_id);
+        localStorage.setItem('user_type', user_type);
         localStorage.setItem('token', response.data.token);
         setSubmitting(false);
 
@@ -36,64 +47,16 @@ const LoginPage = () => {
           confirmButtonText: 'Hoàn tất',
           width: '50rem',
         });
-
-        loginNavigate('/');
+        if (user_type === 'department') {
+          loginNavigate('/district-ward');
+        } else if (user_type === 'ward') {
+          loginNavigate('/home');
+        } else if (user_type === 'district') {
+          loginNavigate('/home');
+        }
       } catch (error) {
         console.log(error);
         setSubmitting(false);
-=======
-    const loginNavigate = useNavigate();
-    useEffect(() => {
-        const user_type = localStorage.getItem('user_type')
-        console.log(user_type)
-        if (user_type === 'department') {
-            loginNavigate('/district-ward');
-        } else if (user_type === 'ward') {
-            loginNavigate('/home');
-
-        } else if (user_type === 'district') {
-            loginNavigate('/home');
-
-        }
-    }, [])
-    const formik = useFormik({
-        initialValues: {
-            email: '',
-            password: '',
-        },
-        validationSchema: Yup.object({
-            email: Yup.string().email('Email không hợp lệ').required('Vui lòng nhập email của bạn'),
-            password: Yup.string().required('Vui lòng nhập mật khẩu của bạn'),
-        }),
-        onSubmit: async (values, { setSubmitting }) => {
-            try {
-                const response = await request.post('auth/login', values);
-                const user_type = response.data.user_type;
-                localStorage.setItem('user-state', true);
-                localStorage.setItem('user_id', response.data.user_id);
-                localStorage.setItem('user_type', user_type);
-                localStorage.setItem('token', response.data.token);
-                setSubmitting(false);
-
-                Swal.fire({
-                    title: 'Đăng nhập thành công!',
-                    icon: 'success',
-                    confirmButtonText: 'Hoàn tất',
-                    width: '50rem',
-                });
-                if (user_type === 'department') {
-                    loginNavigate('/district-ward');
-                } else if (user_type === 'ward') {
-                    loginNavigate('/home');
-
-                } else if (user_type === 'district') {
-                    loginNavigate('/home');
-
-                }
-            } catch (error) {
-                console.log(error);
-                setSubmitting(false);
->>>>>>> 488e6de947b755dc545f5f323e38a3c0c6066bdb
 
         Swal.fire({
           icon: 'error',
