@@ -25,7 +25,6 @@ export const useSocketSubscribe = (eventName, eventHandler) => {
 };
 
 //Example use sokcet
-
 // import { useSocketSubscribe } from './SocketProvder';
 
 export function ExampleComponentUseSocket() {
