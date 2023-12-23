@@ -1,3 +1,1 @@
-import HeaderTable2 from './HeaderTable2';
-
-export { HeaderTable2 };
+export * from './Provider/SocketProvider';

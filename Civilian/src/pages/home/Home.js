@@ -44,7 +44,7 @@ const Home = () => {
     const [AdRender, setAdRender] = useState(coordinatesList);
 
     // When table have the infomation
-    const isHaveInfor = true;
+    const isHaveInfor = false;
 
     const { isLoaded } = useJsApiLoader({
         googleMapsApiKey: 'AIzaSyBxWEpG38Jm2lo2OEe3RDjjVBgGRxwF_ow',

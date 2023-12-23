@@ -9,7 +9,7 @@ $fontColor: #333;
 .sixth-row,
 .seventh-row,
 .form-row {
-  margin-bottom: 20px;
+  margin-bottom: 8px;
 }
 
 .first-row {
@@ -24,7 +24,7 @@ $fontColor: #333;
 
 .title-input {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   font-weight: bold;
   color: #bdc3c7;
 
@@ -45,6 +45,10 @@ $fontColor: #333;
       border-color: #000;
     }
   }
+  .error {
+    margin-top: 6px;
+    color: red;
+  }
 
   select {
     // Tùy chỉnh kiểu đầu xuống cho thẻ select
@@ -58,7 +62,7 @@ $fontColor: #333;
   textarea {
     // Tùy chỉnh kiểu đầu xuống cho thẻ textarea
     resize: vertical; // Cho phép người dùng thay đổi kích thước theo chiều dọc
-    min-height: 150px; // Điều chỉnh chiều cao tối thiểu
+    min-height: 100px; // Điều chỉnh chiều cao tối thiểu
   }
 }
 

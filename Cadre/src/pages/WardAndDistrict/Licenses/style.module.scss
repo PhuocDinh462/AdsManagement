@@ -1,0 +1,128 @@
+@import '/src/styles/colors.scss';
+
+.container__wrap {
+    width: 100%;
+    padding: 10px;
+
+    &_header {
+        height: 58px;
+        display: flex;
+        align-items: center;
+        
+        p {
+            color: #0a6971;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 28px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: normal;
+        }
+    }
+    .container {
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 14rem + 2px);
+      padding: 10px 20px;
+
+      border-radius: 10px;
+      border: 1px solid $text_300;
+  
+      .table__header {
+        &_wrap {
+          width: 100%;
+          text-align: center;
+          font-family: Arial, Helvetica, sans-serif;
+          border-collapse: collapse;
+  
+          &_thead {
+            height: 50px;
+            background-color: #e3e7f2;
+          }
+        }
+      }
+  
+      .table__body {
+        overflow-y: auto;
+        &_wrap {
+          width: 100%;
+          text-align: center;
+          font-family: Arial, Helvetica, sans-serif;
+          border-collapse: collapse;
+  
+          &_row {
+            height: 50px;
+            cursor: pointer;
+
+            &:hover{
+                background-color: #7fcad1 !important;
+            }
+  
+            &:nth-child(odd) {
+              background-color: #f6f7f9;
+            }
+            
+            td {
+                text-align: -webkit-center;
+
+                img {
+                    height: 46px;
+                    width: auto;
+                }
+
+                .status {
+                    color: white;
+                    width: 120px;
+                    border-radius: 3px;
+                    font-size: 14px;
+                    padding: .7rem 0;
+
+                    &_accept {
+                        background-color: #00C64F;
+                    }
+
+                    &_pending {
+                        background-color: #FFA927;
+                    }
+
+                    &_cancel {
+                        background-color: #FF2727;
+                    }
+                }
+            }
+          }
+        
+        }
+      }
+  
+      &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 1rem;
+        margin-top: 5px;
+        border-bottom: $text_300 solid 1px;
+
+        &_filter {
+          display: flex;
+          flex-direction: row;
+          gap: 20px;
+          font-weight: 600;
+          font-family: Arial, Helvetica, sans-serif;
+          margin-right: 4rem;
+        }
+  
+        &_search {
+          display: flex;
+          gap: 30px;
+          margin-bottom: 1rem;
+        }
+      }
+    }
+  }
+  
+.paginationBar_container {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}

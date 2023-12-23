@@ -5,12 +5,21 @@ const bcrypt = require("bcrypt");
 const moment = require('moment');
 
 const getInforAccount = catchAsync(async (req, res, next) => {
-    const localDate = moment.utc(req.user.dob).local();
-    req.user.dob = localDate.format('YYYY-MM-DD HH:mm:ss')
-    res.status(200).json({
-        status: "success",
-        user: req.user,
-    });
+
+    connection.query(
+        `select * from user where user_id = ?`,
+        req.user.user_id,
+        (err, results) => {
+            const localDate = moment.utc(results[0].dob).local();
+            results[0].dob = localDate.format('YYYY-MM-DD HH:mm:ss')
+            res.status(200).json({
+                status: "success",
+                user: results[0],
+            });
+
+        }
+    );
+
 })
 const updateAccountInfor = catchAsync(async (req, res, next) => {
     const { username, email, phone, dob } = req.body;
@@ -36,9 +45,7 @@ const updateAccountInfor = catchAsync(async (req, res, next) => {
                 res.status(200).json({
                     status: "Success",
                     message: "update account infor success",
-                    data: {
-                        data: selectResults[0], // Lấy phần tử đầu tiên trong mảng selectResults
-                    },
+                    account: selectResults[0],
                 });
             });
         }
@@ -90,50 +97,5 @@ const changePassword = catchAsync(async (req, res, next) => {
 });
 
 
-const forgotPassword = async (req, res) => {
-    const { email, password, repassword, otp, otpVerify } = req.body;
-    if (otpVerify) {
-        if (!email || !password || !repassword || !otp) {
-            throw new BadRequestError("Please provide name,email, password and otp");
-        } else if (password !== repassword) {
-            throw new BadRequestError("Password and Repassword must be same");
-        } else {
-            //Hashing password
-            const salt = await bcrypt.genSalt(10);
-            const passwordHashed = await bcrypt.hash(password, salt);
-            const updatePassword = {
-                password: passwordHashed,
-            };
-            const OTP_verify = jwt.verify(otpVerify, process.env.JWT_SECRET);
-            if (OTP_verify.OTP === otp) {
-                //handle change password
-            } else {
-                res.status(400).json({ msg: "Incorrect OTP" });
-            }
-        }
-    } else {
-        throw new BadRequestError("OTP does not exist");
-    }
-};
-// {{URL}}/auth/otp
-const createOTP = async (req, res) => {
-    const { email } = req.body;
-    if (!email) {
-        res
-            .status(400)
-            .json({ msg: "Please provide an email" });
-    } else {
-        const OTP = await sendMail(7, email);
-        if (!OTP) {
-            res
-                .status(400)
-                .json({ msg: "Sending gmail fail!!!" });
-        } else {
-            OTP_token = jwt.sign({ OTP }, process.env.SECRET_KEY, {
-                expiresIn: process.env.OTP_LIFETIME,
-            });
-            res.status(200).json({ otpVerify: OTP_token });
-        }
-    }
-};
+
 module.exports = { getInforAccount, updateAccountInfor, changePassword };

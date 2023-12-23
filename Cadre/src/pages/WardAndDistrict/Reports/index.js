@@ -1,100 +1,69 @@
 import classes from './styles.module.scss';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { faInfo, faEye } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Pagination from '~components/Pagination';
 import SearchBar from '~components/SearchBar';
+import { axiosRequest } from '~/src/api/axios';
+import { format } from 'date-fns';
 
 export default function Reports() {
-  const [data, setData] = useState([
-    {
-      id: 1,
-      address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
-      numberOfReports: 2,
-      latestReport: '12/07/2023',
-    },
-    {
-      id: 1,
-      address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
-      numberOfReports: 1,
-      latestReport: '12/07/2023',
-    },
-    {
-      id: 1,
-      address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
-      numberOfReports: 2,
-      latestReport: '12/07/2023',
-    },
-    {
-      id: 1,
-      address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
-      numberOfReports: 1,
-      latestReport: '12/07/2023',
-    },
-    {
-      id: 1,
-      address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
-      numberOfReports: 2,
-      latestReport: '12/07/2023',
-    },
-    {
-      id: 1,
-      address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
-      numberOfReports: 1,
-      latestReport: '12/07/2023',
-    },
-    {
-      id: 1,
-      address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
-      numberOfReports: 2,
-      latestReport: '12/07/2023',
-    },
-    {
-      id: 1,
-      address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
-      numberOfReports: 1,
-      latestReport: '12/07/2023',
-    },
-    {
-      id: 1,
-      address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
-      numberOfReports: 2,
-      latestReport: '12/07/2023',
-    },
-    {
-      id: 1,
-      address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
-      numberOfReports: 1,
-      latestReport: '12/07/2023',
-    },
-    {
-      id: 1,
-      address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
-      numberOfReports: 2,
-      latestReport: '12/07/2023',
-    },
-    {
-      id: 1,
-      address: '15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM',
-      numberOfReports: 1,
-      latestReport: '12/07/2023',
-    },
-  ]);
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState([]);
+  const [filteredData, setFilterData] = useState(data);
+
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      await axiosRequest
+        .get(`ward/getReportListsByWardId/1`)
+        .then((res) => {
+          const data = res.data.data;
+          setData(data);
+          setFilterData(data);
+        })
+        .catch((error) => {
+          console.log('Get report lists error: ', error);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    })();
+  }, []);
+
+  const [filterKeyword, setFilterKeyword] = useState('');
 
   const pageSize = 10;
   const [currentPage, setCurrentPage] = useState(1);
   const currentTableData = useMemo(() => {
     const firstPageIndex = (currentPage - 1) * pageSize;
     const lastPageIndex = firstPageIndex + pageSize;
-    return data.slice(firstPageIndex, lastPageIndex);
-  }, [pageSize, currentPage, data]);
+    return filteredData.slice(firstPageIndex, lastPageIndex);
+  }, [pageSize, currentPage, data, filteredData]);
+
+  useEffect(() => {
+    if (!filterKeyword) {
+      setFilterData(data);
+      return;
+    }
+
+    setFilterData(
+      data.filter(
+        (item) =>
+          item.point_id.toString() === filterKeyword ||
+          item.address
+            .toLowerCase()
+            .includes(filterKeyword.toLowerCase() || item.numberOfReports.toString() === filterKeyword)
+      )
+    );
+  }, [filterKeyword]);
 
   return (
     <div className={classes.main_container}>
       <div className={classes.container}>
         <div className={classes.container__header}>
           <div className={classes.searchBar_container}>
-            <SearchBar placeholder="Tìm kiếm..." onChange={(keyword) => console.log(keyword)} />
+            <SearchBar placeholder="Tìm kiếm..." onChange={(keyword) => setFilterKeyword(keyword)} />
           </div>
         </div>
 
@@ -117,28 +86,29 @@ export default function Reports() {
         <div className={classes.table__body}>
           <table className={classes.table__body_wrap}>
             <tbody>
-              {currentTableData.map((row, rowIndex) => (
-                <tr className={classes.table__body_wrap_row} key={rowIndex}>
-                  <td style={{ width: '5%' }}>{rowIndex + 1}</td>
-                  <td style={{ width: '50%' }}>{row.address}</td>
-                  <td style={{ width: '15%' }}>{row.numberOfReports}</td>
-                  <td style={{ width: '20%' }}>{row.latestReport}</td>
-                  <td style={{ width: '10%' }}>
-                    <button className={classes.btn_info}>
-                      <div className={classes.icon_container}>
-                        <FontAwesomeIcon icon={faInfo} />
-                      </div>
-                    </button>
-                    <a href={`/reports/detail/${row.id}`}>
-                      <button className={classes.btn_detail}>
+              {!loading &&
+                currentTableData.map((row, rowIndex) => (
+                  <tr className={classes.table__body_wrap_row} key={row.point_id}>
+                    <td style={{ width: '5%' }}>{rowIndex + 1}</td>
+                    <td style={{ width: '50%' }}>{row.address}</td>
+                    <td style={{ width: '15%' }}>{row.numberOfReports}</td>
+                    <td style={{ width: '20%' }}>{format(new Date(row.latestReport), 'dd/MM/yyyy')}</td>
+                    <td style={{ width: '10%' }}>
+                      <button className={classes.btn_info}>
                         <div className={classes.icon_container}>
-                          <FontAwesomeIcon icon={faEye} />
+                          <FontAwesomeIcon icon={faInfo} />
                         </div>
                       </button>
-                    </a>
-                  </td>
-                </tr>
-              ))}
+                      <a href={`/reports/detail/${row.point_id}`}>
+                        <button className={classes.btn_detail}>
+                          <div className={classes.icon_container}>
+                            <FontAwesomeIcon icon={faEye} />
+                          </div>
+                        </button>
+                      </a>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
@@ -147,7 +117,7 @@ export default function Reports() {
       <div className={classes.paginationBar_container}>
         <Pagination
           currentPage={currentPage}
-          totalCount={data.length}
+          totalCount={filteredData.length}
           pageSize={pageSize}
           onPageChange={(page) => setCurrentPage(page)}
         />

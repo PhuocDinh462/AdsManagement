@@ -45,6 +45,9 @@ const ManageAd = () => {
   const [selectedFilter, setSelectedFilter] = useState('Tất cả');
   const [isOpenUpdate, setIsOpenUpdate] = useState(false);
   const [isOpenDetails, setIsOpenDetails] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [selectedRowData, setSelectedRowData] = useState(null);
+  const [modalType, setModalType] = useState(null);
 
   const handleFilterChange = (status) => {
     const filteredData = status === 'Tất cả' ? initialData : initialData.filter((item) => item.status === status);
@@ -58,9 +61,21 @@ const ManageAd = () => {
     cursor: 'pointer',
   });
 
+  const handleAddClick = () => {
+    setSelectedRowData(null);
+    setModalType('add');
+    setModalOpen(true);
+  };
+
   return (
     <div className={classes.container__wrap}>
-      <HeaderTable title={'Danh sách các quảng cáo'} />
+      <div className={classes.header}>
+        <p className={classes.header__title}>Danh sách các quảng cáo</p>
+        <div className={classes.header__buttonAdd} onClick={handleAddClick}>
+          <FontAwesomeIcon icon={faPlus} />
+          <p className={classes.add}>Thêm</p>
+        </div>
+      </div>
 
       <div className={classes.container}>
         {/* Tab Search */}
@@ -143,3 +158,4 @@ const ManageAd = () => {
 };
 
 export default ManageAd;
+

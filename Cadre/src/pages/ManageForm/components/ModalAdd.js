@@ -1,20 +1,65 @@
 import React, { useState } from 'react';
 import classes from './ModalAdd.module.scss';
+import Swal from 'sweetalert2';
+import { axiosClient } from '../../../api/axios';
 
 const ModalAdd = ({ onClose }) => {
-  const [addressType, setAddressType] = useState('district');
+  const [formType, setFormType] = useState('report');
   const [content, setContent] = useState('');
-  const [type, setType] = useState('quan 1');
 
   const handleTypeChange = (type) => {
-    setAddressType(type);
-    setSelectedDistrict(null);
+    setFormType(type);
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
     // Thực hiện lưu dữ liệu vào cơ sở dữ liệu hoặc thực hiện các xử lý khác
-    console.log('Loại địa chỉ:', addressType);
+    const data = {
+      type: formType,
+      typeName: content,
+    };
+
+    if (!data.typeName) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Vui lòng nhập nội dung.',
+        timer: 1500,
+      });
+      return;
+    }
+
+    try {
+      const response = await axiosClient.post('/cadre/addForm', data);
+      console.log(data);
+
+      if (response.status === 'success') {
+        Swal.fire({
+          icon: 'success',
+          title: 'Thêm thành công!',
+          timer: 1500,
+          showConfirmButton: false,
+        });
+
+        onClose();
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Thêm thất bại!',
+          timer: 1500,
+          text: 'Có lỗi xảy ra khi thêm nội dung. Vui lòng thử lại.',
+        });
+      }
+
+      onClose();
+    } catch (error) {
+      console.error('Error:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Thêm thất bại!',
+        timer: 1500,
+        text: 'Có lỗi xảy ra khi thêm nội dung. Vui lòng thử lại.',
+      });
+    }
   };
 
   return (
@@ -25,27 +70,39 @@ const ModalAdd = ({ onClose }) => {
           <p className={classes.level_wrap_title}>Thêm loại:</p>
           <div className={classes.level_wrap_container}>
             <div>
-              <label className={classes.label_add} htmlFor="district-level">
+              <label className={classes.label_add} htmlFor="report-level">
                 Thêm loại hình quảng cáo
               </label>
               <input
-                id="district-level"
+                id="report-level"
                 type="radio"
-                value="district"
-                checked={addressType === 'district'}
-                onChange={() => handleTypeChange('district')}
+                value="report"
+                checked={formType === 'report'}
+                onChange={() => handleTypeChange('report')}
               />
             </div>
             <div>
-              <label className={classes.label_add} htmlFor="ward-level">
+              <label className={classes.label_add} htmlFor="advertisement-level">
                 Thêm hình thức báo cáo
               </label>
               <input
-                id="ward-level"
+                id="advertisement-level"
                 type="radio"
-                value="ward"
-                checked={addressType === 'ward'}
-                onChange={() => handleTypeChange('ward')}
+                value="advertisement"
+                checked={formType === 'advertisement'}
+                onChange={() => handleTypeChange('advertisement')}
+              />
+            </div>
+            <div>
+              <label className={classes.label_add} htmlFor="board-level">
+                Thêm loại bảng quảng cáo
+              </label>
+              <input
+                id="board-level"
+                type="radio"
+                value="board"
+                checked={formType === 'board'}
+                onChange={() => handleTypeChange('board')}
               />
             </div>
           </div>

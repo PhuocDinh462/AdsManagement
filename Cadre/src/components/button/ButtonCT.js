@@ -16,6 +16,7 @@ const ButtonCT = (props) => {
     small,
 
     borderRadius,
+    borderRadius5,
     outlineBtn,
 
     primary,

@@ -1,48 +1,58 @@
 import React, { useState } from 'react';
+import Swal from 'sweetalert2';
+import { axiosClient } from '../../../api/axios';
 import classes from './ModalAdd.module.scss';
 
 const ModalUpdate = ({ data, onClose }) => {
-  const [type, setType] = useState(data.type);
-  const [content, setContent] = useState(data.content);
+  const [content, setContent] = useState(data.typeName);
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    // Thực hiện lưu dữ liệu vào cơ sở dữ liệu hoặc thực hiện các xử lý khác
-    console.log('Loại:', type);
-    console.log('Nội dung:', content);
-    onClose();
+    const dataUpdate = {
+      type: data.type,
+      id: data.typeId,
+      updatedValue: content,
+    };
+    console.log(dataUpdate);
+
+    try {
+      const response = await axiosClient.put('/cadre/updateForm', dataUpdate);
+
+      if (response.status === 'success') {
+        Swal.fire({
+          icon: 'success',
+          title: 'Cập nhật thành công!',
+          timer: 1500,
+          showConfirmButton: false,
+        });
+        onClose();
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Cập nhật thất bại!',
+          timer: 1500,
+          text: 'Có lỗi xảy ra khi cập nhật nội dung. Vui lòng thử lại.',
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Cập nhật thất bại!',
+        timer: 1500,
+        text: error,
+      });
+    }
   };
   return (
     <form onSubmit={handleSave}>
-      <p className={classes.tilte_modal}>ChI TIẾT LOẠI HÌNH QC/HÌNH THỨC BC </p>
+      <p className={classes.tilte_modal}>CHI TIẾT LOẠI HÌNH QC/HÌNH THỨC BC</p>
       <div className={classes.modal_container}>
         <div className={classes.level_wrap}>
           <p className={classes.level_wrap_title}>Loại:</p>
           <div className={classes.level_wrap_container}>
-            <div>
-              <label className={classes.label_add} htmlFor="type-ads">
-                Loại hình quảng cáo
-              </label>
-              <input
-                id="type-ads"
-                type="radio"
-                value="type"
-                checked={data.type === 'Hình quảng cáo'}
-                onChange={(e) => setType(e.target.value)}
-              />
-            </div>
-            <div>
-              <label className={classes.label_add} htmlFor="type-report">
-                Loại hình thức báo cáo
-              </label>
-              <input
-                id="type-report"
-                type="radio"
-                value="type"
-                checked={data.type === 'Hình thức báo cáo'}
-                onChange={(e) => setType(e.target.value)}
-              />
-            </div>
+            {data.type === 'report' && <p>Hình thức báo cáo</p>}
+            {data.type === 'advertisement' && <p>Hình thức quảng cáo</p>}
+            {data.type === 'board' && <p>Loại bảng quảng cáo</p>}
           </div>
         </div>
         <div className={classes.content_wrap}>
@@ -60,7 +70,7 @@ const ModalUpdate = ({ data, onClose }) => {
 
         <div className={classes.button_wrap}>
           <button className={classes.buttonAdd} type="submit">
-            Cập nhập
+            Cập nhật
           </button>
         </div>
       </div>

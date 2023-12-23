@@ -8,7 +8,6 @@
 .map_container {
   width: 100%;
   height: 100%;
-  background-color: rgb(171, 238, 255);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -16,34 +15,54 @@
 
 .filter {
   position: absolute;
-  bottom: 2rem;
+  top: 8.5rem;
   right: 2.5rem;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  z-index: 2;
 
   &__ic {
     font-size: 3rem;
-    color: $text_500;
+    color: #109fac;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &--active {
+      filter: brightness(1.2);
+    }
+  }
+}
+
+.annotation {
+  position: absolute;
+  bottom: 2.5rem;
+  right: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  z-index: 1;
+
+  &__ic {
+    font-size: 3rem;
+    color: #00b2ff;
     margin-top: 1rem;
     cursor: pointer;
     transition: all 0.2s;
 
-    &:not(&--active):hover {
-      opacity: 0.8;
-    }
-
     &--active {
-      color: #109fac;
+      filter: brightness(1.2);
     }
   }
 }
 
 .search {
   position: absolute;
-  top: 8.5rem;
-  left: 2.5rem;
+  top: 7.5rem;
+  left: 1.5rem;
   width: 35rem;
   box-shadow: 1px 1px 8px 1px rgba(black, 0.2);
   border-radius: 100rem;
+  z-index: 2;
 }

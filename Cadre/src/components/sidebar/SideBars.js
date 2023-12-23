@@ -33,16 +33,15 @@ const data = [
   {
     id: 6,
     title: 'Danh sách & xét duyệt',
-    path: '/ads-form4',
+    path: '/action-license',
   },
   {
     id: 7,
     title: 'Thống kê báo cáo & xử lý',
-    path: '/ads-form5',
+    path: '/report-stats',
   },
 ];
 const SideBars = () => {
-  console.log(1324356);
   return (
     <div className={classes.sidebar}>
       <p className={classes.sidebar__title}>Quản lý</p>

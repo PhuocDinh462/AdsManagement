@@ -17,190 +17,54 @@ import {
   faCheck,
   faDiagramProject,
   faBan,
+  faPaperclip,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { IconTextBtn } from '~components/button';
+import { Backdrop } from '@mui/material';
+import ImageModal from './Modals/ImageModal';
+import ProcessModal from './Modals/ProcessModal';
+import { useParams } from 'react-router-dom';
+import { axiosRequest } from '~/src/api/axios';
 
 export default function ReportsDetail() {
-  const [data, setData] = useState([
-    {
-      username: 'Nguyễn Văn A',
-      phone: '0123456789',
-      email: 'nva@gmail.com',
-      reportedObject: 'Bảng quảng cáo',
-      reportType: 'Tố giác sai phạm',
-      status: 'Chờ xử lý',
-      reportContent:
-        'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Expedita veniam temporibus earum et quis aspernatur quia quos provident eos! Magni dolorum a doloribus delectus quae ipsam enim, nam ipsum, nemo consectetur modi autem tempora incidunt quia nihil sint voluptate molestiae saepe consequatur hic! Repudiandae, ad unde! Voluptatibus facilis eum animi ex voluptates ad impedit dicta quisquam ratione corporis, earum similique harum velit! Dolore repellat minima expedita delectus ipsa dignissimos, molestias reiciendis iste rerum minus recusandae voluptatum unde, doloribus, sed sapiente quia. Reprehenderit alias molestiae cumque sit dolores impedit reiciendis, pariatur architecto doloremque quos officia blanditiis. Quaerat similique magnam ab! Numquam, omnis architecto quo nihil rem ipsum iusto totam minus, vitae adipisci reiciendis dolor doloribus enim, ex odit necessitatibus quae commodi perferendis. Possimus incidunt doloremque quos officiis sint quam! Magni commodi saepe id nobis cupiditate, veritatis repudiandae nihil iure quidem ex consequuntur! Exercitationem quibusdam suscipit non placeat dolor excepturi dignissimos temporibus, eveniet vitae ipsum impedit voluptates rem perferendis quis voluptatibus consequuntur sunt sed quasi reiciendis ullam officiis deserunt modi vel iure. Unde alias, dolore architecto expedita doloremque et fugit similique asperiores sint nobis qui recusandae cumque nulla non porro numquam quis dolores magnam nihil. Officiis nihil in et, inventore blanditiis magnam illum odit quibusdam culpa aliquam impedit vero vel nemo, facilis soluta, vitae ut excepturi ipsum aperiam qui deserunt architecto saepe rerum! Aliquam, id iusto cumque odio excepturi fugiat maxime ex voluptatibus quis animi nemo ducimus sequi! Odio quas eveniet nulla! Quasi, facilis voluptas minima voluptatum nam sapiente explicabo error consectetur beatae et numquam cupiditate quos, perspiciatis quam nesciunt nostrum at dolores ullam voluptates rem excepturi necessitatibus mollitia! Perferendis, perspiciatis est officiis, labore natus sapiente molestiae animi illo distinctio magnam totam ipsa minima voluptatem ullam ut magni qui recusandae fugit mollitia corrupti, quasi enim aliquam omnis quibusdam. Libero, amet. Dolores quod repudiandae corporis perspiciatis earum consequatur, explicabo distinctio odio, ad totam debitis repellendus impedit fuga nihil porro mollitia, quia esse ullam adipisci similique soluta illo incidunt ratione! Qui, pariatur natus laudantium aspernatur nostrum, aliquam est minus in deleniti autem, cupiditate molestiae! Consequuntur unde ullam autem quia illo sint, dicta sunt nostrum quas doloribus! Quo dignissimos ratione reiciendis ex laboriosam? Repellendus, reiciendis nobis ab similique tempore eligendi totam voluptate quisquam deleniti vel expedita, accusamus dolor esse reprehenderit consectetur dignissimos deserunt sint est cupiditate, quidem voluptatem. Omnis harum labore laboriosam modi, dignissimos voluptas minima blanditiis maxime, quaerat illo laudantium ipsum hic temporibus consectetur incidunt, iure dicta dolor ullam. Illum modi, nihil mollitia aspernatur facere sint aliquid fugit, asperiores dolores hic minima omnis vitae. Facilis ducimus, tempore explicabo ea sequi fugit eaque perferendis tempora illum asperiores repellat deleniti distinctio dolorem natus nostrum aut amet ipsa molestias eligendi aspernatur aliquid alias rerum quod nobis! Autem laudantium blanditiis rem repellendus cum atque repellat totam vitae sed, necessitatibus dignissimos soluta maiores recusandae corrupti voluptate vel! Cupiditate id, illo eius beatae, quasi voluptatum esse repellendus deserunt sint dicta unde. Consectetur dolor nisi expedita, fugiat quasi blanditiis quaerat vitae quo exercitationem a tenetur nulla voluptatibus, nobis ratione cupiditate eum?',
-    },
-    {
-      username: 'Trần Văn B',
-      phone: '0987654321',
-      email: 'tvb@gmail.com',
-      reportedObject: 'Địa điểm',
-      reportType: 'Tố giác sai phạm',
-      status: 'Đang xử lý',
-      reportContent:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.',
-    },
-    {
-      username: 'Nguyễn Văn A',
-      phone: '0123456789',
-      email: 'nva@gmail.com',
-      reportedObject: 'Bảng quảng cáo',
-      reportType: 'Tố giác sai phạm',
-      status: 'Đã xử lý',
-      reportContent:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid quidem nobis, modi ducimus impedit itaque facilis nihil enim molestias possimus officiis aspernatur aperiam quam voluptatem nam quos dignissimos voluptate expedita.',
-    },
-    {
-      username: 'Trần Văn B',
-      phone: '0987654321',
-      email: 'tvb@gmail.com',
-      reportedObject: 'Địa điểm',
-      reportType: 'Tố giác sai phạm',
-      status: 'Không được chấp nhận',
-      reportContent:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.',
-    },
-    {
-      username: 'Nguyễn Văn A',
-      phone: '0123456789',
-      email: 'nva@gmail.com',
-      reportedObject: 'Bảng quảng cáo',
-      reportType: 'Tố giác sai phạm',
-      status: 'Chờ xử lý',
-      reportContent:
-        'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Expedita veniam temporibus earum et quis aspernatur quia quos provident eos! Magni dolorum a doloribus delectus quae ipsam enim, nam ipsum, nemo consectetur modi autem tempora incidunt quia nihil sint voluptate molestiae saepe consequatur hic! Repudiandae, ad unde! Voluptatibus facilis eum animi ex voluptates ad impedit dicta quisquam ratione corporis, earum similique harum velit! Dolore repellat minima expedita delectus ipsa dignissimos, molestias reiciendis iste rerum minus recusandae voluptatum unde, doloribus, sed sapiente quia. Reprehenderit alias molestiae cumque sit dolores impedit reiciendis, pariatur architecto doloremque quos officia blanditiis. Quaerat similique magnam ab! Numquam, omnis architecto quo nihil rem ipsum iusto totam minus, vitae adipisci reiciendis dolor doloribus enim, ex odit necessitatibus quae commodi perferendis. Possimus incidunt doloremque quos officiis sint quam! Magni commodi saepe id nobis cupiditate, veritatis repudiandae nihil iure quidem ex consequuntur! Exercitationem quibusdam suscipit non placeat dolor excepturi dignissimos temporibus, eveniet vitae ipsum impedit voluptates rem perferendis quis voluptatibus consequuntur sunt sed quasi reiciendis ullam officiis deserunt modi vel iure. Unde alias, dolore architecto expedita doloremque et fugit similique asperiores sint nobis qui recusandae cumque nulla non porro numquam quis dolores magnam nihil. Officiis nihil in et, inventore blanditiis magnam illum odit quibusdam culpa aliquam impedit vero vel nemo, facilis soluta, vitae ut excepturi ipsum aperiam qui deserunt architecto saepe rerum! Aliquam, id iusto cumque odio excepturi fugiat maxime ex voluptatibus quis animi nemo ducimus sequi! Odio quas eveniet nulla! Quasi, facilis voluptas minima voluptatum nam sapiente explicabo error consectetur beatae et numquam cupiditate quos, perspiciatis quam nesciunt nostrum at dolores ullam voluptates rem excepturi necessitatibus mollitia! Perferendis, perspiciatis est officiis, labore natus sapiente molestiae animi illo distinctio magnam totam ipsa minima voluptatem ullam ut magni qui recusandae fugit mollitia corrupti, quasi enim aliquam omnis quibusdam. Libero, amet. Dolores quod repudiandae corporis perspiciatis earum consequatur, explicabo distinctio odio, ad totam debitis repellendus impedit fuga nihil porro mollitia, quia esse ullam adipisci similique soluta illo incidunt ratione! Qui, pariatur natus laudantium aspernatur nostrum, aliquam est minus in deleniti autem, cupiditate molestiae! Consequuntur unde ullam autem quia illo sint, dicta sunt nostrum quas doloribus! Quo dignissimos ratione reiciendis ex laboriosam? Repellendus, reiciendis nobis ab similique tempore eligendi totam voluptate quisquam deleniti vel expedita, accusamus dolor esse reprehenderit consectetur dignissimos deserunt sint est cupiditate, quidem voluptatem. Omnis harum labore laboriosam modi, dignissimos voluptas minima blanditiis maxime, quaerat illo laudantium ipsum hic temporibus consectetur incidunt, iure dicta dolor ullam. Illum modi, nihil mollitia aspernatur facere sint aliquid fugit, asperiores dolores hic minima omnis vitae. Facilis ducimus, tempore explicabo ea sequi fugit eaque perferendis tempora illum asperiores repellat deleniti distinctio dolorem natus nostrum aut amet ipsa molestias eligendi aspernatur aliquid alias rerum quod nobis! Autem laudantium blanditiis rem repellendus cum atque repellat totam vitae sed, necessitatibus dignissimos soluta maiores recusandae corrupti voluptate vel! Cupiditate id, illo eius beatae, quasi voluptatum esse repellendus deserunt sint dicta unde. Consectetur dolor nisi expedita, fugiat quasi blanditiis quaerat vitae quo exercitationem a tenetur nulla voluptatibus, nobis ratione cupiditate eum?',
-    },
-    {
-      username: 'Trần Văn B',
-      phone: '0987654321',
-      email: 'tvb@gmail.com',
-      reportedObject: 'Địa điểm',
-      reportType: 'Tố giác sai phạm',
-      status: 'Đang xử lý',
-      reportContent:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.',
-    },
-    {
-      username: 'Nguyễn Văn A',
-      phone: '0123456789',
-      email: 'nva@gmail.com',
-      reportedObject: 'Bảng quảng cáo',
-      reportType: 'Tố giác sai phạm',
-      status: 'Đã xử lý',
-      reportContent:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid quidem nobis, modi ducimus impedit itaque facilis nihil enim molestias possimus officiis aspernatur aperiam quam voluptatem nam quos dignissimos voluptate expedita.',
-    },
-    {
-      username: 'Trần Văn B',
-      phone: '0987654321',
-      email: 'tvb@gmail.com',
-      reportedObject: 'Địa điểm',
-      reportType: 'Tố giác sai phạm',
-      status: 'Không được chấp nhận',
-      reportContent:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.',
-    },
-    {
-      username: 'Nguyễn Văn A',
-      phone: '0123456789',
-      email: 'nva@gmail.com',
-      reportedObject: 'Bảng quảng cáo',
-      reportType: 'Tố giác sai phạm',
-      status: 'Chờ xử lý',
-      reportContent:
-        'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Expedita veniam temporibus earum et quis aspernatur quia quos provident eos! Magni dolorum a doloribus delectus quae ipsam enim, nam ipsum, nemo consectetur modi autem tempora incidunt quia nihil sint voluptate molestiae saepe consequatur hic! Repudiandae, ad unde! Voluptatibus facilis eum animi ex voluptates ad impedit dicta quisquam ratione corporis, earum similique harum velit! Dolore repellat minima expedita delectus ipsa dignissimos, molestias reiciendis iste rerum minus recusandae voluptatum unde, doloribus, sed sapiente quia. Reprehenderit alias molestiae cumque sit dolores impedit reiciendis, pariatur architecto doloremque quos officia blanditiis. Quaerat similique magnam ab! Numquam, omnis architecto quo nihil rem ipsum iusto totam minus, vitae adipisci reiciendis dolor doloribus enim, ex odit necessitatibus quae commodi perferendis. Possimus incidunt doloremque quos officiis sint quam! Magni commodi saepe id nobis cupiditate, veritatis repudiandae nihil iure quidem ex consequuntur! Exercitationem quibusdam suscipit non placeat dolor excepturi dignissimos temporibus, eveniet vitae ipsum impedit voluptates rem perferendis quis voluptatibus consequuntur sunt sed quasi reiciendis ullam officiis deserunt modi vel iure. Unde alias, dolore architecto expedita doloremque et fugit similique asperiores sint nobis qui recusandae cumque nulla non porro numquam quis dolores magnam nihil. Officiis nihil in et, inventore blanditiis magnam illum odit quibusdam culpa aliquam impedit vero vel nemo, facilis soluta, vitae ut excepturi ipsum aperiam qui deserunt architecto saepe rerum! Aliquam, id iusto cumque odio excepturi fugiat maxime ex voluptatibus quis animi nemo ducimus sequi! Odio quas eveniet nulla! Quasi, facilis voluptas minima voluptatum nam sapiente explicabo error consectetur beatae et numquam cupiditate quos, perspiciatis quam nesciunt nostrum at dolores ullam voluptates rem excepturi necessitatibus mollitia! Perferendis, perspiciatis est officiis, labore natus sapiente molestiae animi illo distinctio magnam totam ipsa minima voluptatem ullam ut magni qui recusandae fugit mollitia corrupti, quasi enim aliquam omnis quibusdam. Libero, amet. Dolores quod repudiandae corporis perspiciatis earum consequatur, explicabo distinctio odio, ad totam debitis repellendus impedit fuga nihil porro mollitia, quia esse ullam adipisci similique soluta illo incidunt ratione! Qui, pariatur natus laudantium aspernatur nostrum, aliquam est minus in deleniti autem, cupiditate molestiae! Consequuntur unde ullam autem quia illo sint, dicta sunt nostrum quas doloribus! Quo dignissimos ratione reiciendis ex laboriosam? Repellendus, reiciendis nobis ab similique tempore eligendi totam voluptate quisquam deleniti vel expedita, accusamus dolor esse reprehenderit consectetur dignissimos deserunt sint est cupiditate, quidem voluptatem. Omnis harum labore laboriosam modi, dignissimos voluptas minima blanditiis maxime, quaerat illo laudantium ipsum hic temporibus consectetur incidunt, iure dicta dolor ullam. Illum modi, nihil mollitia aspernatur facere sint aliquid fugit, asperiores dolores hic minima omnis vitae. Facilis ducimus, tempore explicabo ea sequi fugit eaque perferendis tempora illum asperiores repellat deleniti distinctio dolorem natus nostrum aut amet ipsa molestias eligendi aspernatur aliquid alias rerum quod nobis! Autem laudantium blanditiis rem repellendus cum atque repellat totam vitae sed, necessitatibus dignissimos soluta maiores recusandae corrupti voluptate vel! Cupiditate id, illo eius beatae, quasi voluptatum esse repellendus deserunt sint dicta unde. Consectetur dolor nisi expedita, fugiat quasi blanditiis quaerat vitae quo exercitationem a tenetur nulla voluptatibus, nobis ratione cupiditate eum?',
-    },
-    {
-      username: 'Trần Văn B',
-      phone: '0987654321',
-      email: 'tvb@gmail.com',
-      reportedObject: 'Địa điểm',
-      reportType: 'Tố giác sai phạm',
-      status: 'Đang xử lý',
-      reportContent:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.',
-    },
-    {
-      username: 'Nguyễn Văn A',
-      phone: '0123456789',
-      email: 'nva@gmail.com',
-      reportedObject: 'Bảng quảng cáo',
-      reportType: 'Tố giác sai phạm',
-      status: 'Đã xử lý',
-      reportContent:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid quidem nobis, modi ducimus impedit itaque facilis nihil enim molestias possimus officiis aspernatur aperiam quam voluptatem nam quos dignissimos voluptate expedita.',
-    },
-    {
-      username: 'Trần Văn B',
-      phone: '0987654321',
-      email: 'tvb@gmail.com',
-      reportedObject: 'Địa điểm',
-      reportType: 'Tố giác sai phạm',
-      status: 'Không được chấp nhận',
-      reportContent:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.',
-    },
-    {
-      username: 'Nguyễn Văn A',
-      phone: '0123456789',
-      email: 'nva@gmail.com',
-      reportedObject: 'Bảng quảng cáo',
-      reportType: 'Tố giác sai phạm',
-      status: 'Chờ xử lý',
-      reportContent:
-        'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Expedita veniam temporibus earum et quis aspernatur quia quos provident eos! Magni dolorum a doloribus delectus quae ipsam enim, nam ipsum, nemo consectetur modi autem tempora incidunt quia nihil sint voluptate molestiae saepe consequatur hic! Repudiandae, ad unde! Voluptatibus facilis eum animi ex voluptates ad impedit dicta quisquam ratione corporis, earum similique harum velit! Dolore repellat minima expedita delectus ipsa dignissimos, molestias reiciendis iste rerum minus recusandae voluptatum unde, doloribus, sed sapiente quia. Reprehenderit alias molestiae cumque sit dolores impedit reiciendis, pariatur architecto doloremque quos officia blanditiis. Quaerat similique magnam ab! Numquam, omnis architecto quo nihil rem ipsum iusto totam minus, vitae adipisci reiciendis dolor doloribus enim, ex odit necessitatibus quae commodi perferendis. Possimus incidunt doloremque quos officiis sint quam! Magni commodi saepe id nobis cupiditate, veritatis repudiandae nihil iure quidem ex consequuntur! Exercitationem quibusdam suscipit non placeat dolor excepturi dignissimos temporibus, eveniet vitae ipsum impedit voluptates rem perferendis quis voluptatibus consequuntur sunt sed quasi reiciendis ullam officiis deserunt modi vel iure. Unde alias, dolore architecto expedita doloremque et fugit similique asperiores sint nobis qui recusandae cumque nulla non porro numquam quis dolores magnam nihil. Officiis nihil in et, inventore blanditiis magnam illum odit quibusdam culpa aliquam impedit vero vel nemo, facilis soluta, vitae ut excepturi ipsum aperiam qui deserunt architecto saepe rerum! Aliquam, id iusto cumque odio excepturi fugiat maxime ex voluptatibus quis animi nemo ducimus sequi! Odio quas eveniet nulla! Quasi, facilis voluptas minima voluptatum nam sapiente explicabo error consectetur beatae et numquam cupiditate quos, perspiciatis quam nesciunt nostrum at dolores ullam voluptates rem excepturi necessitatibus mollitia! Perferendis, perspiciatis est officiis, labore natus sapiente molestiae animi illo distinctio magnam totam ipsa minima voluptatem ullam ut magni qui recusandae fugit mollitia corrupti, quasi enim aliquam omnis quibusdam. Libero, amet. Dolores quod repudiandae corporis perspiciatis earum consequatur, explicabo distinctio odio, ad totam debitis repellendus impedit fuga nihil porro mollitia, quia esse ullam adipisci similique soluta illo incidunt ratione! Qui, pariatur natus laudantium aspernatur nostrum, aliquam est minus in deleniti autem, cupiditate molestiae! Consequuntur unde ullam autem quia illo sint, dicta sunt nostrum quas doloribus! Quo dignissimos ratione reiciendis ex laboriosam? Repellendus, reiciendis nobis ab similique tempore eligendi totam voluptate quisquam deleniti vel expedita, accusamus dolor esse reprehenderit consectetur dignissimos deserunt sint est cupiditate, quidem voluptatem. Omnis harum labore laboriosam modi, dignissimos voluptas minima blanditiis maxime, quaerat illo laudantium ipsum hic temporibus consectetur incidunt, iure dicta dolor ullam. Illum modi, nihil mollitia aspernatur facere sint aliquid fugit, asperiores dolores hic minima omnis vitae. Facilis ducimus, tempore explicabo ea sequi fugit eaque perferendis tempora illum asperiores repellat deleniti distinctio dolorem natus nostrum aut amet ipsa molestias eligendi aspernatur aliquid alias rerum quod nobis! Autem laudantium blanditiis rem repellendus cum atque repellat totam vitae sed, necessitatibus dignissimos soluta maiores recusandae corrupti voluptate vel! Cupiditate id, illo eius beatae, quasi voluptatum esse repellendus deserunt sint dicta unde. Consectetur dolor nisi expedita, fugiat quasi blanditiis quaerat vitae quo exercitationem a tenetur nulla voluptatibus, nobis ratione cupiditate eum?',
-    },
-    {
-      username: 'Trần Văn B',
-      phone: '0987654321',
-      email: 'tvb@gmail.com',
-      reportedObject: 'Địa điểm',
-      reportType: 'Tố giác sai phạm',
-      status: 'Đang xử lý',
-      reportContent:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.',
-    },
-    {
-      username: 'Nguyễn Văn A',
-      phone: '0123456789',
-      email: 'nva@gmail.com',
-      reportedObject: 'Bảng quảng cáo',
-      reportType: 'Tố giác sai phạm',
-      status: 'Đã xử lý',
-      reportContent:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid quidem nobis, modi ducimus impedit itaque facilis nihil enim molestias possimus officiis aspernatur aperiam quam voluptatem nam quos dignissimos voluptate expedita.',
-    },
-    {
-      username: 'Trần Văn B',
-      phone: '0987654321',
-      email: 'tvb@gmail.com',
-      reportedObject: 'Địa điểm',
-      reportType: 'Tố giác sai phạm',
-      status: 'Không được chấp nhận',
-      reportContent:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.',
-    },
-  ]);
+  const { id } = useParams();
+  const [data, setData] = useState([]);
 
   const [currentReportIndex, setCurrentReportIndex] = useState(0);
-  const [filteredData, setFilteredData] = useState(data);
+  const [filteredData, setFilteredData] = useState([]);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [imageModalUrl, setImageModalUrl] = useState();
+  const [showProcessModal, setShowProcessModal] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      await axiosRequest
+        .get(`ward/getReportDetailsByPointId/${id}`)
+        .then((res) => {
+          const data = res.data.data;
+          setData(data);
+          setFilteredData(data.reports);
+        })
+        .catch((error) => {
+          console.log('Get spots error: ', error);
+        });
+    })();
+  }, []);
 
   const handleFilter = (keyword) => {
-    if (!keyword) setFilteredData(data);
+    if (!keyword) setFilteredData(data.reports);
     else
       setFilteredData(
-        data.filter((item) => {
+        data.reports.filter((item) => {
           const keywordLc = keyword.toLowerCase();
 
           return (
-            item.username.toLowerCase().includes(keywordLc) ||
-            item.phone.toLowerCase().includes(keywordLc) ||
-            item.email.toLowerCase().includes(keywordLc) ||
-            item.reportType.toLowerCase().includes(keywordLc) ||
+            item.fullname_rp.toLowerCase().includes(keywordLc) ||
+            item.phone_rp.toLowerCase().includes(keywordLc) ||
+            item.email_rp.toLowerCase().includes(keywordLc) ||
+            item.report_type_name.toLowerCase().includes(keywordLc) ||
             item.reportedObject.toLowerCase().includes(keywordLc) ||
             item.status.toLowerCase().includes(keywordLc)
           );
@@ -221,12 +85,12 @@ export default function ReportsDetail() {
 
         <div className={classes.nav_btn_container}>
           <div
-            className={[classes.nav_btn, classes.btn, filteredData.length == 0 && classes['btn--disabled']].join(' ')}
+            className={[classes.nav_btn, classes.btn, filteredData?.length == 0 && classes['btn--disabled']].join(' ')}
           >
             <FontAwesomeIcon icon={faLocationDot} />
           </div>
           <div
-            className={[classes.nav_btn, classes.btn, filteredData.length == 0 && classes['btn--disabled']].join(' ')}
+            className={[classes.nav_btn, classes.btn, filteredData?.length == 0 && classes['btn--disabled']].join(' ')}
           >
             <FontAwesomeIcon icon={faCircleInfo} />
           </div>
@@ -240,7 +104,7 @@ export default function ReportsDetail() {
             className={[
               classes.nav_btn,
               classes.btn,
-              currentReportIndex >= filteredData.length - 1 && classes['btn--disabled'],
+              currentReportIndex >= filteredData?.length - 1 && classes['btn--disabled'],
             ].join(' ')}
             onClick={() => setCurrentReportIndex(currentReportIndex + 1)}
           >
@@ -249,7 +113,7 @@ export default function ReportsDetail() {
         </div>
 
         <dir className={classes.reports_container}>
-          {filteredData.map((item, index) => (
+          {filteredData?.map((item, index) => (
             <div className={classes.report_item} key={index} onClick={() => setCurrentReportIndex(index)}>
               <dir className={classes.divider} />
               <div className={classes.username}>
@@ -259,7 +123,7 @@ export default function ReportsDetail() {
                     currentReportIndex === index && classes['username__text--active'],
                   ].join(' ')}
                 >
-                  {index + 1 + '. ' + item.username}
+                  {index + 1 + '. ' + item.fullname_rp}
                 </div>
                 <div
                   className={[
@@ -276,9 +140,7 @@ export default function ReportsDetail() {
       </div>
 
       <div className={classes.content_container}>
-        <div className={classes.title}>
-          Chi tiết báo cáo tại 15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM
-        </div>
+        <div className={classes.title}>Chi tiết báo cáo tại {data.address}</div>
 
         {filteredData.length > 0 ? (
           <>
@@ -290,7 +152,7 @@ export default function ReportsDetail() {
                       <div className={classes.itemInfo}>
                         <FontAwesomeIcon icon={faUser} />
                         <dir className={classes.itemInfo__text}>
-                          {'Người báo cáo: ' + filteredData[currentReportIndex]?.username}
+                          {'Người báo cáo: ' + filteredData[currentReportIndex]?.fullname_rp}
                         </dir>
                       </div>
                     </td>
@@ -308,7 +170,7 @@ export default function ReportsDetail() {
                       <div className={classes.itemInfo}>
                         <FontAwesomeIcon icon={faPhone} />
                         <dir className={classes.itemInfo__text}>
-                          {'Số điện thoại: ' + filteredData[currentReportIndex]?.phone}
+                          {'Số điện thoại: ' + filteredData[currentReportIndex]?.phone_rp}
                         </dir>
                       </div>
                     </td>
@@ -316,7 +178,7 @@ export default function ReportsDetail() {
                       <div className={classes.itemInfo}>
                         <FontAwesomeIcon icon={faFile} />
                         <dir className={classes.itemInfo__text}>
-                          {'Hình thức báo cáo: ' + filteredData[currentReportIndex]?.reportType}
+                          {'Hình thức báo cáo: ' + filteredData[currentReportIndex]?.report_type_name}
                         </dir>
                       </div>
                     </td>
@@ -326,7 +188,7 @@ export default function ReportsDetail() {
                       <div className={classes.itemInfo}>
                         <FontAwesomeIcon icon={faEnvelope} />
                         <dir className={classes.itemInfo__text}>
-                          {'Email: ' + filteredData[currentReportIndex]?.email}
+                          {'Email: ' + filteredData[currentReportIndex]?.email_rp}
                         </dir>
                       </div>
                     </td>
@@ -343,7 +205,33 @@ export default function ReportsDetail() {
               </table>
             </div>
 
-            <div className={classes.reportContent_container}>{filteredData[currentReportIndex]?.reportContent}</div>
+            <div className={classes.reportContent_container}>
+              <div>{filteredData[currentReportIndex]?.report_content}</div>
+
+              {filteredData[currentReportIndex]?.image_urls.length > 0 && (
+                <div className={classes.attach_container}>
+                  <div className={classes.attach}>
+                    <div className={classes.attach__ic}>
+                      <FontAwesomeIcon icon={faPaperclip} />
+                    </div>
+                    <div className={classes.attach__title}>Đính kèm:</div>
+                  </div>
+                  <div className={classes.img_container}>
+                    {filteredData[currentReportIndex]?.image_urls.map((image_url, index) => (
+                      <img
+                        className={classes.img}
+                        key={index}
+                        src={image_url}
+                        onClick={() => {
+                          setImageModalUrl(image_url);
+                          setShowImageModal(true);
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
 
             <div className={classes.processBtn}>
               <IconTextBtn
@@ -364,7 +252,7 @@ export default function ReportsDetail() {
                   filteredData[currentReportIndex]?.status === 'Đang xử lý' ||
                   filteredData[currentReportIndex]?.status === 'Đã xử lý'
                 }
-                onClick={() => console.log('Xử lý')}
+                onClick={() => setShowProcessModal(true)}
               />
             </div>
           </>
@@ -377,6 +265,14 @@ export default function ReportsDetail() {
           </div>
         )}
       </div>
+
+      <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={showImageModal}>
+        <ImageModal setActive={setShowImageModal} image_url={imageModalUrl} />
+      </Backdrop>
+
+      <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={showProcessModal}>
+        <ProcessModal setActive={setShowProcessModal} email={filteredData[currentReportIndex]?.email_rp} />
+      </Backdrop>
     </div>
   );
 }

@@ -1,110 +1,126 @@
-// import React, { useState, useEffect } from 'react';
-// import { Link, useNavigate } from 'react-router-dom';
-// import { Backdrop, CircularProgress } from '@mui/material';
-
-// 
-// import classes from './Login.module.scss';
-// import Swal from 'sweetalert2';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useFormik } from 'formik';
+import * as Yup from 'yup'; // Để thực hiện validation
 
 import request from '../../utils/request';
 import classes from './Login.module.scss';
 import Images from '../../assets/images';
 import Swal from 'sweetalert2';
-export default function LoginPage() {
+import getGoogleOAuthURL from '~/src/utils/getGoogleUrl';
 
-    const loginNavigate = useNavigate();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [currentUser, setCurrentUser] = useState(() => {
-        const storageUserState = JSON.parse(localStorage.getItem('user-state'));
-        return storageUserState;
-    });
-
-    useEffect(() => {
-        if (currentUser) loginNavigate('/');
-    }, [currentUser]);
-
-    async function handleSubmit(e) {
-        e.preventDefault();
-        // if (email && password) {
-        //     const objLogin = {
-        //         email: email,
-        //         password: password,
-        //     };
-
-        //     setIsLoading(true);
-        //     try {
-        //         const response = await request.post('users/sign_in', objLogin);
-        //         setLocalItem('user-state', true)
-        //         setLocalObject('user', response.data.data)
-        //         setLocalItem('token', response.data.data.token)
-        //         setCurrentUser(true);
-        //         Swal.fire({
-        //             title: 'Đăng nhập thành công!',
-        //             icon: 'success',
-        //             confirmButtonText: 'Hoàn tất',
-        //             width: '50rem',
-        //         });
-        //     } catch (error) {
-        //         Swal.fire({
-        //             icon: 'error',
-        //             title: 'Lỗi',
-        //             text: 'Email hoặc mật khẩu của bạn không đúng!',
-        //             width: '50rem',
-        //         });
-        //     }
-        // }
-        // else {
-        //     Swal.fire({
-        //         icon: 'error',
-        //         title: 'Lỗi',
-        //         text: 'Vui lòng nhập đầy đủ email và mật khẩu của bạn',
-        //         width: '50rem',
-        //     });
-        // }
+const LoginPage = () => {
+  const loginNavigate = useNavigate();
+  useEffect(() => {
+    const user_type = localStorage.getItem('user_type');
+    console.log(user_type);
+    if (user_type === 'department') {
+      loginNavigate('/district-ward');
+    } else if (user_type === 'ward') {
+      loginNavigate('/home');
+    } else if (user_type === 'district') {
+      loginNavigate('/home');
     }
+  }, []);
+  const formik = useFormik({
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    validationSchema: Yup.object({
+      email: Yup.string().email('Email không hợp lệ').required('Vui lòng nhập email của bạn'),
+      password: Yup.string().required('Vui lòng nhập mật khẩu của bạn'),
+    }),
+    onSubmit: async (values, { setSubmitting }) => {
+      try {
+        const response = await request.post('auth/login', values);
+        const user_type = response.data.user_type;
+        localStorage.setItem('user-state', true);
+        localStorage.setItem('user_id', response.data.user_id);
+        localStorage.setItem('user_type', user_type);
+        localStorage.setItem('token', response.data.token);
+        setSubmitting(false);
 
-    return (
-        <div className={classes.wrapper}>
-            <div className={classes.wrapper__logo}>
-                <img src={Images.logoImage} alt="none" />
-            </div>
-            <div className={classes.wrapper__form}>
-                <h2>Đăng nhập</h2>
-                <form action="/" onSubmit={handleSubmit}>
-                    <p>
-                        <input
-                            type="text"
-                            name="first__name"
-                            placeholder="Nhập email của bạn"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                    </p>
-                    <p>
-                        <input
-                            type="password"
-                            name="password"
-                            placeholder="Nhập mật khẩu của bạn"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                        <br />
-                        <br />
-                        <Link to="/forgot">
-                            <label className="right-label">Quên mật khẩu?</label>
-                        </Link>
-                    </p>
-                    <p>
-                        <button id={classes.sub__btn} type="submit">
-                            Đăng nhập
-                        </button>
-                    </p>
-                </form>
+        Swal.fire({
+          title: 'Đăng nhập thành công!',
+          icon: 'success',
+          confirmButtonText: 'Hoàn tất',
+          width: '50rem',
+        });
+        if (user_type === 'department') {
+          loginNavigate('/district-ward');
+        } else if (user_type === 'ward') {
+          loginNavigate('/home');
+        } else if (user_type === 'district') {
+          loginNavigate('/home');
+        }
+      } catch (error) {
+        console.log(error);
+        setSubmitting(false);
 
-            </div>
-        </div>
-    );
-}
+        Swal.fire({
+          icon: 'error',
+          title: 'Lỗi',
+          text: 'Email hoặc mật khẩu của bạn không đúng!',
+          width: '50rem',
+        });
+      }
+    },
+  });
+
+  return (
+    <div className={classes.wrapper}>
+      <div className={classes.wrapper__logo}>
+        <img src={Images.logoImage} alt="none" />
+      </div>
+      <div className={classes.wrapper__form}>
+        <h2>Đăng nhập</h2>
+        <form onSubmit={formik.handleSubmit}>
+          <p>
+            <input
+              type="text"
+              name="email"
+              placeholder="Nhập email của bạn"
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+            />
+            {formik.touched.email && formik.errors.email && <div className={classes.error}>{formik.errors.email}</div>}
+          </p>
+          <p>
+            <input
+              type="password"
+              name="password"
+              placeholder="Nhập mật khẩu của bạn"
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+            />
+            {formik.touched.password && formik.errors.password && (
+              <div className={classes.error}>{formik.errors.password}</div>
+            )}
+            <br />
+            <br />
+            <Link to="/forgot">
+              <label className={classes['right-label']}>Quên mật khẩu?</label>
+            </Link>
+          </p>
+          <p>
+            <button id={classes.sub__btn} type="submit" disabled={formik.isSubmitting}>
+              Đăng nhập
+            </button>
+          </p>
+        </form>
+        <a href={getGoogleOAuthURL()} className={classes['login-button']}>
+          <img src={Images.googleImage} alt="Google Logo" className={classes['google-logo']} />
+          <div className={classes['right-content']}>
+            <span>Đăng nhập với tài khoản Google</span>
+          </div>
+        </a>
+        {/* <a href={getGoogleOAuthURL()}>Login with google</a> */}
+      </div>
+    </div>
+  );
+};
+
+export default LoginPage;

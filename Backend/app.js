@@ -1,27 +1,61 @@
-const express = require("express");
-const dotenv = require("dotenv");
-const morgan = require("morgan");
-const cors = require("cors");
-const corsOptions = require("./configs/corsOptions.js");
-const authRoute = require("./routes/authRoute.js");
-const accountRoute = require("./routes/accountRoute.js");
-const authenticateUser = require("./middlewares/authentication.middleware.js")
+const express = require('express');
+const dotenv = require('dotenv');
+const cors = require('cors');
+const corsOptions = require('./configs/corsOptions.js');
+const authRoute = require('./routes/authRoute.js');
+const accountRoute = require('./routes/accountRoute.js');
+const cadreRoute = require('./routes/cadreRoute.js');
+const authenticateUser = require('./middlewares/authentication.middleware.js');
+const googleRoute = require('./routes/googleRoute.js');
+const wardRoute = require('./routes/wardRoute.js');
+const editBoardRoute = require('./routes/editBoardRequestRoute.js')
+const editPointRoute = require('./routes/editPointRequestRoute.js')
+const boardTypeRoute = require('./routes/boardTypeRoute.js')
+const advertisementTypeRoute = require('./routes/advertisementTypeRoute.js')
+const boardRoute = require('./routes/boardRoute.js')
+const pointRoute = require('./routes/pointRoute.js')
 
 const app = express();
-dotenv.config({ path: "./config.env" });
+
+dotenv.config({ path: './config.env' });
 
 const port = process.env.PORT;
 
-app.use(morgan("combined"));
 app.use(cors(corsOptions));
+
 app.use(express.json());
 
+app.use('/', googleRoute);
+app.use('/board', authenticateUser, boardRoute)
+app.use('/point', authenticateUser, pointRoute)
+app.use('/edit_board', authenticateUser, editBoardRoute)
+app.use('/edit_point', authenticateUser, editPointRoute)
+app.use('/board_type', boardTypeRoute)
+app.use('/advertisement_type', advertisementTypeRoute)
+app.use('/auth', authRoute);
+app.use('/account', authenticateUser, accountRoute);
+app.use('/cadre', cadreRoute);
+app.use('/ward', wardRoute);
 
-app.use("/auth", authRoute)
-app.use("/account", authenticateUser, accountRoute)
-
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Server app listening on port ${port}`);
 });
 
-// module.exports.connection = connection;
+const socketIo = require('socket.io')(server, {
+  cors: { origin: '*' },
+});
+
+//const io = require('./app'); // ví dụ require ở file khác để sử dụng
+
+socketIo.on('connection', (socket) => {
+  ///Handle khi có connect từ client tới
+  console.log('New client connected' + socket.id);
+
+  socket.emit('update', socket.id); // Example send event to client
+
+  socket.on('disconnect', () => {
+    console.log('Client disconnected'); // Khi client disconnect thì log ra terminal.
+  });
+});
+
+module.exports = socketIo;

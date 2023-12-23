@@ -1,0 +1,57 @@
+@import '/src/styles/colors.scss';
+
+$border_radius: 10px;
+
+.main_container {
+  width: 50%;
+  height: fit-content;
+  background-color: white;
+  border-radius: $border_radius;
+}
+
+.header {
+  width: 100%;
+  height: 5rem;
+  background-color: $primary_300;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  font-size: 2rem;
+  user-select: none;
+  border-radius: $border_radius $border_radius 0 0;
+
+  &__closeIc {
+    cursor: pointer;
+    transition: opacity 0.2s;
+    font-size: 2.5rem;
+
+    &:hover {
+      opacity: 0.5;
+    }
+  }
+}
+
+.content {
+  width: 100%;
+  margin: 3rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.textField {
+  width: 90%;
+}
+
+.textField + .textField {
+  margin-top: 3rem;
+}
+
+.btn_container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
