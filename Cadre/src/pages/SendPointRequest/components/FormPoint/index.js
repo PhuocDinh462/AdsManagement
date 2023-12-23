@@ -54,6 +54,7 @@ const FormPoint = () => {
     try {
       const response = await request.get(`point/get_point/${point_id}`, { headers: headers });
       setPointInfor(response.data.point);
+      setImageUploadUrl(response.data.point.image_url)
     } catch (error) {
       console.error('Error fetching surfaces:', error);
     }
@@ -129,7 +130,7 @@ const FormPoint = () => {
       advertisement_type_id: pointInfor.advertisement_type_id,
       requestTime: '',
       address: address,
-      imageURL: pointInfor.image_url,
+      imageURL: imageUploadUrl,
       location_type: pointInfor.location_type,
       isPlanning: pointInfor.is_planning > 0 ? true : false,
       reason: '',
