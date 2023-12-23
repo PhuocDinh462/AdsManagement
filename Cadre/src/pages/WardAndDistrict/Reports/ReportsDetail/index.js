@@ -18,6 +18,7 @@ import {
   faDiagramProject,
   faBan,
   faPaperclip,
+  faPaperPlane,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState, useEffect } from 'react';
@@ -233,27 +234,23 @@ export default function ReportsDetail() {
               )}
             </div>
 
-            <div className={classes.processBtn}>
-              <IconTextBtn
-                label={
-                  filteredData[currentReportIndex]?.status !== 'Đang xử lý' &&
-                  filteredData[currentReportIndex]?.status !== 'Đã xử lý'
-                    ? 'Xử lý'
-                    : filteredData[currentReportIndex]?.status
-                }
-                rightIc={
-                  filteredData[currentReportIndex]?.status === 'Đang xử lý'
-                    ? faHourglassStart
-                    : filteredData[currentReportIndex]?.status === 'Đã xử lý'
-                    ? faCheck
-                    : faArrowRight
-                }
-                disabled={
-                  filteredData[currentReportIndex]?.status === 'Đang xử lý' ||
-                  filteredData[currentReportIndex]?.status === 'Đã xử lý'
-                }
-                onClick={() => setShowProcessModal(true)}
-              />
+            <div className={classes.btn}>
+              <div className={classes.btn__item}>
+                <IconTextBtn
+                  label="Trạng thái"
+                  width={150}
+                  rightIc={faDiagramProject}
+                  onClick={() => setShowProcessModal(true)}
+                />
+              </div>
+              <div className={classes.btn__item}>
+                <IconTextBtn
+                  label="Gửi mail"
+                  width={150}
+                  rightIc={faPaperPlane}
+                  onClick={() => setShowProcessModal(true)}
+                />
+              </div>
             </div>
           </>
         ) : (

@@ -2,12 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
 import classes from './DetailsAdLocation.module.scss';
-import useGeocode from '~/src/components/geoMap/useGeocode';
 
 const DetailsAdLocation = ({ data, onClose }) => {
   const apiKey = 'AIzaSyAQxG3Ubdo-Nhf6tjGYmXhYDe3yr4vGeDw';
   const [address, setAddress] = useState(null);
-  console.log(data);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,7 +33,7 @@ const DetailsAdLocation = ({ data, onClose }) => {
     <div className={classes.adding__overlay}>
       <div className={classes.adding__modal}>
         <div className={classes.adding__modal__heading}>
-          THÊM SẢN PHẨM
+          CHI TIẾT ĐIỂM ĐẶT
           <FontAwesomeIcon icon={faClose} className={classes['adding__modal-ic']} onClick={onClose} />
         </div>
         <ul>
@@ -44,6 +42,17 @@ const DetailsAdLocation = ({ data, onClose }) => {
             <span>
               {' '}
               {data.ward_name} - {data.district_name}
+            </span>
+          </li>
+
+          <li>
+            <strong>
+              Tọa độ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </strong>
+            :
+            <span>
+              {' '}
+              {data.lat},{data.lng}
             </span>
           </li>
           <li>
@@ -57,12 +66,18 @@ const DetailsAdLocation = ({ data, onClose }) => {
             {data.location_type}
           </li>
           <li>
-            <strong>Hình thức quảng cáo &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>: {data.form_ads}
+            <strong>Hình thức quảng cáo &nbsp;&nbsp;</strong>: {data.advertisement_type_name}
+          </li>
+          <li>
+            <strong>Trạng thái quy hoạch &nbsp;&nbsp;</strong>:{' '}
+            <span style={{ color: data.is_planning === 0 ? 'red' : 'green' }}>
+              {data.is_planning === 0 ? 'Chưa quy hoạch' : 'Đã quy hoạch'}
+            </span>
           </li>
           <li>
             <strong>Hình ảnh</strong>:
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '20px 0' }}>
-              <img src={data.image_url} alt="Preview" style={{ maxWidth: '300px', maxHeight: '200px' }} />
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '5px 0' }}>
+              <img src={data.image_url} alt="Preview" style={{ maxWidth: '400px', maxHeight: '350px' }} />
             </div>
           </li>
         </ul>

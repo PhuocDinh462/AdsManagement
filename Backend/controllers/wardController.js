@@ -1,5 +1,6 @@
 const catchAsync = require('../utils/catchAsync');
 const connection = require('../server');
+const socketIO = require('socket.io');
 
 const getAdSpotsByWardId = catchAsync(async (req, res, next) => {
   connection.query('SELECT * FROM advertising_point where ward_id = ?', [req.params.id], (err, results) => {
@@ -296,10 +297,36 @@ const getReportDetailsByPointId = catchAsync(async (req, res, next) => {
   });
 });
 
+const reportListsSocket = (server) => {
+  const io = socketIO(server);
+
+  io.on('connection', (socket) => {
+    console.log('A client connected');
+
+    // Thực hiện query để lắng nghe thay đổi trong bảng MySQL
+    const query = connection.query('SELECT * FROM report');
+    const watcher = query.stream();
+
+    // Lắng nghe sự kiện data của bảng MySQL thay đổi
+    watcher.on('data', (row) => {
+      // Gửi dữ liệu mới đến client khi có thay đổi
+      socket.emit('dataChange', row);
+    });
+
+    // Lắng nghe sự kiện đóng kết nối của client
+    socket.on('disconnect', () => {
+      console.log('A client disconnected');
+      // Dừng theo dõi khi client đóng kết nối
+      watcher.destroy();
+    });
+  });
+};
+
 module.exports = {
   getAdSpotsByWardId,
   getInfoByPointId,
   getAdBoardsBySpotId,
   getReportListsByWardId,
   getReportDetailsByPointId,
+  reportListsSocket,
 };

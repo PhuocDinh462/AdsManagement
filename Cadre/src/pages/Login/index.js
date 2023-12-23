@@ -13,7 +13,6 @@ const LoginPage = () => {
   const loginNavigate = useNavigate();
   useEffect(() => {
     const user_type = localStorage.getItem('user_type');
-    console.log(user_type);
     if (user_type === 'department') {
       loginNavigate('/district-ward');
     } else if (user_type === 'ward') {
