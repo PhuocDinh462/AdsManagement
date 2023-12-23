@@ -2,7 +2,7 @@ import classes from './styles.module.scss';
 import Select from 'react-select';
 import { useState } from 'react';
 import debounce from 'lodash.debounce';
-import { text } from '~/src/styles/colors';
+import { colors, text } from '~styles/colors';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -69,6 +69,14 @@ export default function GoongAutoComplete(props) {
             },
           }),
         }}
+        theme={(theme) => ({
+          ...theme,
+          colors: {
+            ...theme.colors,
+            primary25: colors.primary_200,
+            primary: colors.primary_300,
+          },
+        })}
       />
     </div>
   );
