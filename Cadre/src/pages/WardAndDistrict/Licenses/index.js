@@ -8,6 +8,7 @@ import SearchBar from '~/src/components/SearchBar';
 import Pagination from '~/src/components/Pagination';
 import ButtonCT from '~/src/components/button/ButtonCT';
 import { ic_add } from '~/src/assets';
+import LicenseModalAdd from './LicenseModalAdd';
 const initialData = [
   {
     id: 1,
@@ -131,7 +132,7 @@ const Licenses = () => {
 
   const handleFilterChange = (type) => {
     const filteredData = type === 0 ? initialData : initialData.filter((item) => item.status.type === type);
-    // setData(filteredData);
+    setData(filteredData);
     setSelectedFilter(type);
   };
 
@@ -223,6 +224,7 @@ const Licenses = () => {
           onPageChange={(page) => setCurrentPage(page)}
         />
       </div>
+      <LicenseModalAdd />
       {isOpenDetails && <LicenseDetails disabledButton={true} handleCloseModal={handleCloseModal} />}
     </div>
   );

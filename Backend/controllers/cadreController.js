@@ -245,4 +245,3 @@ const deleteAddress = catchAsync(async (req, res, next) => {
 });
 
 module.exports = { getAllDistrictWard, getDistricts, getWards, createAddress, updateAddress, deleteAddress };
-

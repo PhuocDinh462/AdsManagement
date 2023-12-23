@@ -201,4 +201,3 @@ const AddAdLocation = (props) => {
 };
 
 export default AddAdLocation;
-

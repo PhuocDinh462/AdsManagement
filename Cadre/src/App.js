@@ -1,12 +1,17 @@
 import React from 'react';
 import './styles/style.scss';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import Navigation from './routes';
 
+const theme = createTheme({
+  components: {},
+});
+
 const App = () => (
-  <div>
+  <ThemeProvider theme={theme}>
     <Navigation />
-  </div>
+  </ThemeProvider>
 );
 
 export default App;

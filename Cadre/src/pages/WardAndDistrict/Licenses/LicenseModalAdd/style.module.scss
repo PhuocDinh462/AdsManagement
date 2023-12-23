@@ -1,0 +1,124 @@
+.adding__overlay {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 101;
+  
+    .adding__modal {
+      display: block;
+      width: 500px;
+      height: max-content;
+      border-radius: 10px;
+      background-color: white;
+      padding-bottom: 30px;
+      position: relative;
+  
+      &__heading {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 40px;
+        margin-bottom: 20px;
+        margin-top: 10px;
+        font-size: 16px;
+        font-weight: 700;
+        background: white;
+        border-radius: 10px 10px 0px 0px;
+        color: #0a6971;
+  
+        .adding__modal-ic {
+          position: absolute;
+          top: 50%;
+          right: 20px;
+          transform: translate(-50%, -50%);
+          color: black;
+          font-size: 20px;
+          cursor: pointer;
+  
+          &:hover {
+            opacity: 0.9;
+          }
+        }
+      }
+  
+      &__body {
+        width: 100%;
+        height: max-content;
+        padding: 0 40px;
+        padding-bottom: 20px;
+
+      }
+  
+      &__buttons {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+  
+        button {
+          padding: 8px 15px;
+          min-width: 120px;
+          font-size: 1.6rem;
+          font-weight: 600;
+          border-radius: 50px;
+  
+          &:hover {
+            opacity: 0.9;
+          }
+  
+          &:nth-child(1) {
+            margin-right: 20px;
+            border: 1px solid #0a6971;
+            background-color: white;
+          }
+  
+          &:nth-child(2) {
+            color: white;
+            border: none;
+            background-color: #0a6971;
+            box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+          }
+        }
+      }
+  
+      &__line {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 25px;
+  
+        .modal__line-item {
+          width: 4rem;
+          height: 4px;
+          background-color: #d9d9d9;
+          margin: 0 10px;
+        }
+      }
+  
+      .loading__overlay {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        z-index: 102;
+      }
+    }
+  }
+  
+  
