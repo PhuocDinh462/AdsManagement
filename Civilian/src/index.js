@@ -5,14 +5,17 @@ import { Provider } from 'react-redux';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import store from './store/store';
+import { SocketProvider } from './components/Provider/SocketProvider';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-	<BrowserRouter>
-		<Provider store={store}>
-			<App />
-		</Provider>
-	</BrowserRouter>
+    <BrowserRouter>
+        <SocketProvider>
+            <Provider store={store}>
+                <App />
+            </Provider>
+        </SocketProvider>
+    </BrowserRouter>
 );
 
 reportWebVitals();
