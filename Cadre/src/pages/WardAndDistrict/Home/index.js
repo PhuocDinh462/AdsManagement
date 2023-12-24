@@ -61,6 +61,7 @@ export default function Home() {
   const [displayMarker, setDisplayMarker] = useState(false);
   const [marker, setMarker] = useState();
   const [currentSpotId, setCurrentSpotId] = useState(null);
+  const [isClickMarker, setIsClickMarker] = useState(false);
 
   useEffect(() => {
     setLocalStorageFromCookie('user-state');
@@ -70,6 +71,7 @@ export default function Home() {
   }, []);
 
   const handleMapClick = (event) => {
+    setIsClickMarker(false);
     setDisplayMarker(!displayMarker);
     setCollapseSidebar(false);
     setMarker({
@@ -80,6 +82,7 @@ export default function Home() {
   };
 
   const handleMarkerClick = (_marker) => {
+    setIsClickMarker(true);
     setDisplayMarker(true);
     setCollapseSidebar(false);
     setMarker({
@@ -313,7 +316,13 @@ export default function Home() {
       </div>
 
       {displayMarker && (
-        <SpotInfoSidebar spotCoord={marker} spotId={currentSpotId} adSpots={adSpots} setCollapse={setCollapseSidebar} />
+        <SpotInfoSidebar
+          spotCoord={marker}
+          spotId={currentSpotId}
+          adSpots={adSpots}
+          setCollapse={setCollapseSidebar}
+          isClickMarker={isClickMarker}
+        />
       )}
     </div>
   );

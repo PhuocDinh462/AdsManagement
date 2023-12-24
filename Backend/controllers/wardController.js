@@ -373,6 +373,23 @@ const getAdBoardByBoardId = catchAsync(async (req, res, next) => {
   });
 });
 
+const getNumberOfReportsByLatLng = catchAsync(async (req, res, next) => {
+  const { lat, lng } = req.body;
+
+  connection.query(
+    'SELECT * FROM report rp JOIN detail dt ON rp.detail_id = dt.detail_id where lat = ? and lng = ? and point_id is NULL and board_id is NULL',
+    [lat, lng],
+    (err, results) => {
+      if (err) {
+        console.error('Error executing query: ', err);
+        res.status(500).send('Internal Server Error');
+        return;
+      }
+      res.status(200).json({ status: 'success', data: { numberOfReports: results.length } });
+    }
+  );
+});
+
 module.exports = {
   getAdSpotsByWardId,
   getInfoByPointId,
@@ -381,4 +398,5 @@ module.exports = {
   getReportDetailsByPointId,
   updateReportStatus,
   getAdBoardByBoardId,
+  getNumberOfReportsByLatLng,
 };
