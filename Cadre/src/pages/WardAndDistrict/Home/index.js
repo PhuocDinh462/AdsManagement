@@ -87,13 +87,13 @@ export default function Home() {
       lng: _marker.lng,
     });
 
-    setCurrentSpotId(_marker.point_id);
+    setCurrentSpotId(_marker?.point_id);
   };
 
   const iconSize = 25;
 
   const selectIcon = (spot) => {
-    if (spot.numberOfBoards > 0) {
+    if (spot.point_id) {
       if (spot.reportStatus === 'noReport' && spot.is_planning) return AdSpotPlanned;
       else if (spot.reportStatus === 'noReport' && !spot.is_planning) return AdSpotNotPlan;
       else if (spot.reportStatus === 'noProcess') return AdSpotBeReported;
@@ -173,17 +173,37 @@ export default function Home() {
   useSocketSubscribe('changeReport', async (res) => {
     const data = res.data;
 
-    const newReportStatus = data.status === 'processed' ? 'processed' : 'noProcess';
-
     if (data.point_id) {
       const adSpotsIndex = adSpots.findIndex((spot) => spot.point_id === data.point_id);
-      updateAdSpotsReportStatus(adSpotsIndex, newReportStatus);
-    } else if (data.board_id) {
+      await axiosRequest
+        .get(`/ward/getInfoByPointId/${data.point_id}`)
+        .then((res) => {
+          const _data = res.data.data;
+          if (_data.spotInfo.reports === 0 && _data.boardInfo.every((board) => board.reports === 0))
+            updateAdSpotsReportStatus(adSpotsIndex, 'processed');
+          else updateAdSpotsReportStatus(adSpotsIndex, 'noProcess');
+        })
+        .catch((error) => {
+          console.log('Get spot info error: ', error);
+        });
+    } else {
       await axiosRequest
         .get(`ward/getAdBoardByBoardId/${data.board_id}`)
-        .then((res) => {
-          const adSpotsIndex = adSpots.findIndex((spot) => spot.point_id === res.data.data.point_id);
-          updateAdSpotsReportStatus(adSpotsIndex, newReportStatus);
+        .then(async (res) => {
+          const point_id = res.data.data.point_id;
+          const adSpotsIndex = adSpots.findIndex((spot) => spot.point_id === point_id);
+
+          await axiosRequest
+            .get(`/ward/getInfoByPointId/${point_id}`)
+            .then((res) => {
+              const data = res.data.data;
+              if (data.spotInfo.reports === 0 && data.boardInfo.every((board) => board.reports === 0))
+                updateAdSpotsReportStatus(adSpotsIndex, 'processed');
+              else updateAdSpotsReportStatus(adSpotsIndex, 'noProcess');
+            })
+            .catch((error) => {
+              console.log('Get spot info error: ', error);
+            });
         })
         .catch((error) => {
           console.log('Get AdBoard error: ', error);
@@ -236,9 +256,9 @@ export default function Home() {
                     (!plannedStatus ? !spot.is_planning : true) &&
                     (!notPlanStatus ? spot.is_planning : true)
                 )
-                .map((item) => (
+                .map((item, index) => (
                   <Marker
-                    key={item.point_id}
+                    key={index}
                     position={{ lat: item.lat, lng: item.lng }}
                     icon={{
                       url: selectIcon(item),

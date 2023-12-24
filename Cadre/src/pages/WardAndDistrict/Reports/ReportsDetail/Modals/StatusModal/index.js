@@ -12,9 +12,10 @@ import Select from 'react-select';
 export default function StatusModal(props) {
   const { setActive, report_id } = props;
   const [loading, setLoading] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState('Pending');
+  const [selectedStatus, setSelectedStatus] = useState('pending');
 
   const handleConfirm = async () => {
+    console.log(selectedStatus);
     setLoading(true);
     const body = {
       id: report_id,
@@ -90,7 +91,7 @@ export default function StatusModal(props) {
           defaultValue={options[0]}
           options={options}
           styles={customStyles}
-          onChange={(e) => console.log(setSelectedStatus(e.value))}
+          onChange={(e) => setSelectedStatus(e.value)}
           theme={(theme) => ({
             ...theme,
             colors: {

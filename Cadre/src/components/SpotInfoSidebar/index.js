@@ -40,7 +40,10 @@ export default function SpotInfoSidebar(props) {
   }, [spotCoord]);
 
   useEffect(() => {
-    if (!spotId) return;
+    if (!spotId) {
+      setCurrentInfo(null);
+      return;
+    }
     (async () => {
       setLoading(true);
       await axiosRequest

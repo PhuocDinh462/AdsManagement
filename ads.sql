@@ -540,17 +540,18 @@ VALUES (
         'https://inan2h.vn/wp-content/uploads/2022/09/Kich-Thuoc-In-Pano-Quang-Cao-Chuan-Cap-Nhat-Moi-Nhat-1200x900.jpg',
         30.0,
         40.0,
-        12.0,
-        22.0
-    ), (
-        'Content B',
-        'https://inan2h.vn/wp-content/uploads/2022/09/Kich-Thuoc-In-Pano-Quang-Cao-Chuan-Cap-Nhat-Moi-Nhat-1200x900.jpg',
-        'https://wewin.com.vn/wp-content/uploads/2021/08/pano-quang-cao-ngoai-troi-scaled.jpg',
-        35.0,
-        45.0,
-        18.0,
-        28.0
-    );
+        10.765674,
+        106.680951
+
+), (
+    'Content B',
+    'https://inan2h.vn/wp-content/uploads/2022/09/Kich-Thuoc-In-Pano-Quang-Cao-Chuan-Cap-Nhat-Moi-Nhat-1200x900.jpg',
+    'https://wewin.com.vn/wp-content/uploads/2021/08/pano-quang-cao-ngoai-troi-scaled.jpg',
+    35.0,
+    45.0,
+    10.765501,
+    106.677138
+);
 
 -- Dữ liệu mẫu cho bảng AdvertisingBoard
 INSERT INTO
