@@ -20,6 +20,7 @@ import {
 import setLocalStorageFromCookie from '~/src/utils/setLocalStorageFromCookie';
 import { axiosRequest } from '~/src/api/axios';
 import AnnotationDropdown from '~components/Dropdown/AnnotationDropdown';
+import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
 
 const containerStyle = {
   width: '100%',
@@ -143,6 +144,34 @@ export default function Home() {
   const [beReportedStatus, setBeReportedStatus] = useState(true);
   const [plannedStatus, setPlannedStatus] = useState(true);
   const [notPlanStatus, setNotPlanStatus] = useState(true);
+
+  // Socket
+  useSocketSubscribe('changeReport', async (res) => {
+    const data = res.data;
+
+    const newReportStatus = data.status === 'Processed' ? 'Processed' : 'noProcess';
+
+    if (data.point_id) {
+      const adSpotsIndex = adSpots.findIndex((spot) => spot.point_id === data.point_id);
+      updateAdSpotsReportStatus(adSpotsIndex, newReportStatus);
+    } else if (data.board_id) {
+      await axiosRequest
+        .get(`ward/getAdBoardByBoardId/${data.board_id}`)
+        .then((res) => {
+          const adSpotsIndex = adSpots.findIndex((spot) => spot.point_id === res.data.data.point_id);
+          updateAdSpotsReportStatus(adSpotsIndex, newReportStatus);
+        })
+        .catch((error) => {
+          console.log('Get AdBoard error: ', error);
+        });
+    }
+  });
+
+  const updateAdSpotsReportStatus = (index, newReportStatus) => {
+    setAdSpots((prevArray) =>
+      prevArray.map((item, i) => (i === index ? { ...item, reportStatus: newReportStatus } : item))
+    );
+  };
 
   return (
     <div className={classes.main_container}>

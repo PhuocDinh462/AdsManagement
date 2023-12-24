@@ -8,12 +8,12 @@ export const useSocketSubscribe = (eventName, eventHandler) => {
   // when the component, *which uses this hook* mounts,
   // add a listener.
   useEffect(() => {
-    console.log('SocketIO: adding listener', eventName);
+    // console.log('SocketIO: adding listener', eventName);
     socket.on(eventName, eventHandler);
 
     // Remove when it unmounts
     return () => {
-      console.log('SocketIO: removing listener', eventName);
+      // console.log('SocketIO: removing listener', eventName);
       socket?.off(eventName, eventHandler);
     };
 
@@ -51,4 +51,3 @@ export function AlertNotification() {
 
   return <div>{someState}</div>;
 }
-

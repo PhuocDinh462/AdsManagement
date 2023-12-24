@@ -1,6 +1,7 @@
 const catchAsync = require('../utils/catchAsync');
 const connection = require('../server');
 const socketIO = require('socket.io');
+const socket = require('../app');
 
 const getAdSpotsByWardId = catchAsync(async (req, res, next) => {
   connection.query('SELECT * FROM advertising_point where ward_id = ?', [req.params.id], (err, results) => {
@@ -316,35 +317,24 @@ const updateReportStatus = catchAsync(async (req, res, next) => {
         return;
       }
 
+      socket?.socketIo?.emit('changeReport', { method: 'update', data: results[0] });
       res.status(200).json({ status: 'success', data: results });
     });
   });
 });
 
-const reportListsSocket = (server) => {
-  const io = socketIO(server);
+const getAdBoardByBoardId = catchAsync(async (req, res, next) => {
+  const query = 'SELECT * FROM advertising_board where board_id = ?';
 
-  io.on('connection', (socket) => {
-    console.log('A client connected');
-
-    // Thực hiện query để lắng nghe thay đổi trong bảng MySQL
-    const query = connection.query('SELECT * FROM report');
-    const watcher = query.stream();
-
-    // Lắng nghe sự kiện data của bảng MySQL thay đổi
-    watcher.on('data', (row) => {
-      // Gửi dữ liệu mới đến client khi có thay đổi
-      socket.emit('dataChange', row);
-    });
-
-    // Lắng nghe sự kiện đóng kết nối của client
-    socket.on('disconnect', () => {
-      console.log('A client disconnected');
-      // Dừng theo dõi khi client đóng kết nối
-      watcher.destroy();
-    });
+  connection.query(query, [req.params.id], (err, results) => {
+    if (err) {
+      console.error('Error executing query: ', err);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.status(200).json({ status: 'success', data: results[0] || null });
   });
-};
+});
 
 module.exports = {
   getAdSpotsByWardId,
@@ -353,5 +343,5 @@ module.exports = {
   getReportListsByWardId,
   getReportDetailsByPointId,
   updateReportStatus,
-  reportListsSocket,
+  getAdBoardByBoardId,
 };
