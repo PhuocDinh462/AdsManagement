@@ -282,7 +282,9 @@ export default function Home() {
         />
       </div>
 
-      {displayMarker && <SpotInfoSidebar spotCoord={marker} spotId={currentSpotId} setCollapse={setCollapseSidebar} />}
+      {displayMarker && (
+        <SpotInfoSidebar spotCoord={marker} spotId={currentSpotId} adSpots={adSpots} setCollapse={setCollapseSidebar} />
+      )}
     </div>
   );
 }
