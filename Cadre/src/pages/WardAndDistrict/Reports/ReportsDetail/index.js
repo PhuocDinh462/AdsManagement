@@ -26,7 +26,7 @@ import StatusModal from './Modals/StatusModal';
 import { useParams } from 'react-router-dom';
 import { axiosRequest } from '~/src/api/axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { setReportIndex, selectReportIndex } from '~/src/store/reducers';
+import { setReportIndex, selectReportIndex, setReportPointId } from '~/src/store/reducers';
 import { useNavigate } from 'react-router';
 
 export default function ReportsDetail() {
@@ -55,7 +55,6 @@ export default function ReportsDetail() {
           setData(data);
           setFilteredData(data.reports);
           if (reportIndexStorage < data.reports.length) setCurrentReportIndex(reportIndexStorage);
-          console.log(reportIndexStorage);
         })
         .catch((error) => {
           console.log('Get spots error: ', error);
@@ -97,7 +96,13 @@ export default function ReportsDetail() {
         </div>
 
         <div className={classes.nav_btn_container}>
-          <div className={[classes.nav_btn, classes.btn].join(' ')} onClick={() => navigate(`/home/${id}`)}>
+          <div
+            className={[classes.nav_btn, classes.btn].join(' ')}
+            onClick={() => {
+              dispatch(setReportPointId(id));
+              navigate('/home');
+            }}
+          >
             <FontAwesomeIcon icon={faLocationDot} />
           </div>
           <div

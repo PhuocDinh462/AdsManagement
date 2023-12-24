@@ -7,7 +7,7 @@ import SearchBar from '~components/SearchBar';
 import { axiosRequest } from '~/src/api/axios';
 import { format } from 'date-fns';
 import { useDispatch } from 'react-redux';
-import { setReportIndex } from '~/src/store/reducers';
+import { setReportIndex, setReportPointId } from '~/src/store/reducers';
 import { useNavigate } from 'react-router';
 
 export default function Reports() {
@@ -99,7 +99,13 @@ export default function Reports() {
                     <td style={{ width: '15%' }}>{row.numberOfReports}</td>
                     <td style={{ width: '20%' }}>{format(new Date(row.latestReport), 'dd/MM/yyyy')}</td>
                     <td style={{ width: '10%' }}>
-                      <button className={classes.btn_info} onClick={() => navigate(`/home/${row.point_id}`)}>
+                      <button
+                        className={classes.btn_info}
+                        onClick={() => {
+                          dispatch(setReportPointId(row.point_id));
+                          navigate('/home');
+                        }}
+                      >
                         <div className={classes.icon_container}>
                           <FontAwesomeIcon icon={faLocationDot} />
                         </div>

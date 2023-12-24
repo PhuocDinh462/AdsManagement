@@ -22,6 +22,8 @@ import { axiosRequest } from '~/src/api/axios';
 import AnnotationDropdown from '~components/Dropdown/AnnotationDropdown';
 import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
 import { useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { setReportPointId, selectReportPointId } from '~/src/store/reducers';
 
 const containerStyle = {
   width: '100%',
@@ -29,7 +31,9 @@ const containerStyle = {
 };
 
 export default function Home() {
-  const { point_id } = useParams();
+  const dispatch = useDispatch();
+  const point_id = useSelector(selectReportPointId);
+
   const [filterActive, setFilterActive] = useState(false);
   const [annotationActive, setAnnotationActive] = useState(false);
   const [collapseSidebar, setCollapseSidebar] = useState(false);
@@ -134,9 +138,12 @@ export default function Home() {
           const data = res.data.data;
           setAdSpots(data);
 
+          console.log(point_id);
+
           if (point_id) {
             const index = data.findIndex((item) => item.point_id === +point_id);
             if (index !== -1) handleMarkerClick(data[index]);
+            dispatch(setReportPointId(null));
           }
         })
         .catch((error) => {
