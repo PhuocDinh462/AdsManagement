@@ -44,6 +44,7 @@ const CardInfor = (props) => {
                     outlineBtn={true}
                     borderRadius={true}
                     redWarning={true}
+                    onClick={() => props.onClickShowReport()}
                 />
             </div>
         </div>

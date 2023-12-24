@@ -184,7 +184,7 @@
             -moz-box-shadow: 4px 0px 5px 0px rgba(0, 0, 0, 0.1);
 
             &-items {
-                margin-top: 10rem;
+                margin-top: 8rem;
                 /* ===== Scrollbar CSS ===== */
                 /* Firefox */
                 * {
@@ -210,8 +210,8 @@
 
             &-table {
                 &-show-img {
-                    padding-bottom: 9rem;
-                    margin-top: 45vh;
+                    // padding-bottom: 9rem;
+                    margin-top: 34rem;
                 }
 
                 &-hidden-img {
@@ -224,7 +224,6 @@
         &-imgAds {
             position: absolute;
             // width: 40rem;
-            text-align: center;
             background-color: white;
             padding-bottom: 2vh;
             box-shadow: 0 0.1rem 0.1rem 0 #969696;
