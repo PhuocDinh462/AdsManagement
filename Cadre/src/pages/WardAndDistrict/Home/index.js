@@ -21,6 +21,7 @@ import setLocalStorageFromCookie from '~/src/utils/setLocalStorageFromCookie';
 import { axiosRequest } from '~/src/api/axios';
 import AnnotationDropdown from '~components/Dropdown/AnnotationDropdown';
 import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
+import { useParams } from 'react-router-dom';
 
 const containerStyle = {
   width: '100%',
@@ -28,6 +29,7 @@ const containerStyle = {
 };
 
 export default function Home() {
+  const { point_id } = useParams();
   const [filterActive, setFilterActive] = useState(false);
   const [annotationActive, setAnnotationActive] = useState(false);
   const [collapseSidebar, setCollapseSidebar] = useState(false);
@@ -62,6 +64,7 @@ export default function Home() {
     setLocalStorageFromCookie('user_id');
     setLocalStorageFromCookie('token');
   }, []);
+
   const handleMapClick = (event) => {
     setDisplayMarker(!displayMarker);
     setCollapseSidebar(false);
@@ -72,7 +75,7 @@ export default function Home() {
     setCurrentSpotId(null);
   };
 
-  const handleMarkerClick = async (_marker) => {
+  const handleMarkerClick = (_marker) => {
     setDisplayMarker(true);
     setCollapseSidebar(false);
     setMarker({
@@ -128,7 +131,13 @@ export default function Home() {
       await axiosRequest
         .get(`ward/getAdSpotsByWardId/1`)
         .then((res) => {
-          setAdSpots(res.data.data);
+          const data = res.data.data;
+          setAdSpots(data);
+
+          if (point_id) {
+            const index = data.findIndex((item) => item.point_id === +point_id);
+            if (index !== -1) handleMarkerClick(data[index]);
+          }
         })
         .catch((error) => {
           console.log('Get spots error: ', error);

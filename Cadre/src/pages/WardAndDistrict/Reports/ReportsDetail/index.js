@@ -3,7 +3,6 @@ import SearchBar from '~components/SearchBar';
 import {
   faArrowLeft,
   faLocationDot,
-  faCircleInfo,
   faAngleUp,
   faAngleDown,
   faAngleLeft,
@@ -28,12 +27,14 @@ import { useParams } from 'react-router-dom';
 import { axiosRequest } from '~/src/api/axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { setReportIndex, selectReportIndex } from '~/src/store/reducers';
+import { useNavigate } from 'react-router';
 
 export default function ReportsDetail() {
   const { id } = useParams();
   const [data, setData] = useState([]);
   const dispatch = useDispatch();
   const reportIndexStorage = useSelector(selectReportIndex);
+  const navigate = useNavigate();
 
   const [currentReportIndex, setCurrentReportIndex] = useState(0);
   const [filteredData, setFilteredData] = useState([]);
@@ -96,15 +97,8 @@ export default function ReportsDetail() {
         </div>
 
         <div className={classes.nav_btn_container}>
-          <div
-            className={[classes.nav_btn, classes.btn, filteredData?.length == 0 && classes['btn--disabled']].join(' ')}
-          >
+          <div className={[classes.nav_btn, classes.btn].join(' ')} onClick={() => navigate(`/home/${id}`)}>
             <FontAwesomeIcon icon={faLocationDot} />
-          </div>
-          <div
-            className={[classes.nav_btn, classes.btn, filteredData?.length == 0 && classes['btn--disabled']].join(' ')}
-          >
-            <FontAwesomeIcon icon={faCircleInfo} />
           </div>
           <div
             className={[classes.nav_btn, classes.btn, currentReportIndex <= 0 && classes['btn--disabled']].join(' ')}

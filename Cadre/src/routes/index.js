@@ -50,7 +50,7 @@ const Navigation = () => {
 
         {/* Layout dành cho trang không có sidebar, chỉ có thanh navbar */}
         <Route element={<LayoutNavBar />}>
-          <Route path="/home" name="home" element={<WardAndDistrictHome />} />
+          <Route path="/home/:point_id?" name="home" element={<WardAndDistrictHome />} />
           <Route path="/create-account" name="create account" element={<CreateAccount />} />
           <Route path="/advertising-spots" name="advertising-spots" element={<AdSpots />} />
           <Route path="/advertising-spots/:id" name="advertising-spots/boards" element={<Boards />} />
@@ -69,4 +69,3 @@ const Navigation = () => {
 };
 
 export default Navigation;
-

@@ -1,6 +1,6 @@
 import classes from './styles.module.scss';
 import React, { useState, useMemo, useEffect } from 'react';
-import { faInfo, faEye } from '@fortawesome/free-solid-svg-icons';
+import { faLocationDot, faEye } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Pagination from '~components/Pagination';
 import SearchBar from '~components/SearchBar';
@@ -99,9 +99,9 @@ export default function Reports() {
                     <td style={{ width: '15%' }}>{row.numberOfReports}</td>
                     <td style={{ width: '20%' }}>{format(new Date(row.latestReport), 'dd/MM/yyyy')}</td>
                     <td style={{ width: '10%' }}>
-                      <button className={classes.btn_info}>
+                      <button className={classes.btn_info} onClick={() => navigate(`/home/${row.point_id}`)}>
                         <div className={classes.icon_container}>
-                          <FontAwesomeIcon icon={faInfo} />
+                          <FontAwesomeIcon icon={faLocationDot} />
                         </div>
                       </button>
                       <button
