@@ -84,7 +84,7 @@ export default function SpotInfoSidebar(props) {
                     </div>
                     <div className={classes.detail}>
                       <span className={classes.label}>Hình thức: </span>
-                      {currentInfo?.boardInfo[currentAdsIndex].advertisement_content}
+                      {currentInfo?.spotInfo.type_name}
                     </div>
                     <div className={classes.detail}>
                       <span className={classes.label}>Phân loại: </span>

@@ -40,6 +40,7 @@ export default function Home() {
     lat: 10.763781,
     lng: 106.684918,
   });
+  const [zoom, setZoom] = useState(15);
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
@@ -137,10 +138,20 @@ export default function Home() {
           const data = res.data.data;
           setAdSpots(data);
 
+          // Use for locate button in Report page
           if (point_id) {
             const index = data.findIndex((item) => item.point_id === +point_id);
-            if (index !== -1) handleMarkerClick(data[index]);
+            if (index !== -1) {
+              handleMarkerClick(data[index]);
+              setCenter({ lat: data[index].lat, lng: data[index].lng });
+              // setZoom(16);
+            }
             dispatch(setReportPointId(null));
+          } else {
+            // Set center
+            const avgLat = data.map((item) => item.lat).reduce((a, b) => a + b, 0) / data.length;
+            const avgLng = data.map((item) => item.lng).reduce((a, b) => a + b, 0) / data.length;
+            setCenter({ lat: avgLat, lng: avgLng });
           }
         })
         .catch((error) => {
@@ -193,7 +204,7 @@ export default function Home() {
           <GoogleMap
             mapContainerStyle={containerStyle}
             center={center}
-            zoom={16}
+            zoom={zoom}
             options={{
               zoomControl: false,
               fullscreenControl: false,
@@ -205,7 +216,7 @@ export default function Home() {
             }}
             onClick={handleMapClick}
           >
-            <Polygon
+            {/* <Polygon
               paths={boundary}
               options={{
                 fillColor: 'transparent',
@@ -214,7 +225,7 @@ export default function Home() {
                 strokeWeight: 5,
                 clickable: false,
               }}
-            />
+            /> */}
             {displayMarker && <Marker position={marker} clickable={false} zIndex={1} />}
             {!loading &&
               adSpots
