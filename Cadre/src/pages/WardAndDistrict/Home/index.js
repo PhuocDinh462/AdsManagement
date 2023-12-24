@@ -138,8 +138,6 @@ export default function Home() {
           const data = res.data.data;
           setAdSpots(data);
 
-          console.log(point_id);
-
           if (point_id) {
             const index = data.findIndex((item) => item.point_id === +point_id);
             if (index !== -1) handleMarkerClick(data[index]);
