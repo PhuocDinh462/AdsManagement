@@ -288,8 +288,12 @@ export default function ReportsDetail() {
         </div>
       )}
 
-      <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={showImageModal}>
-        <ImageModal setActive={setShowImageModal} image_url={imageModalUrl} />
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={showImageModal}
+        onClick={() => setShowImageModal(false)}
+      >
+        <img className={classes.imageModal} src={imageModalUrl} />
       </Backdrop>
 
       <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={showProcessModal}>

@@ -21,7 +21,6 @@ import setLocalStorageFromCookie from '~/src/utils/setLocalStorageFromCookie';
 import { axiosRequest } from '~/src/api/axios';
 import AnnotationDropdown from '~components/Dropdown/AnnotationDropdown';
 import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
-import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setReportPointId, selectReportPointId } from '~/src/store/reducers';
 
@@ -97,7 +96,7 @@ export default function Home() {
       if (spot.reportStatus === 'noReport' && spot.is_planning) return AdSpotPlanned;
       else if (spot.reportStatus === 'noReport' && !spot.is_planning) return AdSpotNotPlan;
       else if (spot.reportStatus === 'noProcess') return AdSpotBeReported;
-      else if (spot.reportStatus === 'Processed') return AdSpotSolvedReport;
+      else if (spot.reportStatus === 'processed') return AdSpotSolvedReport;
     } else {
       if (spot.reportStatus === 'noProcess') return SpotBeReported;
       else return SpotSolvedReport;
@@ -163,7 +162,7 @@ export default function Home() {
   useSocketSubscribe('changeReport', async (res) => {
     const data = res.data;
 
-    const newReportStatus = data.status === 'Processed' ? 'Processed' : 'noProcess';
+    const newReportStatus = data.status === 'processed' ? 'processed' : 'noProcess';
 
     if (data.point_id) {
       const adSpotsIndex = adSpots.findIndex((spot) => spot.point_id === data.point_id);

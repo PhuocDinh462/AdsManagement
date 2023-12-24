@@ -41,8 +41,8 @@ const getAdSpotsByWardId = catchAsync(async (req, res, next) => {
             const allReports = [...spotReports, ...boardReports];
 
             if (allReports.length > 0) {
-              if (allReports.filter((report) => report.status === 'Processed').length === allReports.length)
-                reportStatus = 'Processed';
+              if (allReports.filter((report) => report.status === 'processed').length === allReports.length)
+                reportStatus = 'processed';
               else reportStatus = 'noProcess';
             }
 
@@ -94,7 +94,7 @@ const getInfoByPointId = catchAsync(async (req, res, next) => {
                 ? {
                     ...spotInfo[0],
                     reports: reports.filter(
-                      (report) => report.point_id === spotInfo[0].point_id && report.status !== 'Processed'
+                      (report) => report.point_id === spotInfo[0].point_id && report.status !== 'processed'
                     ).length,
                   }
                 : null,
@@ -102,7 +102,7 @@ const getInfoByPointId = catchAsync(async (req, res, next) => {
                 return {
                   ...item,
                   reports: reports.filter(
-                    (report) => report.board_id === item.board_id && report.status !== 'Processed'
+                    (report) => report.board_id === item.board_id && report.status !== 'processed'
                   ).length,
                 };
               }),
@@ -263,13 +263,11 @@ const getReportDetailsByPointId = catchAsync(async (req, res, next) => {
                   reportedObject: report.point_id ? 'Địa điểm' : 'Bảng quảng cáo',
                   image_urls: [report.image_url_1, report.image_url_2],
                   status:
-                    report.status === 'Pending'
-                      ? 'Chờ xử lý'
-                      : report.status === 'Processing'
-                      ? 'Đang xử lý'
-                      : report.status === 'Processed'
+                    report.status === 'processed'
                       ? 'Đã xử lý'
-                      : 'Không được chấp nhận',
+                      : report.status === 'processing'
+                      ? 'Đang xử lý'
+                      : 'Chờ xử lý',
                 };
               }),
             }));

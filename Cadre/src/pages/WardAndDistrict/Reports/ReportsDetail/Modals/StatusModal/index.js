@@ -63,15 +63,15 @@ export default function StatusModal(props) {
 
   const options = [
     {
-      value: 'Pending',
+      value: 'pending',
       label: 'Chờ xử lý',
     },
     {
-      value: 'Processing',
+      value: 'processing',
       label: 'Đang xử lý',
     },
     {
-      value: 'Processed',
+      value: 'processed',
       label: 'Đã xử lý',
     },
   ];

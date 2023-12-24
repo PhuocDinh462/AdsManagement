@@ -216,3 +216,12 @@
     margin-bottom: 1rem;
   }
 }
+
+.imageModal {
+  width: fit-content;
+  height: fit-content;
+  max-width: 90%;
+  max-height: 90vh;
+  border-radius: 10px;
+  object-fit: cover;
+}
