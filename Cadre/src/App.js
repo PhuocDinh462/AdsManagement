@@ -1,12 +1,19 @@
 import React from 'react';
 import './styles/style.scss';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import Navigation from './routes';
+import { AlertNotification } from '~/src/hook/useSocketSubscribe';
+
+const theme = createTheme({
+  components: {},
+});
 
 const App = () => (
-  <div>
+  <ThemeProvider theme={theme}>
     <Navigation />
-  </div>
+    {/* <AlertNotification /> */}
+  </ThemeProvider>
 );
 
 export default App;

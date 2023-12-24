@@ -66,6 +66,7 @@ const FormBoard = () => {
       const responsePoint = await request.get(`point/get_point/${responseBoard.data.board.point_id}`, { headers: headers });
       setBoardInfor(responseBoard.data.board);
       setPointInfor(responsePoint.data.point)
+      setImageUploadUrl(responseBoard.data.board.advertisement_image_url)
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -145,7 +146,7 @@ const FormBoard = () => {
       requestTime: '',
       address: address,
       boardType: boardInfor.board_type_id,
-      imageURL: boardInfor.advertisement_image_url,
+      imageURL: imageUploadUrl,
       width: boardInfor.width,
       height: boardInfor.height,
       content: boardInfor.advertisement_content,

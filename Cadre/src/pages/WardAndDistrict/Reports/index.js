@@ -1,16 +1,21 @@
 import classes from './styles.module.scss';
 import React, { useState, useMemo, useEffect } from 'react';
-import { faInfo, faEye } from '@fortawesome/free-solid-svg-icons';
+import { faLocationDot, faEye } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Pagination from '~components/Pagination';
 import SearchBar from '~components/SearchBar';
 import { axiosRequest } from '~/src/api/axios';
 import { format } from 'date-fns';
+import { useDispatch } from 'react-redux';
+import { setReportIndex, setReportPointId } from '~/src/store/reducers';
+import { useNavigate } from 'react-router';
 
 export default function Reports() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [filteredData, setFilterData] = useState(data);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -94,18 +99,28 @@ export default function Reports() {
                     <td style={{ width: '15%' }}>{row.numberOfReports}</td>
                     <td style={{ width: '20%' }}>{format(new Date(row.latestReport), 'dd/MM/yyyy')}</td>
                     <td style={{ width: '10%' }}>
-                      <button className={classes.btn_info}>
+                      <button
+                        className={classes.btn_info}
+                        onClick={() => {
+                          dispatch(setReportPointId(row.point_id));
+                          navigate('/home');
+                        }}
+                      >
                         <div className={classes.icon_container}>
-                          <FontAwesomeIcon icon={faInfo} />
+                          <FontAwesomeIcon icon={faLocationDot} />
                         </div>
                       </button>
-                      <a href={`/reports/detail/${row.point_id}`}>
-                        <button className={classes.btn_detail}>
-                          <div className={classes.icon_container}>
-                            <FontAwesomeIcon icon={faEye} />
-                          </div>
-                        </button>
-                      </a>
+                      <button
+                        className={classes.btn_detail}
+                        onClick={() => {
+                          dispatch(setReportIndex(0));
+                          navigate(`/reports/detail/${row.point_id}`);
+                        }}
+                      >
+                        <div className={classes.icon_container}>
+                          <FontAwesomeIcon icon={faEye} />
+                        </div>
+                      </button>
                     </td>
                   </tr>
                 ))}

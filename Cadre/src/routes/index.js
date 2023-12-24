@@ -23,6 +23,7 @@ import ManageAd from '../pages/ManageAd/ManageAd';
 import ActionLicense from '../pages/ActionLicense';
 import ReportStats from '../pages/ReportStats';
 import Boards from '../pages/WardAndDistrict/AdSpots/Boards';
+import ManageEditRequest from '../pages/ManageEditRequest/ManageEditRequest';
 
 const Navigation = () => {
   const authenticated = true;
@@ -41,6 +42,7 @@ const Navigation = () => {
 
           <Route path="/ads-location" name="ads-location" element={<ManageAdLocation />} />
           <Route path="/ads" name="ads" element={<ManageAd />} />
+          <Route path="/action-edit" name="ads" element={<ManageEditRequest />} />
 
           <Route path="/action-license" name="manage license" element={<ActionLicense />} />
           <Route path="/report-stats" name="report stats" element={<ReportStats />} />
@@ -67,4 +69,3 @@ const Navigation = () => {
 };
 
 export default Navigation;
-

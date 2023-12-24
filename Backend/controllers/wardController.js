@@ -1,5 +1,7 @@
 const catchAsync = require('../utils/catchAsync');
 const connection = require('../server');
+const socketIO = require('socket.io');
+const socket = require('../app');
 
 const getAdSpotsByWardId = catchAsync(async (req, res, next) => {
   connection.query('SELECT * FROM advertising_point where ward_id = ?', [req.params.id], (err, results) => {
@@ -39,8 +41,8 @@ const getAdSpotsByWardId = catchAsync(async (req, res, next) => {
             const allReports = [...spotReports, ...boardReports];
 
             if (allReports.length > 0) {
-              if (allReports.filter((report) => report.status === 'Processed').length === allReports.length)
-                reportStatus = 'Processed';
+              if (allReports.filter((report) => report.status === 'processed').length === allReports.length)
+                reportStatus = 'processed';
               else reportStatus = 'noProcess';
             }
 
@@ -92,7 +94,7 @@ const getInfoByPointId = catchAsync(async (req, res, next) => {
                 ? {
                     ...spotInfo[0],
                     reports: reports.filter(
-                      (report) => report.point_id === spotInfo[0].point_id && report.status !== 'Processed'
+                      (report) => report.point_id === spotInfo[0].point_id && report.status !== 'processed'
                     ).length,
                   }
                 : null,
@@ -100,7 +102,7 @@ const getInfoByPointId = catchAsync(async (req, res, next) => {
                 return {
                   ...item,
                   reports: reports.filter(
-                    (report) => report.board_id === item.board_id && report.status !== 'Processed'
+                    (report) => report.board_id === item.board_id && report.status !== 'processed'
                   ).length,
                 };
               }),
@@ -261,13 +263,11 @@ const getReportDetailsByPointId = catchAsync(async (req, res, next) => {
                   reportedObject: report.point_id ? 'Địa điểm' : 'Bảng quảng cáo',
                   image_urls: [report.image_url_1, report.image_url_2],
                   status:
-                    report.status === 'Pending'
-                      ? 'Chờ xử lý'
-                      : report.status === 'Processing'
-                      ? 'Đang xử lý'
-                      : report.status === 'Processed'
+                    report.status === 'processed'
                       ? 'Đã xử lý'
-                      : 'Không được chấp nhận',
+                      : report.status === 'processing'
+                      ? 'Đang xử lý'
+                      : 'Chờ xử lý',
                 };
               }),
             }));
@@ -296,10 +296,50 @@ const getReportDetailsByPointId = catchAsync(async (req, res, next) => {
   });
 });
 
+const updateReportStatus = catchAsync(async (req, res, next) => {
+  const { id, status } = req.body;
+
+  connection.query('update report set status = ? where report_id = ?', [status, id], (err, results) => {
+    if (err) {
+      console.error('Error executing query: ', err);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+
+    if (results.affectedRows === 0) res.status(401).json({ status: 'fail', msg: 'report_id is not exist' });
+
+    connection.query('select * from report where report_id = ?', [id], (err, results) => {
+      if (err) {
+        console.error('Error executing query: ', err);
+        res.status(500).send('Internal Server Error');
+        return;
+      }
+
+      socket?.socketIo?.emit('changeReport', { method: 'update', data: results[0] });
+      res.status(200).json({ status: 'success', data: results });
+    });
+  });
+});
+
+const getAdBoardByBoardId = catchAsync(async (req, res, next) => {
+  const query = 'SELECT * FROM advertising_board where board_id = ?';
+
+  connection.query(query, [req.params.id], (err, results) => {
+    if (err) {
+      console.error('Error executing query: ', err);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.status(200).json({ status: 'success', data: results[0] || null });
+  });
+});
+
 module.exports = {
   getAdSpotsByWardId,
   getInfoByPointId,
   getAdBoardsBySpotId,
   getReportListsByWardId,
   getReportDetailsByPointId,
+  updateReportStatus,
+  getAdBoardByBoardId,
 };

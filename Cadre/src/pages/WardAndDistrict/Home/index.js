@@ -20,6 +20,9 @@ import {
 import setLocalStorageFromCookie from '~/src/utils/setLocalStorageFromCookie';
 import { axiosRequest } from '~/src/api/axios';
 import AnnotationDropdown from '~components/Dropdown/AnnotationDropdown';
+import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
+import { useDispatch, useSelector } from 'react-redux';
+import { setReportPointId, selectReportPointId } from '~/src/store/reducers';
 
 const containerStyle = {
   width: '100%',
@@ -27,6 +30,9 @@ const containerStyle = {
 };
 
 export default function Home() {
+  const dispatch = useDispatch();
+  const point_id = useSelector(selectReportPointId);
+
   const [filterActive, setFilterActive] = useState(false);
   const [annotationActive, setAnnotationActive] = useState(false);
   const [collapseSidebar, setCollapseSidebar] = useState(false);
@@ -61,6 +67,7 @@ export default function Home() {
     setLocalStorageFromCookie('user_id');
     setLocalStorageFromCookie('token');
   }, []);
+
   const handleMapClick = (event) => {
     setDisplayMarker(!displayMarker);
     setCollapseSidebar(false);
@@ -71,7 +78,7 @@ export default function Home() {
     setCurrentSpotId(null);
   };
 
-  const handleMarkerClick = async (_marker) => {
+  const handleMarkerClick = (_marker) => {
     setDisplayMarker(true);
     setCollapseSidebar(false);
     setMarker({
@@ -89,7 +96,7 @@ export default function Home() {
       if (spot.reportStatus === 'noReport' && spot.is_planning) return AdSpotPlanned;
       else if (spot.reportStatus === 'noReport' && !spot.is_planning) return AdSpotNotPlan;
       else if (spot.reportStatus === 'noProcess') return AdSpotBeReported;
-      else if (spot.reportStatus === 'Processed') return AdSpotSolvedReport;
+      else if (spot.reportStatus === 'processed') return AdSpotSolvedReport;
     } else {
       if (spot.reportStatus === 'noProcess') return SpotBeReported;
       else return SpotSolvedReport;
@@ -127,7 +134,14 @@ export default function Home() {
       await axiosRequest
         .get(`ward/getAdSpotsByWardId/1`)
         .then((res) => {
-          setAdSpots(res.data.data);
+          const data = res.data.data;
+          setAdSpots(data);
+
+          if (point_id) {
+            const index = data.findIndex((item) => item.point_id === +point_id);
+            if (index !== -1) handleMarkerClick(data[index]);
+            dispatch(setReportPointId(null));
+          }
         })
         .catch((error) => {
           console.log('Get spots error: ', error);
@@ -143,6 +157,34 @@ export default function Home() {
   const [beReportedStatus, setBeReportedStatus] = useState(true);
   const [plannedStatus, setPlannedStatus] = useState(true);
   const [notPlanStatus, setNotPlanStatus] = useState(true);
+
+  // Socket
+  useSocketSubscribe('changeReport', async (res) => {
+    const data = res.data;
+
+    const newReportStatus = data.status === 'processed' ? 'processed' : 'noProcess';
+
+    if (data.point_id) {
+      const adSpotsIndex = adSpots.findIndex((spot) => spot.point_id === data.point_id);
+      updateAdSpotsReportStatus(adSpotsIndex, newReportStatus);
+    } else if (data.board_id) {
+      await axiosRequest
+        .get(`ward/getAdBoardByBoardId/${data.board_id}`)
+        .then((res) => {
+          const adSpotsIndex = adSpots.findIndex((spot) => spot.point_id === res.data.data.point_id);
+          updateAdSpotsReportStatus(adSpotsIndex, newReportStatus);
+        })
+        .catch((error) => {
+          console.log('Get AdBoard error: ', error);
+        });
+    }
+  });
+
+  const updateAdSpotsReportStatus = (index, newReportStatus) => {
+    setAdSpots((prevArray) =>
+      prevArray.map((item, i) => (i === index ? { ...item, reportStatus: newReportStatus } : item))
+    );
+  };
 
   return (
     <div className={classes.main_container}>
@@ -239,7 +281,9 @@ export default function Home() {
         />
       </div>
 
-      {displayMarker && <SpotInfoSidebar spotCoord={marker} spotId={currentSpotId} setCollapse={setCollapseSidebar} />}
+      {displayMarker && (
+        <SpotInfoSidebar spotCoord={marker} spotId={currentSpotId} adSpots={adSpots} setCollapse={setCollapseSidebar} />
+      )}
     </div>
   );
 }

@@ -43,7 +43,7 @@ export default function ProcessModal(props) {
   const { setActive, email } = props;
   const [loading, setLoading] = useState(false);
 
-  const [handlingMethod, setHandlingMethod] = useState();
+  const [handlingMethod, setHandlingMethod] = useState('');
 
   const handleConfirm = async () => {
     setLoading(true);
@@ -74,7 +74,7 @@ export default function ProcessModal(props) {
   return (
     <div className={classes.main_container}>
       <div className={classes.header}>
-        <div className={classes.header__title}>Xử lý báo cáo</div>
+        <div className={classes.header__title}>Gửi mail</div>
         <div className={classes.header__closeIc} onClick={() => setActive(false)}>
           <FontAwesomeIcon icon={faXmark} />
         </div>
@@ -85,7 +85,7 @@ export default function ProcessModal(props) {
           <CssTextField
             defaultValue={null}
             variant="outlined"
-            label={'Cách thức xử lý'}
+            label={'Nội dung'}
             fullWidth
             multiline
             rows={10}
@@ -97,7 +97,7 @@ export default function ProcessModal(props) {
       </div>
 
       <div className={classes.btn_container}>
-        <IconTextBtn label="Gửi" rightIc={faShare} onClick={() => handleConfirm()} />
+        <IconTextBtn label="Gửi" rightIc={faShare} onClick={() => handleConfirm()} disabled={!handlingMethod} />
       </div>
 
       <Backdrop sx={{ color: 'white', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loading}>

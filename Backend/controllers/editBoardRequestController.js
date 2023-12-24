@@ -1,5 +1,6 @@
 const catchAsync = require("../utils/catchAsync");
 const connection = require("../server"); // Sử dụng module quản lý kết nối cơ sở dữ liệu
+const socket = require('../app');
 
 const getInforEditBoardRequest = catchAsync(async (req, res, next) => {
     const { id } = req.params;
@@ -38,6 +39,8 @@ const createEditBoardRequest = catchAsync(async (req, res, next) => {
             height,
             created_by: req.user.user_id
         }
+        socket?.socketIo?.emit('update', 'New Edit Board Request Created');
+
         res.status(200).json({
             status: "success",
             edit_request

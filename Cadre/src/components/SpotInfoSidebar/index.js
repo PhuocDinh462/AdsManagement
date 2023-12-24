@@ -9,7 +9,7 @@ import axios from 'axios';
 import { axiosRequest } from '~/src/api/axios';
 
 export default function SpotInfoSidebar(props) {
-  const { spotCoord, spotId, setCollapse } = props;
+  const { spotCoord, spotId, setCollapse, adSpots } = props;
   const [status, setStatus] = useState(true);
   const [currentAdsIndex, setCurrentAdsIndex] = useState(0);
   const [spotName, setSpotName] = useState();
@@ -56,7 +56,7 @@ export default function SpotInfoSidebar(props) {
           setLoading(false);
         });
     })();
-  }, [spotId]);
+  }, [spotId, adSpots]);
 
   return (
     <div className={[classes.main_container, status ? classes.slideIn : classes.slideOut].join(' ')}>
