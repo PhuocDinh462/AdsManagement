@@ -1,6 +1,5 @@
 const catchAsync = require('../utils/catchAsync');
 const connection = require('../server');
-const socketIO = require('socket.io');
 const socket = require('../app');
 
 const getAdSpotsByWardId = catchAsync(async (req, res, next) => {
@@ -23,7 +22,7 @@ const getAdSpotsByWardId = catchAsync(async (req, res, next) => {
       connection.query(
         'SELECT * FROM report rp JOIN detail dt ON rp.detail_id = dt.detail_id',
         [req.params.id],
-        (err, results) => {
+        async (err, results) => {
           if (err) {
             console.error('Error executing query: ', err);
             res.status(500).send('Internal Server Error');
@@ -56,38 +55,66 @@ const getAdSpotsByWardId = catchAsync(async (req, res, next) => {
             };
           });
 
-          // Find spots have report but isn't adSpot
-          const reportSpots = reports
-            .filter((report) => !report.point_id && !report.board_id)
-            .map((spot) => {
-              return {
-                lat: spot.lat,
-                lng: spot.lng,
-                reportStatus: spot.status === 'processed' ? 'processed' : 'noProcess',
-              };
-            });
+          connection.query(
+            'SELECT * FROM ward JOIN district ON ward.district_id = district.district_id',
+            [req.params.id],
+            async (err, results) => {
+              if (err) {
+                console.error('Error executing query: ', err);
+                res.status(500).send('Internal Server Error');
+                return;
+              }
+              const wardName = results[0].ward_name;
+              const districtName = results[0].district_name;
 
-          // Tạo một đối tượng Map để theo dõi các cặp lat và lng đã xuất hiện
-          const latLngMap = new Map();
+              // Find spots have report but isn't adSpot
+              const reportSpots = await Promise.all(
+                reports
+                  .filter((report) => !report.point_id && !report.board_id)
+                  .map(async (spot) => {
+                    const url = `https://rsapi.goong.io/Geocode?latlng=${spot.lat},${spot.lng}&api_key=${process.env.GOONG_APIKEY}`;
+                    const response = await fetch(url);
+                    const data = await response.json();
 
-          // Lọc và tạo mảng mới dựa trên điều kiện
-          const reportSpotsFiltered = reportSpots.filter((item) => {
-            const latLngKey = `${item.lat}-${item.lng}`;
+                    return {
+                      lat: spot.lat,
+                      lng: spot.lng,
+                      address: data?.error ? null : data.results[0].formatted_address,
+                      reportStatus: spot.status === 'processed' ? 'processed' : 'noProcess',
+                    };
+                  })
+              );
 
-            // Nếu lat và lng chưa xuất hiện, thêm vào Map và giữ lại phần tử
-            if (!latLngMap.has(latLngKey)) {
-              latLngMap.set(latLngKey, true);
-              return true;
+              // Tạo một đối tượng Map để theo dõi các cặp lat và lng đã xuất hiện
+              const latLngMap = new Map();
+
+              // Lọc và tạo mảng mới dựa trên điều kiện
+              const reportSpotsFiltered = reportSpots.filter((item) => {
+                const latLngKey = `${item.lat}-${item.lng}`;
+
+                // Nếu lat và lng chưa xuất hiện, thêm vào Map và giữ lại phần tử
+                if (!latLngMap.has(latLngKey)) {
+                  latLngMap.set(latLngKey, true);
+                  return true;
+                }
+
+                // Nếu đã xuất hiện, chỉ giữ lại các phần tử có reportStatus là "noProcess"
+                return item.reportStatus === 'noProcess';
+              });
+
+              res.status(200).json({
+                status: 'success',
+                data: [
+                  ...adSpots,
+                  ...reportSpotsFiltered.filter(
+                    (spot) =>
+                      spot.address?.toLowerCase().includes(wardName.toLowerCase()) &&
+                      spot.address?.toLowerCase().includes(districtName.toLowerCase())
+                  ),
+                ],
+              });
             }
-
-            // Nếu đã xuất hiện, chỉ giữ lại các phần tử có reportStatus là "noProcess"
-            return item.reportStatus === 'noProcess';
-          });
-
-          res.status(200).json({
-            status: 'success',
-            data: [...adSpots, ...reportSpotsFiltered],
-          });
+          );
         }
       );
     });
