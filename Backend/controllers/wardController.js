@@ -322,10 +322,31 @@ const getReportListsByWardId = catchAsync(async (req, res, next) => {
             };
           });
 
-          res.status(200).json({
-            status: 'success',
-            data: [...adSpots, ...reportSpotsFiltered],
-          });
+          connection.query(
+            'SELECT * FROM ward JOIN district ON ward.district_id = district.district_id',
+            [req.params.id],
+            async (err, results) => {
+              if (err) {
+                console.error('Error executing query: ', err);
+                res.status(500).send('Internal Server Error');
+                return;
+              }
+              const wardName = results[0].ward_name;
+              const districtName = results[0].district_name;
+
+              res.status(200).json({
+                status: 'success',
+                data: [
+                  ...adSpots,
+                  ...reportSpotsFiltered.filter(
+                    (spot) =>
+                      spot.address?.toLowerCase().includes(wardName.toLowerCase()) &&
+                      spot.address?.toLowerCase().includes(districtName.toLowerCase())
+                  ),
+                ],
+              });
+            }
+          );
         }
       );
     });
