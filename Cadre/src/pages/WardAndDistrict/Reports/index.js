@@ -53,12 +53,10 @@ export default function Reports() {
     }
 
     setFilterData(
-      data.filter(
-        (item) =>
-          item.point_id.toString() === filterKeyword ||
-          item.address
-            .toLowerCase()
-            .includes(filterKeyword.toLowerCase() || item.numberOfReports.toString() === filterKeyword)
+      data.filter((item) =>
+        item.address
+          .toLowerCase()
+          .includes(filterKeyword.toLowerCase() || item.numberOfReports.toString() === filterKeyword)
       )
     );
   }, [filterKeyword]);
