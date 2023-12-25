@@ -312,6 +312,8 @@ const getReportListsByWardId = catchAsync(async (req, res, next) => {
             return {
               address: spot.address || null,
               numberOfReports: currentReportSpot.length,
+              lat: spot.lat,
+              lng: spot.lng,
               latestReport: currentReportSpot
                 .map((item) => item.created_at)
                 .sort((a, b) => new Date(b) - new Date(a))[0],
@@ -420,6 +422,47 @@ const getReportDetailsByPointId = catchAsync(async (req, res, next) => {
   });
 });
 
+const getReportDetailsByLatLng = catchAsync(async (req, res, next) => {
+  const { lat, lng } = req.body;
+
+  connection.query(
+    'SELECT * FROM report rp JOIN detail dt ON rp.detail_id = dt.detail_id JOIN report_type rt ON rp.report_type_id = rt.report_type_id where dt.lat = ? and dt.lng and rp.point_id is NULL and rp.board_id is NULL',
+    [lat, lng],
+    async (err, results) => {
+      if (err) {
+        console.error('Error executing query: ', err);
+        res.status(500).send('Internal Server Error');
+        return;
+      }
+      const reports = results;
+
+      const url = `https://rsapi.goong.io/Geocode?latlng=${reports[0].lat},${reports[0].lng}&api_key=${process.env.GOONG_APIKEY}`;
+      const response = await fetch(url);
+      const data = await response.json();
+      const address = data?.error ? null : data.results[0].formatted_address;
+
+      res.status(200).json({
+        status: 'success',
+        data: {
+          address: address,
+          reports: reports.map((report) => {
+            return {
+              ...report,
+              reportedObject: 'Địa điểm',
+              status:
+                report.status === 'processed'
+                  ? 'Đã xử lý'
+                  : report.status === 'processing'
+                  ? 'Đang xử lý'
+                  : 'Chờ xử lý',
+            };
+          }),
+        },
+      });
+    }
+  );
+});
+
 const updateReportStatus = catchAsync(async (req, res, next) => {
   const { id, status } = req.body;
 
@@ -481,6 +524,7 @@ module.exports = {
   getAdBoardsBySpotId,
   getReportListsByWardId,
   getReportDetailsByPointId,
+  getReportDetailsByLatLng,
   updateReportStatus,
   getAdBoardByBoardId,
   getNumberOfReportsByLatLng,

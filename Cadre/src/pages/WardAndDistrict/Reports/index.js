@@ -93,7 +93,7 @@ export default function Reports() {
             <tbody>
               {!loading &&
                 currentTableData.map((row, rowIndex) => (
-                  <tr className={classes.table__body_wrap_row} key={row.point_id}>
+                  <tr className={classes.table__body_wrap_row} key={rowIndex}>
                     <td style={{ width: '5%' }}>{rowIndex + 1}</td>
                     <td style={{ width: '50%' }}>{row.address}</td>
                     <td style={{ width: '15%' }}>{row.numberOfReports}</td>
@@ -116,7 +116,7 @@ export default function Reports() {
                         className={classes.btn_detail}
                         onClick={() => {
                           dispatch(setReportIndex(0));
-                          navigate(`/reports/detail/${row.point_id}`);
+                          navigate(`/reports/detail/${row?.point_id || row.lat + ',' + row.lng}`);
                         }}
                       >
                         <div className={classes.icon_container}>
