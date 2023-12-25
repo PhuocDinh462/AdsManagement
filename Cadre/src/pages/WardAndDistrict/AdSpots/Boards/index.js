@@ -20,55 +20,61 @@ import {
   faBlackboard,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { IconTextBtn } from '~components/button';
 import images from '~/src/assets/images';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
+import request from '~/src/utils/request';
 const pointDetail = 'Chi tiết điểm đặt tại 15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM'
 const ad_types = ["Cổ động chính trị", "Quảng cáo thương mại", "Xã hội hoá"]
 export default function Boards() {
-  const [data, setData] = useState([
-    {
-      id: 1,
-      width: 2.5,
-      height: 2.2,
-      board_type_id: 2,
-      username: 'Nguyễn Văn A',
-      advertisement_image_url: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
-      advertisement_content: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.
-      
-      `,
+  const { id } = useParams()
+  // const [data, setData] = useState([
+  //   {
+  //     id: 1,
+  //     width: 2.5,
+  //     height: 2.2,
+  //     board_type_id: 2,
+  //     username: 'Nguyễn Văn A',
+  //     advertisement_image_url: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
+  //     advertisement_content: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.
+  //     Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.
+  //     Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.
+  //     Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.
+  //     Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.
+  //     Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.
 
-    },
-    {
-      id: 2,
-      width: 2.5,
-      height: 3.2,
-      board_type_id: 1,
-      advertisement_image_url: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
-      advertisement_content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.',
+  //     `,
 
-    },
-    {
-      id: 3,
-      width: 2.5,
-      height: 4.2,
-      board_type_id: 0,
-      advertisement_image_url: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
-      advertisement_content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.',
+  //   },
+  //   {
+  //     id: 2,
+  //     width: 2.5,
+  //     height: 3.2,
+  //     board_type_id: 1,
+  //     advertisement_image_url: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
+  //     advertisement_content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.',
 
-    }
-  ]);
+  //   },
+  //   {
+  //     id: 3,
+  //     width: 2.5,
+  //     height: 4.2,
+  //     board_type_id: 0,
+  //     advertisement_image_url: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
+  //     advertisement_content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.',
+
+  //   }
+  // ]);
+  const [data, setData] = useState([])
 
   const [currentReportIndex, setCurrentReportIndex] = useState(0);
   const boardNavigate = useNavigate();
   const [filteredData, setFilteredData] = useState(data);
-
+  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
   const handleFilter = (keyword) => {
     if (!keyword) setFilteredData(data);
     else
@@ -88,6 +94,21 @@ export default function Boards() {
       );
     setCurrentReportIndex(0);
   };
+  const fetchBoards = async () => {
+    try {
+      const res = await request.get(`board/get_boards_by_point/${id}`, { headers: headers })
+      setData(res.data.board)
+    } catch (error) {
+      console.log('Error fetching data: ' + error.message)
+    }
+  }
+  useEffect(() => {
+    fetchBoards();
+  }, [])
+
+  useEffect(() => {
+    handleFilter();
+  }, [data])
 
   return (
     <div className={classes.main_container}>
@@ -139,7 +160,8 @@ export default function Boards() {
                     currentReportIndex === index && classes['username__text--active'],
                   ].join(' ')}
                 >
-                  {index + 1 + '. Bảng ' + item.id}
+                  {console.log(item)}
+                  {index + 1 + '. Bảng ' + item.board_id}
                 </div>
                 <div
                   className={[
@@ -207,7 +229,7 @@ export default function Boards() {
                 label='Chỉnh sửa'
                 rightIc={faArrowRight}
                 onClick={() => {
-                  boardNavigate(`/board-request/${filteredData[currentReportIndex]?.id}`)
+                  boardNavigate(`/board-request/${filteredData[currentReportIndex]?.board_id}`)
                 }}
               />
             </div>

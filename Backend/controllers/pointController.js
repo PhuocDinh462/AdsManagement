@@ -16,4 +16,8 @@ const getInforPoint = catchAsync(async (req, res, next) => {
     );
 })
 
+const getPointsByManager = catchAsync(async (req, res, next) => {
+
+})
+
 module.exports = { getInforPoint };
