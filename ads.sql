@@ -212,7 +212,7 @@ CREATE TABLE `edit_request_board` (
   advertisement_content VARCHAR(255),
   advertisement_image_url VARCHAR(255),
   reason VARCHAR(255),
-  time_request date,
+  request_time date,
   width FLOAT,
   height FLOAT,
   created_by INT,
@@ -233,7 +233,7 @@ CREATE TABLE `edit_request_point` (
   image_url VARCHAR(255),
   edit_status ENUM('pending', 'approved','canceled'),
   reason VARCHAR(255),
-  time_request date,
+  request_time date,
   created_by INT,
   created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at timestamp DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
@@ -330,14 +330,14 @@ VALUES
   ('License Content B', 'licenseImgB.jpg', 'Pending', NULL, 5, 2, 55.0, 65.0, 2, 2);
 
 -- Dữ liệu mẫu cho bảng EditRequestBoard
-INSERT INTO `edit_request_board` (board_id, board_type_id, edit_status, advertisement_content, advertisement_image_url, reason,time_request, width, height, created_by)
+INSERT INTO `edit_request_board` (board_id, board_type_id, edit_status, advertisement_content, advertisement_image_url, reason,request_time, width, height, created_by)
 VALUES
   (1, 1, 'pending', 'Edit Content A', 'editImgA.jpg', 'Change request A', '2023-12-24', 10.0, 8.0, 4),
   (1, 1, 'canceled', 'Edit Content A', 'editImgA.jpg', 'Change request A','2023-12-21', 6.0, 7.0, 4),
   (2, 2, 'approved', 'Edit Content B', 'editImgB.jpg', 'Change request B','2023-12-20', 20.0, 10.0, 5);
 
 -- Dữ liệu mẫu cho bảng EditRequestPoint
-INSERT INTO `edit_request_point` (point_id, advertisement_type_id, location_type, is_planning, image_url, edit_status, reason, time_request, created_by)
+INSERT INTO `edit_request_point` (point_id, advertisement_type_id, location_type, is_planning, image_url, edit_status, reason, request_time, created_by)
 VALUES
   (1, 1, 'Chợ', false, 'editPointImgA.jpg', 'pending', 'Change request A','2023-12-20', 4),
   (1, 1, 'Trung tâm thương mại', false, 'editPointImgC.jpg', 'approved', 'Change request C','2023-11-25', 6),
