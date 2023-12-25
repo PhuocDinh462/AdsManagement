@@ -266,6 +266,8 @@ const getReportListsByWardId = catchAsync(async (req, res, next) => {
 
               return {
                 point_id: spot.point_id,
+                lat: spot.lat,
+                lng: spot.lng,
                 address: data?.error ? null : data.results[0].formatted_address,
                 numberOfReports: spot.numberOfReports,
                 latestReport: spot.lastReport,
@@ -406,6 +408,8 @@ const getReportDetailsByPointId = catchAsync(async (req, res, next) => {
 
               return {
                 point_id: spot.point_id,
+                lat: spot.lat,
+                lng: spot.lng,
                 address: data?.error ? null : data.results[0].formatted_address,
                 reports: spot.reports,
               };
@@ -425,8 +429,14 @@ const getReportDetailsByPointId = catchAsync(async (req, res, next) => {
 const getReportDetailsByLatLng = catchAsync(async (req, res, next) => {
   const { lat, lng } = req.body;
 
+  if (!lat || !lng)
+    return res.status(401).json({
+      status: 'fail',
+      msg: "lat and lng can't be empty",
+    });
+
   connection.query(
-    'SELECT * FROM report rp JOIN detail dt ON rp.detail_id = dt.detail_id JOIN report_type rt ON rp.report_type_id = rt.report_type_id where dt.lat = ? and dt.lng and rp.point_id is NULL and rp.board_id is NULL',
+    'SELECT * FROM report rp JOIN detail dt ON rp.detail_id = dt.detail_id JOIN report_type rt ON rp.report_type_id = rt.report_type_id where lat = ? and lng = ? and rp.point_id is NULL and rp.board_id is NULL',
     [lat, lng],
     async (err, results) => {
       if (err) {
@@ -435,16 +445,17 @@ const getReportDetailsByLatLng = catchAsync(async (req, res, next) => {
         return;
       }
       const reports = results;
-
-      const url = `https://rsapi.goong.io/Geocode?latlng=${reports[0].lat},${reports[0].lng}&api_key=${process.env.GOONG_APIKEY}`;
+      const url = `https://rsapi.goong.io/Geocode?latlng=${reports[0]?.lat},${reports[0]?.lng}&api_key=${process.env.GOONG_APIKEY}`;
       const response = await fetch(url);
       const data = await response.json();
-      const address = data?.error ? null : data.results[0].formatted_address;
+      const address = data?.error ? null : data.results[0]?.formatted_address;
 
       res.status(200).json({
         status: 'success',
         data: {
           address: address,
+          lat: lat,
+          lng: lng,
           reports: reports.map((report) => {
             return {
               ...report,

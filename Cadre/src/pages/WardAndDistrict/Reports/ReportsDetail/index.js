@@ -20,13 +20,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState, useEffect } from 'react';
 import { IconTextBtn } from '~components/button';
 import { Backdrop } from '@mui/material';
-import ImageModal from './Modals/ImageModal';
 import ProcessModal from './Modals/ProcessModal';
 import StatusModal from './Modals/StatusModal';
 import { useParams } from 'react-router-dom';
 import { axiosRequest } from '~/src/api/axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { setReportIndex, selectReportIndex, setReportPointId } from '~/src/store/reducers';
+import { setReportIndex, selectReportIndex, setReportCoord } from '~/src/store/reducers';
 import { useNavigate } from 'react-router';
 
 export default function ReportsDetail() {
@@ -120,7 +119,7 @@ export default function ReportsDetail() {
           <div
             className={[classes.nav_btn, classes.btn].join(' ')}
             onClick={() => {
-              dispatch(setReportPointId(id));
+              dispatch(setReportCoord({ lat: data.lat, lng: data.lng }));
               navigate('/home');
             }}
           >

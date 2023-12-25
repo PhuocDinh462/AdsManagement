@@ -7,7 +7,7 @@ import SearchBar from '~components/SearchBar';
 import { axiosRequest } from '~/src/api/axios';
 import { format } from 'date-fns';
 import { useDispatch } from 'react-redux';
-import { setReportIndex, setReportPointId } from '~/src/store/reducers';
+import { setReportIndex, setReportCoord } from '~/src/store/reducers';
 import { useNavigate } from 'react-router';
 
 export default function Reports() {
@@ -104,7 +104,7 @@ export default function Reports() {
                       <button
                         className={classes.btn_info}
                         onClick={() => {
-                          dispatch(setReportPointId(row.point_id));
+                          dispatch(setReportCoord({ lat: row.lat, lng: row.lng }));
                           navigate('/home');
                         }}
                       >
