@@ -522,7 +522,7 @@ const getNumberOfReportsByLatLng = catchAsync(async (req, res, next) => {
   const { lat, lng } = req.body;
 
   connection.query(
-    'SELECT * FROM report rp JOIN detail dt ON rp.detail_id = dt.detail_id where lat = ? and lng = ? and point_id is NULL and board_id is NULL',
+    'SELECT * FROM report rp JOIN detail dt ON rp.detail_id = dt.detail_id where lat = ? and lng = ? and rp.status != "processed" and point_id is NULL and board_id is NULL',
     [lat, lng],
     (err, results) => {
       if (err) {
