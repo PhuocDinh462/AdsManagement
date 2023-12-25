@@ -457,9 +457,11 @@ const getReportDetailsByLatLng = catchAsync(async (req, res, next) => {
           lat: lat,
           lng: lng,
           reports: reports.map((report) => {
+            const { image_url_1, image_url_2, ...restReport } = report;
             return {
-              ...report,
+              ...restReport,
               reportedObject: 'Địa điểm',
+              image_urls: [report.image_url_1, report.image_url_2],
               status:
                 report.status === 'processed'
                   ? 'Đã xử lý'
