@@ -17,7 +17,27 @@ const getInforPoint = catchAsync(async (req, res, next) => {
 })
 
 const getPointsByManager = catchAsync(async (req, res, next) => {
-
+    connection.query(
+        `SELECT ap.*
+    FROM advertising_point ap
+    JOIN ward w ON ap.ward_id = w.ward_id
+    WHERE w.manager_id = ?`,
+        [req.user.user_id],  // Đặt giá trị manager_id vào mảng tham số
+        (err, results) => {
+            if (err) {
+                console.error(err);
+                res.status(500).json({
+                    status: "error",
+                    message: "Internal Server Error",
+                });
+            } else {
+                res.status(200).json({
+                    status: "success",
+                    point: results,
+                });
+            }
+        }
+    );
 })
 
-module.exports = { getInforPoint };
+module.exports = { getInforPoint, getPointsByManager };
