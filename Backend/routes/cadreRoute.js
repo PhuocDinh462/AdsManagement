@@ -2,6 +2,7 @@ const express = require('express');
 const cadreController = require('../controllers/cadreController');
 const cadreFormController = require('../controllers/cadreFormController');
 const cadreAdsPointController = require('../controllers/cadreAdsPointController');
+const requestEditController = require('../controllers/cadreRequestEdit');
 const router = express.Router();
 
 router.get('/', cadreController.getAllDistrictWard);
@@ -21,6 +22,9 @@ router.get('/adsType', cadreAdsPointController.getAdvertisementTypes);
 router.post('/addAdsPoint', cadreAdsPointController.addAdsPoint);
 router.put('/updateAdsPoint', cadreAdsPointController.updateAdsPoint);
 router.delete('/deleteAdsPoint', cadreAdsPointController.deleteAdsPoint);
+
+router.get('/getRequestEditBoard', requestEditController.getRequestEditBoards);
+router.get('/getRequestEditPoint', requestEditController.getRequestEditPoints);
 
 module.exports = router;
 

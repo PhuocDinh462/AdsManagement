@@ -37,12 +37,12 @@ const ManageAdLocation = () => {
     fetchData();
   }, []);
 
-  const updateDataAfterAdd = async (newData) => {
+  const updateDataAfterAdd = async () => {
     await fetchData();
     setModalOpen(false);
   };
 
-  const updateDataAfterUpdate = async (newData) => {
+  const updateDataAfterUpdate = async () => {
     await fetchData();
     setIsOpenUpdate(false);
   };

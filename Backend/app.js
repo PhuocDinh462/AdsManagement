@@ -26,7 +26,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use('/', googleRoute);
-app.use('/board', authenticateUser, boardRoute);
+app.use('/board', boardRoute);
 app.use('/point', authenticateUser, pointRoute);
 app.use('/edit_board', authenticateUser, editBoardRoute);
 app.use('/edit_point', authenticateUser, editPointRoute);
@@ -61,3 +61,4 @@ socketIo.on('connection', (socket) => {
 // socket?.socketIo?.emit('update', 'aaaaa');
 
 module.exports.socketIo = socketIo;
+

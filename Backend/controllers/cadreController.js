@@ -99,7 +99,9 @@ const getDistricts = catchAsync(async (req, res, next) => {
 });
 
 const getWards = catchAsync(async (req, res, next) => {
-  const query = 'SELECT * FROM ward';
+  const query =
+    'SELECT ward.*, district.district_name FROM ward JOIN district ON ward.district_id = district.district_id';
+
   connection.query(query, (err, results) => {
     if (err) {
       console.error('Error executing query: ', err);
@@ -245,3 +247,4 @@ const deleteAddress = catchAsync(async (req, res, next) => {
 });
 
 module.exports = { getAllDistrictWard, getDistricts, getWards, createAddress, updateAddress, deleteAddress };
+
