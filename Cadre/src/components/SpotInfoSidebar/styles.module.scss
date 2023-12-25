@@ -159,12 +159,6 @@ $borderWidth: 1px;
 
       &--haveReports {
         color: #fa3c3c;
-        cursor: pointer;
-        transition: opacity 0.2s;
-
-        &:hover {
-          opacity: 0.5;
-        }
       }
     }
 

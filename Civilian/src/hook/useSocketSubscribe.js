@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { SocketContext } from '../components';
+import { SocketContext } from '../components/Provider/SocketProvider';
 
 export const useSocketSubscribe = (eventName, eventHandler) => {
   // Get the socket instance
@@ -33,6 +33,20 @@ export function ExampleComponentUseSocket() {
 
   const handleSocketUpdate = (message) => {
     setSomeState(message);
+  };
+
+  useSocketSubscribe('update', handleSocketUpdate);
+
+  return <div>{someState}</div>;
+}
+
+
+
+export function AlertNotification() {
+  const [someState, setSomeState] = useState('');
+
+  const handleSocketUpdate = (message) => {
+    alert(message);
   };
 
   useSocketSubscribe('update', handleSocketUpdate);

@@ -12,7 +12,7 @@ const theme = createTheme({
 const App = () => (
   <ThemeProvider theme={theme}>
     <Navigation />
-    <AlertNotification />
+    {/* <AlertNotification /> */}
   </ThemeProvider>
 );
 

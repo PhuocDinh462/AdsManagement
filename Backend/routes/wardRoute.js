@@ -12,5 +12,7 @@ router.get('/getReportListsByWardId/:id', wardController.getReportListsByWardId)
 router.get('/getReportDetailsByPointId/:id', wardController.getReportDetailsByPointId);
 router.post('/replyReport', emailController.replyReport);
 router.patch('/updateReportStatus', validate(updateReportStatus), wardController.updateReportStatus);
+router.get('/getAdBoardByBoardId/:id', wardController.getAdBoardByBoardId);
+router.post('/getNumberOfReportsByLatLng', wardController.getNumberOfReportsByLatLng);
 
 module.exports = router;

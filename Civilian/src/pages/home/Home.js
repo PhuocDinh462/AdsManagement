@@ -10,6 +10,7 @@ import ic_no_ad from '../../assets/imgs/noad.png';
 import CardInfor from './CardInfor';
 import InforTable from './InforTable';
 import Checklist from '~/src/components/CheckList/CheckList';
+import ModalReport from '~/src/components/ModalReport/ModalReport';
 
 const infoAds = {
     PANEL: 'Panel',
@@ -41,6 +42,7 @@ const Home = () => {
     const [showAdDetail, setShowAdDetail] = useState({ id: -1, show: false });
     const [selectedMarker, setSelectedMarker] = useState(null);
     const [isShowFilter, setIsShowFilter] = useState(false);
+    const [isShowReport, setIsShowReport] = useState({ id: '', show: false, type: '' });
     const [AdRender, setAdRender] = useState(coordinatesList);
 
     // When table have the infomation
@@ -136,7 +138,16 @@ const Home = () => {
                                                         <p className={classes.info__state}>
                                                             {coordinate.state === 1 ? 'ĐÃ QUY HOẠCH' : 'CHƯA QUY HOẠCH'}
                                                         </p>
-                                                        <p className={classes.info__report} onClick={() => {}}>
+                                                        <p
+                                                            className={classes.info__report}
+                                                            onClick={() => {
+                                                                setIsShowReport({
+                                                                    id: index + '',
+                                                                    show: true,
+                                                                    type: 'PANEL',
+                                                                });
+                                                            }}
+                                                        >
                                                             Báo cáo
                                                         </p>
                                                     </div>
@@ -185,27 +196,18 @@ const Home = () => {
                             </div>
                         )}
                         <div className={classes['container__home-inf-content']}>
-                            {showInfo.info === infoAds.PANEL ? (
+                            {showInfo.info === infoAds.PANEL && (
                                 <div className={classes['container__home-inf-content-items']}>
                                     {listInforPosition.map((item, index) => (
                                         <CardInfor
                                             key={item.id}
                                             title={locationAdList[showInfo.id].id}
                                             onClickShowDetail={() => handleShowDetail(index)}
+                                            onClickShowReport={() => {
+                                                setIsShowReport({ id: index + '', show: true, type: 'Table' });
+                                            }}
                                         />
                                     ))}
-                                </div>
-                            ) : (
-                                <div
-                                    className={
-                                        classes[
-                                            `container__home-inf-content-table${
-                                                isHaveInfor ? '-show-img' : '-hidden-img'
-                                            }`
-                                        ]
-                                    }
-                                >
-                                    <InforTable title={locationAdList[showInfo.id].id} />
                                 </div>
                             )}
                         </div>
@@ -229,15 +231,18 @@ const Home = () => {
                         <img src="https://s.pro.vn/018b" alt="none" />
                     </div>
                     <div className={classes['container__home-inf-content']}>
-                        <div
-                            className={
-                                classes[`container__home-inf-content-table${isHaveInfor ? '-show-img' : '-hidden-img'}`]
-                            }
-                        >
+                        <div className={classes[`container__home-inf-content-table-show-img`]}>
                             <InforTable title={listInforPosition[showAdDetail.id].id} />
                         </div>
                     </div>
                 </div>
+            )}
+
+            {isShowReport.show && (
+                <ModalReport
+                    title={isShowReport.type}
+                    onClose={() => setIsShowReport({ id: '', show: false, type: '' })}
+                />
             )}
         </div>
     );
