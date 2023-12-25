@@ -218,62 +218,112 @@ const getReportListsByWardId = catchAsync(async (req, res, next) => {
       }
       const boards = results;
 
-      connection.query('SELECT * FROM report', async (err, results) => {
-        if (err) {
-          console.error('Error executing query: ', err);
-          res.status(500).send('Internal Server Error');
-          return;
-        }
-        const reports = results;
+      connection.query(
+        'SELECT * FROM report rp JOIN detail dt ON rp.detail_id = dt.detail_id',
+        async (err, results) => {
+          if (err) {
+            console.error('Error executing query: ', err);
+            res.status(500).send('Internal Server Error');
+            return;
+          }
+          const reports = results;
 
-        const spotReports = spots
-          .map((spot) => ({
-            ...spot,
-            spotReports: reports.filter((report) => report.point_id === spot.point_id),
-          }))
-          .map((spot) => ({
-            ...spot,
-            idBoardOfThis: boards.filter((board) => board.point_id === spot.point_id).map((board) => board.board_id),
-          }))
-          .map((spot) => ({
-            ...spot,
-            boardReports: reports.filter((report) => spot.idBoardOfThis.includes(report.board_id)),
-          }))
-          .map((spot) => ({
-            ...spot,
-            allReports: [...spot.spotReports, ...spot.boardReports],
-          }));
+          const spotReports = spots
+            .map((spot) => ({
+              ...spot,
+              spotReports: reports.filter((report) => report.point_id === spot.point_id),
+            }))
+            .map((spot) => ({
+              ...spot,
+              idBoardOfThis: boards.filter((board) => board.point_id === spot.point_id).map((board) => board.board_id),
+            }))
+            .map((spot) => ({
+              ...spot,
+              boardReports: reports.filter((report) => spot.idBoardOfThis.includes(report.board_id)),
+            }))
+            .map((spot) => ({
+              ...spot,
+              allReports: [...spot.spotReports, ...spot.boardReports],
+            }));
 
-        const filteredSpots = spotReports
-          .filter((spot) => spot.allReports.length > 0)
-          .map((spot) => ({
-            point_id: spot.point_id,
-            lat: spot.lat,
-            lng: spot.lng,
-            numberOfReports: spot.allReports.length,
-            lastReport: spot.allReports.map((report) => report.created_at).sort((a, b) => new Date(b) - new Date(a))[0],
-          }));
+          const filteredSpots = spotReports
+            .filter((spot) => spot.allReports.length > 0)
+            .map((spot) => ({
+              point_id: spot.point_id,
+              lat: spot.lat,
+              lng: spot.lng,
+              numberOfReports: spot.allReports.length,
+              lastReport: spot.allReports
+                .map((report) => report.created_at)
+                .sort((a, b) => new Date(b) - new Date(a))[0],
+            }));
 
-        const finalData = await Promise.all(
-          filteredSpots.map(async (spot) => {
-            const url = `https://rsapi.goong.io/Geocode?latlng=${spot.lat},${spot.lng}&api_key=${process.env.GOONG_APIKEY}`;
-            const response = await fetch(url);
-            const data = await response.json();
+          const adSpots = await Promise.all(
+            filteredSpots.map(async (spot) => {
+              const url = `https://rsapi.goong.io/Geocode?latlng=${spot.lat},${spot.lng}&api_key=${process.env.GOONG_APIKEY}`;
+              const response = await fetch(url);
+              const data = await response.json();
+
+              return {
+                point_id: spot.point_id,
+                address: data?.error ? null : data.results[0].formatted_address,
+                numberOfReports: spot.numberOfReports,
+                latestReport: spot.lastReport,
+              };
+            })
+          );
+
+          // Find spots have report but isn't adSpot
+          const reportSpots = await Promise.all(
+            reports
+              .filter((report) => !report.point_id && !report.board_id)
+              .map(async (spot) => {
+                const url = `https://rsapi.goong.io/Geocode?latlng=${spot.lat},${spot.lng}&api_key=${process.env.GOONG_APIKEY}`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                return {
+                  lat: spot.lat,
+                  lng: spot.lng,
+                  address: data?.error ? null : data.results[0]?.formatted_address,
+                  created_at: spot.created_at,
+                };
+              })
+          );
+
+          // Tạo một đối tượng Map để theo dõi các cặp lat và lng đã xuất hiện
+          const latLngMap = new Map();
+
+          // Lọc và tạo mảng mới dựa trên điều kiện
+          const reportSpotsCoord = reportSpots.filter((item) => {
+            const latLngKey = `${item.lat}-${item.lng}`;
+
+            // Nếu lat và lng chưa xuất hiện, thêm vào Map và giữ lại phần tử
+            if (!latLngMap.has(latLngKey)) {
+              latLngMap.set(latLngKey, true);
+              return true;
+            }
+            return false;
+          });
+
+          const reportSpotsFiltered = reportSpotsCoord.map((spot) => {
+            const currentReportSpot = reportSpots.filter((item) => item.lat === spot.lat && item.lng === spot.lng);
 
             return {
-              point_id: spot.point_id,
-              address: data?.error ? null : data.results[0].formatted_address,
-              numberOfReports: spot.numberOfReports,
-              latestReport: spot.lastReport,
+              address: spot.address || null,
+              numberOfReports: currentReportSpot.length,
+              latestReport: currentReportSpot
+                .map((item) => item.created_at)
+                .sort((a, b) => new Date(b) - new Date(a))[0],
             };
-          })
-        );
+          });
 
-        res.status(200).json({
-          status: 'success',
-          data: finalData,
-        });
-      });
+          res.status(200).json({
+            status: 'success',
+            data: [...adSpots, ...reportSpotsFiltered],
+          });
+        }
+      );
     });
   });
 });

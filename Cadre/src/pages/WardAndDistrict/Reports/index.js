@@ -97,7 +97,9 @@ export default function Reports() {
                     <td style={{ width: '5%' }}>{rowIndex + 1}</td>
                     <td style={{ width: '50%' }}>{row.address}</td>
                     <td style={{ width: '15%' }}>{row.numberOfReports}</td>
-                    <td style={{ width: '20%' }}>{format(new Date(row.latestReport), 'dd/MM/yyyy')}</td>
+                    <td style={{ width: '20%' }}>
+                      {row.latestReport && format(new Date(row.latestReport), 'dd/MM/yyyy')}
+                    </td>
                     <td style={{ width: '10%' }}>
                       <button
                         className={classes.btn_info}
