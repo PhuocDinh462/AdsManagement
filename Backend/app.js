@@ -26,7 +26,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use('/', googleRoute);
-app.use('/board', boardRoute);
+app.use('/board', authenticateUser, boardRoute);
 app.use('/point', authenticateUser, pointRoute);
 app.use('/edit_board', authenticateUser, editBoardRoute);
 app.use('/edit_point', authenticateUser, editPointRoute);
