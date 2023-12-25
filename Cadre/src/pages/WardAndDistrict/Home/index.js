@@ -189,7 +189,7 @@ export default function Home() {
         .catch((error) => {
           console.log('Get spot info error: ', error);
         });
-    } else {
+    } else if (data.board_id) {
       await axiosRequest
         .get(`ward/getAdBoardByBoardId/${data.board_id}`)
         .then(async (res) => {
@@ -207,6 +207,21 @@ export default function Home() {
             .catch((error) => {
               console.log('Get spot info error: ', error);
             });
+        })
+        .catch((error) => {
+          console.log('Get AdBoard error: ', error);
+        });
+    } else {
+      const lat = data.lat;
+      const lng = data.lng;
+      await axiosRequest
+        .post(`ward/getReportDetailsByLatLng`, { lat: lat, lng: lng })
+        .then(async (res) => {
+          const reports = res.data.data.reports;
+          const adSpotsIndex = adSpots.findIndex((spot) => spot.lat === lat && spot.lng === lng);
+          if (reports.filter((report) => report.status !== 'Đã xử lý').length > 0)
+            updateAdSpotsReportStatus(adSpotsIndex, 'noProcess');
+          else updateAdSpotsReportStatus(adSpotsIndex, 'processed');
         })
         .catch((error) => {
           console.log('Get AdBoard error: ', error);

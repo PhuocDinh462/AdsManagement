@@ -488,16 +488,20 @@ const updateReportStatus = catchAsync(async (req, res, next) => {
 
     if (results.affectedRows === 0) res.status(401).json({ status: 'fail', msg: 'report_id is not exist' });
 
-    connection.query('select * from report where report_id = ?', [id], (err, results) => {
-      if (err) {
-        console.error('Error executing query: ', err);
-        res.status(500).send('Internal Server Error');
-        return;
-      }
+    connection.query(
+      'select * from report rp join detail dt on rp.detail_id = dt.detail_id where report_id = ?',
+      [id],
+      (err, results) => {
+        if (err) {
+          console.error('Error executing query: ', err);
+          res.status(500).send('Internal Server Error');
+          return;
+        }
 
-      socket?.socketIo?.emit('changeReport', { method: 'update', data: results[0] });
-      res.status(200).json({ status: 'success', data: results });
-    });
+        socket?.socketIo?.emit('changeReport', { method: 'update', data: results[0] });
+        res.status(200).json({ status: 'success', data: results });
+      }
+    );
   });
 });
 
