@@ -89,7 +89,7 @@ const getAdSpotsByWardId = catchAsync(async (req, res, next) => {
               const latLngMap = new Map();
 
               // Lọc và tạo mảng mới dựa trên điều kiện
-              const reportSpotsFiltered = reportSpots.filter((item) => {
+              const reportSpotsCoord = reportSpots.filter((item) => {
                 const latLngKey = `${item.lat}-${item.lng}`;
 
                 // Nếu lat và lng chưa xuất hiện, thêm vào Map và giữ lại phần tử
@@ -97,9 +97,17 @@ const getAdSpotsByWardId = catchAsync(async (req, res, next) => {
                   latLngMap.set(latLngKey, true);
                   return true;
                 }
+                return false;
+              });
 
-                // Nếu đã xuất hiện, chỉ giữ lại các phần tử có reportStatus là "noProcess"
-                return item.reportStatus === 'noProcess';
+              const reportSpotsFiltered = reportSpotsCoord.map((spot) => {
+                if (
+                  reportSpots
+                    .filter((item) => item.lat === spot.lat && item.lng === spot.lng)
+                    .every((item) => item.reportStatus === 'processed')
+                )
+                  return { ...spot, reportStatus: 'processed' };
+                return { ...spot, reportStatus: 'noProcess' };
               });
 
               res.status(200).json({
