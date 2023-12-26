@@ -19,5 +19,6 @@ router.get('/getAdBoardByBoardId/:id', wardController.getAdBoardByBoardId);
 router.post('/getNumberOfReportsByLatLng', wardController.getNumberOfReportsByLatLng);
 router.post('/license/create-license', validationLicenseReq, createLicensingRequest);
 router.get('/license', getAllLicenseRequest);
+router.get('/getAdSpotsListByWardId/:id', wardController.getAdSpotsListByWardId);
 
 module.exports = router;
