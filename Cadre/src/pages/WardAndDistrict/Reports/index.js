@@ -7,7 +7,7 @@ import SearchBar from '~components/SearchBar';
 import { axiosRequest } from '~/src/api/axios';
 import { format } from 'date-fns';
 import { useDispatch } from 'react-redux';
-import { setReportIndex, setReportPointId } from '~/src/store/reducers';
+import { setReportIndex, setReportCoord } from '~/src/store/reducers';
 import { useNavigate } from 'react-router';
 
 export default function Reports() {
@@ -53,12 +53,10 @@ export default function Reports() {
     }
 
     setFilterData(
-      data.filter(
-        (item) =>
-          item.point_id.toString() === filterKeyword ||
-          item.address
-            .toLowerCase()
-            .includes(filterKeyword.toLowerCase() || item.numberOfReports.toString() === filterKeyword)
+      data.filter((item) =>
+        item.address
+          .toLowerCase()
+          .includes(filterKeyword.toLowerCase() || item.numberOfReports.toString() === filterKeyword)
       )
     );
   }, [filterKeyword]);
@@ -93,16 +91,18 @@ export default function Reports() {
             <tbody>
               {!loading &&
                 currentTableData.map((row, rowIndex) => (
-                  <tr className={classes.table__body_wrap_row} key={row.point_id}>
+                  <tr className={classes.table__body_wrap_row} key={rowIndex}>
                     <td style={{ width: '5%' }}>{rowIndex + 1}</td>
                     <td style={{ width: '50%' }}>{row.address}</td>
                     <td style={{ width: '15%' }}>{row.numberOfReports}</td>
-                    <td style={{ width: '20%' }}>{format(new Date(row.latestReport), 'dd/MM/yyyy')}</td>
+                    <td style={{ width: '20%' }}>
+                      {row.latestReport && format(new Date(row.latestReport), 'dd/MM/yyyy')}
+                    </td>
                     <td style={{ width: '10%' }}>
                       <button
                         className={classes.btn_info}
                         onClick={() => {
-                          dispatch(setReportPointId(row.point_id));
+                          dispatch(setReportCoord({ lat: row.lat, lng: row.lng }));
                           navigate('/home');
                         }}
                       >
@@ -114,7 +114,7 @@ export default function Reports() {
                         className={classes.btn_detail}
                         onClick={() => {
                           dispatch(setReportIndex(0));
-                          navigate(`/reports/detail/${row.point_id}`);
+                          navigate(`/reports/detail/${row?.point_id || row.lat + ',' + row.lng}`);
                         }}
                       >
                         <div className={classes.icon_container}>

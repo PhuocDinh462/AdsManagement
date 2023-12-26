@@ -20,17 +20,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState, useEffect } from 'react';
 import { IconTextBtn } from '~components/button';
 import { Backdrop } from '@mui/material';
-import ImageModal from './Modals/ImageModal';
 import ProcessModal from './Modals/ProcessModal';
 import StatusModal from './Modals/StatusModal';
 import { useParams } from 'react-router-dom';
 import { axiosRequest } from '~/src/api/axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { setReportIndex, selectReportIndex, setReportPointId } from '~/src/store/reducers';
+import { setReportIndex, selectReportIndex, setReportCoord } from '~/src/store/reducers';
 import { useNavigate } from 'react-router';
 
 export default function ReportsDetail() {
   const { id } = useParams();
+  const lat = id.split(',')[0];
+  const lng = id.split(',')[1];
   const [data, setData] = useState([]);
   const dispatch = useDispatch();
   const reportIndexStorage = useSelector(selectReportIndex);
@@ -47,22 +48,41 @@ export default function ReportsDetail() {
 
   useEffect(() => {
     setLoading(true);
-    (async () => {
-      await axiosRequest
-        .get(`ward/getReportDetailsByPointId/${id}`)
-        .then((res) => {
-          const data = res.data.data;
-          setData(data);
-          setFilteredData(data.reports);
-          if (reportIndexStorage < data.reports.length) setCurrentReportIndex(reportIndexStorage);
-        })
-        .catch((error) => {
-          console.log('Get spots error: ', error);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    })();
+
+    if (lat && lng)
+      (async () => {
+        await axiosRequest
+          .post(`ward/getReportDetailsByLatLng`, { lat: lat, lng: lng })
+          .then((res) => {
+            const data = res.data.data;
+            setData(data);
+            setFilteredData(data.reports);
+            if (reportIndexStorage < data.reports?.length) setCurrentReportIndex(reportIndexStorage);
+          })
+          .catch((error) => {
+            console.log('Get spots error: ', error);
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+      })();
+    else
+      (async () => {
+        await axiosRequest
+          .get(`ward/getReportDetailsByPointId/${id}`)
+          .then((res) => {
+            const data = res.data.data;
+            setData(data);
+            setFilteredData(data.reports);
+            if (reportIndexStorage < data.reports?.length) setCurrentReportIndex(reportIndexStorage);
+          })
+          .catch((error) => {
+            console.log('Get spots error: ', error);
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+      })();
   }, []);
 
   const handleFilter = (keyword) => {
@@ -99,7 +119,7 @@ export default function ReportsDetail() {
           <div
             className={[classes.nav_btn, classes.btn].join(' ')}
             onClick={() => {
-              dispatch(setReportPointId(id));
+              dispatch(setReportCoord({ lat: data.lat, lng: data.lng }));
               navigate('/home');
             }}
           >
@@ -167,7 +187,7 @@ export default function ReportsDetail() {
         <div className={classes.content_container}>
           <div className={classes.title}>Chi tiết báo cáo tại {data.address}</div>
 
-          {filteredData.length > 0 ? (
+          {filteredData?.length > 0 ? (
             <>
               <div className={classes.userInfo_container}>
                 <table style={{ width: '100%' }}>
@@ -233,7 +253,7 @@ export default function ReportsDetail() {
               <div className={classes.reportContent_container}>
                 <div>{filteredData[currentReportIndex]?.report_content}</div>
 
-                {filteredData[currentReportIndex]?.image_urls.length > 0 && (
+                {filteredData[currentReportIndex]?.image_urls?.length > 0 && (
                   <div className={classes.attach_container}>
                     <div className={classes.attach}>
                       <div className={classes.attach__ic}>

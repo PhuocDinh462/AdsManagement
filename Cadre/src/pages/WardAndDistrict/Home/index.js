@@ -22,7 +22,7 @@ import { axiosRequest } from '~/src/api/axios';
 import AnnotationDropdown from '~components/Dropdown/AnnotationDropdown';
 import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
 import { useDispatch, useSelector } from 'react-redux';
-import { setReportPointId, selectReportPointId } from '~/src/store/reducers';
+import { setReportCoord, selectReportCoord } from '~/src/store/reducers';
 
 const containerStyle = {
   width: '100%',
@@ -31,7 +31,7 @@ const containerStyle = {
 
 export default function Home() {
   const dispatch = useDispatch();
-  const point_id = useSelector(selectReportPointId);
+  const point_coord = useSelector(selectReportCoord);
 
   const [filterActive, setFilterActive] = useState(false);
   const [annotationActive, setAnnotationActive] = useState(false);
@@ -142,14 +142,14 @@ export default function Home() {
           setAdSpots(data);
 
           // Use for locate button in Report page
-          if (point_id) {
-            const index = data.findIndex((item) => item.point_id === +point_id);
+          if (point_coord) {
+            const index = data.findIndex((item) => item.lat === +point_coord.lat && item.lng === +point_coord.lng);
             if (index !== -1) {
               handleMarkerClick(data[index]);
               setCenter({ lat: data[index].lat, lng: data[index].lng });
               // setZoom(16);
             }
-            dispatch(setReportPointId(null));
+            dispatch(setReportCoord(null));
           } else {
             // Set center
             const avgLat = data.map((item) => item.lat).reduce((a, b) => a + b, 0) / data.length;
@@ -189,7 +189,7 @@ export default function Home() {
         .catch((error) => {
           console.log('Get spot info error: ', error);
         });
-    } else {
+    } else if (data.board_id) {
       await axiosRequest
         .get(`ward/getAdBoardByBoardId/${data.board_id}`)
         .then(async (res) => {
@@ -207,6 +207,21 @@ export default function Home() {
             .catch((error) => {
               console.log('Get spot info error: ', error);
             });
+        })
+        .catch((error) => {
+          console.log('Get AdBoard error: ', error);
+        });
+    } else {
+      const lat = data.lat;
+      const lng = data.lng;
+      await axiosRequest
+        .post(`ward/getReportDetailsByLatLng`, { lat: lat, lng: lng })
+        .then(async (res) => {
+          const reports = res.data.data.reports;
+          const adSpotsIndex = adSpots.findIndex((spot) => spot.lat === lat && spot.lng === lng);
+          if (reports.filter((report) => report.status !== 'Đã xử lý').length > 0)
+            updateAdSpotsReportStatus(adSpotsIndex, 'noProcess');
+          else updateAdSpotsReportStatus(adSpotsIndex, 'processed');
         })
         .catch((error) => {
           console.log('Get AdBoard error: ', error);

@@ -10,6 +10,7 @@ router.get('/getInfoByPointId/:id', wardController.getInfoByPointId);
 router.get('/getAdBoardsBySpotId/:id', wardController.getAdBoardsBySpotId);
 router.get('/getReportListsByWardId/:id', wardController.getReportListsByWardId);
 router.get('/getReportDetailsByPointId/:id', wardController.getReportDetailsByPointId);
+router.post('/getReportDetailsByLatLng', wardController.getReportDetailsByLatLng);
 router.post('/replyReport', emailController.replyReport);
 router.patch('/updateReportStatus', validate(updateReportStatus), wardController.updateReportStatus);
 router.get('/getAdBoardByBoardId/:id', wardController.getAdBoardByBoardId);

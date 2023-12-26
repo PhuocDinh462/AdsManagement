@@ -1,6 +1,5 @@
 const catchAsync = require('../utils/catchAsync');
 const connection = require('../server');
-const socketIO = require('socket.io');
 const socket = require('../app');
 
 const getAdSpotsByWardId = catchAsync(async (req, res, next) => {
@@ -23,7 +22,7 @@ const getAdSpotsByWardId = catchAsync(async (req, res, next) => {
       connection.query(
         'SELECT * FROM report rp JOIN detail dt ON rp.detail_id = dt.detail_id',
         [req.params.id],
-        (err, results) => {
+        async (err, results) => {
           if (err) {
             console.error('Error executing query: ', err);
             res.status(500).send('Internal Server Error');
@@ -56,38 +55,74 @@ const getAdSpotsByWardId = catchAsync(async (req, res, next) => {
             };
           });
 
-          // Find spots have report but isn't adSpot
-          const reportSpots = reports
-            .filter((report) => !report.point_id && !report.board_id)
-            .map((spot) => {
-              return {
-                lat: spot.lat,
-                lng: spot.lng,
-                reportStatus: spot.status === 'processed' ? 'processed' : 'noProcess',
-              };
-            });
+          connection.query(
+            'SELECT * FROM ward JOIN district ON ward.district_id = district.district_id',
+            [req.params.id],
+            async (err, results) => {
+              if (err) {
+                console.error('Error executing query: ', err);
+                res.status(500).send('Internal Server Error');
+                return;
+              }
+              const wardName = results[0].ward_name;
+              const districtName = results[0].district_name;
 
-          // Tạo một đối tượng Map để theo dõi các cặp lat và lng đã xuất hiện
-          const latLngMap = new Map();
+              // Find spots have report but isn't adSpot
+              const reportSpots = await Promise.all(
+                reports
+                  .filter((report) => !report.point_id && !report.board_id)
+                  .map(async (spot) => {
+                    const url = `https://rsapi.goong.io/Geocode?latlng=${spot.lat},${spot.lng}&api_key=${process.env.GOONG_APIKEY}`;
+                    const response = await fetch(url);
+                    const data = await response.json();
 
-          // Lọc và tạo mảng mới dựa trên điều kiện
-          const reportSpotsFiltered = reportSpots.filter((item) => {
-            const latLngKey = `${item.lat}-${item.lng}`;
+                    return {
+                      lat: spot.lat,
+                      lng: spot.lng,
+                      address: data?.error ? null : data.results[0].formatted_address,
+                      reportStatus: spot.status === 'processed' ? 'processed' : 'noProcess',
+                    };
+                  })
+              );
 
-            // Nếu lat và lng chưa xuất hiện, thêm vào Map và giữ lại phần tử
-            if (!latLngMap.has(latLngKey)) {
-              latLngMap.set(latLngKey, true);
-              return true;
+              // Tạo một đối tượng Map để theo dõi các cặp lat và lng đã xuất hiện
+              const latLngMap = new Map();
+
+              // Lọc và tạo mảng mới dựa trên điều kiện
+              const reportSpotsCoord = reportSpots.filter((item) => {
+                const latLngKey = `${item.lat}-${item.lng}`;
+
+                // Nếu lat và lng chưa xuất hiện, thêm vào Map và giữ lại phần tử
+                if (!latLngMap.has(latLngKey)) {
+                  latLngMap.set(latLngKey, true);
+                  return true;
+                }
+                return false;
+              });
+
+              const reportSpotsFiltered = reportSpotsCoord.map((spot) => {
+                if (
+                  reportSpots
+                    .filter((item) => item.lat === spot.lat && item.lng === spot.lng)
+                    .every((item) => item.reportStatus === 'processed')
+                )
+                  return { ...spot, reportStatus: 'processed' };
+                return { ...spot, reportStatus: 'noProcess' };
+              });
+
+              res.status(200).json({
+                status: 'success',
+                data: [
+                  ...adSpots,
+                  ...reportSpotsFiltered.filter(
+                    (spot) =>
+                      spot.address?.toLowerCase().includes(wardName.toLowerCase()) &&
+                      spot.address?.toLowerCase().includes(districtName.toLowerCase())
+                  ),
+                ],
+              });
             }
-
-            // Nếu đã xuất hiện, chỉ giữ lại các phần tử có reportStatus là "noProcess"
-            return item.reportStatus === 'noProcess';
-          });
-
-          res.status(200).json({
-            status: 'success',
-            data: [...adSpots, ...reportSpotsFiltered],
-          });
+          );
         }
       );
     });
@@ -183,62 +218,137 @@ const getReportListsByWardId = catchAsync(async (req, res, next) => {
       }
       const boards = results;
 
-      connection.query('SELECT * FROM report', async (err, results) => {
-        if (err) {
-          console.error('Error executing query: ', err);
-          res.status(500).send('Internal Server Error');
-          return;
-        }
-        const reports = results;
+      connection.query(
+        'SELECT * FROM report rp JOIN detail dt ON rp.detail_id = dt.detail_id',
+        async (err, results) => {
+          if (err) {
+            console.error('Error executing query: ', err);
+            res.status(500).send('Internal Server Error');
+            return;
+          }
+          const reports = results;
 
-        const spotReports = spots
-          .map((spot) => ({
-            ...spot,
-            spotReports: reports.filter((report) => report.point_id === spot.point_id),
-          }))
-          .map((spot) => ({
-            ...spot,
-            idBoardOfThis: boards.filter((board) => board.point_id === spot.point_id).map((board) => board.board_id),
-          }))
-          .map((spot) => ({
-            ...spot,
-            boardReports: reports.filter((report) => spot.idBoardOfThis.includes(report.board_id)),
-          }))
-          .map((spot) => ({
-            ...spot,
-            allReports: [...spot.spotReports, ...spot.boardReports],
-          }));
+          const spotReports = spots
+            .map((spot) => ({
+              ...spot,
+              spotReports: reports.filter((report) => report.point_id === spot.point_id),
+            }))
+            .map((spot) => ({
+              ...spot,
+              idBoardOfThis: boards.filter((board) => board.point_id === spot.point_id).map((board) => board.board_id),
+            }))
+            .map((spot) => ({
+              ...spot,
+              boardReports: reports.filter((report) => spot.idBoardOfThis.includes(report.board_id)),
+            }))
+            .map((spot) => ({
+              ...spot,
+              allReports: [...spot.spotReports, ...spot.boardReports],
+            }));
 
-        const filteredSpots = spotReports
-          .filter((spot) => spot.allReports.length > 0)
-          .map((spot) => ({
-            point_id: spot.point_id,
-            lat: spot.lat,
-            lng: spot.lng,
-            numberOfReports: spot.allReports.length,
-            lastReport: spot.allReports.map((report) => report.created_at).sort((a, b) => new Date(b) - new Date(a))[0],
-          }));
+          const filteredSpots = spotReports
+            .filter((spot) => spot.allReports.length > 0)
+            .map((spot) => ({
+              point_id: spot.point_id,
+              lat: spot.lat,
+              lng: spot.lng,
+              numberOfReports: spot.allReports.length,
+              lastReport: spot.allReports
+                .map((report) => report.created_at)
+                .sort((a, b) => new Date(b) - new Date(a))[0],
+            }));
 
-        const finalData = await Promise.all(
-          filteredSpots.map(async (spot) => {
-            const url = `https://rsapi.goong.io/Geocode?latlng=${spot.lat},${spot.lng}&api_key=${process.env.GOONG_APIKEY}`;
-            const response = await fetch(url);
-            const data = await response.json();
+          const adSpots = await Promise.all(
+            filteredSpots.map(async (spot) => {
+              const url = `https://rsapi.goong.io/Geocode?latlng=${spot.lat},${spot.lng}&api_key=${process.env.GOONG_APIKEY}`;
+              const response = await fetch(url);
+              const data = await response.json();
+
+              return {
+                point_id: spot.point_id,
+                lat: spot.lat,
+                lng: spot.lng,
+                address: data?.error ? null : data.results[0].formatted_address,
+                numberOfReports: spot.numberOfReports,
+                latestReport: spot.lastReport,
+              };
+            })
+          );
+
+          // Find spots have report but isn't adSpot
+          const reportSpots = await Promise.all(
+            reports
+              .filter((report) => !report.point_id && !report.board_id)
+              .map(async (spot) => {
+                const url = `https://rsapi.goong.io/Geocode?latlng=${spot.lat},${spot.lng}&api_key=${process.env.GOONG_APIKEY}`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                return {
+                  lat: spot.lat,
+                  lng: spot.lng,
+                  address: data?.error ? null : data.results[0]?.formatted_address,
+                  created_at: spot.created_at,
+                };
+              })
+          );
+
+          // Tạo một đối tượng Map để theo dõi các cặp lat và lng đã xuất hiện
+          const latLngMap = new Map();
+
+          // Lọc và tạo mảng mới dựa trên điều kiện
+          const reportSpotsCoord = reportSpots.filter((item) => {
+            const latLngKey = `${item.lat}-${item.lng}`;
+
+            // Nếu lat và lng chưa xuất hiện, thêm vào Map và giữ lại phần tử
+            if (!latLngMap.has(latLngKey)) {
+              latLngMap.set(latLngKey, true);
+              return true;
+            }
+            return false;
+          });
+
+          const reportSpotsFiltered = reportSpotsCoord.map((spot) => {
+            const currentReportSpot = reportSpots.filter((item) => item.lat === spot.lat && item.lng === spot.lng);
 
             return {
-              point_id: spot.point_id,
-              address: data?.error ? null : data.results[0].formatted_address,
-              numberOfReports: spot.numberOfReports,
-              latestReport: spot.lastReport,
+              address: spot.address || null,
+              numberOfReports: currentReportSpot.length,
+              lat: spot.lat,
+              lng: spot.lng,
+              latestReport: currentReportSpot
+                .map((item) => item.created_at)
+                .sort((a, b) => new Date(b) - new Date(a))[0],
             };
-          })
-        );
+          });
 
-        res.status(200).json({
-          status: 'success',
-          data: finalData,
-        });
-      });
+          connection.query(
+            'SELECT * FROM ward JOIN district ON ward.district_id = district.district_id',
+            [req.params.id],
+            async (err, results) => {
+              if (err) {
+                console.error('Error executing query: ', err);
+                res.status(500).send('Internal Server Error');
+                return;
+              }
+              const wardName = results[0].ward_name;
+              const districtName = results[0].district_name;
+
+              res.status(200).json({
+                status: 'success',
+                data: [
+                  ...adSpots,
+                  ...reportSpotsFiltered.filter(
+                    (spot) =>
+                      spot.address?.toLowerCase().includes(wardName.toLowerCase()) &&
+                      spot.address?.toLowerCase().includes(districtName.toLowerCase())
+                  ),
+                ],
+              });
+            }
+          );
+        }
+      );
     });
   });
 });
@@ -319,6 +429,8 @@ const getReportDetailsByPointId = catchAsync(async (req, res, next) => {
 
               return {
                 point_id: spot.point_id,
+                lat: spot.lat,
+                lng: spot.lng,
                 address: data?.error ? null : data.results[0].formatted_address,
                 reports: spot.reports,
               };
@@ -335,6 +447,56 @@ const getReportDetailsByPointId = catchAsync(async (req, res, next) => {
   });
 });
 
+const getReportDetailsByLatLng = catchAsync(async (req, res, next) => {
+  const { lat, lng } = req.body;
+
+  if (!lat || !lng)
+    return res.status(401).json({
+      status: 'fail',
+      msg: "lat and lng can't be empty",
+    });
+
+  connection.query(
+    'SELECT * FROM report rp JOIN detail dt ON rp.detail_id = dt.detail_id JOIN report_type rt ON rp.report_type_id = rt.report_type_id where lat = ? and lng = ? and rp.point_id is NULL and rp.board_id is NULL',
+    [lat, lng],
+    async (err, results) => {
+      if (err) {
+        console.error('Error executing query: ', err);
+        res.status(500).send('Internal Server Error');
+        return;
+      }
+      const reports = results;
+      const url = `https://rsapi.goong.io/Geocode?latlng=${reports[0]?.lat},${reports[0]?.lng}&api_key=${process.env.GOONG_APIKEY}`;
+      const response = await fetch(url);
+      const data = await response.json();
+      const address = data?.error ? null : data.results[0]?.formatted_address;
+
+      res.status(200).json({
+        status: 'success',
+        data: {
+          address: address,
+          lat: lat,
+          lng: lng,
+          reports: reports.map((report) => {
+            const { image_url_1, image_url_2, ...restReport } = report;
+            return {
+              ...restReport,
+              reportedObject: 'Địa điểm',
+              image_urls: [report.image_url_1, report.image_url_2],
+              status:
+                report.status === 'processed'
+                  ? 'Đã xử lý'
+                  : report.status === 'processing'
+                  ? 'Đang xử lý'
+                  : 'Chờ xử lý',
+            };
+          }),
+        },
+      });
+    }
+  );
+});
+
 const updateReportStatus = catchAsync(async (req, res, next) => {
   const { id, status } = req.body;
 
@@ -347,16 +509,20 @@ const updateReportStatus = catchAsync(async (req, res, next) => {
 
     if (results.affectedRows === 0) res.status(401).json({ status: 'fail', msg: 'report_id is not exist' });
 
-    connection.query('select * from report where report_id = ?', [id], (err, results) => {
-      if (err) {
-        console.error('Error executing query: ', err);
-        res.status(500).send('Internal Server Error');
-        return;
-      }
+    connection.query(
+      'select * from report rp join detail dt on rp.detail_id = dt.detail_id where report_id = ?',
+      [id],
+      (err, results) => {
+        if (err) {
+          console.error('Error executing query: ', err);
+          res.status(500).send('Internal Server Error');
+          return;
+        }
 
-      socket?.socketIo?.emit('changeReport', { method: 'update', data: results[0] });
-      res.status(200).json({ status: 'success', data: results });
-    });
+        socket?.socketIo?.emit('changeReport', { method: 'update', data: results[0] });
+        res.status(200).json({ status: 'success', data: results });
+      }
+    );
   });
 });
 
@@ -377,7 +543,7 @@ const getNumberOfReportsByLatLng = catchAsync(async (req, res, next) => {
   const { lat, lng } = req.body;
 
   connection.query(
-    'SELECT * FROM report rp JOIN detail dt ON rp.detail_id = dt.detail_id where lat = ? and lng = ? and point_id is NULL and board_id is NULL',
+    'SELECT * FROM report rp JOIN detail dt ON rp.detail_id = dt.detail_id where lat = ? and lng = ? and rp.status != "processed" and point_id is NULL and board_id is NULL',
     [lat, lng],
     (err, results) => {
       if (err) {
@@ -396,6 +562,7 @@ module.exports = {
   getAdBoardsBySpotId,
   getReportListsByWardId,
   getReportDetailsByPointId,
+  getReportDetailsByLatLng,
   updateReportStatus,
   getAdBoardByBoardId,
   getNumberOfReportsByLatLng,
