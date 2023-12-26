@@ -13,6 +13,7 @@ const DetailsAdLocation = ({ data, onClose }) => {
         const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${data.lat},${data.lng}&key=${apiKey}`;
         const response = await fetch(apiUrl);
         const result = await response.json();
+        console.log(result);
 
         if (result.status === 'OK' && result.results.length > 0) {
           const detailedAddress = result.results[0].formatted_address;

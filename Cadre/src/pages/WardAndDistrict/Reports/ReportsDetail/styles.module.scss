@@ -195,7 +195,7 @@
     margin: 2rem 0;
 
     .btn__item + .btn__item {
-      margin-left: 1rem;
+      margin-left: 2rem;
     }
   }
 }
@@ -215,4 +215,13 @@
     font-size: 15rem;
     margin-bottom: 1rem;
   }
+}
+
+.imageModal {
+  width: fit-content;
+  height: fit-content;
+  max-width: 90%;
+  max-height: 90vh;
+  border-radius: 10px;
+  object-fit: cover;
 }
