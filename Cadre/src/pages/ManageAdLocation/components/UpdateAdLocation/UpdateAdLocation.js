@@ -111,7 +111,7 @@ const UpdateAdLocation = ({ data, onClose }) => {
       if (response.status === 'success') {
         Swal.fire({
           icon: 'success',
-          title: 'Thêm thành công!',
+          title: 'Cập nhật thành công!',
           timer: 1500,
           showConfirmButton: false,
         });
@@ -120,7 +120,7 @@ const UpdateAdLocation = ({ data, onClose }) => {
       } else {
         Swal.fire({
           icon: 'error',
-          title: 'Thêm thất bại!',
+          title: 'Cập nhật thất bại!',
           timer: 1500,
           text: 'Có lỗi xảy ra khi thêm nội dung. Vui lòng thử lại.',
         });
@@ -131,7 +131,7 @@ const UpdateAdLocation = ({ data, onClose }) => {
       console.error('Error:', error);
       Swal.fire({
         icon: 'error',
-        title: 'Thêm thất bại!',
+        title: 'Cập nhật thất bại!',
         timer: 1500,
         text: 'Có lỗi xảy ra khi thêm nội dung. Vui lòng thử lại.',
       });

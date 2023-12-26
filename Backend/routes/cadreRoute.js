@@ -25,6 +25,9 @@ router.delete('/deleteAdsPoint', cadreAdsPointController.deleteAdsPoint);
 
 router.get('/getRequestEditBoard', requestEditController.getRequestEditBoards);
 router.get('/getRequestEditPoint', requestEditController.getRequestEditPoints);
+router.get('/detailAdsBoard/:id', requestEditController.getDetailInforBoard);
+router.get('/detailAdsPoint/:id', requestEditController.getDetailAdvertisingPoint);
+router.put('/updateStatusEditReq/:id', requestEditController.updateStatus);
 
 module.exports = router;
 
