@@ -86,6 +86,7 @@ CREATE TABLE `contract` (
   company_email VARCHAR(255),
   company_phone VARCHAR(255),
   company_address VARCHAR(255),
+  company_taxcode VARCHAR(255),
   start_date DATE,
   end_date DATE,
   representative VARCHAR(255),
@@ -184,7 +185,6 @@ CREATE TABLE `licensing_request` (
   licensing_id INT auto_increment,
   advertisement_content VARCHAR(255),
   advertisement_image_url VARCHAR(255),
-  request_time DATETIME,
   `status` varchar(255) NOT null,
   rejection_reason VARCHAR(255),
   user_id INT,
@@ -266,10 +266,10 @@ VALUES
 -- (Đã có dữ liệu mẫu trong đoạn tạo bảng)
 
 -- Dữ liệu mẫu cho bảng Contract
-INSERT INTO `contract` (company_name, company_email, company_phone, company_address, start_date, end_date, representative)
+INSERT INTO `contract` (company_name, company_email, company_phone, company_address,company_taxcode, start_date, end_date, representative)
 VALUES
-  ('Company A', 'companyA@example.com', '123456789', 'Address A', '2023-01-01', '2023-12-31', 'Rep A'),
-  ('Company B', 'companyB@example.com', '987654321', 'Address B', '2023-03-01', '2023-12-31', 'Rep B');
+  ('Company A', 'companyA@example.com', '123456789', 'Address A','123456', '2023-01-01', '2023-12-31', 'Rep A'),
+  ('Company B', 'companyB@example.com', '987654321', 'Address B', '122333','2023-03-01', '2023-12-31', 'Rep B');
 
 -- Dữ liệu mẫu cho bảng AdvertisingPoint
 INSERT INTO `advertising_point` (ward_id, advertisement_type_id, location_type, image_url, `lat`, `lng`, is_planning)
@@ -299,10 +299,10 @@ VALUES
   ('2023-02-20', 'Processing B', 'Jane Doe', 'jane@example.com', '444555666', 'Approved', 2, 2, NULL, 1);
 
 -- Dữ liệu mẫu cho bảng LicensingRequest
-INSERT INTO `licensing_request` (advertisement_content, advertisement_image_url, request_time, `status`, rejection_reason, user_id, point_id, width, height, contract_id, report_id)
+INSERT INTO `licensing_request` (advertisement_content, advertisement_image_url, `status`, rejection_reason, user_id, point_id, width, height, contract_id, report_id)
 VALUES
-  ('License Content A', 'licenseImgA.jpg', '2023-01-10', 'Approved', NULL, 4, 1, 50.0, 60.0, 1, 1),
-  ('License Content B', 'licenseImgB.jpg', '2023-02-15', 'Pending', NULL, 5, 2, 55.0, 65.0, 2, 2);
+  ('License Content A', 'licenseImgA.jpg', 'Approved', NULL, 4, 1, 50.0, 60.0, 1, 1),
+  ('License Content B', 'licenseImgB.jpg',  'Pending', NULL, 5, 2, 55.0, 65.0, 2, 2);
 
 -- Dữ liệu mẫu cho bảng EditRequestBoard
 INSERT INTO `edit_request_board` (board_id, board_type_id, edit_status, advertisement_content, advertisement_image_url, request_time, reason, width, height, created_by)

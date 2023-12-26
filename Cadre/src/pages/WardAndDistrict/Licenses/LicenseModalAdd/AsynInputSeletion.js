@@ -12,7 +12,7 @@ function sleep(duration) {
   });
 }
 
-export default function AsynInput(props) {
+export default function AsynInputSeletion(props) {
   const { labelInput } = props;
 
   const [open, setOpen] = React.useState(false);
@@ -47,7 +47,7 @@ export default function AsynInput(props) {
 
   return (
     <Box sx={{ my: '20px' }}>
-      <Typography variant="h6" gutterBottom fontWeight={600} ml={0.2}>
+      <Typography variant="h5" gutterBottom fontWeight={600} ml={0.2} color="#222222">
         {labelInput}
       </Typography>
       <Autocomplete
@@ -71,12 +71,13 @@ export default function AsynInput(props) {
           <TextField
             {...params}
             size="small"
+            label="Lựa chọn"
             InputLabelProps={{
-              style: { fontSize: '12px' }, // Adjust the font size as needed
+              style: { fontSize: '14px' }, // Adjust the font size as needed
             }}
             InputProps={{
               ...params.InputProps,
-              style: { fontSize: '12px' },
+              style: { fontSize: '14px' },
               endAdornment: (
                 <React.Fragment>
                   {loading ? <CircularProgress color="inherit" size={20} sx={{ fontSize: '16px' }} /> : null}
