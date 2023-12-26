@@ -93,14 +93,14 @@ export default function AdSpots() {
                     {row.is_planning ? 'Đã quy hoạch' : 'Chưa quy hoạch'}
                   </td>
                   <td style={{ width: '10%' }}>
-                    <Link to={`/point-request/${row.id}`}>
+                    <Link to={`/point-request/${row.point_id}`}>
                       <button className={classes.btn_info}>
                         <div className={classes.icon_container}>
                           <FontAwesomeIcon icon={faPencil} />
                         </div>
                       </button>
                     </Link>
-                    <Link to={`/advertising-spots/${row.id}`}>
+                    <Link to={`/advertising-spots/${row.point_id}`}>
                       <button className={classes.btn_detail}>
                         <div className={classes.icon_container}>
                           <FontAwesomeIcon icon={faEye} />
