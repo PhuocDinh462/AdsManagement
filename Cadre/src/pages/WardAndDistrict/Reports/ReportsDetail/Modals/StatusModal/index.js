@@ -8,11 +8,19 @@ import { Backdrop, CircularProgress } from '@mui/material';
 import Swal from 'sweetalert2';
 import { axiosRequest } from '~/src/api/axios';
 import Select from 'react-select';
+import { useSelector } from 'react-redux';
+import { selectUser } from '~/src/store/reducers';
 
 export default function StatusModal(props) {
   const { setActive, report_id } = props;
   const [loading, setLoading] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState('pending');
+
+  const user = useSelector(selectUser);
+  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
 
   const handleConfirm = async () => {
     console.log(selectedStatus);
@@ -22,7 +30,7 @@ export default function StatusModal(props) {
       status: selectedStatus,
     };
     await axiosRequest
-      .patch(`ward/updateReportStatus`, body)
+      .patch(`ward/updateReportStatus`, body, { headers: headers })
       .then((res) => {
         setActive(false);
         Swal.fire({

@@ -7,6 +7,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { noImage } from '~assets/imgs/Imgs';
 import axios from 'axios';
 import { axiosRequest } from '~/src/api/axios';
+import { useSelector } from 'react-redux';
+import { selectUser } from '~/src/store/reducers';
 
 export default function SpotInfoSidebar(props) {
   const { spotCoord, spotId, setCollapse, adSpots, isClickMarker } = props;
@@ -16,6 +18,12 @@ export default function SpotInfoSidebar(props) {
   const [spotAddress, setSpotAddress] = useState();
   const [loading, setLoading] = useState(false);
   const [currentInfo, setCurrentInfo] = useState();
+
+  const user = useSelector(selectUser);
+  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -49,7 +57,7 @@ export default function SpotInfoSidebar(props) {
 
       if (spotId)
         await axiosRequest
-          .get(`ward/getInfoByPointId/${spotId}`)
+          .get(`ward/getInfoByPointId/${spotId}`, { headers: headers })
           .then((res) => {
             const data = res.data.data;
             setCurrentInfo(data);
@@ -66,7 +74,7 @@ export default function SpotInfoSidebar(props) {
           lng: spotCoord.lng,
         };
         await axiosRequest
-          .post('ward/getNumberOfReportsByLatLng', body)
+          .post('ward/getNumberOfReportsByLatLng', body, { headers: headers })
           .then((res) => {
             const data = res.data.data;
             setCurrentInfo({ spotInfo: { reports: data.numberOfReports } });

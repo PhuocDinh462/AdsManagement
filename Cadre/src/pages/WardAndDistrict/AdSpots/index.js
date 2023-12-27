@@ -4,18 +4,28 @@ import { faPencil, faEye } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Pagination from '~components/Pagination';
 import SearchBar from '~components/SearchBar';
-import { Link } from 'react-router-dom';
 import { axiosRequest } from '~/src/api/axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectUser, setBoardIndex } from '~/src/store/reducers';
+import { useNavigate } from 'react-router';
 
 export default function AdSpots() {
   const [data, setData] = useState([]);
   const [filteredData, setFilterData] = useState(data);
   const [filterKeyword, setFilterKeyword] = useState('');
 
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const user = useSelector(selectUser);
+  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
+
   useEffect(() => {
     (async () => {
       await axiosRequest
-        .get(`ward/getAdSpotsListByWardId/1`)
+        .get(`ward/getAdSpotsListByWardId/${user.ward_id}`, { headers: headers })
         .then((res) => {
           const data = res.data.data;
           setData(data);
@@ -93,20 +103,22 @@ export default function AdSpots() {
                     {row.is_planning ? 'Đã quy hoạch' : 'Chưa quy hoạch'}
                   </td>
                   <td style={{ width: '10%' }}>
-                    <Link to={`/point-request/${row.point_id}`}>
-                      <button className={classes.btn_info}>
-                        <div className={classes.icon_container}>
-                          <FontAwesomeIcon icon={faPencil} />
-                        </div>
-                      </button>
-                    </Link>
-                    <Link to={`/advertising-spots/${row.point_id}`}>
-                      <button className={classes.btn_detail}>
-                        <div className={classes.icon_container}>
-                          <FontAwesomeIcon icon={faEye} />
-                        </div>
-                      </button>
-                    </Link>
+                    <button className={classes.btn_info} onClick={() => navigate(`/point-request/${row.point_id}`)}>
+                      <div className={classes.icon_container}>
+                        <FontAwesomeIcon icon={faPencil} />
+                      </div>
+                    </button>
+                    <button
+                      className={classes.btn_detail}
+                      onClick={() => {
+                        dispatch(setBoardIndex(0));
+                        navigate(`/advertising-spots/${row.point_id}`);
+                      }}
+                    >
+                      <div className={classes.icon_container}>
+                        <FontAwesomeIcon icon={faEye} />
+                      </div>
+                    </button>
                   </td>
                 </tr>
               ))}

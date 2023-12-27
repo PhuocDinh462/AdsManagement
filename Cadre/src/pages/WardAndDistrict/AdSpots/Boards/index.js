@@ -18,7 +18,7 @@ import { IconTextBtn } from '~components/button';
 import { useNavigate, useParams } from 'react-router';
 import { axiosRequest } from '~/src/api/axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { setBoardIndex, selectBoardIndex, setReportCoord } from '~/src/store/reducers';
+import { setBoardIndex, selectBoardIndex, setReportCoord, selectUser } from '~/src/store/reducers';
 import { Backdrop } from '@mui/material';
 
 export default function Boards() {
@@ -33,10 +33,13 @@ export default function Boards() {
   const [currentBoardIndex, setCurrentBoardIndex] = useState(0);
   const navigate = useNavigate();
   const [filteredData, setFilteredData] = useState(data);
-  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
+
+  const user = useSelector(selectUser);
+  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
   const headers = {
     Authorization: tokenAuth,
   };
+
   const handleFilter = (keyword) => {
     if (!keyword) setFilteredData(data.boards);
     else
