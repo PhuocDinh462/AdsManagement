@@ -4,7 +4,7 @@ import { faClose } from '@fortawesome/free-solid-svg-icons';
 import classes from './DetailsAdLocation.module.scss';
 
 const DetailsAdLocation = ({ data, onClose }) => {
-  const apiKey = 'AIzaSyAQxG3Ubdo-Nhf6tjGYmXhYDe3yr4vGeDw';
+  const apiKey = 'AIzaSyCFjMz64uEI7tL_FMVpawPirJJKE5VQtzU';
   const [address, setAddress] = useState(null);
 
   useEffect(() => {
