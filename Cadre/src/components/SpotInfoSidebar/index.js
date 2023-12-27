@@ -11,7 +11,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { selectUser, selectBoardId, setBoardId } from '~/src/store/reducers';
 
 export default function SpotInfoSidebar(props) {
-  const { spotCoord, spotId, setCollapse, adSpots, isClickMarker } = props;
+  const { spotCoord, spotId, setCollapse, adSpots, isClickMarker, setAutoCompleteValue } = props;
   const [status, setStatus] = useState(true);
   const [currentAdsIndex, setCurrentAdsIndex] = useState(0);
   const [spotName, setSpotName] = useState();
@@ -39,6 +39,7 @@ export default function SpotInfoSidebar(props) {
         )
         .then((res) => {
           const data = res.data.results;
+          setAutoCompleteValue(data[0].formatted_address);
           setSpotName(data[0]?.name);
           setSpotAddress(data[0]?.address);
         })

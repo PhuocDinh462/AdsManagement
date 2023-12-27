@@ -68,6 +68,8 @@ export default function Home() {
   const [currentSpotId, setCurrentSpotId] = useState(null);
   const [isClickMarker, setIsClickMarker] = useState(false);
 
+  const [autoCompleteValue, setAutoCompleteValue] = useState();
+
   useEffect(() => {
     setLocalStorageFromCookie('user-state');
     setLocalStorageFromCookie('user_type');
@@ -76,6 +78,7 @@ export default function Home() {
   }, []);
 
   const handleMapClick = (event) => {
+    setAutoCompleteValue();
     setIsClickMarker(false);
     setDisplayMarker(!displayMarker);
     setCollapseSidebar(false);
@@ -332,6 +335,8 @@ export default function Home() {
           apiKey={process.env.REACT_APP_GOONG_APIKEY}
           placeholder="Tìm kiếm theo địa chỉ"
           collapseSidebar={!displayMarker || collapseSidebar}
+          value={autoCompleteValue}
+          setValue={setAutoCompleteValue}
           onChange={(place_id) => handleSearch(place_id)}
         />
       </div>
@@ -343,6 +348,7 @@ export default function Home() {
           adSpots={adSpots}
           setCollapse={setCollapseSidebar}
           isClickMarker={isClickMarker}
+          setAutoCompleteValue={setAutoCompleteValue}
         />
       )}
     </div>
