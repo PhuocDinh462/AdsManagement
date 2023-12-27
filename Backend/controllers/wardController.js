@@ -189,18 +189,18 @@ const getInfoByPointId = catchAsync(async (req, res, next) => {
 });
 
 const getAdBoardsBySpotId = catchAsync(async (req, res, next) => {
-  connection.query('select * from advertising_board where point_id = ?', [req.params.id], (err, results) => {
-    if (err) {
-      console.error('Error executing query: ', err);
-      res.status(500).send('Internal Server Error');
-      return;
-    }
-    const boards = results;
+  connection.query(
+    'select * from advertising_board ab join board_type bt on ab.board_type_id = bt.board_type_id where point_id = ?',
+    [req.params.id],
+    (err, results) => {
+      if (err) {
+        console.error('Error executing query: ', err);
+        res.status(500).send('Internal Server Error');
+        return;
+      }
+      const boards = results;
 
-    connection.query(
-      'select * from advertising_point ap join advertisement_type at on ap.advertisement_type_id = at.advertisement_type_id where point_id = ?',
-      [req.params.id],
-      async (err, results) => {
+      connection.query('select * from advertising_point where point_id = ?', [req.params.id], async (err, results) => {
         if (err) {
           console.error('Error executing query: ', err);
           res.status(500).send('Internal Server Error');
@@ -214,11 +214,11 @@ const getAdBoardsBySpotId = catchAsync(async (req, res, next) => {
 
         res.status(200).json({
           status: 'success',
-          data: { address: address, lat: spot.lat, lng: spot.lng, ad_type: spot.type_name, boards: boards },
+          data: { address: address, lat: spot.lat, lng: spot.lng, boards: boards },
         });
-      }
-    );
-  });
+      });
+    }
+  );
 });
 
 const getReportListsByWardId = catchAsync(async (req, res, next) => {
