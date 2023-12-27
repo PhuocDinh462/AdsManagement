@@ -7,10 +7,10 @@ import {
   faAngleUp,
   faAngleDown,
   faAngleLeft,
-  faFlag,
   faFile,
   faBan,
   faBlackboard,
+  faRectangleAd,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useEffect, useState } from 'react';
@@ -177,7 +177,7 @@ export default function Boards() {
                     </td>
                     <td className={classes.userInfo_col}>
                       <div className={classes.itemInfo}>
-                        <FontAwesomeIcon icon={faFlag} />
+                        <FontAwesomeIcon icon={faRectangleAd} />
                         <dir className={classes.itemInfo__text}>
                           {'Loại quảng cáo: ' + filteredData[currentBoardIndex]?.type_name}
                         </dir>
