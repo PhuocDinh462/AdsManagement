@@ -18,7 +18,7 @@ import { IconTextBtn } from '~components/button';
 import { useNavigate, useParams } from 'react-router';
 import { axiosRequest } from '~/src/api/axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { setBoardIndex, selectBoardIndex, setReportCoord, selectUser } from '~/src/store/reducers';
+import { setBoardIndex, selectBoardIndex, setReportCoord, selectUser, setBoardId } from '~/src/store/reducers';
 import { Backdrop } from '@mui/material';
 
 export default function Boards() {
@@ -88,9 +88,10 @@ export default function Boards() {
 
         <div className={classes.nav_btn_container}>
           <div
-            className={[classes.nav_btn, classes.btn].join(' ')}
+            className={[classes.nav_btn, classes.btn, filteredData.length === 0 && classes['btn--disabled']].join(' ')}
             onClick={() => {
               dispatch(setReportCoord({ lat: data.lat, lng: data.lng }));
+              dispatch(setBoardId(filteredData[currentBoardIndex].board_id));
               navigate('/home');
             }}
           >

@@ -25,7 +25,7 @@ import StatusModal from './Modals/StatusModal';
 import { useParams } from 'react-router-dom';
 import { axiosRequest } from '~/src/api/axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { setReportIndex, selectReportIndex, setReportCoord, selectUser } from '~/src/store/reducers';
+import { setReportIndex, selectReportIndex, setReportCoord, selectUser, setBoardId } from '~/src/store/reducers';
 import { useNavigate } from 'react-router';
 
 export default function ReportsDetail() {
@@ -126,6 +126,8 @@ export default function ReportsDetail() {
             className={[classes.nav_btn, classes.btn].join(' ')}
             onClick={() => {
               dispatch(setReportCoord({ lat: data.lat, lng: data.lng }));
+              if (filteredData[currentReportIndex]?.reportedObject === 'Bảng quảng cáo')
+                dispatch(setBoardId(filteredData[currentReportIndex]?.board_id));
               navigate('/home');
             }}
           >

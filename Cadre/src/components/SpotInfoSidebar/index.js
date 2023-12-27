@@ -7,8 +7,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { noImage } from '~assets/imgs/Imgs';
 import axios from 'axios';
 import { axiosRequest } from '~/src/api/axios';
-import { useSelector } from 'react-redux';
-import { selectUser } from '~/src/store/reducers';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectUser, selectBoardId, setBoardId } from '~/src/store/reducers';
 
 export default function SpotInfoSidebar(props) {
   const { spotCoord, spotId, setCollapse, adSpots, isClickMarker } = props;
@@ -19,15 +19,19 @@ export default function SpotInfoSidebar(props) {
   const [loading, setLoading] = useState(false);
   const [currentInfo, setCurrentInfo] = useState();
 
+  const dispatch = useDispatch();
   const user = useSelector(selectUser);
   const tokenAuth = 'Bearer ' + user.token.split('"').join('');
   const headers = {
     Authorization: tokenAuth,
   };
 
+  const boardIdStorage = useSelector(selectBoardId);
+
   useEffect(() => {
     setLoading(true);
     setCurrentAdsIndex(0);
+
     (async () => {
       await axios
         .get(
@@ -61,6 +65,12 @@ export default function SpotInfoSidebar(props) {
           .then((res) => {
             const data = res.data.data;
             setCurrentInfo(data);
+
+            if (boardIdStorage) {
+              const boardIdStorageIndex = data.boardInfo.findIndex((item) => item.board_id === boardIdStorage);
+              if (boardIdStorageIndex !== -1) setCurrentAdsIndex(boardIdStorageIndex);
+              dispatch(setBoardId(null));
+            }
           })
           .catch((error) => {
             console.log('Get info error: ', error);
