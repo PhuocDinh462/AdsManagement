@@ -22,53 +22,21 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useEffect, useState } from 'react';
 import { IconTextBtn } from '~components/button';
-import images from '~/src/assets/images';
 import { useNavigate, useParams } from 'react-router';
 import request from '~/src/utils/request';
-const pointDetail = 'Chi tiết điểm đặt tại 15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM'
-const ad_types = ["Cổ động chính trị", "Quảng cáo thương mại", "Xã hội hoá"]
+import { useDispatch, useSelector } from 'react-redux';
+import { setBoardIndex, selectBoardIndex, setReportCoord } from '~/src/store/reducers';
+
+const pointDetail = 'Chi tiết điểm đặt tại 15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM';
+const ad_types = ['Cổ động chính trị', 'Quảng cáo thương mại', 'Xã hội hoá'];
+
 export default function Boards() {
-  const { id } = useParams()
-  // const [data, setData] = useState([
-  //   {
-  //     id: 1,
-  //     width: 2.5,
-  //     height: 2.2,
-  //     board_type_id: 2,
-  //     username: 'Nguyễn Văn A',
-  //     advertisement_image_url: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
-  //     advertisement_content: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.
-  //     Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.
-  //     Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.
-  //     Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.
-  //     Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.
-  //     Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.
+  const { id } = useParams();
+  const [data, setData] = useState([]);
+  const dispatch = useDispatch();
+  const boardIndexStorage = useSelector(selectBoardIndex);
 
-  //     `,
-
-  //   },
-  //   {
-  //     id: 2,
-  //     width: 2.5,
-  //     height: 3.2,
-  //     board_type_id: 1,
-  //     advertisement_image_url: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
-  //     advertisement_content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.',
-
-  //   },
-  //   {
-  //     id: 3,
-  //     width: 2.5,
-  //     height: 4.2,
-  //     board_type_id: 0,
-  //     advertisement_image_url: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
-  //     advertisement_content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda nostrum dicta distinctio harum non quod natus ipsum ducimus, aliquid enim, nobis labore sapiente ut architecto rerum explicabo culpa nam amet soluta exercitationem! Beatae hic alias quis aliquid ex eligendi vel natus, eveniet ullam possimus, necessitatibus, reiciendis earum dolor? Necessitatibus, ullam.',
-
-  //   }
-  // ]);
-  const [data, setData] = useState([])
-
-  const [currentReportIndex, setCurrentReportIndex] = useState(0);
+  const [currentBoardIndex, setCurrentBoardIndex] = useState(0);
   const boardNavigate = useNavigate();
   const [filteredData, setFilteredData] = useState(data);
   const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
@@ -92,23 +60,23 @@ export default function Boards() {
           );
         })
       );
-    setCurrentReportIndex(0);
   };
   const fetchBoards = async () => {
     try {
-      const res = await request.get(`board/get_boards_by_point/${id}`, { headers: headers })
-      setData(res.data.board)
+      const res = await request.get(`board/get_boards_by_point/${id}`, { headers: headers });
+      setData(res.data.board);
+      if (boardIndexStorage < res.data.board.length) setCurrentBoardIndex(boardIndexStorage);
     } catch (error) {
-      console.log('Error fetching data: ' + error.message)
+      console.log('Error fetching data: ' + error.message);
     }
-  }
+  };
   useEffect(() => {
     fetchBoards();
-  }, [])
+  }, []);
 
   useEffect(() => {
     handleFilter();
-  }, [data])
+  }, [data]);
 
   return (
     <div className={classes.main_container}>
@@ -121,19 +89,15 @@ export default function Boards() {
         </div>
 
         <div className={classes.nav_btn_container}>
-          <div
-            className={[classes.nav_btn, classes.btn, filteredData.length == 0 && classes['btn--disabled']].join(' ')}
-          >
+          <div className={[classes.nav_btn, classes.btn].join(' ')}>
             <FontAwesomeIcon icon={faLocationDot} />
           </div>
           <div
-            className={[classes.nav_btn, classes.btn, filteredData.length == 0 && classes['btn--disabled']].join(' ')}
-          >
-            <FontAwesomeIcon icon={faCircleInfo} />
-          </div>
-          <div
-            className={[classes.nav_btn, classes.btn, currentReportIndex <= 0 && classes['btn--disabled']].join(' ')}
-            onClick={() => setCurrentReportIndex(currentReportIndex - 1)}
+            className={[classes.nav_btn, classes.btn, currentBoardIndex <= 0 && classes['btn--disabled']].join(' ')}
+            onClick={() => {
+              setCurrentBoardIndex(currentBoardIndex - 1);
+              dispatch(setBoardIndex(currentBoardIndex - 1));
+            }}
           >
             <FontAwesomeIcon icon={faAngleUp} />
           </div>
@@ -141,9 +105,12 @@ export default function Boards() {
             className={[
               classes.nav_btn,
               classes.btn,
-              currentReportIndex >= filteredData.length - 1 && classes['btn--disabled'],
+              currentBoardIndex >= filteredData.length - 1 && classes['btn--disabled'],
             ].join(' ')}
-            onClick={() => setCurrentReportIndex(currentReportIndex + 1)}
+            onClick={() => {
+              setCurrentBoardIndex(currentBoardIndex + 1);
+              dispatch(setBoardIndex(currentBoardIndex + 1));
+            }}
           >
             <FontAwesomeIcon icon={faAngleDown} />
           </div>
@@ -151,13 +118,20 @@ export default function Boards() {
 
         <dir className={classes.reports_container}>
           {filteredData.map((item, index) => (
-            <div className={classes.report_item} key={index} onClick={() => setCurrentReportIndex(index)}>
+            <div
+              className={classes.report_item}
+              key={index}
+              onClick={() => {
+                setCurrentBoardIndex(index);
+                dispatch(setBoardIndex(index));
+              }}
+            >
               <dir className={classes.divider} />
               <div className={classes.username}>
                 <div
                   className={[
                     classes.username__text,
-                    currentReportIndex === index && classes['username__text--active'],
+                    currentBoardIndex === index && classes['username__text--active'],
                   ].join(' ')}
                 >
                   {console.log(item)}
@@ -166,7 +140,7 @@ export default function Boards() {
                 <div
                   className={[
                     classes.username__ic,
-                    currentReportIndex === index && classes['username__ic--active'],
+                    currentBoardIndex === index && classes['username__ic--active'],
                   ].join(' ')}
                 >
                   <FontAwesomeIcon icon={faAngleLeft} />
@@ -178,9 +152,7 @@ export default function Boards() {
       </div>
 
       <div className={classes.content_container}>
-        <div className={classes.title}>
-          {pointDetail}
-        </div>
+        <div className={classes.title}>{pointDetail}</div>
 
         {filteredData.length > 0 ? (
           <>
@@ -192,7 +164,11 @@ export default function Boards() {
                       <div className={classes.itemInfo}>
                         <FontAwesomeIcon icon={faBlackboard} />
                         <dir className={classes.itemInfo__text}>
-                          {'Kích thước: ' + filteredData[currentReportIndex]?.width + 'm x ' + filteredData[currentReportIndex]?.height + "m"}
+                          {'Kích thước: ' +
+                            filteredData[currentBoardIndex]?.width +
+                            'm x ' +
+                            filteredData[currentBoardIndex]?.height +
+                            'm'}
                         </dir>
                       </div>
                     </td>
@@ -200,7 +176,7 @@ export default function Boards() {
                       <div className={classes.itemInfo}>
                         <FontAwesomeIcon icon={faFlag} />
                         <dir className={classes.itemInfo__text}>
-                          {'Hình thức quảng cáo: ' + ad_types[filteredData[currentReportIndex]?.board_type_id]}
+                          {'Hình thức quảng cáo: ' + ad_types[filteredData[currentBoardIndex]?.board_type_id]}
                         </dir>
                       </div>
                     </td>
@@ -212,8 +188,11 @@ export default function Boards() {
                         <span> Hình ảnh:</span>
                         <dir className={classes.itemInfo__text}>
                           {/* <img src={images.googleImage} alt="Image Board" className={classes['board_image']} /> */}
-                          <img src={filteredData[currentReportIndex]?.advertisement_image_url} alt="Image Board" className={classes['board_image']} />
-
+                          <img
+                            src={filteredData[currentBoardIndex]?.advertisement_image_url}
+                            alt="Image Board"
+                            className={classes['board_image']}
+                          />
                         </dir>
                       </div>
                     </td>
@@ -222,14 +201,16 @@ export default function Boards() {
               </table>
             </div>
 
-            <div className={classes.reportContent_container}>{filteredData[currentReportIndex]?.advertisement_content}</div>
+            <div className={classes.reportContent_container}>
+              {filteredData[currentBoardIndex]?.advertisement_content}
+            </div>
 
             <div className={classes.processBtn}>
               <IconTextBtn
-                label='Chỉnh sửa'
+                label="Chỉnh sửa"
                 rightIc={faArrowRight}
                 onClick={() => {
-                  boardNavigate(`/board-request/${filteredData[currentReportIndex]?.board_id}`)
+                  boardNavigate(`/board-request/${filteredData[currentBoardIndex]?.board_id}`);
                 }}
               />
             </div>

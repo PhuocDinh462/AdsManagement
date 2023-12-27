@@ -189,15 +189,35 @@ const getInfoByPointId = catchAsync(async (req, res, next) => {
 });
 
 const getAdBoardsBySpotId = catchAsync(async (req, res, next) => {
-  const query = 'SELECT * FROM advertising_board where point_id = ?';
-
-  connection.query(query, [req.params.id], (err, results) => {
+  connection.query('select * from advertising_board where point_id = ?', [req.params.id], (err, results) => {
     if (err) {
       console.error('Error executing query: ', err);
       res.status(500).send('Internal Server Error');
       return;
     }
-    res.status(200).json({ status: 'success', data: results });
+    const boards = results;
+
+    connection.query(
+      'select * from advertising_point ap join advertisement_type at on ap.advertisement_type_id = at.advertisement_type_id where point_id = ?',
+      [req.params.id],
+      async (err, results) => {
+        if (err) {
+          console.error('Error executing query: ', err);
+          res.status(500).send('Internal Server Error');
+          return;
+        }
+        spot = results[0];
+        const url = `https://rsapi.goong.io/Geocode?latlng=${spot.lat},${spot.lng}&api_key=${process.env.GOONG_APIKEY}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        const address = data?.error ? null : data.results[0].formatted_address;
+
+        res.status(200).json({
+          status: 'success',
+          data: { address: address, lat: spot.lat, lng: spot.lng, ad_type: spot.type_name, boards: boards },
+        });
+      }
+    );
   });
 });
 
