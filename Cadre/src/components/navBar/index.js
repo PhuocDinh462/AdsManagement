@@ -4,19 +4,19 @@ import NavBarItem from './navBarItem';
 import { useLocation } from 'react-router-dom';
 import AccountDropdown from '../Dropdown/AccountDropdown';
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 
 export default function NavBar(props) {
   const location = useLocation();
   const currentPath = '/' + location.pathname.split('/')[1];
   const [activeAccountDropdown, setActiveAccountDropdown] = useState(false);
   const { categories } = props;
+  const navigate = useNavigate();
 
   return (
     <div className={classes.main_container}>
       <div className={classes.logo_container}>
-        <a href="/">
-          <img src={logo} className={classes.logo} />
-        </a>
+        <img src={logo} className={classes.logo} onClick={() => navigate('/')} />
 
         {categories?.map((item, index) => (
           <NavBarItem
