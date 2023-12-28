@@ -40,7 +40,7 @@ const CssTextField = styled(TextField, {
 }));
 
 export default function ProcessModal(props) {
-  const { setActive, email } = props;
+  const { setActive, email, report_id } = props;
   const [loading, setLoading] = useState(false);
 
   const [handlingMethod, setHandlingMethod] = useState('');
@@ -48,6 +48,7 @@ export default function ProcessModal(props) {
   const handleConfirm = async () => {
     setLoading(true);
     const body = {
+      report_id: report_id,
       email: email,
       content: handlingMethod,
     };

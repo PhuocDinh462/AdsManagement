@@ -112,6 +112,7 @@ const initialData = [
 const Licenses = () => {
   const [data, setData] = useState(initialData);
   const [isOpenDetails, setIsOpenDetails] = useState(false);
+  const [isOpenAdd, setIsOpenAdd] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState(0);
 
   const pageSize = 10;
@@ -126,8 +127,16 @@ const Licenses = () => {
     setIsOpenDetails(true);
   };
 
-  const handleCloseModal = () => {
+  const handleCloseModalDetails = () => {
     setIsOpenDetails(false);
+  };
+
+  const handleOpenModalAdd = (data) => {
+    setIsOpenAdd(true);
+  };
+
+  const handleCloseModalAdd = () => {
+    setIsOpenAdd(false);
   };
 
   const handleFilterChange = (type) => {
@@ -148,7 +157,14 @@ const Licenses = () => {
           {/* Tab Search */}
           <div className={classes.container__header_search}>
             <SearchBar placeholder="Tìm kiếm..." onChange={(keyword) => console.log(keyword)} />
-            <ButtonCT iconLeft={ic_add} borderRadius primary medium content="Tạo Yêu Cầu" />
+            <ButtonCT
+              onClick={handleOpenModalAdd}
+              iconLeft={ic_add}
+              borderRadius
+              primary
+              medium
+              content="Tạo Yêu Cầu"
+            />
           </div>
 
           {/* Tab Filter */}
@@ -224,8 +240,8 @@ const Licenses = () => {
           onPageChange={(page) => setCurrentPage(page)}
         />
       </div>
-      <LicenseModalAdd />
-      {isOpenDetails && <LicenseDetails disabledButton={true} handleCloseModal={handleCloseModal} />}
+      {isOpenAdd && <LicenseModalAdd handleCloseModal={handleCloseModalAdd} />}
+      {isOpenDetails && <LicenseDetails disabledButton={true} handleCloseModal={handleCloseModalDetails} />}
     </div>
   );
 };

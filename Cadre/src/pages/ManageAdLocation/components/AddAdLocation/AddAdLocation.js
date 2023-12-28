@@ -7,12 +7,16 @@ import Swal from 'sweetalert2';
 import { storage } from '~/src/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { v4 } from 'uuid';
+import Coordination from '~/src/components/Coordination/Coordination';
+import Modal from '~/src/components/Modal/Modal';
 
 const AddAdLocation = ({ onClose }) => {
   const [indexCur, setIndexCur] = useState(1);
   const [previewImage, setPreviewImage] = useState(null);
   const [wards, setWards] = useState([]);
   const [adsType, setAdsType] = useState([]);
+  const [dataAddress, setDataAddress] = useState();
+  const [isModalMap, setModalMap] = useState(false);
 
   const [longitude, setLongitude] = useState('');
   const [latitude, setLatitude] = useState('');
@@ -106,7 +110,6 @@ const AddAdLocation = ({ onClose }) => {
     }
     try {
       const response = await axiosClient.post('/cadre/addAdsPoint', dataToSend);
-      console.log(response);
 
       if (response.status === 'success') {
         Swal.fire({
@@ -149,50 +152,54 @@ const AddAdLocation = ({ onClose }) => {
           <div className={classes.adding__modal__body}>
             {indexCur === 1 && (
               <>
-                <h4>Vĩ độ (Latitude)</h4>
-                <input
-                  type="text"
-                  placeholder="Nhập vào vĩ độ"
-                  value={latitude}
-                  onChange={(e) => setLatitude(e.target.value)}
-                />
-                <h4>Kinh độ (Longitude)</h4>
-                <input
-                  type="text"
-                  placeholder="Nhập vào kinh độ"
-                  value={longitude}
-                  onChange={(e) => setLongitude(e.target.value)}
-                />
-                <h4>Chọn loại vị trí</h4>
-                <select value={locationType} onChange={(e) => setLocationType(e.target.value)}>
-                  <option value="" disabled>
-                    Chọn loại vị trí
-                  </option>
-                  <option value={'Đất công/Công viên/Hành lang an toàn giao thông'}>
-                    Đất công/Công viên/Hành lang an toàn giao thông
-                  </option>
-                  <option value={'Đất tư nhân/Nhà ở riêng lẻ'}> Đất tư nhân/Nhà ở riêng lẻ</option>
-                  <option value={'Trung tâm thương mại'}>Trung tâm thương mại</option>
-                  <option value={'Chợ'}>Chợ</option>
-                  <option value={'Cây xăng'}>Cây xăng</option>
-                  <option value={'Nhà chờ xe buýt'}>Nhà chờ xe buýt</option>
-                </select>
-
-                <h4>Chọn phường</h4>
-                <select value={selectedWard || ''} onChange={(e) => setSelectedWard(e.target.value)}>
-                  <option value="" disabled>
-                    Chọn quận
-                  </option>
-                  {wards.map((ward) => (
-                    <option key={ward.ward_id} value={ward.ward_id}>
-                      {ward.ward_name}
-                    </option>
-                  ))}
-                </select>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <div className={classes.flex_left}>
+                    <h4>Chọn phường</h4>
+                    <select value={selectedWard || ''} onChange={(e) => setSelectedWard(e.target.value)}>
+                      <option value="" disabled>
+                        Chọn phường
+                      </option>
+                      {wards.map((ward) => (
+                        <option key={ward.ward_id} value={ward.ward_id}>
+                          {ward.ward_name}, {ward.district_name}
+                        </option>
+                      ))}
+                    </select>
+                    <h4>Vĩ độ (Latitude)</h4>
+                    <input
+                      type="text"
+                      placeholder="Nhập vào vĩ độ"
+                      value={latitude}
+                      onChange={(e) => setLatitude(e.target.value)}
+                    />
+                    <h4>Kinh độ (Longitude)</h4>
+                    <input
+                      type="text"
+                      placeholder="Nhập vào kinh độ"
+                      value={longitude}
+                      onChange={(e) => setLongitude(e.target.value)}
+                    />
+                    <div onClick={(e) => setModalMap(true)}>Chọn trên bản đồ</div>
+                    <h4>Chọn loại vị trí</h4>
+                    <select value={locationType} onChange={(e) => setLocationType(e.target.value)}>
+                      <option value="" disabled>
+                        Chọn loại vị trí
+                      </option>
+                      <option value={'Đất công/Công viên/Hành lang an toàn giao thông'}>
+                        Đất công/Công viên/Hành lang an toàn giao thông
+                      </option>
+                      <option value={'Đất tư nhân/Nhà ở riêng lẻ'}> Đất tư nhân/Nhà ở riêng lẻ</option>
+                      <option value={'Trung tâm thương mại'}>Trung tâm thương mại</option>
+                      <option value={'Chợ'}>Chợ</option>
+                      <option value={'Cây xăng'}>Cây xăng</option>
+                      <option value={'Nhà chờ xe buýt'}>Nhà chờ xe buýt</option>
+                    </select>
+                  </div>
+                </div>
               </>
             )}
             {indexCur === 2 && (
-              <>
+              <div>
                 <h4>Trạng thái quy hoạch</h4>
                 <select value={planning || ''} onChange={(e) => setPlanning(e.target.value)}>
                   <option value="" disabled>
@@ -220,7 +227,7 @@ const AddAdLocation = ({ onClose }) => {
                     <img src={previewImage} alt="Preview" style={{ maxWidth: '100%', maxHeight: '200px' }} />
                   </div>
                 )}
-              </>
+              </div>
             )}
           </div>
           <div className={classes.adding__modal__line}>
@@ -258,8 +265,17 @@ const AddAdLocation = ({ onClose }) => {
           </div>
         </form>
       </div>
+
+      {isModalMap && (
+        <Modal>
+          <div style={{ width: '40vw', height: '100%' }}>
+            <Coordination setLatitude={setLatitude} setLongitude={setLongitude} setModalMap={setModalMap} />
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };
 
 export default AddAdLocation;
+

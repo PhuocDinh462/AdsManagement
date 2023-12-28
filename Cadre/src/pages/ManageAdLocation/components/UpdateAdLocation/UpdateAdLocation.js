@@ -177,14 +177,14 @@ const UpdateAdLocation = ({ data, onClose }) => {
                   <option value={'Cây xăng'}>Cây xăng</option>
                   <option value={'Nhà chờ xe buýt'}>Nhà chờ xe buýt</option>
                 </select>
-                <h4>Chọn quận</h4>
+                <h4>Chọn phường</h4>
                 <select value={selectedWard || ''} onChange={(e) => setSelectedWard(e.target.value)}>
                   <option value="" disabled>
-                    Chọn quận
+                    Chọn phường
                   </option>
                   {wards.map((ward) => (
                     <option key={ward.ward_id} value={ward.ward_id}>
-                      {ward.ward_name}
+                      {ward.ward_name}, {ward.district_name}
                     </option>
                   ))}
                 </select>

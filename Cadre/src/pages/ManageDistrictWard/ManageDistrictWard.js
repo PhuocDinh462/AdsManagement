@@ -9,6 +9,7 @@ import { axiosClient } from '../../api/axios';
 import ModalUpdate from './components/ModalUpdate';
 import Swal from 'sweetalert2';
 import setLocalStorageFromCookie from '~/src/utils/setLocalStorageFromCookie';
+import DetailAddress from './components/DetailModal/DetailAddress';
 
 const ManageDistrictWard = () => {
   const [data, setData] = useState([]);
@@ -17,6 +18,7 @@ const ManageDistrictWard = () => {
   const [error, setError] = useState(null);
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isModalDetail, setIsModalDetail] = useState(false);
   const [modalType, setModalType] = useState(null);
   const [selectedRowData, setSelectedRowData] = useState(null);
   useEffect(() => {
@@ -75,6 +77,11 @@ const ManageDistrictWard = () => {
     setModalOpen(false);
   };
 
+  const updateDataAfterDetail = async () => {
+    setIsModalDetail(false);
+    setModalOpen(false);
+  };
+
   const handleFilterChange = (level) => {
     const filteredData = level === 'All' ? originalData : originalData.filter((item) => item.level === level);
     setData(filteredData);
@@ -101,6 +108,10 @@ const ManageDistrictWard = () => {
 
   const handleCloseModal = () => {
     setModalOpen(false);
+  };
+  const handleCloseDetailModal = () => {
+    setModalOpen(false);
+    setIsModalDetail(false);
   };
 
   const handleDeleteClick = async (id, type) => {
@@ -198,7 +209,14 @@ const ManageDistrictWard = () => {
           <table className={classes.table__body_wrap}>
             <tbody>
               {data.map((row, rowIndex) => (
-                <tr className={classes.table__body_wrap_row} key={rowIndex}>
+                <tr
+                  className={classes.table__body_wrap_row}
+                  key={rowIndex}
+                  onClick={() => {
+                    setSelectedRowData(row);
+                    setIsModalDetail(true);
+                  }}
+                >
                   <td style={{ width: '5%' }}>{rowIndex + 1}</td>
                   <td style={{ width: '20%' }}>{row.area}</td>
                   <td style={{ width: '20%' }}>{row.managerName}</td>
@@ -207,12 +225,21 @@ const ManageDistrictWard = () => {
                   <td style={{ width: '10%' }}>{row.level}</td>
                   <td style={{ width: '15%' }}>
                     <button
-                      onClick={() => handleDeleteClick(row.id, row.level === 'Phường' ? 'ward' : 'district')}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteClick(row.id, row.level === 'Phường' ? 'ward' : 'district');
+                      }}
                       className={classes.btn_trash}
                     >
                       <FontAwesomeIcon icon={faTrash} />
                     </button>
-                    <button onClick={() => handleEditClick(row)} className={classes.btn_pen}>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEditClick(row);
+                      }}
+                      className={classes.btn_pen}
+                    >
                       <FontAwesomeIcon icon={faPen} />
                     </button>
                   </td>
@@ -223,12 +250,18 @@ const ManageDistrictWard = () => {
         </div>
       </div>
 
+      {isModalDetail && (
+        <Modal onClose={handleCloseDetailModal}>
+          <DetailAddress data={selectedRowData} onClose={updateDataAfterAdd} />
+        </Modal>
+      )}
+
       {isModalOpen && (
         <Modal onClose={handleCloseModal}>
           {modalType === 'add' ? (
             <ModalAdd onClose={updateDataAfterAdd} />
           ) : modalType === 'update' ? (
-            <ModalUpdate data={selectedRowData} onClose={updateDataAfterAdd} />
+            <ModalUpdate data={selectedRowData} onClose={updateDataAfterDetail} />
           ) : null}
         </Modal>
       )}

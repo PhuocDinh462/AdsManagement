@@ -556,6 +556,34 @@ const getNumberOfReportsByLatLng = catchAsync(async (req, res, next) => {
   );
 });
 
+const getAdSpotsListByWardId = catchAsync(async (req, res, next) => {
+  connection.query('SELECT * FROM advertising_point where ward_id = ?', [req.params.id], async (err, results) => {
+    if (err) {
+      console.error('Error executing query: ', err);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+
+    const finalData = await Promise.all(
+      results.map(async (spot) => {
+        const url = `https://rsapi.goong.io/Geocode?latlng=${spot.lat},${spot.lng}&api_key=${process.env.GOONG_APIKEY}`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        return {
+          ...spot,
+          address: data?.error ? null : data.results[0].formatted_address,
+        };
+      })
+    );
+
+    res.status(200).json({
+      status: 'success',
+      data: finalData,
+    });
+  });
+});
+
 module.exports = {
   getAdSpotsByWardId,
   getInfoByPointId,
@@ -566,4 +594,5 @@ module.exports = {
   updateReportStatus,
   getAdBoardByBoardId,
   getNumberOfReportsByLatLng,
+  getAdSpotsListByWardId,
 };

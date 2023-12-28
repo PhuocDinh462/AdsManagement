@@ -86,6 +86,7 @@ CREATE TABLE `contract` (
   company_email VARCHAR(255),
   company_phone VARCHAR(255),
   company_address VARCHAR(255),
+  company_taxcode VARCHAR(255),
   start_date DATE,
   end_date DATE,
   representative VARCHAR(255),
@@ -289,10 +290,10 @@ VALUES
 -- (Đã có dữ liệu mẫu trong đoạn tạo bảng)
 
 -- Dữ liệu mẫu cho bảng Contract
-INSERT INTO `contract` (company_name, company_email, company_phone, company_address, start_date, end_date, representative)
+INSERT INTO `contract` (company_name, company_email, company_phone, company_address,company_taxcode, start_date, end_date, representative)
 VALUES
-  ('Company A', 'companyA@example.com', '123456789', 'Address A', '2023-01-01', '2023-12-31', 'Rep A'),
-  ('Company B', 'companyB@example.com', '987654321', 'Address B', '2023-03-01', '2023-12-31', 'Rep B');
+  ('Company A', 'companyA@example.com', '123456789', 'Address A','123456', '2023-01-01', '2023-12-31', 'Rep A'),
+  ('Company B', 'companyB@example.com', '987654321', 'Address B', '122333','2023-03-01', '2023-12-31', 'Rep B');
 
 -- Dữ liệu mẫu cho bảng AdvertisingPoint
 INSERT INTO `advertising_point` (ward_id, advertisement_type_id, location_type, image_url, `lat`, `lng`, is_planning)
@@ -327,7 +328,7 @@ VALUES
 INSERT INTO `licensing_request` (advertisement_content, advertisement_image_url, `status`, rejection_reason, user_id, point_id, width, height, contract_id, report_id)
 VALUES
   ('License Content A', 'licenseImgA.jpg', 'Approved', NULL, 4, 1, 50.0, 60.0, 1, 1),
-  ('License Content B', 'licenseImgB.jpg', 'Pending', NULL, 5, 2, 55.0, 65.0, 2, 2);
+  ('License Content B', 'licenseImgB.jpg',  'Pending', NULL, 5, 2, 55.0, 65.0, 2, 2);
 
 -- Dữ liệu mẫu cho bảng EditRequestBoard
 INSERT INTO `edit_request_board` (board_id, board_type_id, edit_status, advertisement_content, advertisement_image_url, reason,request_time, width, height, created_by)

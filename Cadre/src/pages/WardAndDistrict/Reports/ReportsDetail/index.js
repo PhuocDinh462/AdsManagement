@@ -317,7 +317,11 @@ export default function ReportsDetail() {
       </Backdrop>
 
       <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={showProcessModal}>
-        <ProcessModal setActive={setShowProcessModal} email={filteredData[currentReportIndex]?.email_rp} />
+        <ProcessModal
+          setActive={setShowProcessModal}
+          report_id={filteredData[currentReportIndex]?.report_id}
+          email={filteredData[currentReportIndex]?.email_rp}
+        />
       </Backdrop>
 
       <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={showStatusModal}>

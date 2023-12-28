@@ -14,6 +14,7 @@ const boardTypeRoute = require('./routes/boardTypeRoute.js');
 const advertisementTypeRoute = require('./routes/advertisementTypeRoute.js');
 const boardRoute = require('./routes/boardRoute.js');
 const pointRoute = require('./routes/pointRoute.js');
+const contractRoute = require('./routes/contract.route.js');
 
 const app = express();
 
@@ -35,7 +36,8 @@ app.use('/advertisement_type', advertisementTypeRoute);
 app.use('/auth', authRoute);
 app.use('/account', authenticateUser, accountRoute);
 app.use('/cadre', cadreRoute);
-app.use('/ward', wardRoute);
+app.use('/ward', authenticateUser, wardRoute);
+app.use('/contract', contractRoute);
 
 const server = app.listen(port, () => {
   console.log(`Server app listening on port ${port}`);
@@ -61,4 +63,3 @@ socketIo.on('connection', (socket) => {
 // socket?.socketIo?.emit('update', 'aaaaa');
 
 module.exports.socketIo = socketIo;
-
