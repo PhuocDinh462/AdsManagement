@@ -248,32 +248,32 @@ export default function Home() {
     {
       textColor: 'white',
       url: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m1.png',
+      height: 50,
+      width: 50,
+    },
+    {
+      textColor: 'white',
+      url: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m2.png',
       height: 60,
       width: 60,
     },
     {
       textColor: 'white',
-      url: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m2.png',
+      url: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m3.png',
       height: 70,
       width: 70,
     },
     {
       textColor: 'white',
-      url: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m3.png',
+      url: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m4.png',
       height: 80,
       width: 80,
     },
     {
       textColor: 'white',
-      url: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m4.png',
+      url: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m5.png',
       height: 90,
       width: 90,
-    },
-    {
-      textColor: 'white',
-      url: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m5.png',
-      height: 100,
-      width: 100,
     },
   ];
 
