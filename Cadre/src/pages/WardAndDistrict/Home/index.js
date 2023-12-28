@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 import FilterDropdown from '~components/Dropdown/FilterDropdown';
 import GoongAutoComplete from '~components/GoongAutoComplete';
 import SpotInfoSidebar from '~components/SpotInfoSidebar';
-import { GoogleMap, useJsApiLoader, Marker, Polygon } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, Marker, Polygon, MarkerClusterer } from '@react-google-maps/api';
 import { colors } from '~styles/colors';
 import axios from 'axios';
 import {
@@ -244,6 +244,39 @@ export default function Home() {
     );
   };
 
+  const clusterStyles = [
+    {
+      textColor: 'white',
+      url: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m1.png',
+      height: 60,
+      width: 60,
+    },
+    {
+      textColor: 'white',
+      url: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m2.png',
+      height: 70,
+      width: 70,
+    },
+    {
+      textColor: 'white',
+      url: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m3.png',
+      height: 80,
+      width: 80,
+    },
+    {
+      textColor: 'white',
+      url: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m4.png',
+      height: 90,
+      width: 90,
+    },
+    {
+      textColor: 'white',
+      url: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m5.png',
+      height: 100,
+      width: 100,
+    },
+  ];
+
   return (
     <div className={classes.main_container}>
       <div className={classes.map_container}>
@@ -273,30 +306,41 @@ export default function Home() {
                 clickable: false,
               }}
             /> */}
+
             {displayMarker && <Marker position={marker} clickable={false} zIndex={1} />}
-            {!loading &&
-              adSpots
-                .filter(
-                  (spot) =>
-                    (!noReportStatus ? spot.reportStatus !== 'noReport' : true) &&
-                    (!beReportedStatus ? spot.reportStatus === 'noReport' : true) &&
-                    (!plannedStatus ? !spot.is_planning : true) &&
-                    (!notPlanStatus ? spot.is_planning : true)
-                )
-                .map((item, index) => (
-                  <Marker
-                    key={index}
-                    position={{ lat: item.lat, lng: item.lng }}
-                    icon={{
-                      url: selectIcon(item),
-                      scaledSize: isLoaded ? new window.google.maps.Size(iconSize, iconSize) : null,
-                      anchor: new google.maps.Point(iconSize / 2, iconSize / 2),
-                      origin: new google.maps.Point(0, 0),
-                    }}
-                    onClick={() => handleMarkerClick(item)}
-                    zIndex={0}
-                  />
-                ))}
+
+            <MarkerClusterer
+              minimumClusterSize={2}
+              options={{
+                styles: clusterStyles,
+              }}
+            >
+              {(clusterer) =>
+                adSpots
+                  .filter(
+                    (spot) =>
+                      (!noReportStatus ? spot.reportStatus !== 'noReport' : true) &&
+                      (!beReportedStatus ? spot.reportStatus === 'noReport' : true) &&
+                      (!plannedStatus ? !spot.is_planning : true) &&
+                      (!notPlanStatus ? spot.is_planning : true)
+                  )
+                  .map((item, index) => (
+                    <Marker
+                      key={index}
+                      position={{ lat: item.lat, lng: item.lng }}
+                      icon={{
+                        url: selectIcon(item),
+                        scaledSize: isLoaded ? new window.google.maps.Size(iconSize, iconSize) : null,
+                        anchor: new google.maps.Point(iconSize / 2, iconSize / 2),
+                        origin: new google.maps.Point(0, 0),
+                      }}
+                      onClick={() => handleMarkerClick(item)}
+                      zIndex={0}
+                      clusterer={clusterer}
+                    />
+                  ))
+              }
+            </MarkerClusterer>
           </GoogleMap>
         ) : (
           <>Loading...</>
