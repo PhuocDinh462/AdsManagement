@@ -45,12 +45,8 @@ const ReportStats = () => {
 
   const getFilterStyle = (filter) => ({
     color: selectedFilter === filter ? '#0A6971' : '#2f2f2f',
-    background: selectedFilter === filter ? 'linear-gradient(to right, #093028, #237a57)' : '#c2e59c',
+    borderBottom: selectedFilter === filter ? '2px solid #0A6971' : 'none',
     cursor: 'pointer',
-    padding: '20px 30px',
-    borderRadius: '10px',
-    marginBottom: '10px',
-    color: selectedFilter === filter ? '#fff' : '#093028',
   });
   return (
     <div className={classes.container__wrap}>
@@ -63,9 +59,7 @@ const ReportStats = () => {
           {/* Tab Filter */}
           <div className={classes.container__header_filter}>
             <div onClick={() => handleFilterChange(0)} style={getFilterStyle(0)}>
-              <p>
-                Tất cả báo cáo <span></span>
-              </p>
+              Tất cả
             </div>
             <div onClick={() => handleFilterChange(1)} style={getFilterStyle(1)}>
               Đang xử lý

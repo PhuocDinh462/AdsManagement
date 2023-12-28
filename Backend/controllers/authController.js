@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 
 const createAccount = catchAsync(async (req, res, next) => {
   const { username, password, email, phone, dob, user_type } = req.body;
-  console.log('Vinh');
+
   const insertAcc = 'insert into user (username, password, email, phone,dob, user_type) values (?,?,?,?,?,?)';
 
   const stringToHash = password;

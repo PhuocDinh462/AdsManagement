@@ -8,7 +8,6 @@ $borderWidth: 1px;
   position: absolute;
   top: 6rem;
   background-color: white;
-  border-right: $borderWidth solid $text_300;
   width: $width;
   height: calc(100vh - 6rem);
   z-index: 1;
@@ -34,6 +33,7 @@ $borderWidth: 1px;
   top: calc(50vh - 5.5rem);
   left: 38rem;
   width: fit-content;
+  border-left: $borderWidth solid $text_300;
 }
 
 @keyframes slide_left_in {

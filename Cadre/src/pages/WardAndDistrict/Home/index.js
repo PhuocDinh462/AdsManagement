@@ -22,7 +22,7 @@ import { axiosRequest } from '~/src/api/axios';
 import AnnotationDropdown from '~components/Dropdown/AnnotationDropdown';
 import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
 import { useDispatch, useSelector } from 'react-redux';
-import { setReportCoord, selectReportCoord } from '~/src/store/reducers';
+import { setReportCoord, selectReportCoord, selectUser } from '~/src/store/reducers';
 
 const containerStyle = {
   width: '100%',
@@ -32,6 +32,11 @@ const containerStyle = {
 export default function Home() {
   const dispatch = useDispatch();
   const point_coord = useSelector(selectReportCoord);
+  const user = useSelector(selectUser);
+  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
 
   const [filterActive, setFilterActive] = useState(false);
   const [annotationActive, setAnnotationActive] = useState(false);
@@ -63,6 +68,8 @@ export default function Home() {
   const [currentSpotId, setCurrentSpotId] = useState(null);
   const [isClickMarker, setIsClickMarker] = useState(false);
 
+  const [autoCompleteValue, setAutoCompleteValue] = useState();
+
   useEffect(() => {
     setLocalStorageFromCookie('user-state');
     setLocalStorageFromCookie('user_type');
@@ -71,6 +78,7 @@ export default function Home() {
   }, []);
 
   const handleMapClick = (event) => {
+    setAutoCompleteValue();
     setIsClickMarker(false);
     setDisplayMarker(!displayMarker);
     setCollapseSidebar(false);
@@ -136,7 +144,7 @@ export default function Home() {
     (async () => {
       setLoading(true);
       await axiosRequest
-        .get(`ward/getAdSpotsByWardId/1`)
+        .get(`ward/getAdSpotsByWardId/${user.ward_id}`, { headers: headers })
         .then((res) => {
           const data = res.data.data;
           setAdSpots(data);
@@ -179,7 +187,7 @@ export default function Home() {
     if (data.point_id) {
       const adSpotsIndex = adSpots.findIndex((spot) => spot.point_id === data.point_id);
       await axiosRequest
-        .get(`/ward/getInfoByPointId/${data.point_id}`)
+        .get(`/ward/getInfoByPointId/${data.point_id}`, { headers: headers })
         .then((res) => {
           const _data = res.data.data;
           if (_data.spotInfo.reports === 0 && _data.boardInfo.every((board) => board.reports === 0))
@@ -191,13 +199,13 @@ export default function Home() {
         });
     } else if (data.board_id) {
       await axiosRequest
-        .get(`ward/getAdBoardByBoardId/${data.board_id}`)
+        .get(`ward/getAdBoardByBoardId/${data.board_id}`, { headers: headers })
         .then(async (res) => {
           const point_id = res.data.data.point_id;
           const adSpotsIndex = adSpots.findIndex((spot) => spot.point_id === point_id);
 
           await axiosRequest
-            .get(`/ward/getInfoByPointId/${point_id}`)
+            .get(`/ward/getInfoByPointId/${point_id}`, { headers: headers })
             .then((res) => {
               const data = res.data.data;
               if (data.spotInfo.reports === 0 && data.boardInfo.every((board) => board.reports === 0))
@@ -214,8 +222,9 @@ export default function Home() {
     } else {
       const lat = data.lat;
       const lng = data.lng;
+
       await axiosRequest
-        .post(`ward/getReportDetailsByLatLng`, { lat: lat, lng: lng })
+        .post(`ward/getReportDetailsByLatLng`, { lat: lat, lng: lng }, { headers: headers })
         .then(async (res) => {
           const reports = res.data.data.reports;
           const adSpotsIndex = adSpots.findIndex((spot) => spot.lat === lat && spot.lng === lng);
@@ -326,6 +335,8 @@ export default function Home() {
           apiKey={process.env.REACT_APP_GOONG_APIKEY}
           placeholder="Tìm kiếm theo địa chỉ"
           collapseSidebar={!displayMarker || collapseSidebar}
+          value={autoCompleteValue}
+          setValue={setAutoCompleteValue}
           onChange={(place_id) => handleSearch(place_id)}
         />
       </div>
@@ -337,6 +348,7 @@ export default function Home() {
           adSpots={adSpots}
           setCollapse={setCollapseSidebar}
           isClickMarker={isClickMarker}
+          setAutoCompleteValue={setAutoCompleteValue}
         />
       )}
     </div>

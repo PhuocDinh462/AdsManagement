@@ -35,7 +35,7 @@ app.use('/board_type', boardTypeRoute);
 app.use('/advertisement_type', advertisementTypeRoute);
 app.use('/auth', authRoute);
 app.use('/account', authenticateUser, accountRoute);
-app.use('/cadre', cadreRoute);
+app.use('/cadre', authenticateUser, cadreRoute);
 app.use('/ward', authenticateUser, wardRoute);
 app.use('/contract', contractRoute);
 
@@ -63,3 +63,4 @@ socketIo.on('connection', (socket) => {
 // socket?.socketIo?.emit('update', 'aaaaa');
 
 module.exports.socketIo = socketIo;
+

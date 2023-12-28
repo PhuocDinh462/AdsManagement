@@ -10,9 +10,14 @@ const ModalUpdate = ({ onClose, data }) => {
   const [wardName, setWardName] = useState(data.level === 'Phường' ? data.area : '');
   const [districts, setDistricts] = useState([]);
 
+  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
+
   useEffect(() => {
     axiosClient
-      .get('cadre/districts')
+      .get('cadre/districts', { headers })
       .then((response) => {
         setDistricts(response);
       })
@@ -61,7 +66,7 @@ const ModalUpdate = ({ onClose, data }) => {
       return;
     }
     try {
-      const response = await axiosClient.put('/cadre/updateAddress', requestData);
+      const response = await axiosClient.put('/cadre/updateAddress', requestData, { headers });
 
       if (response.status === 'success') {
         Swal.fire({

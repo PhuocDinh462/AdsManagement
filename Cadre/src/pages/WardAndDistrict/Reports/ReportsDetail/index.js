@@ -25,7 +25,7 @@ import StatusModal from './Modals/StatusModal';
 import { useParams } from 'react-router-dom';
 import { axiosRequest } from '~/src/api/axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { setReportIndex, selectReportIndex, setReportCoord } from '~/src/store/reducers';
+import { setReportIndex, selectReportIndex, setReportCoord, selectUser, setBoardId } from '~/src/store/reducers';
 import { useNavigate } from 'react-router';
 
 export default function ReportsDetail() {
@@ -36,6 +36,12 @@ export default function ReportsDetail() {
   const dispatch = useDispatch();
   const reportIndexStorage = useSelector(selectReportIndex);
   const navigate = useNavigate();
+
+  const user = useSelector(selectUser);
+  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
 
   const [currentReportIndex, setCurrentReportIndex] = useState(0);
   const [filteredData, setFilteredData] = useState([]);
@@ -52,7 +58,7 @@ export default function ReportsDetail() {
     if (lat && lng)
       (async () => {
         await axiosRequest
-          .post(`ward/getReportDetailsByLatLng`, { lat: lat, lng: lng })
+          .post(`ward/getReportDetailsByLatLng`, { lat: lat, lng: lng }, { headers: headers })
           .then((res) => {
             const data = res.data.data;
             setData(data);
@@ -69,7 +75,7 @@ export default function ReportsDetail() {
     else
       (async () => {
         await axiosRequest
-          .get(`ward/getReportDetailsByPointId/${id}`)
+          .get(`ward/getReportDetailsByPointId/${id}`, { headers: headers })
           .then((res) => {
             const data = res.data.data;
             setData(data);
@@ -120,6 +126,8 @@ export default function ReportsDetail() {
             className={[classes.nav_btn, classes.btn].join(' ')}
             onClick={() => {
               dispatch(setReportCoord({ lat: data.lat, lng: data.lng }));
+              if (filteredData[currentReportIndex]?.reportedObject === 'Bảng quảng cáo')
+                dispatch(setBoardId(filteredData[currentReportIndex]?.board_id));
               navigate('/home');
             }}
           >

@@ -27,10 +27,16 @@ const ManageDistrictWard = () => {
     setLocalStorageFromCookie('user_id');
     setLocalStorageFromCookie('token');
   }, []);
+
+  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
+
   const fetchData = async () => {
     try {
-      const response = await axiosClient.get('/cadre');
-
+      const response = await axiosClient.get('/cadre', { headers });
+      console.log(response);
       const convertedData = response.reduce((accumulator, district) => {
         const districtManager = district.districtManager || {};
         const districtInfo = {
@@ -127,9 +133,15 @@ const ManageDistrictWard = () => {
     });
 
     if (confirmResult.isConfirmed) {
+      const data = {
+        id,
+        type,
+      };
+      console.log(headers);
       try {
         const response = await axiosClient.delete('/cadre/deleteAddress', {
-          data: { id, type },
+          headers,
+          data,
         });
 
         if (response.status === 'success') {
@@ -252,7 +264,7 @@ const ManageDistrictWard = () => {
 
       {isModalDetail && (
         <Modal onClose={handleCloseDetailModal}>
-          <DetailAddress data={selectedRowData} onClose={updateDataAfterAdd} />
+          <DetailAddress data={selectedRowData} onClose={updateDataAfterDetail} />
         </Modal>
       )}
 
@@ -261,7 +273,7 @@ const ManageDistrictWard = () => {
           {modalType === 'add' ? (
             <ModalAdd onClose={updateDataAfterAdd} />
           ) : modalType === 'update' ? (
-            <ModalUpdate data={selectedRowData} onClose={updateDataAfterDetail} />
+            <ModalUpdate data={selectedRowData} onClose={updateDataAfterAdd} />
           ) : null}
         </Modal>
       )}

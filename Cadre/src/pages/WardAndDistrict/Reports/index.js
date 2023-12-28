@@ -6,8 +6,8 @@ import Pagination from '~components/Pagination';
 import SearchBar from '~components/SearchBar';
 import { axiosRequest } from '~/src/api/axios';
 import { format } from 'date-fns';
-import { useDispatch } from 'react-redux';
-import { setReportIndex, setReportCoord } from '~/src/store/reducers';
+import { useDispatch, useSelector } from 'react-redux';
+import { setReportIndex, setReportCoord, selectUser } from '~/src/store/reducers';
 import { useNavigate } from 'react-router';
 
 export default function Reports() {
@@ -17,11 +17,17 @@ export default function Reports() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const user = useSelector(selectUser);
+  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
+
   useEffect(() => {
     (async () => {
       setLoading(true);
       await axiosRequest
-        .get(`ward/getReportListsByWardId/1`)
+        .get(`ward/getReportListsByWardId/${user.ward_id}`, { headers: headers })
         .then((res) => {
           const data = res.data.data;
           setData(data);

@@ -2,16 +2,21 @@ import classes from './styles.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle, faSignOut } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router';
+import { useDispatch } from 'react-redux';
+import { setUser } from '~/src/store/reducers';
 
 export default function AccountDropdown() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const handleLogout = () => {
     localStorage.clear();
-    navigate('/login')
-  }
+    dispatch(setUser(null));
+    navigate('/login');
+  };
   const handleSeeInfor = () => {
-    navigate('/infor')
-  }
+    navigate('/infor');
+  };
   return (
     <div className={classes.main_container}>
       <div className={classes.item_container} onClick={handleSeeInfor}>
