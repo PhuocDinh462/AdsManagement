@@ -3,7 +3,7 @@ import { logo, user } from '~assets/imgs/Imgs';
 import NavBarItem from './navBarItem';
 import { useLocation } from 'react-router-dom';
 import AccountDropdown from '../Dropdown/AccountDropdown';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faList } from '@fortawesome/free-solid-svg-icons';
@@ -14,9 +14,15 @@ export default function NavBar(props) {
   const currentPath = '/' + location.pathname.split('/')[1];
   const [activeAccountDropdown, setActiveAccountDropdown] = useState(false);
   const [filterWardActive, setFilterWardActive] = useState(false);
+  const [checkUserDistrict, setCheckUserDistrict] = useState(false);
   const { categories } = props;
   const navigate = useNavigate();
-
+  useEffect(() => {
+    const type = localStorage.getItem('user_type')
+    if (type === 'district') {
+      setCheckUserDistrict(true)
+    }
+  }, [])
   return (
     <div className={classes.main_container}>
       <div className={classes.logo_container}>
@@ -37,19 +43,20 @@ export default function NavBar(props) {
 
 
       <div className={classes.wrapper}>
-        <div className={classes.filter}>
-          <div
-            className={[classes.filter__ic, filterWardActive && classes['filter__ic--active']].join(' ')}
-            onClick={() => setFilterWardActive(!filterWardActive)}
-          >
-            <FontAwesomeIcon icon={faList} />
+        {checkUserDistrict && (
+          <div className={classes.filter}>
+            <div
+              className={[classes.filter__ic, filterWardActive && classes['filter__ic--active']].join(' ')}
+              onClick={() => setFilterWardActive(!filterWardActive)}
+            >
+              <FontAwesomeIcon icon={faList} />
+            </div>
+            {filterWardActive && (
+              <DropdownWard
+              />
+            )}
           </div>
-          {filterWardActive && (
-            <DropdownWard
-
-            />
-          )}
-        </div>
+        )}
         <div className={classes.avatar_container}>
           <img
             src={user}
