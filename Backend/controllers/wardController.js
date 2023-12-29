@@ -165,11 +165,11 @@ const getInfoByPointId = catchAsync(async (req, res, next) => {
               data: {
                 spotInfo: spotInfo[0]
                   ? {
-                      ...spotInfo[0],
-                      reports: reports.filter(
-                        (report) => report.point_id === spotInfo[0].point_id && report.status !== 'processed'
-                      ).length,
-                    }
+                    ...spotInfo[0],
+                    reports: reports.filter(
+                      (report) => report.point_id === spotInfo[0].point_id && report.status !== 'processed'
+                    ).length,
+                  }
                   : null,
                 boardInfo: boardInfo.map((item) => {
                   return {
@@ -435,8 +435,8 @@ const getReportDetailsByPointId = catchAsync(async (req, res, next) => {
                     report.status === 'processed'
                       ? 'Đã xử lý'
                       : report.status === 'processing'
-                      ? 'Đang xử lý'
-                      : 'Chờ xử lý',
+                        ? 'Đang xử lý'
+                        : 'Chờ xử lý',
                 };
               }),
             }));
@@ -507,8 +507,8 @@ const getReportDetailsByLatLng = catchAsync(async (req, res, next) => {
                 report.status === 'processed'
                   ? 'Đã xử lý'
                   : report.status === 'processing'
-                  ? 'Đang xử lý'
-                  : 'Chờ xử lý',
+                    ? 'Đang xử lý'
+                    : 'Chờ xử lý',
             };
           }),
         },
@@ -604,6 +604,26 @@ const getAdSpotsListByWardId = catchAsync(async (req, res, next) => {
   });
 });
 
+const getAllWardsByDistrictManager = catchAsync(async (req, res, next) => {
+  connection.query(
+    `SELECT w.* FROM ward w JOIN district d ON w.district_id = d.district_id where d.manager_id = ?`,
+    [req.user.user_id], // Đặt giá trị manager_id vào mảng tham số
+    (err, results) => {
+      if (err) {
+        console.error(err);
+        res.status(500).json({
+          status: 'error',
+          message: 'Internal Server Error',
+        });
+      } else {
+        res.status(200).json({
+          status: 'success',
+          wards: results,
+        });
+      }
+    }
+  );
+});
 module.exports = {
   getAdSpotsByWardId,
   getInfoByPointId,
@@ -615,4 +635,5 @@ module.exports = {
   getAdBoardByBoardId,
   getNumberOfReportsByLatLng,
   getAdSpotsListByWardId,
+  getAllWardsByDistrictManager
 };

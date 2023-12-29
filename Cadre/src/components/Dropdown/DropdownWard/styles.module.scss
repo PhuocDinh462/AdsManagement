@@ -2,12 +2,17 @@
 
 .main_container {
   position: absolute;
+
   top: 48px;
   background-color: white;
   box-shadow: 2px 2px 8px 3px rgba(black, 0.2);
   border: 1px solid $text_300;
   border-radius: 10px;
   padding: 2rem;
+  .filterItem {
+    max-height: 20rem;
+    overflow-y: auto;
+  }
 }
 
 .title {
@@ -21,6 +26,7 @@
   display: flex;
   align-items: center;
   padding: 0.5rem 0;
+  margin-right: 8px;
 
   .checkbox__ic {
     font-size: 2rem;
