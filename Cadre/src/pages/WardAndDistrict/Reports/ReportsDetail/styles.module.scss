@@ -177,6 +177,8 @@
         .img {
           width: 15rem;
           height: 8rem;
+          border: 1px solid $text_300;
+          border-radius: 5px;
           object-fit: cover;
           cursor: pointer;
           transition: all 0.2s;
@@ -224,4 +226,24 @@
   max-height: 90vh;
   border-radius: 10px;
   object-fit: cover;
+}
+
+.reportStatus_container {
+  display: flex;
+  align-items: center;
+}
+
+.reportStatus {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0.7rem;
+  color: rgb(238, 238, 238);
+  border-radius: 4px;
+  font-size: 1.35rem;
+  user-select: none;
+
+  &__ic {
+    margin-left: 0.5rem;
+  }
 }
