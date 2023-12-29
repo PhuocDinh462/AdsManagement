@@ -32,14 +32,13 @@ export default function StatusModal(props) {
       .patch(`ward/updateReportStatus`, body, { headers: headers })
       .then((res) => {
         setActive(false);
+        changeStatusByReportId(report_id, options.find((item) => item.value === selectedStatus).label);
         Swal.fire({
           icon: 'success',
           title: 'Thông báo',
           text: 'Cập nhật trạng thái thành công',
           width: '50rem',
           confirmButtonColor: colors.primary_300,
-        }).then(() => {
-          changeStatusByReportId(report_id, options.find((item) => item.value === selectedStatus).label);
         });
       })
       .catch((error) => {
