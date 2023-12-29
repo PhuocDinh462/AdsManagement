@@ -18,6 +18,7 @@ const { body } = require('express-validator');
 const axios = require('axios');
 
 const connection = require('./server'); // Sử dụng module quản lý kết nối cơ sở dữ liệu
+const contractRoute = require('./routes/contract.route.js');
 
 const app = express();
 
@@ -38,8 +39,9 @@ app.use('/board_type', boardTypeRoute);
 app.use('/advertisement_type', advertisementTypeRoute);
 app.use('/auth', authRoute);
 app.use('/account', authenticateUser, accountRoute);
-app.use('/cadre', cadreRoute);
-app.use('/ward', wardRoute);
+app.use('/cadre', authenticateUser, cadreRoute);
+app.use('/ward', authenticateUser, wardRoute);
+app.use('/contract', contractRoute);
 
 const server = app.listen(port, () => {
   console.log(`Server app listening on port ${port}`);
@@ -65,3 +67,4 @@ socketIo.on('connection', (socket) => {
 // socket?.socketIo?.emit('update', 'aaaaa');
 
 module.exports.socketIo = socketIo;
+

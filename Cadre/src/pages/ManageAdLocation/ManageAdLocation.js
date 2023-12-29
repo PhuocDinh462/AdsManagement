@@ -21,9 +21,14 @@ const ManageAdLocation = () => {
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [isModalOpen, setModalOpen] = useState(false);
 
+  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
+
   const fetchData = async () => {
     try {
-      const response = await axiosClient.get('/cadre/adsPoint');
+      const response = await axiosClient.get('/cadre/adsPoint', { headers });
       setData(response);
       setOriginalData(response);
     } catch (error) {
@@ -37,12 +42,12 @@ const ManageAdLocation = () => {
     fetchData();
   }, []);
 
-  const updateDataAfterAdd = async (newData) => {
+  const updateDataAfterAdd = async () => {
     await fetchData();
     setModalOpen(false);
   };
 
-  const updateDataAfterUpdate = async (newData) => {
+  const updateDataAfterUpdate = async () => {
     await fetchData();
     setIsOpenUpdate(false);
   };

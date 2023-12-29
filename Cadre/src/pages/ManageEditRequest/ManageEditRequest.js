@@ -2,28 +2,40 @@ import React, { useEffect, useState } from 'react';
 import classes from './ManageEditRequest.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
-import { faPlus, faClose, faTrash, faPen } from '@fortawesome/free-solid-svg-icons';
-import ModalAdd from './components/ModalAdd';
+import { faPen } from '@fortawesome/free-solid-svg-icons';
 import Modal from '~/src/components/Modal/Modal';
-import ModalUpdate from './components/ModalUpdate';
 import { axiosClient } from '../../api/axios';
 import Swal from 'sweetalert2';
+import DetailActionEdit from './components/DetailActionEdit/DetailActionEdit';
 
 const ManageForm = () => {
-  const [data, setData] = useState([]);
-  const [originalData, setOriginalData] = useState();
+  const [data, setData] = useState({ boards: [], points: [] });
+  const [originalData, setOriginalData] = useState({ boards: [], points: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedFilter, setSelectedFilter] = useState('Tất cả');
+  const [selectedFilter, setSelectedFilter] = useState('Bảng quảng cáo');
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [modalType, setModalType] = useState(null);
 
+  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
+
   const fetchData = async () => {
     try {
-      const response = await axiosClient.get('/cadre/form');
-      setData(response);
-      setOriginalData(response);
+      const responseBoards = await axiosClient.get('/cadre/getRequestEditBoard', { headers });
+      const responsePoints = await axiosClient.get('/cadre/getRequestEditPoint', { headers });
+
+      setData({
+        boards: responseBoards,
+        points: responsePoints,
+      });
+      setOriginalData({
+        boards: responseBoards,
+        points: responsePoints,
+      });
     } catch (error) {
       setError(error);
     } finally {
@@ -43,17 +55,17 @@ const ManageForm = () => {
   const handleFilterChange = (type) => {
     let filteredData;
 
-    if (type === 'Tất cả') {
-      filteredData = originalData;
-    } else if (type === 'Hình thức quảng cáo') {
-      filteredData = originalData.filter((item) => item.type === 'advertisement');
-    } else if (type === 'Hình thức báo cáo') {
-      filteredData = originalData.filter((item) => item.type === 'report');
-    } else if (type === 'Bảng') {
-      filteredData = originalData.filter((item) => item.type === 'board');
+    if (type === 'Bảng quảng cáo') {
+      filteredData = originalData.boards;
+    } else if (type === 'Điểm đặt quảng cáo') {
+      filteredData = originalData.points;
     }
 
-    setData(filteredData);
+    setData({
+      ...data,
+      [type.toLowerCase()]: filteredData,
+    });
+
     setSelectedFilter(type);
   };
 
@@ -62,21 +74,13 @@ const ManageForm = () => {
     borderBottom: selectedFilter === filter ? '2px solid #0A6971' : 'none',
     cursor: 'pointer',
   });
-
   const handleCloseModal = () => {
     setModalOpen(false);
   };
 
-  const handleAddClick = () => {
-    setSelectedRowData(null);
-    setModalType('add');
-    setModalOpen(true);
-  };
-
-  const handleEditClick = (rowData) => {
-    setSelectedRowData(rowData);
-    setModalType('update');
-    setModalOpen(true);
+  const updateDataAfterUpdate = async (newData) => {
+    await fetchData();
+    setModalOpen(false);
   };
 
   const handleDeleteClick = async (row) => {
@@ -123,29 +127,16 @@ const ManageForm = () => {
     <div className={classes.container_wrap}>
       <div className={classes.header}>
         <p className={classes.header__title}>Danh sách loại hình quảng cáo và hình thức báo cáo</p>
-        <div className={classes.header__buttonAdd} onClick={handleAddClick}>
-          <FontAwesomeIcon icon={faPlus} />
-          <p className={classes.add}>Thêm</p>
-        </div>
       </div>
       <div className={classes.container}>
         {/* Tab Filter */}
         <div className={classes.container__header}>
           <div className={classes.container__header_filter}>
-            <div onClick={() => handleFilterChange('Tất cả')} style={getFilterStyle('Tất cả')}>
-              Tất cả
+            <div onClick={() => handleFilterChange('Bảng quảng cáo')} style={getFilterStyle('Bảng quảng cáo')}>
+              Bảng quảng cáo
             </div>
-            <div
-              onClick={() => handleFilterChange('Hình thức quảng cáo')}
-              style={getFilterStyle('Hình thức quảng cáo')}
-            >
-              Các loại hình quảng cáo
-            </div>
-            <div onClick={() => handleFilterChange('Hình thức báo cáo')} style={getFilterStyle('Hình thức báo cáo')}>
-              Các loại hình thức báo cáo
-            </div>
-            <div onClick={() => handleFilterChange('Bảng')} style={getFilterStyle('Bảng')}>
-              Các loại bảng
+            <div onClick={() => handleFilterChange('Điểm đặt quảng cáo')} style={getFilterStyle('Điểm đặt quảng cáo')}>
+              Điểm đặt quảng cáo
             </div>
           </div>
           <div className={classes.container__header_search}>
@@ -158,12 +149,26 @@ const ManageForm = () => {
         <div className={classes.table_header}>
           <table className={classes.table__header_wrap}>
             <thead className={classes.table__header_wrap_thead}>
-              <tr>
-                <th style={{ width: '5%' }}>STT</th>
-                <th style={{ width: '40%' }}>Nội dung</th>
-                <th style={{ width: '20%' }}>Loại</th>
-                <th style={{ width: '15%' }}>Chỉnh sửa</th>
-              </tr>
+              {selectedFilter === 'Bảng quảng cáo' && (
+                <tr>
+                  <th style={{ width: '5%' }}>STT</th>
+                  <th style={{ width: '25%' }}>Nội dung bảng QC</th>
+                  <th style={{ width: '25%' }}>Loại bảng QC</th>
+                  <th style={{ width: '15%' }}>Kích thước</th>
+                  <th style={{ width: '15%' }}>Trạng thái xử lý</th>
+                  <th style={{ width: '15%' }}>Xem và xét duyệt</th>
+                </tr>
+              )}
+              {selectedFilter === 'Điểm đặt quảng cáo' && (
+                <tr>
+                  <th style={{ width: '5%' }}>STT</th>
+                  <th style={{ width: '25%' }}>Loại vị trí</th>
+                  <th style={{ width: '15%' }}>Hình thức quảng cáo</th>
+                  <th style={{ width: '25%' }}>Lý do chỉnh sửa</th>
+                  <th style={{ width: '15%' }}>Trạng thái quy hoạch</th>
+                  <th style={{ width: '15%' }}>Xem và xét duyệt</th>
+                </tr>
+              )}
             </thead>
           </table>
         </div>
@@ -172,26 +177,62 @@ const ManageForm = () => {
         <div className={classes.table__body}>
           <table className={classes.table__body_wrap}>
             <tbody>
-              {data.map((row, rowIndex) => (
-                <tr className={classes.table__body_wrap_row} key={rowIndex}>
-                  <td style={{ width: '5%' }}>{rowIndex + 1}</td>
-                  <td style={{ width: '40%' }}>{row.typeName}</td>
-                  <td style={{ width: '20%' }}>
-                    {row.type === 'report' && 'Hình thức báo cáo'}
-                    {row.type === 'advertisement' && 'Hình thức quảng cáo'}
-                    {row.type === 'board' && 'Loại bảng quảng cáo'}
-                  </td>
+              {selectedFilter === 'Bảng quảng cáo' &&
+                data.boards.map((row, rowIndex) => (
+                  <tr className={classes.table__body_wrap_row} key={rowIndex}>
+                    <td style={{ width: '5%' }}>{rowIndex + 1}</td>
+                    <td style={{ width: '25%' }}>{row.advertisement_content}</td>
+                    <td style={{ width: '25%' }}>{row.board_type_name}</td>
+                    <td style={{ width: '15%' }}>
+                      {row.width}m x {row.height}m
+                    </td>
+                    <td style={{ width: '15%' }}>
+                      {row.edit_status === 'pending' && <span style={{ color: 'orange' }}>Chưa xử lý</span>}
+                      {row.edit_status === 'approved' && <span style={{ color: 'green' }}>Đã duyệt</span>}
+                      {row.edit_status === 'canceled' && <span style={{ color: 'red' }}>Từ chối</span>}
+                    </td>
 
-                  <td style={{ width: '15%' }}>
-                    <button className={classes.btn_trash} onClick={() => handleDeleteClick(row)}>
-                      <FontAwesomeIcon icon={faTrash} />
-                    </button>
-                    <button onClick={() => handleEditClick(row)} className={classes.btn_pen}>
-                      <FontAwesomeIcon icon={faPen} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
+                    <td style={{ width: '15%' }}>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedRowData(row);
+                          setModalOpen(true);
+                        }}
+                        className={classes.btn_pen}
+                      >
+                        <FontAwesomeIcon icon={faPen} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              {selectedFilter === 'Điểm đặt quảng cáo' &&
+                data.points.map((row, rowIndex) => (
+                  <tr className={classes.table__body_wrap_row} key={rowIndex}>
+                    <td style={{ width: '5%' }}>{rowIndex + 1}</td>
+                    <td style={{ width: '25%' }}>{row.location_type}</td>
+                    <td style={{ width: '15%' }}>{row.advertisement_type_name}</td>
+                    <td style={{ width: '25%' }}>{row.reason}</td>
+                    <td style={{ width: '15%' }}>
+                      {row.edit_status === 'pending' && <span style={{ color: 'orange' }}>Chưa xử lý</span>}
+                      {row.edit_status === 'approved' && <span style={{ color: 'green' }}>Đã duyệt</span>}
+                      {row.edit_status === 'canceled' && <span style={{ color: 'red' }}>Từ chối</span>}
+                    </td>
+
+                    <td style={{ width: '15%' }}>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedRowData(row);
+                          setModalOpen(true);
+                        }}
+                        className={classes.btn_pen}
+                      >
+                        <FontAwesomeIcon icon={faPen} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
@@ -199,11 +240,12 @@ const ManageForm = () => {
 
       {isModalOpen && (
         <Modal onClose={handleCloseModal}>
-          {modalType === 'add' ? (
-            <ModalAdd onClose={updateDataAfterAdd} />
-          ) : modalType === 'update' ? (
-            <ModalUpdate data={selectedRowData} onClose={updateDataAfterAdd} />
-          ) : null}
+          <DetailActionEdit
+            data={selectedRowData}
+            onClose={() => {
+              updateDataAfterUpdate();
+            }}
+          />
         </Modal>
       )}
     </div>

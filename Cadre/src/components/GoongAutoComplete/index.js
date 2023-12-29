@@ -7,7 +7,7 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default function GoongAutoComplete(props) {
-  const { apiKey, onChange, defaultInputValue, placeholder, collapseSidebar } = props;
+  const { apiKey, onChange, defaultInputValue, placeholder, collapseSidebar, value, setValue } = props;
   const [options, setOptions] = useState();
   const [loading, setLoading] = useState(false);
 
@@ -50,9 +50,13 @@ export default function GoongAutoComplete(props) {
         isClearable={true}
         isLoading={loading}
         defaultInputValue={defaultInputValue}
+        value={value ? { value: value, label: value } : null}
         options={options}
         onInputChange={handleInputChange}
-        onChange={(e) => onChange(e?.place_id)}
+        onChange={(e) => {
+          setValue(e?.label);
+          onChange(e?.place_id);
+        }}
         placeholder={placeholder || ''}
         styles={{
           control: (base, state) => ({

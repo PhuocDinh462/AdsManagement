@@ -25,9 +25,11 @@ body {
   -ms-tap-highlight-color: rgba(0, 0, 0, 0);
   -moz-tap-highlight-color: rgba(0, 0, 0, 0);
 
-  .MuiAutocomplete-paper {
+  .MuiAutocomplete-paper, .MuiPickersCalendarHeader-labelContainer, .MuiDayCalendar-weekDayLabel, .MuiPickersDay-root, .MuiPickersYear-yearButton  {
     font-size: 14px;
   }
+
+  
 }
 
 a {

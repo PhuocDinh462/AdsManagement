@@ -10,9 +10,14 @@ const ModalAdd = ({ onClose }) => {
   const [wardName, setWardName] = useState('');
   const [districts, setDistricts] = useState([]);
 
+  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
+
   useEffect(() => {
     axiosClient
-      .get('cadre/districts')
+      .get('cadre/districts', { headers })
       .then((response) => {
         setDistricts(response);
         console.log(response);
@@ -61,8 +66,8 @@ const ModalAdd = ({ onClose }) => {
       return;
     }
     try {
-      const response = await axiosClient.post('/cadre/createAddress', data);
-      console.log(data);
+      const response = await axiosClient.post('/cadre/createAddress', data, { headers });
+      // console.log(data);
 
       if (response.status === 'success') {
         Swal.fire({

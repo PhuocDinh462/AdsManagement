@@ -9,6 +9,8 @@ import { useState } from 'react';
 import { Backdrop, CircularProgress } from '@mui/material';
 import Swal from 'sweetalert2';
 import { axiosRequest } from '~/src/api/axios';
+import { useSelector } from 'react-redux';
+import { selectUser } from '~/src/store/reducers';
 
 const fontSize = 16;
 
@@ -40,19 +42,25 @@ const CssTextField = styled(TextField, {
 }));
 
 export default function ProcessModal(props) {
-  const { setActive, email } = props;
+  const { setActive, email, report_id } = props;
   const [loading, setLoading] = useState(false);
-
   const [handlingMethod, setHandlingMethod] = useState('');
+
+  const user = useSelector(selectUser);
+  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
 
   const handleConfirm = async () => {
     setLoading(true);
     const body = {
+      report_id: report_id,
       email: email,
       content: handlingMethod,
     };
     await axiosRequest
-      .post(`ward/replyReport`, body)
+      .post(`ward/replyReport`, body, { headers: headers })
       .then((res) => {
         setActive(false);
         Swal.fire({

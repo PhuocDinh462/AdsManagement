@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 import FilterDropdown from '~components/Dropdown/FilterDropdown';
 import GoongAutoComplete from '~components/GoongAutoComplete';
 import SpotInfoSidebar from '~components/SpotInfoSidebar';
-import { GoogleMap, useJsApiLoader, Marker, Polygon } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, Marker, Polygon, MarkerClusterer } from '@react-google-maps/api';
 import { colors } from '~styles/colors';
 import axios from 'axios';
 import {
@@ -22,7 +22,7 @@ import { axiosRequest } from '~/src/api/axios';
 import AnnotationDropdown from '~components/Dropdown/AnnotationDropdown';
 import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
 import { useDispatch, useSelector } from 'react-redux';
-import { setReportPointId, selectReportPointId } from '~/src/store/reducers';
+import { setReportCoord, selectReportCoord, selectUser } from '~/src/store/reducers';
 
 const containerStyle = {
   width: '100%',
@@ -31,7 +31,12 @@ const containerStyle = {
 
 export default function Home() {
   const dispatch = useDispatch();
-  const point_id = useSelector(selectReportPointId);
+  const point_coord = useSelector(selectReportCoord);
+  const user = useSelector(selectUser);
+  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
 
   const [filterActive, setFilterActive] = useState(false);
   const [annotationActive, setAnnotationActive] = useState(false);
@@ -40,6 +45,7 @@ export default function Home() {
     lat: 10.763781,
     lng: 106.684918,
   });
+  const [zoom, setZoom] = useState(15);
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
@@ -60,6 +66,9 @@ export default function Home() {
   const [displayMarker, setDisplayMarker] = useState(false);
   const [marker, setMarker] = useState();
   const [currentSpotId, setCurrentSpotId] = useState(null);
+  const [isClickMarker, setIsClickMarker] = useState(false);
+
+  const [autoCompleteValue, setAutoCompleteValue] = useState();
 
   useEffect(() => {
     setLocalStorageFromCookie('user-state');
@@ -69,6 +78,8 @@ export default function Home() {
   }, []);
 
   const handleMapClick = (event) => {
+    setAutoCompleteValue();
+    setIsClickMarker(false);
     setDisplayMarker(!displayMarker);
     setCollapseSidebar(false);
     setMarker({
@@ -79,6 +90,7 @@ export default function Home() {
   };
 
   const handleMarkerClick = (_marker) => {
+    setIsClickMarker(true);
     setDisplayMarker(true);
     setCollapseSidebar(false);
     setMarker({
@@ -86,13 +98,13 @@ export default function Home() {
       lng: _marker.lng,
     });
 
-    setCurrentSpotId(_marker.point_id);
+    setCurrentSpotId(_marker?.point_id);
   };
 
   const iconSize = 25;
 
   const selectIcon = (spot) => {
-    if (spot.numberOfBoards > 0) {
+    if (spot.point_id) {
       if (spot.reportStatus === 'noReport' && spot.is_planning) return AdSpotPlanned;
       else if (spot.reportStatus === 'noReport' && !spot.is_planning) return AdSpotNotPlan;
       else if (spot.reportStatus === 'noProcess') return AdSpotBeReported;
@@ -132,15 +144,25 @@ export default function Home() {
     (async () => {
       setLoading(true);
       await axiosRequest
-        .get(`ward/getAdSpotsByWardId/1`)
+        .get(`ward/getAdSpotsByWardId/${user.ward_id}`, { headers: headers })
         .then((res) => {
           const data = res.data.data;
           setAdSpots(data);
 
-          if (point_id) {
-            const index = data.findIndex((item) => item.point_id === +point_id);
-            if (index !== -1) handleMarkerClick(data[index]);
-            dispatch(setReportPointId(null));
+          // Use for locate button in Report page
+          if (point_coord) {
+            const index = data.findIndex((item) => item.lat === +point_coord.lat && item.lng === +point_coord.lng);
+            if (index !== -1) {
+              handleMarkerClick(data[index]);
+              setCenter({ lat: data[index].lat, lng: data[index].lng });
+              // setZoom(16);
+            }
+            dispatch(setReportCoord(null));
+          } else {
+            // Set center
+            const avgLat = data.map((item) => item.lat).reduce((a, b) => a + b, 0) / data.length;
+            const avgLng = data.map((item) => item.lng).reduce((a, b) => a + b, 0) / data.length;
+            setCenter({ lat: avgLat, lng: avgLng });
           }
         })
         .catch((error) => {
@@ -162,17 +184,53 @@ export default function Home() {
   useSocketSubscribe('changeReport', async (res) => {
     const data = res.data;
 
-    const newReportStatus = data.status === 'processed' ? 'processed' : 'noProcess';
-
     if (data.point_id) {
       const adSpotsIndex = adSpots.findIndex((spot) => spot.point_id === data.point_id);
-      updateAdSpotsReportStatus(adSpotsIndex, newReportStatus);
+      await axiosRequest
+        .get(`/ward/getInfoByPointId/${data.point_id}`, { headers: headers })
+        .then((res) => {
+          const _data = res.data.data;
+          if (_data.spotInfo.reports === 0 && _data.boardInfo.every((board) => board.reports === 0))
+            updateAdSpotsReportStatus(adSpotsIndex, 'processed');
+          else updateAdSpotsReportStatus(adSpotsIndex, 'noProcess');
+        })
+        .catch((error) => {
+          console.log('Get spot info error: ', error);
+        });
     } else if (data.board_id) {
       await axiosRequest
-        .get(`ward/getAdBoardByBoardId/${data.board_id}`)
-        .then((res) => {
-          const adSpotsIndex = adSpots.findIndex((spot) => spot.point_id === res.data.data.point_id);
-          updateAdSpotsReportStatus(adSpotsIndex, newReportStatus);
+        .get(`ward/getAdBoardByBoardId/${data.board_id}`, { headers: headers })
+        .then(async (res) => {
+          const point_id = res.data.data.point_id;
+          const adSpotsIndex = adSpots.findIndex((spot) => spot.point_id === point_id);
+
+          await axiosRequest
+            .get(`/ward/getInfoByPointId/${point_id}`, { headers: headers })
+            .then((res) => {
+              const data = res.data.data;
+              if (data.spotInfo.reports === 0 && data.boardInfo.every((board) => board.reports === 0))
+                updateAdSpotsReportStatus(adSpotsIndex, 'processed');
+              else updateAdSpotsReportStatus(adSpotsIndex, 'noProcess');
+            })
+            .catch((error) => {
+              console.log('Get spot info error: ', error);
+            });
+        })
+        .catch((error) => {
+          console.log('Get AdBoard error: ', error);
+        });
+    } else {
+      const lat = data.lat;
+      const lng = data.lng;
+
+      await axiosRequest
+        .post(`ward/getReportDetailsByLatLng`, { lat: lat, lng: lng }, { headers: headers })
+        .then(async (res) => {
+          const reports = res.data.data.reports;
+          const adSpotsIndex = adSpots.findIndex((spot) => spot.lat === lat && spot.lng === lng);
+          if (reports.filter((report) => report.status !== 'Đã xử lý').length > 0)
+            updateAdSpotsReportStatus(adSpotsIndex, 'noProcess');
+          else updateAdSpotsReportStatus(adSpotsIndex, 'processed');
         })
         .catch((error) => {
           console.log('Get AdBoard error: ', error);
@@ -186,6 +244,39 @@ export default function Home() {
     );
   };
 
+  const clusterStyles = [
+    {
+      textColor: 'white',
+      url: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m1.png',
+      height: 50,
+      width: 50,
+    },
+    {
+      textColor: 'white',
+      url: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m2.png',
+      height: 60,
+      width: 60,
+    },
+    {
+      textColor: 'white',
+      url: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m3.png',
+      height: 70,
+      width: 70,
+    },
+    {
+      textColor: 'white',
+      url: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m4.png',
+      height: 80,
+      width: 80,
+    },
+    {
+      textColor: 'white',
+      url: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m5.png',
+      height: 90,
+      width: 90,
+    },
+  ];
+
   return (
     <div className={classes.main_container}>
       <div className={classes.map_container}>
@@ -193,7 +284,7 @@ export default function Home() {
           <GoogleMap
             mapContainerStyle={containerStyle}
             center={center}
-            zoom={16}
+            zoom={zoom}
             options={{
               zoomControl: false,
               fullscreenControl: false,
@@ -205,7 +296,7 @@ export default function Home() {
             }}
             onClick={handleMapClick}
           >
-            <Polygon
+            {/* <Polygon
               paths={boundary}
               options={{
                 fillColor: 'transparent',
@@ -214,31 +305,42 @@ export default function Home() {
                 strokeWeight: 5,
                 clickable: false,
               }}
-            />
+            /> */}
+
             {displayMarker && <Marker position={marker} clickable={false} zIndex={1} />}
-            {!loading &&
-              adSpots
-                .filter(
-                  (spot) =>
-                    (!noReportStatus ? spot.reportStatus !== 'noReport' : true) &&
-                    (!beReportedStatus ? spot.reportStatus === 'noReport' : true) &&
-                    (!plannedStatus ? !spot.is_planning : true) &&
-                    (!notPlanStatus ? spot.is_planning : true)
-                )
-                .map((item) => (
-                  <Marker
-                    key={item.point_id}
-                    position={{ lat: item.lat, lng: item.lng }}
-                    icon={{
-                      url: selectIcon(item),
-                      scaledSize: isLoaded ? new window.google.maps.Size(iconSize, iconSize) : null,
-                      anchor: new google.maps.Point(iconSize / 2, iconSize / 2),
-                      origin: new google.maps.Point(0, 0),
-                    }}
-                    onClick={() => handleMarkerClick(item)}
-                    zIndex={0}
-                  />
-                ))}
+
+            <MarkerClusterer
+              minimumClusterSize={2}
+              options={{
+                styles: clusterStyles,
+              }}
+            >
+              {(clusterer) =>
+                adSpots
+                  .filter(
+                    (spot) =>
+                      (!noReportStatus ? spot.reportStatus !== 'noReport' : true) &&
+                      (!beReportedStatus ? spot.reportStatus === 'noReport' : true) &&
+                      (!plannedStatus ? !spot.is_planning : true) &&
+                      (!notPlanStatus ? spot.is_planning : true)
+                  )
+                  .map((item, index) => (
+                    <Marker
+                      key={index}
+                      position={{ lat: item.lat, lng: item.lng }}
+                      icon={{
+                        url: selectIcon(item),
+                        scaledSize: isLoaded ? new window.google.maps.Size(iconSize, iconSize) : null,
+                        anchor: new google.maps.Point(iconSize / 2, iconSize / 2),
+                        origin: new google.maps.Point(0, 0),
+                      }}
+                      onClick={() => handleMarkerClick(item)}
+                      zIndex={0}
+                      clusterer={clusterer}
+                    />
+                  ))
+              }
+            </MarkerClusterer>
           </GoogleMap>
         ) : (
           <>Loading...</>
@@ -277,12 +379,21 @@ export default function Home() {
           apiKey={process.env.REACT_APP_GOONG_APIKEY}
           placeholder="Tìm kiếm theo địa chỉ"
           collapseSidebar={!displayMarker || collapseSidebar}
+          value={autoCompleteValue}
+          setValue={setAutoCompleteValue}
           onChange={(place_id) => handleSearch(place_id)}
         />
       </div>
 
       {displayMarker && (
-        <SpotInfoSidebar spotCoord={marker} spotId={currentSpotId} adSpots={adSpots} setCollapse={setCollapseSidebar} />
+        <SpotInfoSidebar
+          spotCoord={marker}
+          spotId={currentSpotId}
+          adSpots={adSpots}
+          setCollapse={setCollapseSidebar}
+          isClickMarker={isClickMarker}
+          setAutoCompleteValue={setAutoCompleteValue}
+        />
       )}
     </div>
   );

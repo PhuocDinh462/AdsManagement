@@ -95,6 +95,7 @@ const addFormType = catchAsync(async (req, res, next) => {
 
 const deleteForm = catchAsync(async (req, res, next) => {
   const { type, id } = req.body;
+  console.log(req.body);
 
   let tableName, idColumnName;
 

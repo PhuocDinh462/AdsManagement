@@ -4,7 +4,7 @@ import { faClose } from '@fortawesome/free-solid-svg-icons';
 import classes from './DetailsAdLocation.module.scss';
 
 const DetailsAdLocation = ({ data, onClose }) => {
-  const apiKey = 'AIzaSyAQxG3Ubdo-Nhf6tjGYmXhYDe3yr4vGeDw';
+  const apiKey = 'AIzaSyCFjMz64uEI7tL_FMVpawPirJJKE5VQtzU';
   const [address, setAddress] = useState(null);
 
   useEffect(() => {
@@ -13,6 +13,7 @@ const DetailsAdLocation = ({ data, onClose }) => {
         const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${data.lat},${data.lng}&key=${apiKey}`;
         const response = await fetch(apiUrl);
         const result = await response.json();
+        console.log(result);
 
         if (result.status === 'OK' && result.results.length > 0) {
           const detailedAddress = result.results[0].formatted_address;
