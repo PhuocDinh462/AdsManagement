@@ -37,7 +37,6 @@ export default function Home() {
   const headers = {
     Authorization: tokenAuth,
   };
-
   const [filterActive, setFilterActive] = useState(false);
   const [annotationActive, setAnnotationActive] = useState(false);
   const [collapseSidebar, setCollapseSidebar] = useState(false);
