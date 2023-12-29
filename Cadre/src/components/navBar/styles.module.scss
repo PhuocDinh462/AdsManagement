@@ -13,7 +13,10 @@
   position: relative;
   z-index: 100;
 }
-
+.wrapper {
+  display: flex;
+  justify-content: space-between;
+}
 .logo_container {
   display: flex;
   justify-content: center;
@@ -58,3 +61,24 @@
   margin-right: 2rem;
   margin-top: 10px;
 }
+
+.filter {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-top: 0.75rem;
+  z-index: 2;
+  margin-right: 24px;
+
+  &__ic {
+    font-size: 2.5rem;
+    color: #109fac;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &--active {
+      filter: brightness(1.2);
+    }
+  }
+}
+
