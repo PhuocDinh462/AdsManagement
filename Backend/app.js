@@ -14,6 +14,10 @@ const boardTypeRoute = require('./routes/boardTypeRoute.js');
 const advertisementTypeRoute = require('./routes/advertisementTypeRoute.js');
 const boardRoute = require('./routes/boardRoute.js');
 const pointRoute = require('./routes/pointRoute.js');
+const { body } = require('express-validator');
+const axios = require('axios');
+
+const connection = require('./server'); // Sử dụng module quản lý kết nối cơ sở dữ liệu
 const contractRoute = require('./routes/contract.route.js');
 
 const app = express();
