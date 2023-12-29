@@ -5,11 +5,15 @@ import { useLocation } from 'react-router-dom';
 import AccountDropdown from '../Dropdown/AccountDropdown';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faList } from '@fortawesome/free-solid-svg-icons';
+import DropdownWard from '../Dropdown/DropdownWard';
 
 export default function NavBar(props) {
   const location = useLocation();
   const currentPath = '/' + location.pathname.split('/')[1];
   const [activeAccountDropdown, setActiveAccountDropdown] = useState(false);
+  const [filterWardActive, setFilterWardActive] = useState(false);
   const { categories } = props;
   const navigate = useNavigate();
 
@@ -27,19 +31,37 @@ export default function NavBar(props) {
             active={currentPath === item.path}
           />
         ))}
+
+
       </div>
 
-      <div className={classes.avatar_container}>
-        <img
-          src={user}
-          className={`${classes['avatar']} ${activeAccountDropdown ? classes['avatar--active'] : ''}`}
-          onClick={() => setActiveAccountDropdown(!activeAccountDropdown)}
-        />
-        {activeAccountDropdown && (
-          <div className={classes.accountDropdown_container}>
-            <AccountDropdown className={classes.accountDropdown_container} />
+
+      <div className={classes.wrapper}>
+        <div className={classes.filter}>
+          <div
+            className={[classes.filter__ic, filterWardActive && classes['filter__ic--active']].join(' ')}
+            onClick={() => setFilterWardActive(!filterWardActive)}
+          >
+            <FontAwesomeIcon icon={faList} />
           </div>
-        )}
+          {filterWardActive && (
+            <DropdownWard
+
+            />
+          )}
+        </div>
+        <div className={classes.avatar_container}>
+          <img
+            src={user}
+            className={`${classes['avatar']} ${activeAccountDropdown ? classes['avatar--active'] : ''}`}
+            onClick={() => setActiveAccountDropdown(!activeAccountDropdown)}
+          />
+          {activeAccountDropdown && (
+            <div className={classes.accountDropdown_container}>
+              <AccountDropdown className={classes.accountDropdown_container} />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
