@@ -123,16 +123,24 @@
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                background-color: #f9f9f9;
+                background-color: #eeeeee;
                 border-radius: 6px;
-                padding: 1rem 2rem;
+                padding: 0.2rem 1.4rem;
+                margin-bottom: 1rem;
 
                 .uploaded__content {
                     display: flex;
                     align-items: center;
 
+                    img {
+                        width: 50px;
+                        height: 50px;
+                        object-fit: contain;
+                    }
+
                     p {
                         margin-left: 1rem;
+                        font-size: 13px;
                     }
                 }
 
@@ -142,6 +150,17 @@
                     border-radius: 50%;
                     cursor: pointer;
                 }
+            }
+
+            .reselect {
+                max-width: fit-content;
+                font-size: 12px;
+                padding: 0.8rem 2rem;
+                border: none;
+                border-radius: 2rem;
+                background-color: #0a6971;
+                color: #fff;
+                cursor: pointer;
             }
 
             .adding__modal-upload {
