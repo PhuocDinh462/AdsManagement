@@ -369,13 +369,16 @@ export default function ReportsDetail() {
         />
       </Backdrop>
 
-      <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={showStatusModal}>
-        <StatusModal
-          setActive={setShowStatusModal}
-          report_id={filteredData[currentReportIndex]?.report_id}
-          changeStatusByReportId={changeStatusByReportId}
-        />
-      </Backdrop>
+      {showStatusModal && (
+        <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={showStatusModal}>
+          <StatusModal
+            setActive={setShowStatusModal}
+            report_id={filteredData[currentReportIndex]?.report_id}
+            changeStatusByReportId={changeStatusByReportId}
+            reportList={data.reports}
+          />
+        </Backdrop>
+      )}
     </div>
   );
 }

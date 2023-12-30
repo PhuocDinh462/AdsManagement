@@ -13,13 +13,14 @@ import AddAdLocation from './components/AddAdLocation/AddAdLocation';
 
 const ManageAdLocation = () => {
   const [data, setData] = useState([]);
-  const [originalData, setOriginalData] = useState();
+  const [originalData, setOriginalData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isOpenUpdate, setIsOpenUpdate] = useState(false);
   const [isOpenDetails, setIsOpenDetails] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
 
   const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
   const headers = {
@@ -41,6 +42,21 @@ const ManageAdLocation = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const handleSearchChange = (event) => {
+    const searchValue = event.target.value;
+
+    if (!originalData) {
+      return;
+    }
+
+    const filteredData = originalData.filter((item) => {
+      const ward = (item && item.ward_name) || '';
+      return ward.toLowerCase().indexOf(searchValue.toLowerCase()) !== -1;
+    });
+
+    setData(filteredData);
+  };
 
   const updateDataAfterAdd = async () => {
     await fetchData();
@@ -81,7 +97,10 @@ const ManageAdLocation = () => {
     });
     if (confirmResult.isConfirmed) {
       try {
-        const response = await axiosClient.delete('cadre/deleteAdsPoint', { data: { point_id: row.point_id } });
+        const response = await axiosClient.delete('cadre/deleteAdsPoint', {
+          headers,
+          data: { point_id: row.point_id },
+        });
 
         if (response.status === 'success') {
           Swal.fire({
@@ -123,7 +142,13 @@ const ManageAdLocation = () => {
         <div className={classes.container__header}>
           <div className={classes.container__header_search}>
             <FontAwesomeIcon icon={faMagnifyingGlass} className={classes.ic} />
-            <input status="text" id="inputSearch" placeholder="Tìm kiếm..." className={classes.text_input} />
+            <input
+              type="text"
+              id="inputSearch"
+              placeholder="Tìm kiếm tên phường..."
+              className={classes.text_input}
+              onChange={handleSearchChange}
+            />
           </div>
         </div>
 
@@ -134,9 +159,9 @@ const ManageAdLocation = () => {
               <tr>
                 <th style={{ width: '5%' }}>STT</th>
                 <th style={{ width: '20%' }}>Tọa độ (Vĩ độ - Kinh độ)</th>
-                <th style={{ width: '20%' }}>Khu vực</th>
+                <th style={{ width: '25%' }}>Khu vực</th>
                 <th style={{ width: '20%' }}>Loại vị trí</th>
-                <th style={{ width: '25%' }}>Trạng thái</th>
+                <th style={{ width: '20%' }}>Trạng thái</th>
                 <th style={{ width: '10%' }}>Chỉnh sửa</th>
               </tr>
             </thead>
@@ -147,47 +172,57 @@ const ManageAdLocation = () => {
         <div className={classes.table__body}>
           <table className={classes.table__body_wrap}>
             <tbody>
-              {data.map((row, rowIndex) => (
-                <tr
-                  className={classes.table__body_wrap_row}
-                  key={rowIndex}
-                  onClick={() => {
-                    setIsOpenDetails(true);
-                    setSelectedRowData(row);
-                  }}
-                >
-                  <td style={{ width: '5%' }}>{rowIndex + 1}</td>
-                  <td style={{ width: '20%' }}>
-                    {convertToDegrees(row.lat)},{convertToDegrees(row.lng)}
-                  </td>
-                  <td style={{ width: '20%' }}>{row.ward_name}</td>
-                  <td style={{ width: '20%' }}>{row.location_type}</td>
-                  <td style={{ width: '25%', color: row.is_planning === 1 ? '#2A591E' : '#EF1414' }}>
-                    {row.is_planning === 1 ? 'Đã quy hoạch' : 'Chưa quy hoạch'}
-                  </td>
-                  <td style={{ width: '10%' }}>
-                    <button
-                      className={classes.btn_trash}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteClick(row);
-                      }}
-                    >
-                      <FontAwesomeIcon icon={faTrashCan} className={classes.icon} />
-                    </button>
-                    <button
-                      className={classes.btn_pen}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedRowData(row);
-                        setIsOpenUpdate(true);
-                      }}
-                    >
-                      <FontAwesomeIcon icon={faPenToSquare} className={classes.icon} />
-                    </button>
+              {data && data.length > 0 ? (
+                data.map((row, rowIndex) => (
+                  <tr
+                    className={classes.table__body_wrap_row}
+                    key={rowIndex}
+                    onClick={() => {
+                      setIsOpenDetails(true);
+                      setSelectedRowData(row);
+                    }}
+                  >
+                    <td style={{ width: '5%' }}>{rowIndex + 1}</td>
+                    <td style={{ width: '20%' }}>
+                      {convertToDegrees(row.lat)},{convertToDegrees(row.lng)}
+                    </td>
+                    <td style={{ width: '25%' }}>
+                      {row.ward_name}, {row.district_name}
+                    </td>
+                    <td style={{ width: '20%' }}>{row.location_type}</td>
+                    <td style={{ width: '20%', color: row.is_planning === 1 ? '#2A591E' : '#EF1414' }}>
+                      {row.is_planning === 1 ? 'Đã quy hoạch' : 'Chưa quy hoạch'}
+                    </td>
+                    <td style={{ width: '10%' }}>
+                      <button
+                        className={classes.btn_trash}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteClick(row);
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faTrashCan} className={classes.icon} />
+                      </button>
+                      <button
+                        className={classes.btn_pen}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedRowData(row);
+                          setIsOpenUpdate(true);
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faPenToSquare} className={classes.icon} />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6" style={{ textAlign: 'center', fontStyle: 'italic', paddingTop: '20px' }}>
+                    Không có dữ liệu
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

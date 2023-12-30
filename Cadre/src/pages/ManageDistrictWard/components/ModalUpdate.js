@@ -3,12 +3,16 @@ import classes from './ModalAdd.module.scss';
 import { axiosClient } from '../../../api/axios';
 import Swal from 'sweetalert2';
 
-const ModalUpdate = ({ onClose, data }) => {
-  const [addressType, setAddressType] = useState(data.level === 'Quận' ? 'district' : 'ward');
-  const [districtName, setDistrictName] = useState(data.level === 'Quận' ? data.area : data.district_name);
-  const [selectedDistrict, setSelectedDistrict] = useState(data.level === 'Quận' ? data.id : data.district_id);
-  const [wardName, setWardName] = useState(data.level === 'Phường' ? data.area : '');
+const ModalUpdate = ({ onClose, data, filteredData }) => {
+  const [addressType, setAddressType] = useState(filteredData === 'Quận' ? 'district' : 'ward');
+
+  const [districtName, setDistrictName] = useState(data.district_name);
+  const [wardName, setWardName] = useState(data.ward_name);
+
+  const [selectedDistrict, setSelectedDistrict] = useState(filteredData === 'Quận' ? data.id : data.district_id);
   const [districts, setDistricts] = useState([]);
+  const [selectedManager, setSelectedManager] = useState(data.manager_id);
+  const [users, setUsers] = useState([]);
 
   const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
   const headers = {
@@ -26,9 +30,35 @@ const ModalUpdate = ({ onClose, data }) => {
       });
   }, []);
 
+  useEffect(() => {
+    axiosClient
+      .get('cadre/usersWithoutMgmt', { headers })
+      .then((response) => {
+        const newData = {
+          user_id: data.manager_id,
+          username: filteredData === 'Quận' ? data.district_manager_username : data.ward_manager_username,
+        };
+
+        setUsers([...response, newData]);
+        console.log(response);
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+      });
+  }, []);
+
   const handleDistrictChange = (district) => {
     setSelectedDistrict(district);
     setDistrictName(district);
+  };
+
+  const handleUserChange = (user) => {
+    setSelectedManager(user);
+  };
+
+  const handleUserChangeDistrict = (user) => {
+    setSelectedManager(user);
+    // setUserNameDistrict(user);
   };
 
   const handleSave = async (e) => {
@@ -38,15 +68,18 @@ const ModalUpdate = ({ onClose, data }) => {
       addressType === 'ward'
         ? {
             addressType,
-            id: data.id,
+            id: data.ward_id,
+            user_id: selectedManager,
             wardName,
             selectedDistrict: selectedDistrict,
           }
         : {
             addressType,
-            id: data.id,
+            id: data.district_id,
+            user_id: selectedManager,
             districtName,
           };
+    console.log(requestData);
     // Kiểm tra nếu là quận và tên quận không được để trống
     if (requestData.addressType === 'district' && !requestData.districtName) {
       Swal.fire({
@@ -115,6 +148,22 @@ const ModalUpdate = ({ onClose, data }) => {
               value={districtName}
               onChange={(e) => setDistrictName(e.target.value)}
             />
+
+            <label htmlFor="select_user" className={classes.title_label}>
+              Chọn người quản lý:
+            </label>
+            <select
+              id="select_user"
+              className={classes.input_area}
+              value={selectedManager || ''}
+              onChange={(e) => handleUserChangeDistrict(e.target.value)}
+            >
+              {users.map((user) => (
+                <option key={user.user_id} value={user.user_id}>
+                  {user.username}
+                </option>
+              ))}
+            </select>
           </div>
         )}
 
@@ -127,12 +176,31 @@ const ModalUpdate = ({ onClose, data }) => {
               <select
                 id="select_district"
                 className={classes.input_area}
-                value={districtName || ''}
+                value={selectedDistrict || ''}
                 onChange={(e) => handleDistrictChange(e.target.value)}
               >
                 {districts.map((district) => (
-                  <option key={district.district_id} value={district.district_name}>
+                  <option key={district.district_id} value={district.district_id}>
                     {district.district_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className={classes.district}>
+              <label htmlFor="select_user" className={classes.title_label}>
+                Chọn người quản lý:
+              </label>
+
+              <select
+                id="select_user"
+                className={classes.input_area}
+                value={selectedManager || ''}
+                onChange={(e) => handleUserChange(e.target.value)}
+              >
+                {users.map((user) => (
+                  <option key={user.user_id} value={user.user_id}>
+                    {user.username}
                   </option>
                 ))}
               </select>

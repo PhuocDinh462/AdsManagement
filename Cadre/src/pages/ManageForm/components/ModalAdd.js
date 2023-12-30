@@ -7,6 +7,11 @@ const ModalAdd = ({ onClose }) => {
   const [formType, setFormType] = useState('report');
   const [content, setContent] = useState('');
 
+  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
+
   const handleTypeChange = (type) => {
     setFormType(type);
   };
@@ -29,7 +34,7 @@ const ModalAdd = ({ onClose }) => {
     }
 
     try {
-      const response = await axiosClient.post('/cadre/addForm', data);
+      const response = await axiosClient.post('/cadre/addForm', data, { headers });
       console.log(data);
 
       if (response.status === 'success') {

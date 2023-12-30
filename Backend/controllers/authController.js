@@ -59,8 +59,6 @@ const login = catchAsync(async (req, res, next) => {
         return res.status(500).json({ error: 'Database error' });
       }
 
-      console.log(results);
-
       if (!results[0] || !bcrypt.compareSync(password, results[0].password))
         return res.status(401).json({
           status: 'fail',

@@ -7,8 +7,10 @@ const ModalAdd = ({ onClose }) => {
   const [addressType, setAddressType] = useState('district');
   const [districtName, setDistrictName] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState();
+  const [selectedManager, setSelectedManager] = useState();
   const [wardName, setWardName] = useState('');
   const [districts, setDistricts] = useState([]);
+  const [users, setUsers] = useState([]);
 
   const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
   const headers = {
@@ -20,6 +22,17 @@ const ModalAdd = ({ onClose }) => {
       .get('cadre/districts', { headers })
       .then((response) => {
         setDistricts(response);
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+      });
+  }, []);
+
+  useEffect(() => {
+    axiosClient
+      .get('cadre/usersWithoutMgmt', { headers })
+      .then((response) => {
+        setUsers(response);
         console.log(response);
       })
       .catch((error) => {
@@ -32,8 +45,11 @@ const ModalAdd = ({ onClose }) => {
     setSelectedDistrict(null);
   };
 
-  const handleDistrictChange = (district) => {
-    setSelectedDistrict(district);
+  const handleDistrictChange = (user) => {
+    setSelectedDistrict(user);
+  };
+  const handleUserChange = (user) => {
+    setSelectedManager(user);
   };
 
   const handleSave = async (e) => {
@@ -43,8 +59,10 @@ const ModalAdd = ({ onClose }) => {
       addressType,
       districtName,
       selectedDistrict,
+      user_id: selectedManager,
       wardName,
     };
+    console.log(data);
 
     // Kiểm tra nếu là quận và tên quận không được để trống
     if (data.addressType === 'district' && !data.districtName) {
@@ -135,10 +153,27 @@ const ModalAdd = ({ onClose }) => {
 
         {addressType === 'district' && (
           <div className={classes.district_wrap}>
+            <label htmlFor="select_user" className={classes.title_label}>
+              Chọn người quản lý:
+            </label>
+            <select
+              id="select_user"
+              className={classes.input_area}
+              value={selectedManager || ''}
+              onChange={(e) => handleUserChange(e.target.value)}
+            >
+              <option value="" disabled>
+                Chọn người quản lý
+              </option>
+              {users.map((user) => (
+                <option key={user.user_id} value={user.user_id}>
+                  {user.username}
+                </option>
+              ))}
+            </select>
             <label htmlFor="add-district" className={classes.title_label}>
               Tên Quận:
             </label>
-
             <input
               className={classes.input_area}
               id="add-district"
@@ -167,6 +202,26 @@ const ModalAdd = ({ onClose }) => {
                 {districts.map((district) => (
                   <option key={district.district_id} value={district.district_id}>
                     {district.district_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className={classes.district}>
+              <label htmlFor="select_user" className={classes.title_label}>
+                Chọn người quản lý:
+              </label>
+              <select
+                id="select_user"
+                className={classes.input_area}
+                value={selectedManager || ''}
+                onChange={(e) => handleUserChange(e.target.value)}
+              >
+                <option value="" disabled>
+                  Chọn người quản lý
+                </option>
+                {users.map((user) => (
+                  <option key={user.user_id} value={user.user_id}>
+                    {user.username}
                   </option>
                 ))}
               </select>

@@ -37,7 +37,7 @@ CREATE TABLE `user` (
 CREATE TABLE `district` (
   district_id INT auto_increment,
   district_name VARCHAR(255) NOT NULL,
-  manager_id INT,
+  manager_id INT ,
   created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at timestamp DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (district_id),
@@ -53,9 +53,10 @@ CREATE TABLE `ward` (
   created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at timestamp DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (ward_id),
-  FOREIGN KEY (district_id) REFERENCES district(district_id),
+  FOREIGN KEY (district_id) REFERENCES district(district_id) ON DELETE CASCADE,
   FOREIGN KEY (manager_id) REFERENCES `user`(user_id)
 );
+
 CREATE TABLE `board_type` (
   `board_type_id` INT PRIMARY KEY AUTO_INCREMENT,
   `type_name` VARCHAR(255),
@@ -241,7 +242,7 @@ CREATE TABLE `edit_request_point` (
   updated_at timestamp DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   FOREIGN KEY (created_by) REFERENCES `user`(user_id) ON DELETE SET NULL,
-  FOREIGN KEY (`point_id`) REFERENCES `advertising_point`(`point_id`) ON DELETE SET NULL,
+  FOREIGN KEY (`point_id`) REFERENCES `advertising_point`(`point_id`) ON DELETE CASCADE,
   FOREIGN KEY (advertisement_type_id) REFERENCES advertisement_type(advertisement_type_id) ON DELETE SET NULL
 );
 
@@ -249,20 +250,30 @@ CREATE TABLE `edit_request_point` (
 INSERT INTO `user` (username, `password`, email, phone, dob, user_type, created_by, updated_by)
 VALUES
   ('admin', 'admin123', 'admin@example.com', '123456789', '1990-01-01', 'admin', NULL, NULL),
-  ('Nguyen Van A', 'manager123', 'manager1@example.com', '987654321', '1995-05-15', 'manager', 1, 1),
-  ('Tran Anh B', 'manager456', 'manager2@example.com', '987123456', '1998-10-20', 'manager', 1, 1),
-  ('Tran Anh Phuong', 'manager456', 'anhphuong@example.com', '987123456', '1991-10-20', 'manager', 1, 1),
-  ('Tran Thi Hong', 'manager456', 'thihong@example.com', '987123456', '1998-10-20', 'manager', 1, 1),
-  ('Tran Hong', 'manager456', 'tranhong@example.com', '987123456', '1990-10-20', 'manager', 1, 1),
-  ('Tran Anh Hoang', 'manager456', 'anhhoang@example.com', '987123456', '1992-10-20', 'manager', 1, 1),
-  ('Tran Kim Hong', 'manager456', 'kimhong@example.com', '987123456', '1999-10-20', 'manager', 1, 1),
-  ('Tran Kim Phuong', 'manager456', 'kimphuong@example.com', '987123456', '1998-10-20', 'manager', 1, 1),
-  ('Tran Anh Thanh', 'manager456', 'anhthanh@example.com', '987123456', '1995-10-20', 'manager', 1, 1),
-  ('Tran Phi Long', 'manager456', 'philong@example.com', '987123456', '1998-10-20', 'manager', 1, 1),
-  ('Tran Anh Tuan', 'manager456', 'anhtuan@example.com', '987123456', '1998-11-20', 'manager', 1, 1),
-  ('Tran Y Nhu', 'manager456', 'ynhu@example.com', '987123456', '1992-10-21', 'manager', 1, 1),
-  ('Tran Tuan Anh', 'manager456', 'tuananh@example.com', '987123456', '1998-01-20', 'manager', 1, 1),
-  ('Nguyen Thien Toan', 'manager456', 'thientoan@example.com', '987123456', '1996-05-20', 'manager', 1, 1);
+  ('Nguyen Van A', 'manager123', 'manager1@example.com', '987654321', '1995-05-15', 'district', 1, 1),
+  ('Tran Anh B', 'manager456', 'manager2@example.com', '987123456', '1998-10-20', 'district', 1, 1),
+  ('Tran Anh Phuong', 'manager456', 'anhphuong@example.com', '987123456', '1991-10-20', 'district', 1, 1),
+  ('Tran Thi Hong', 'manager456', 'thihong@example.com', '987123456', '1998-10-20', 'ward', 1, 1),
+  ('Tran Hong', 'manager456', 'tranhong@example.com', '987123456', '1990-10-20', 'ward', 1, 1),
+  ('Tran Anh Hoang', 'manager456', 'anhhoang@example.com', '987123456', '1992-10-20', 'ward', 1, 1),
+  ('Tran Kim Hong', 'manager456', 'kimhong@example.com', '987123456', '1999-10-20', 'ward', 1, 1),
+  ('Tran Kim Phuong', 'manager456', 'kimphuong@example.com', '987123456', '1998-10-20', 'ward', 1, 1),
+  ('Tran Anh Thanh', 'manager456', 'anhthanh@example.com', '987123456', '1995-10-20', 'ward', 1, 1),
+  ('Tran Phi Long', 'manager456', 'philong@example.com', '987123456', '1998-10-20', 'ward', 1, 1),
+  ('Tran Anh Tuan', 'manager456', 'anhtuan@example.com', '987123456', '1998-11-20', 'ward', 1, 1),
+  ('Tran Y Nhu', 'manager456', 'ynhu@example.com', '987123456', '1992-10-21', 'ward', 1, 1),
+  ('Tran Tuan Anh', 'manager456', 'tuananh@example.com', '987123456', '1998-01-20', 'ward', 1, 1),
+  ('Ha Anh Tuan', 'manager456', 'haanhtuan@example.com', '987123456', '1998-01-20', 'ward', 1, 1),
+  ('Tanq Ngoc Chau Nhi', 'manager456', 'chaunhi@example.com', '987123456', '1998-01-20', 'ward', 1, 1),
+  ('Tran Sy Hung', 'manager456', 'syhung@example.com', '987123456', '1998-01-20', 'ward', 1, 1),
+  ('Pham Bang Bang', 'manager456', 'bangbang@example.com', '987123456', '1998-01-20', 'ward', 1, 1),
+  ('Nguyen Thanh Tung', 'manager456', 'thanhtung@example.com', '987123456', '1998-01-20', 'ward', 1, 1),
+  ('Dam Vinh Hung', 'manager456', 'damvinhhung@example.com', '987123456', '1998-01-20', 'ward', 1, 1),
+  ('Vo Vu Truong Giang', 'manager456', 'truonggiang@example.com', '987123456', '1998-01-20', 'ward', 1, 1),
+  ('Le Hong Ngoc', 'manager456', 'lehongngoc@example.com', '987123456', '1998-01-20', 'ward', 1, 1),
+  ('Lam Vy Da', 'manager456', 'vyda@example.com', '987123456', '1998-01-20', 'ward', 1, 1),
+  ('Phan Le Vi Thanh', 'manager456', 'cris7@example.com', '987123456', '1998-01-20', 'ward', 1, 1),
+  ('Nguyen Thien Toan', 'manager456', 'thientoan@example.com', '987123456', '1996-05-20', 'ward', 1, 1);
 
 -- Dữ liệu mẫu cho bảng District
 INSERT INTO `district` (district_name, manager_id)
@@ -406,9 +417,9 @@ VALUES
 INSERT INTO `edit_request_point` (point_id, advertisement_type_id, location_type, is_planning, image_url, edit_status, reason, time_request, created_by)
 VALUES
   (1, 1, 'Chợ', false, 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Street-Column-Advertising-Mockup-PSD.jpege1e620af-64ec-466f-aa84-5d062a7341e7?alt=media&token=95e9ee75-1837-4a3b-b9fa-e8da8c113cb7', 'pending', 'Change request A','2023-12-20', 4),
-  (1, 1, 'Trung tâm thương mại', false, 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2F340842304_211052514888451_6814854970581350591_n.jpegd6986e67-e6d8-4f77-a1d5-b88e31a57f19?alt=media&token=45c08982-18fc-43ad-928c-2aa4f2dda397', 'pending', 'Change request C','2023-11-25', 6),
-  (1, 1, 'Chợ', false, 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2Fjsx8_8lo8_180725-removebg.png4dc1c29d-a1ee-4603-9f5a-16b456067ac2?alt=media&token=51ea5aa2-4862-4a67-a615-7c9bd0da2f2c', 'canceled', 'Change request D','2023-12-25', 7),
-  (1, 1, 'Cây xăng', true, 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FCity%20lights%20(Anime%20Background).jpg0c1069f9-5a1b-40f9-8171-7513dc627248?alt=media&token=24074b26-ce6b-4aa4-93ad-579fbc8e4c0f', 'pending', 'Change request B','2023-11-25', 5);
+  (2, 1, 'Trung tâm thương mại', false, 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2F340842304_211052514888451_6814854970581350591_n.jpegd6986e67-e6d8-4f77-a1d5-b88e31a57f19?alt=media&token=45c08982-18fc-43ad-928c-2aa4f2dda397', 'pending', 'Change request C','2023-11-25', 6),
+  (3, 1, 'Chợ', false, 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2Fjsx8_8lo8_180725-removebg.png4dc1c29d-a1ee-4603-9f5a-16b456067ac2?alt=media&token=51ea5aa2-4862-4a67-a615-7c9bd0da2f2c', 'canceled', 'Change request D','2023-12-25', 7),
+  (4, 1, 'Cây xăng', true, 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FCity%20lights%20(Anime%20Background).jpg0c1069f9-5a1b-40f9-8171-7513dc627248?alt=media&token=24074b26-ce6b-4aa4-93ad-579fbc8e4c0f', 'pending', 'Change request B','2023-11-25', 5);
 
 
 
