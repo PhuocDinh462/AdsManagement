@@ -80,9 +80,9 @@ export default function Boards() {
     <div className={classes.main_container}>
       <div className={classes.sideBar_container}>
         <div className={classes.searchBar_container}>
-          <a href="/reports" className={[classes.back_btn, classes.btn].join(' ')}>
+          <div className={[classes.back_btn, classes.btn].join(' ')} onClick={() => navigate(-1)}>
             <FontAwesomeIcon icon={faArrowLeft} />
-          </a>
+          </div>
           <SearchBar placeholder="Tìm kiếm..." width="20rem" onChange={(keyword) => handleFilter(keyword)} />
         </div>
 

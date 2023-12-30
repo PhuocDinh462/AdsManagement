@@ -50,26 +50,34 @@ const login = catchAsync(async (req, res, next) => {
     });
   }
 
-  connection.query(`select * from user where email = ?`, email, (err, results) => {
-    if (err) {
-      console.error('Error executing query: ' + err.stack);
-      return res.status(500).json({ error: 'Database error' });
-    }
+  connection.query(
+    `select * from user u left join ward w on u.user_id = w.manager_id left join district d on u.user_id = d.manager_id where u.email = ?`,
+    email,
+    (err, results) => {
+      if (err) {
+        console.error('Error executing query: ' + err.stack);
+        return res.status(500).json({ error: 'Database error' });
+      }
 
-    if (!results[0] || !bcrypt.compareSync(password, results[0].password))
-      return res.status(401).json({
-        status: 'fail',
-        msg: 'Invalid Credential!',
+      console.log(results);
+
+      if (!results[0] || !bcrypt.compareSync(password, results[0].password))
+        return res.status(401).json({
+          status: 'fail',
+          msg: 'Invalid Credential!',
+        });
+
+      const accessToken = generateToken.accessToken(results[0]);
+      res.status(200).json({
+        status: 'success',
+        user_id: results[0].user_id,
+        user_type: results[0].user_type,
+        ward_id: results[0].ward_id,
+        district_id: results[0].district_id,
+        token: accessToken,
       });
-
-    const accessToken = generateToken.accessToken(results[0]);
-    res.status(200).json({
-      status: 'success',
-      user_id: results[0].user_id,
-      user_type: results[0].user_type,
-      token: accessToken,
-    });
-  });
+    }
+  );
 });
 
 const forgotPassword = async (req, res) => {

@@ -22,7 +22,7 @@ import { axiosRequest } from '~/src/api/axios';
 import AnnotationDropdown from '~components/Dropdown/AnnotationDropdown';
 import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
 import { useDispatch, useSelector } from 'react-redux';
-import { setReportCoord, selectReportCoord, selectUser } from '~/src/store/reducers';
+import { setReportCoord, selectReportCoord, selectUser, selectSelectedWards } from '~/src/store/reducers';
 
 const containerStyle = {
   width: '100%',
@@ -32,6 +32,7 @@ const containerStyle = {
 export default function Home() {
   const dispatch = useDispatch();
   const point_coord = useSelector(selectReportCoord);
+  const selectedWards = useSelector(selectSelectedWards);
   const user = useSelector(selectUser);
   const tokenAuth = 'Bearer ' + user.token.split('"').join('');
   const headers = {
@@ -139,39 +140,77 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [adSpots, setAdSpots] = useState([]);
 
-  useEffect(() => {
-    (async () => {
-      setLoading(true);
+  const fetchWardsSpots = async () => {
+    let data = [];
+    setLoading(true);
+    for (let i = 0; i < selectedWards.length; i++) {
       await axiosRequest
-        .get(`ward/getAdSpotsByWardId/${user.ward_id}`, { headers: headers })
+        .get(`ward/getReportListsByWardId/${selectedWards[i].ward_id}`, { headers: headers })
         .then((res) => {
-          const data = res.data.data;
-          setAdSpots(data);
-
-          // Use for locate button in Report page
-          if (point_coord) {
-            const index = data.findIndex((item) => item.lat === +point_coord.lat && item.lng === +point_coord.lng);
-            if (index !== -1) {
-              handleMarkerClick(data[index]);
-              setCenter({ lat: data[index].lat, lng: data[index].lng });
-              // setZoom(16);
+          if (res.data.data.length > 0) {
+            for (let j = 0; j < res.data.data.length; j++) {
+              data.push(res.data.data[j])
             }
-            dispatch(setReportCoord(null));
-          } else {
-            // Set center
-            const avgLat = data.map((item) => item.lat).reduce((a, b) => a + b, 0) / data.length;
-            const avgLng = data.map((item) => item.lng).reduce((a, b) => a + b, 0) / data.length;
-            setCenter({ lat: avgLat, lng: avgLng });
           }
         })
         .catch((error) => {
-          console.log('Get spots error: ', error);
-        })
-        .finally(() => {
-          setLoading(false);
+          console.log('Get report lists error: ', error);
         });
-    })();
-  }, []);
+    }
+    setAdSpots(data);
+    if (point_coord) {
+      const index = data.findIndex((item) => item.lat === +point_coord.lat && item.lng === +point_coord.lng);
+      if (index !== -1) {
+        handleMarkerClick(data[index]);
+        setCenter({ lat: data[index].lat, lng: data[index].lng });
+        // setZoom(16);
+      }
+      dispatch(setReportCoord(null));
+    } else {
+      // Set center
+      const avgLat = data.map((item) => item.lat).reduce((a, b) => a + b, 0) / data.length;
+      const avgLng = data.map((item) => item.lng).reduce((a, b) => a + b, 0) / data.length;
+      setCenter({ lat: avgLat, lng: avgLng });
+    }
+    setLoading(false);
+  }
+  useEffect(() => {
+    if (user.user_type === 'ward') {
+      (async () => {
+        setLoading(true);
+        await axiosRequest
+          .get(`ward/getAdSpotsByWardId/${user.ward_id}`, { headers: headers })
+          .then((res) => {
+            const data = res.data.data;
+            setAdSpots(data);
+
+            // Use for locate button in Report page
+            if (point_coord) {
+              const index = data.findIndex((item) => item.lat === +point_coord.lat && item.lng === +point_coord.lng);
+              if (index !== -1) {
+                handleMarkerClick(data[index]);
+                setCenter({ lat: data[index].lat, lng: data[index].lng });
+                // setZoom(16);
+              }
+              dispatch(setReportCoord(null));
+            } else {
+              // Set center
+              const avgLat = data.map((item) => item.lat).reduce((a, b) => a + b, 0) / data.length;
+              const avgLng = data.map((item) => item.lng).reduce((a, b) => a + b, 0) / data.length;
+              setCenter({ lat: avgLat, lng: avgLng });
+            }
+          })
+          .catch((error) => {
+            console.log('Get spots error: ', error);
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+      })();
+    } else if (user.user_type === 'district') {
+      fetchWardsSpots();
+    }
+  }, [selectedWards]);
 
   // Filter
   const [noReportStatus, setNoReportStatus] = useState(true);

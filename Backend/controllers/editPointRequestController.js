@@ -39,7 +39,8 @@ const createEditPointRequest = catchAsync(async (req, res, next) => {
             reason,
             created_by: req.user.user_id
         }
-        socket?.socketIo?.emit('update', 'New Edit Point Request Created');
+        socket?.socketIo?.emit('createEditPointRequest', { data: edit_request });
+
 
         res.status(200).json({
             status: "success",

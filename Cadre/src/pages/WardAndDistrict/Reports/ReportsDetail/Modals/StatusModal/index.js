@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 import { selectUser } from '~/src/store/reducers';
 
 export default function StatusModal(props) {
-  const { setActive, report_id } = props;
+  const { setActive, report_id, changeStatusByReportId } = props;
   const [loading, setLoading] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState('pending');
 
@@ -23,7 +23,6 @@ export default function StatusModal(props) {
   };
 
   const handleConfirm = async () => {
-    console.log(selectedStatus);
     setLoading(true);
     const body = {
       id: report_id,
@@ -33,18 +32,17 @@ export default function StatusModal(props) {
       .patch(`ward/updateReportStatus`, body, { headers: headers })
       .then((res) => {
         setActive(false);
+        changeStatusByReportId(report_id, options.find((item) => item.value === selectedStatus).label);
         Swal.fire({
           icon: 'success',
           title: 'Thông báo',
           text: 'Cập nhật trạng thái thành công',
           width: '50rem',
           confirmButtonColor: colors.primary_300,
-        }).then(() => {
-          window.location.reload(false);
         });
       })
       .catch((error) => {
-        console.log('Update report status error: ', error);
+        console.log('Update report status error: ');
       })
       .finally(() => {
         setLoading(false);
