@@ -7,28 +7,28 @@ const DetailsAdLocation = ({ data, onClose }) => {
   const apiKey = 'AIzaSyCFjMz64uEI7tL_FMVpawPirJJKE5VQtzU';
   const [address, setAddress] = useState(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${data.lat},${data.lng}&key=${apiKey}`;
-        const response = await fetch(apiUrl);
-        const result = await response.json();
-        console.log(result);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${data.lat},${data.lng}&key=${apiKey}`;
+  //       const response = await fetch(apiUrl);
+  //       const result = await response.json();
+  //       console.log(result);
 
-        if (result.status === 'OK' && result.results.length > 0) {
-          const detailedAddress = result.results[0].formatted_address;
-          setAddress(detailedAddress);
-        } else {
-          setAddress('Không có địa chỉ được tìm thấy');
-        }
-      } catch (error) {
-        console.error('Lỗi khi lấy địa chỉ:', error);
-        setAddress('Lỗi khi lấy địa chỉ');
-      }
-    };
+  //       if (result.status === 'OK' && result.results.length > 0) {
+  //         const detailedAddress = result.results[0].formatted_address;
+  //         setAddress(detailedAddress);
+  //       } else {
+  //         setAddress('Không có địa chỉ được tìm thấy');
+  //       }
+  //     } catch (error) {
+  //       console.error('Lỗi khi lấy địa chỉ:', error);
+  //       setAddress('Lỗi khi lấy địa chỉ');
+  //     }
+  //   };
 
-    fetchData();
-  }, [data.lat, data.lng, apiKey]);
+  //   fetchData();
+  // }, [data.lat, data.lng, apiKey]);
 
   return (
     <div className={classes.adding__overlay}>
@@ -60,7 +60,7 @@ const DetailsAdLocation = ({ data, onClose }) => {
             <strong>
               Địa chỉ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </strong>
-            : {address}
+            : {data.address}
           </li>
           <li>
             <strong>Loại vị trí &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>:{' '}
