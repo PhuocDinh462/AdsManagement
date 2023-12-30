@@ -3,6 +3,7 @@ const cadreController = require('../controllers/cadreController');
 const cadreFormController = require('../controllers/cadreFormController');
 const cadreAdsPointController = require('../controllers/cadreAdsPointController');
 const requestEditController = require('../controllers/cadreRequestEdit');
+const cadreReportController = require('../controllers/cadreReportController');
 const router = express.Router();
 
 router.get('/', cadreController.getAllDistrictWard);
@@ -28,6 +29,8 @@ router.get('/getRequestEditPoint', requestEditController.getRequestEditPoints);
 router.get('/detailAdsBoard/:id', requestEditController.getDetailInforBoard);
 router.get('/detailAdsPoint/:id', requestEditController.getDetailAdvertisingPoint);
 router.put('/updateStatusEditReq/:id', requestEditController.updateStatus);
+
+router.get('getAllReport', cadreReportController.getAllReport);
 
 module.exports = router;
 

@@ -15,6 +15,9 @@ import {
   faBan,
   faPaperclip,
   faPaperPlane,
+  faCheck,
+  faXmark,
+  faClockRotateLeft,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState, useEffect } from 'react';
@@ -25,7 +28,7 @@ import StatusModal from './Modals/StatusModal';
 import { useParams } from 'react-router-dom';
 import { axiosRequest } from '~/src/api/axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { setReportIndex, selectReportIndex, setReportCoord } from '~/src/store/reducers';
+import { setReportIndex, selectReportIndex, setReportCoord, selectUser, setBoardId } from '~/src/store/reducers';
 import { useNavigate } from 'react-router';
 
 export default function ReportsDetail() {
@@ -36,6 +39,12 @@ export default function ReportsDetail() {
   const dispatch = useDispatch();
   const reportIndexStorage = useSelector(selectReportIndex);
   const navigate = useNavigate();
+
+  const user = useSelector(selectUser);
+  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
 
   const [currentReportIndex, setCurrentReportIndex] = useState(0);
   const [filteredData, setFilteredData] = useState([]);
@@ -52,7 +61,7 @@ export default function ReportsDetail() {
     if (lat && lng)
       (async () => {
         await axiosRequest
-          .post(`ward/getReportDetailsByLatLng`, { lat: lat, lng: lng })
+          .post(`ward/getReportDetailsByLatLng`, { lat: lat, lng: lng }, { headers: headers })
           .then((res) => {
             const data = res.data.data;
             setData(data);
@@ -69,7 +78,7 @@ export default function ReportsDetail() {
     else
       (async () => {
         await axiosRequest
-          .get(`ward/getReportDetailsByPointId/${id}`)
+          .get(`ward/getReportDetailsByPointId/${id}`, { headers: headers })
           .then((res) => {
             const data = res.data.data;
             setData(data);
@@ -105,13 +114,21 @@ export default function ReportsDetail() {
     setCurrentReportIndex(0);
   };
 
+  const changeStatusByReportId = (id, newStatus) => {
+    setData({
+      ...data,
+      reports: data.reports.map((item) => (item.report_id === id ? { ...item, status: newStatus } : { ...item })),
+    });
+    setFilteredData(filteredData.map((item) => (item.report_id === id ? { ...item, status: newStatus } : { ...item })));
+  };
+
   return (
     <div className={classes.main_container}>
       <div className={classes.sideBar_container}>
         <div className={classes.searchBar_container}>
-          <a href="/reports" className={[classes.back_btn, classes.btn].join(' ')}>
+          <div className={[classes.back_btn, classes.btn].join(' ')} onClick={() => navigate(-1)}>
             <FontAwesomeIcon icon={faArrowLeft} />
-          </a>
+          </div>
           <SearchBar placeholder="Tìm kiếm..." width="20rem" onChange={(keyword) => handleFilter(keyword)} />
         </div>
 
@@ -120,6 +137,8 @@ export default function ReportsDetail() {
             className={[classes.nav_btn, classes.btn].join(' ')}
             onClick={() => {
               dispatch(setReportCoord({ lat: data.lat, lng: data.lng }));
+              if (filteredData[currentReportIndex]?.reportedObject === 'Bảng quảng cáo')
+                dispatch(setBoardId(filteredData[currentReportIndex]?.board_id));
               navigate('/home');
             }}
           >
@@ -153,7 +172,7 @@ export default function ReportsDetail() {
           {filteredData?.map((item, index) => (
             <div
               className={classes.report_item}
-              key={index}
+              key={item.report_id}
               onClick={() => {
                 setCurrentReportIndex(index);
                 dispatch(setReportIndex(index));
@@ -240,9 +259,35 @@ export default function ReportsDetail() {
                       <td className={classes.userInfo_col}>
                         <div className={classes.itemInfo}>
                           <FontAwesomeIcon icon={faDiagramProject} />
-                          <dir className={classes.itemInfo__text}>
-                            {'Trạng thái: ' + filteredData[currentReportIndex]?.status}
-                          </dir>
+                          <div className={classes.itemInfo__text}>
+                            <div className={classes.reportStatus_container}>
+                              Trạng thái:&nbsp;
+                              <div
+                                className={classes.reportStatus}
+                                style={{
+                                  backgroundColor:
+                                    filteredData[currentReportIndex]?.status === 'Chờ xử lý'
+                                      ? '#ff3a3a'
+                                      : filteredData[currentReportIndex]?.status === 'Đang xử lý'
+                                      ? '#0095d5'
+                                      : '#00AE46',
+                                }}
+                              >
+                                {filteredData[currentReportIndex]?.status}
+                                <div className={classes.reportStatus__ic}>
+                                  <FontAwesomeIcon
+                                    icon={
+                                      filteredData[currentReportIndex]?.status === 'Chờ xử lý'
+                                        ? faXmark
+                                        : filteredData[currentReportIndex]?.status === 'Đang xử lý'
+                                        ? faClockRotateLeft
+                                        : faCheck
+                                    }
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </td>
                     </tr>
@@ -325,7 +370,11 @@ export default function ReportsDetail() {
       </Backdrop>
 
       <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={showStatusModal}>
-        <StatusModal setActive={setShowStatusModal} report_id={filteredData[currentReportIndex]?.report_id} />
+        <StatusModal
+          setActive={setShowStatusModal}
+          report_id={filteredData[currentReportIndex]?.report_id}
+          changeStatusByReportId={changeStatusByReportId}
+        />
       </Backdrop>
     </div>
   );

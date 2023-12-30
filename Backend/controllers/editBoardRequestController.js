@@ -39,8 +39,7 @@ const createEditBoardRequest = catchAsync(async (req, res, next) => {
             height,
             created_by: req.user.user_id
         }
-        socket?.socketIo?.emit('update', 'New Edit Board Request Created');
-
+        socket?.socketIo?.emit('createEditBoardRequest', { data: edit_request });
         res.status(200).json({
             status: "success",
             edit_request

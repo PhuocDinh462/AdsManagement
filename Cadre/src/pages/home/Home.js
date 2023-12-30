@@ -19,7 +19,6 @@ const Home = () => {
           {selectedPage === 1 && <ManageDistrictWard />}
           {selectedPage === 2 && <ManageForm />}
           {selectedPage === 6 && <ManageLicensing />}
-          {/* ... render other components based on selectedPage */}
         </div>
       </div>
     </div>
@@ -27,3 +26,4 @@ const Home = () => {
 };
 
 export default Home;
+

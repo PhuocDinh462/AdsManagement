@@ -20,5 +20,6 @@ router.post('/getNumberOfReportsByLatLng', wardController.getNumberOfReportsByLa
 router.post('/license/create-license', validationLicenseReq, createLicensingRequest);
 router.get('/license', getAllLicenseRequest);
 router.get('/getAdSpotsListByWardId/:id', wardController.getAdSpotsListByWardId);
+router.get('/get_wards_managing', wardController.getAllWardsByDistrictManager);
 
 module.exports = router;

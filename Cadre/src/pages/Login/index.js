@@ -9,8 +9,13 @@ import Images from '../../assets/images';
 import Swal from 'sweetalert2';
 import getGoogleOAuthURL from '~/src/utils/getGoogleUrl';
 
+import { useDispatch } from 'react-redux';
+import { setUser } from '~/src/store/reducers';
+
 const LoginPage = () => {
   const loginNavigate = useNavigate();
+  const dispatch = useDispatch();
+
   useEffect(() => {
     const user_type = localStorage.getItem('user_type');
     if (user_type === 'department') {
@@ -38,6 +43,18 @@ const LoginPage = () => {
         localStorage.setItem('user_id', response.data.user_id);
         localStorage.setItem('user_type', user_type);
         localStorage.setItem('token', response.data.token);
+
+        dispatch(
+          setUser({
+            'user-state': true,
+            user_id: response.data.user_id,
+            user_type: user_type,
+            token: response.data.token,
+            ward_id: response.data.ward_id,
+            district_id: response.data.district_id,
+          })
+        );
+
         setSubmitting(false);
 
         Swal.fire({

@@ -165,11 +165,11 @@ const getInfoByPointId = catchAsync(async (req, res, next) => {
               data: {
                 spotInfo: spotInfo[0]
                   ? {
-                      ...spotInfo[0],
-                      reports: reports.filter(
-                        (report) => report.point_id === spotInfo[0].point_id && report.status !== 'processed'
-                      ).length,
-                    }
+                    ...spotInfo[0],
+                    reports: reports.filter(
+                      (report) => report.point_id === spotInfo[0].point_id && report.status !== 'processed'
+                    ).length,
+                  }
                   : null,
                 boardInfo: boardInfo.map((item) => {
                   return {
@@ -189,16 +189,36 @@ const getInfoByPointId = catchAsync(async (req, res, next) => {
 });
 
 const getAdBoardsBySpotId = catchAsync(async (req, res, next) => {
-  const query = 'SELECT * FROM advertising_board where point_id = ?';
+  connection.query(
+    'select * from advertising_board ab join board_type bt on ab.board_type_id = bt.board_type_id where point_id = ?',
+    [req.params.id],
+    (err, results) => {
+      if (err) {
+        console.error('Error executing query: ', err);
+        res.status(500).send('Internal Server Error');
+        return;
+      }
+      const boards = results;
 
-  connection.query(query, [req.params.id], (err, results) => {
-    if (err) {
-      console.error('Error executing query: ', err);
-      res.status(500).send('Internal Server Error');
-      return;
+      connection.query('select * from advertising_point where point_id = ?', [req.params.id], async (err, results) => {
+        if (err) {
+          console.error('Error executing query: ', err);
+          res.status(500).send('Internal Server Error');
+          return;
+        }
+        spot = results[0];
+        const url = `https://rsapi.goong.io/Geocode?latlng=${spot.lat},${spot.lng}&api_key=${process.env.GOONG_APIKEY}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        const address = data?.error ? null : data.results[0].formatted_address;
+
+        res.status(200).json({
+          status: 'success',
+          data: { address: address, lat: spot.lat, lng: spot.lng, boards: boards },
+        });
+      });
     }
-    res.status(200).json({ status: 'success', data: results });
-  });
+  );
 });
 
 const getReportListsByWardId = catchAsync(async (req, res, next) => {
@@ -415,8 +435,8 @@ const getReportDetailsByPointId = catchAsync(async (req, res, next) => {
                     report.status === 'processed'
                       ? 'Đã xử lý'
                       : report.status === 'processing'
-                      ? 'Đang xử lý'
-                      : 'Chờ xử lý',
+                        ? 'Đang xử lý'
+                        : 'Chờ xử lý',
                 };
               }),
             }));
@@ -487,8 +507,8 @@ const getReportDetailsByLatLng = catchAsync(async (req, res, next) => {
                 report.status === 'processed'
                   ? 'Đã xử lý'
                   : report.status === 'processing'
-                  ? 'Đang xử lý'
-                  : 'Chờ xử lý',
+                    ? 'Đang xử lý'
+                    : 'Chờ xử lý',
             };
           }),
         },
@@ -584,6 +604,26 @@ const getAdSpotsListByWardId = catchAsync(async (req, res, next) => {
   });
 });
 
+const getAllWardsByDistrictManager = catchAsync(async (req, res, next) => {
+  connection.query(
+    `SELECT w.* FROM ward w JOIN district d ON w.district_id = d.district_id where d.manager_id = ?`,
+    [req.user.user_id], // Đặt giá trị manager_id vào mảng tham số
+    (err, results) => {
+      if (err) {
+        console.error(err);
+        res.status(500).json({
+          status: 'error',
+          message: 'Internal Server Error',
+        });
+      } else {
+        res.status(200).json({
+          status: 'success',
+          wards: results,
+        });
+      }
+    }
+  );
+});
 module.exports = {
   getAdSpotsByWardId,
   getInfoByPointId,
@@ -595,4 +635,5 @@ module.exports = {
   getAdBoardByBoardId,
   getNumberOfReportsByLatLng,
   getAdSpotsListByWardId,
+  getAllWardsByDistrictManager
 };

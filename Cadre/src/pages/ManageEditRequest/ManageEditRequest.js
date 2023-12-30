@@ -18,10 +18,15 @@ const ManageForm = () => {
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [modalType, setModalType] = useState(null);
 
+  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
+
   const fetchData = async () => {
     try {
-      const responseBoards = await axiosClient.get('/cadre/getRequestEditBoard');
-      const responsePoints = await axiosClient.get('/cadre/getRequestEditPoint');
+      const responseBoards = await axiosClient.get('/cadre/getRequestEditBoard', { headers });
+      const responsePoints = await axiosClient.get('/cadre/getRequestEditPoint', { headers });
 
       setData({
         boards: responseBoards,

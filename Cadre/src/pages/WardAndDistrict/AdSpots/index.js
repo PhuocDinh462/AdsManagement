@@ -4,28 +4,63 @@ import { faPencil, faEye } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Pagination from '~components/Pagination';
 import SearchBar from '~components/SearchBar';
-import { Link } from 'react-router-dom';
 import { axiosRequest } from '~/src/api/axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectSelectedWards, selectUser, setBoardIndex } from '~/src/store/reducers';
+import { useNavigate } from 'react-router';
 
 export default function AdSpots() {
   const [data, setData] = useState([]);
   const [filteredData, setFilterData] = useState(data);
   const [filterKeyword, setFilterKeyword] = useState('');
 
-  useEffect(() => {
-    (async () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const user = useSelector(selectUser);
+  const selectedWards = useSelector(selectSelectedWards);
+  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
+  const fetchWardsSpots = async () => {
+    let spots = [];
+    for (let i = 0; i < selectedWards.length; i++) {
       await axiosRequest
-        .get(`ward/getAdSpotsListByWardId/1`)
+        .get(`ward/getAdSpotsListByWardId/${selectedWards[i].ward_id}`, { headers: headers })
         .then((res) => {
-          const data = res.data.data;
-          setData(data);
-          setFilterData(data);
+          if (res.data.data.length > 0) {
+            for (let j = 0; j < res.data.data.length; j++) {
+              spots.push(res.data.data[j])
+            }
+          }
         })
         .catch((error) => {
           console.log('Get report lists error: ', error);
         });
-    })();
-  }, []);
+    }
+    setData(spots);
+    setFilterData(spots);
+  }
+
+  useEffect(() => {
+    if (user.user_type === 'ward') {
+      (async () => {
+        await axiosRequest
+          .get(`ward/getAdSpotsListByWardId/${user.ward_id}`, { headers: headers })
+          .then((res) => {
+            const data = res.data.data;
+            setData(data);
+            setFilterData(data);
+          })
+          .catch((error) => {
+            console.log('Get report lists error: ', error);
+          });
+      })();
+    }
+    else if (user.user_type === 'district') {
+      fetchWardsSpots();
+    }
+  }, [selectedWards]);
 
   useEffect(() => {
     if (!filterKeyword) {
@@ -93,20 +128,22 @@ export default function AdSpots() {
                     {row.is_planning ? 'Đã quy hoạch' : 'Chưa quy hoạch'}
                   </td>
                   <td style={{ width: '10%' }}>
-                    <Link to={`/point-request/${row.point_id}`}>
-                      <button className={classes.btn_info}>
-                        <div className={classes.icon_container}>
-                          <FontAwesomeIcon icon={faPencil} />
-                        </div>
-                      </button>
-                    </Link>
-                    <Link to={`/advertising-spots/${row.point_id}`}>
-                      <button className={classes.btn_detail}>
-                        <div className={classes.icon_container}>
-                          <FontAwesomeIcon icon={faEye} />
-                        </div>
-                      </button>
-                    </Link>
+                    <button className={classes.btn_info} onClick={() => navigate(`/point-request/${row.point_id}`)}>
+                      <div className={classes.icon_container}>
+                        <FontAwesomeIcon icon={faPencil} />
+                      </div>
+                    </button>
+                    <button
+                      className={classes.btn_detail}
+                      onClick={() => {
+                        dispatch(setBoardIndex(0));
+                        navigate(`/advertising-spots/${row.point_id}`);
+                      }}
+                    >
+                      <div className={classes.icon_container}>
+                        <FontAwesomeIcon icon={faEye} />
+                      </div>
+                    </button>
                   </td>
                 </tr>
               ))}

@@ -20,9 +20,14 @@ const ManageForm = () => {
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [modalType, setModalType] = useState(null);
 
+  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
+
   const fetchData = async () => {
     try {
-      const response = await axiosClient.get('/cadre/form');
+      const response = await axiosClient.get('/cadre/form', { headers });
       setData(response);
       setOriginalData(response);
     } catch (error) {
@@ -91,9 +96,13 @@ const ManageForm = () => {
       confirmButtonText: 'Xóa',
       cancelButtonText: 'Hủy',
     });
+    const data = { type: row.type, id: row.typeId };
     if (confirmResult.isConfirmed) {
       try {
-        const response = await axiosClient.delete('cadre/deleteForm', { data: { type: row.type, id: row.typeId } });
+        const response = await axiosClient.delete('cadre/deleteForm', {
+          headers,
+          data,
+        });
 
         if (response.status === 'success') {
           Swal.fire({

@@ -9,6 +9,7 @@ import { axiosClient } from '../../api/axios';
 import ModalUpdate from './components/ModalUpdate';
 import Swal from 'sweetalert2';
 import setLocalStorageFromCookie from '~/src/utils/setLocalStorageFromCookie';
+import DetailAddress from './components/DetailModal/DetailAddress';
 
 const ManageDistrictWard = () => {
   const [data, setData] = useState([]);
@@ -17,6 +18,7 @@ const ManageDistrictWard = () => {
   const [error, setError] = useState(null);
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isModalDetail, setIsModalDetail] = useState(false);
   const [modalType, setModalType] = useState(null);
   const [selectedRowData, setSelectedRowData] = useState(null);
   useEffect(() => {
@@ -25,10 +27,16 @@ const ManageDistrictWard = () => {
     setLocalStorageFromCookie('user_id');
     setLocalStorageFromCookie('token');
   }, []);
+
+  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
+
   const fetchData = async () => {
     try {
-      const response = await axiosClient.get('/cadre');
-
+      const response = await axiosClient.get('/cadre', { headers });
+      console.log(response);
       const convertedData = response.reduce((accumulator, district) => {
         const districtManager = district.districtManager || {};
         const districtInfo = {
@@ -75,6 +83,11 @@ const ManageDistrictWard = () => {
     setModalOpen(false);
   };
 
+  const updateDataAfterDetail = async () => {
+    setIsModalDetail(false);
+    setModalOpen(false);
+  };
+
   const handleFilterChange = (level) => {
     const filteredData = level === 'All' ? originalData : originalData.filter((item) => item.level === level);
     setData(filteredData);
@@ -102,6 +115,10 @@ const ManageDistrictWard = () => {
   const handleCloseModal = () => {
     setModalOpen(false);
   };
+  const handleCloseDetailModal = () => {
+    setModalOpen(false);
+    setIsModalDetail(false);
+  };
 
   const handleDeleteClick = async (id, type) => {
     const confirmResult = await Swal.fire({
@@ -116,9 +133,15 @@ const ManageDistrictWard = () => {
     });
 
     if (confirmResult.isConfirmed) {
+      const data = {
+        id,
+        type,
+      };
+      console.log(headers);
       try {
         const response = await axiosClient.delete('/cadre/deleteAddress', {
-          data: { id, type },
+          headers,
+          data,
         });
 
         if (response.status === 'success') {
@@ -198,7 +221,14 @@ const ManageDistrictWard = () => {
           <table className={classes.table__body_wrap}>
             <tbody>
               {data.map((row, rowIndex) => (
-                <tr className={classes.table__body_wrap_row} key={rowIndex}>
+                <tr
+                  className={classes.table__body_wrap_row}
+                  key={rowIndex}
+                  onClick={() => {
+                    setSelectedRowData(row);
+                    setIsModalDetail(true);
+                  }}
+                >
                   <td style={{ width: '5%' }}>{rowIndex + 1}</td>
                   <td style={{ width: '20%' }}>{row.area}</td>
                   <td style={{ width: '20%' }}>{row.managerName}</td>
@@ -207,12 +237,21 @@ const ManageDistrictWard = () => {
                   <td style={{ width: '10%' }}>{row.level}</td>
                   <td style={{ width: '15%' }}>
                     <button
-                      onClick={() => handleDeleteClick(row.id, row.level === 'Phường' ? 'ward' : 'district')}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteClick(row.id, row.level === 'Phường' ? 'ward' : 'district');
+                      }}
                       className={classes.btn_trash}
                     >
                       <FontAwesomeIcon icon={faTrash} />
                     </button>
-                    <button onClick={() => handleEditClick(row)} className={classes.btn_pen}>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEditClick(row);
+                      }}
+                      className={classes.btn_pen}
+                    >
                       <FontAwesomeIcon icon={faPen} />
                     </button>
                   </td>
@@ -222,6 +261,12 @@ const ManageDistrictWard = () => {
           </table>
         </div>
       </div>
+
+      {isModalDetail && (
+        <Modal onClose={handleCloseDetailModal}>
+          <DetailAddress data={selectedRowData} onClose={updateDataAfterDetail} />
+        </Modal>
+      )}
 
       {isModalOpen && (
         <Modal onClose={handleCloseModal}>

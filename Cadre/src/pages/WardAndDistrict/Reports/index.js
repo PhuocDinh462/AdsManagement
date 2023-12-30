@@ -6,8 +6,8 @@ import Pagination from '~components/Pagination';
 import SearchBar from '~components/SearchBar';
 import { axiosRequest } from '~/src/api/axios';
 import { format } from 'date-fns';
-import { useDispatch } from 'react-redux';
-import { setReportIndex, setReportCoord } from '~/src/store/reducers';
+import { useDispatch, useSelector } from 'react-redux';
+import { setReportIndex, setReportCoord, selectUser, selectSelectedWards } from '~/src/store/reducers';
 import { useNavigate } from 'react-router';
 
 export default function Reports() {
@@ -16,25 +16,56 @@ export default function Reports() {
   const [filteredData, setFilterData] = useState(data);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const selectedWards = useSelector(selectSelectedWards);
+  const user = useSelector(selectUser);
+  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
 
-  useEffect(() => {
-    (async () => {
-      setLoading(true);
+  const fetchWardsReports = async () => {
+    let reports = [];
+    setLoading(true);
+    for (let i = 0; i < selectedWards.length; i++) {
       await axiosRequest
-        .get(`ward/getReportListsByWardId/1`)
+        .get(`ward/getReportListsByWardId/${selectedWards[i].ward_id}`, { headers: headers })
         .then((res) => {
-          const data = res.data.data;
-          setData(data);
-          setFilterData(data);
+          if (res.data.data.length > 0) {
+            for (let j = 0; j < res.data.data.length; j++) {
+              reports.push(res.data.data[j])
+            }
+          }
         })
         .catch((error) => {
           console.log('Get report lists error: ', error);
-        })
-        .finally(() => {
-          setLoading(false);
         });
-    })();
-  }, []);
+    }
+    setData(reports);
+    setFilterData(reports);
+    setLoading(false);
+  }
+  useEffect(() => {
+    if (user.user_type === 'ward') {
+      (async () => {
+
+        await axiosRequest
+          .get(`ward/getReportListsByWardId/${user.ward_id}`, { headers: headers })
+          .then((res) => {
+            const data = res.data.data;
+            setData(data);
+            setFilterData(data);
+          })
+          .catch((error) => {
+            console.log('Get report lists error: ', error);
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+      })();
+    } else if (user.user_type === 'district') {
+      fetchWardsReports()
+    }
+  }, [selectedWards]);
 
   const [filterKeyword, setFilterKeyword] = useState('');
 
