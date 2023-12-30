@@ -20,7 +20,7 @@ const getAllPoint = catchAsync(async (req, res) => {
 
 const getPointByType = catchAsync(async (req, res, next) => {
   const { id } = req.params;
-
+  console.log(req.user);
   connection.query(
     `select * from advertising_point where advertisement_type_id = ? and is_planning = true`,
     [id],
@@ -33,9 +33,12 @@ const getPointByType = catchAsync(async (req, res, next) => {
         });
         return;
       }
+      console.log(results);
+
+      // const response = results[0]
       res.status(200).json({
         status: 'success',
-        point: results[0],
+        data: results[0],
       });
     }
   );

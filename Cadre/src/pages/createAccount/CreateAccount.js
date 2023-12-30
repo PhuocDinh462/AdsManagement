@@ -1,20 +1,32 @@
-import React, { useState } from 'react';
-import classes from './CreateAcount.module.scss';
-import { logo } from '~assets/imgs/Imgs';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import Swal from 'sweetalert2';
+import { axiosClient } from '~/src/api/axios';
+import setLocalStorageFromCookie from '~/src/utils/setLocalStorageFromCookie';
+import classes from './CreateAcount.module.scss';
 
 const CreateAcount = () => {
-  const [username, setUsename] = useState('');
-  const [birthday, setBirthday] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [district, setDistrict] = useState('');
   const [ward, setWard] = useState('');
   const [level, setLevel] = useState('district'); // Mặc định là quận
-  const [location, setLocation] = useState(''); // Quận hoặc phường tùy thuộc vào level
+
+  const [listDictrict, setListDictrict] = useState([]);
+  const [listWard, setListWard] = useState([]);
+
+  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
@@ -22,37 +34,116 @@ const CreateAcount = () => {
 
   const handleLevelChange = (e) => {
     setLevel(e.target.value);
+
+    if (e.target.value === 'ward') fetchDataDistrictWithWardEmpty();
+    else fetchDataDistrict();
     setDistrict(''); // Reset giá trị của location khi chọn lại cấp độ
+  };
+
+  const handleDistrictChange = async (e) => {
+    setDistrict(e.target.value);
+
+    if (level === 'ward' && e.target.value !== '') {
+      fetchDataWard(e.target.value);
+    }
   };
 
   const handleWardChange = (e) => {
     setWard(e.target.value);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const onSubmit = (dataInput) => {
+    console.log(dataInput);
+    if (hasEmptyStringValues(dataInput)) {
+      notiError('Thông tin không hợp lệ!', 'Thông tin của quản lý chưa đầy đủ');
+      return;
+    } else if (district === '') {
+      notiError('Thông tin không hợp lệ!', 'Bạn chưa chọn quận cho người quản lý');
+      return;
+    }
+
+    let dataRequest = { ...dataInput, officer_id: district };
+
+    if (level === 'ward') {
+      if (ward === '') {
+        notiError('Thông tin không hợp lệ!', 'Bạn chưa chọn phường cho người quản lý');
+        return;
+      }
+      dataRequest = { ...dataRequest, officer_id: ward };
+    }
 
     // Thực hiện xử lý logic khi form được submit
-    console.log('Form submitted with the following data:');
-    console.log('Username:', username);
-    console.log('Birthday:', birthday);
-    console.log('Email:', email);
-    console.log('Phone:', phone);
-    console.log('Password:', password);
-    console.log('Level:', level);
-    console.log('District:', district);
-    console.log('Ward:', ward);
+    fecthDataCreateAccount(dataRequest);
   };
+
+  function hasEmptyStringValues(obj) {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key) && typeof obj[key] === 'string' && obj[key].trim() === '') {
+        return true; // Nếu có chuỗi rỗng, trả về true
+      }
+    }
+    return false; // Nếu không có chuỗi rỗng, trả về false
+  }
+
+  const notiError = (title, content) => {
+    Swal.fire({
+      icon: 'error',
+      title: `${title}`,
+      text: `${content}`,
+    });
+  };
+
+  const notiSuccess = (title) => {
+    Swal.fire({
+      position: 'top-middle',
+      icon: 'success',
+      title: `${title}`,
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  };
+  const fecthDataCreateAccount = async (data) => {
+    try {
+      await axiosClient.post('/cadre/auth/create', data, { headers });
+      reset();
+      notiSuccess('Đăng ký tài khoản thành công!');
+    } catch (err) {
+      notiError('Lỗi đăng ký!', 'Thông tin cung cấp chưa chính xác');
+      console.log(err);
+    }
+  };
+
+  const fetchDataWard = async (ward_id) => {
+    const response = await axiosClient.get(`/cadre/wards/district/${ward_id}`, { headers });
+    setListWard(response.data);
+  };
+
+  const fetchDataDistrict = async () => {
+    const response = await axiosClient.get('/cadre/districts/empty', { headers });
+    setListDictrict(response.data);
+  };
+
+  const fetchDataDistrictWithWardEmpty = async () => {
+    const response = await axiosClient.get('/cadre/districts/ward-empty', { headers });
+    setListDictrict(response.data);
+  };
+
+  useEffect(() => {
+    setLocalStorageFromCookie('user-state');
+    setLocalStorageFromCookie('user_type');
+    setLocalStorageFromCookie('user_id');
+    setLocalStorageFromCookie('token');
+    fetchDataDistrict();
+  }, []);
 
   return (
     <div className={classes.container}>
       <div className={classes.container__header}>
         <p className={classes.container__header_title}>TẠO TÀI KHOẢN</p>
-        <img className={classes.container__header_logo} src={logo} alt="logo" />
       </div>
 
       <div className={classes.container__body}>
-        <form className={classes.form} onSubmit={handleSubmit}>
+        <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
           <div className={classes.wrap_form}>
             <div className={classes.container__body_left}>
               <div className={classes.form_input}>
@@ -63,9 +154,8 @@ const CreateAcount = () => {
                   id="name"
                   className={classes.input_area}
                   type="text"
-                  value={username}
                   placeholder="Nguyen Van A"
-                  onChange={(e) => setUsename(e.target.value)}
+                  {...register('username')}
                 />
               </div>
 
@@ -77,9 +167,8 @@ const CreateAcount = () => {
                   id="birthday"
                   className={classes.input_area}
                   type="text"
-                  value={birthday}
-                  placeholder="dd/mm/yy"
-                  onChange={(e) => setBirthday(e.target.value)}
+                  placeholder="yyyy-mm-dd"
+                  {...register('dob')}
                 />
               </div>
 
@@ -91,9 +180,8 @@ const CreateAcount = () => {
                   id="email"
                   className={classes.input_area}
                   type="text"
-                  value={email}
                   placeholder="example@.gmail.com"
-                  onChange={(e) => setEmail(e.target.value)}
+                  {...register('email')}
                 />
               </div>
 
@@ -105,9 +193,8 @@ const CreateAcount = () => {
                   id="phone"
                   className={classes.input_area}
                   type="text"
-                  value={phone}
                   placeholder="012345678"
-                  onChange={(e) => setPhone(e.target.value)}
+                  {...register('phone')}
                 />
               </div>
 
@@ -120,9 +207,8 @@ const CreateAcount = () => {
                     id="pass"
                     className={classes.input_pass}
                     type={showPassword ? 'text' : 'password'}
-                    value={password}
                     placeholder="*****"
-                    onChange={(e) => setPassword(e.target.value)}
+                    {...register('password')}
                   />
                   <FontAwesomeIcon
                     className={classes.icon_show}
@@ -135,43 +221,46 @@ const CreateAcount = () => {
             <div className={classes.container__body_right}>
               <label className={classes.wrap}>
                 <p className={classes.title}>Cấp độ quản lý:</p>
-                <select value={level} onChange={handleLevelChange}>
+                <select {...register('user_type')} value={level} onChange={handleLevelChange}>
                   <option value="district">Quận</option>
                   <option value="ward">Phường</option>
                 </select>
               </label>
               <label className={classes.wrap}>
                 <p className={classes.title}>Chọn Quận:</p>
-                <select value={district} onChange={(e) => setDistrict(e.target.value)}>
-                  <option value="quan1">Quận 1</option>
-                  <option value="quan2">Quận 2</option>
+                <select defaultValue="" value={district} onChange={handleDistrictChange}>
+                  <option value="">Trống</option>
+                  {listDictrict.map((item) => {
+                    return (
+                      <option key={item.district_id} value={item.district_id}>
+                        {item.district_name}
+                      </option>
+                    );
+                  })}
                 </select>
               </label>
               {level === 'ward' && (
                 <label className={classes.wrap}>
                   <p className={classes.title}>Phường:</p>
-                  <select value={ward} onChange={handleWardChange}>
+                  <select defaultValue="" value={ward} onChange={handleWardChange}>
                     {/* Tùy thuộc vào quận hoặc phường được chọn, thêm các phường tương ứng */}
-                    {district === 'quan1' && (
-                      <>
-                        <option value="phuongA">Phường A</option>
-                        <option value="phuongB">Phường B</option>
-                        {/* Thêm các phường của Quận 1 */}
-                      </>
-                    )}
-                    {district === 'quan2' && (
-                      <>
-                        <option value="phuongX">Phường X</option>
-                        <option value="phuongY">Phường Y</option>
-                        {/* Thêm các phường của Quận 2 */}
-                      </>
-                    )}
+                    <option value="">Trống</option>
+
+                    {listWard.map((item) => {
+                      return (
+                        <option key={item.ward_id} value={item.ward_id}>
+                          {item.ward_name}
+                        </option>
+                      );
+                    })}
                   </select>
                 </label>
               )}
             </div>
           </div>
-          <button className={classes.button_submit}>Đăng ký</button>
+          <button type="submit" className={classes.button_submit}>
+            Đăng ký
+          </button>
         </form>
       </div>
     </div>
@@ -179,4 +268,3 @@ const CreateAcount = () => {
 };
 
 export default CreateAcount;
-

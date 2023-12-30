@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
-import classes from './style.module.scss';
-import { storage } from '~/src/firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { v4 } from 'uuid';
-import AsynInputSeletion from './AsynInputSeletion';
-import InputText from './InputText';
-import DatePicker from './DatePicker';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Typography } from '@mui/material';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { useState } from 'react';
+import { v4 } from 'uuid';
+import { storage } from '~/src/firebase';
+import AsynInputSeletion from './AsynInputSeletion';
+import DatePicker from './DatePicker';
+import InputText from './InputText';
+import classes from './style.module.scss';
 
 const formInput = {
   page1: [{ label: 'Chọn Điểm Quảng Cáo' }, { label: 'Chọn Bảng Quảng Cáo' }],
@@ -22,6 +22,12 @@ const formInput = {
   ],
 };
 
+const listType = [
+  { title: 'Cổ động chính trị', value: 0 },
+  { title: 'Quảng cáo thương mại', value: 1 },
+  { title: 'Xã hội hoá', value: 2 },
+];
+
 const LicenseModalAdd = (props) => {
   const { handleCloseModal } = props;
 
@@ -29,6 +35,19 @@ const LicenseModalAdd = (props) => {
   const [previewImage, setPreviewImage] = useState(null);
 
   const [imageUploadUrl, setImageUploadUrl] = useState(null);
+
+  const [typeAds, setTypeAds] = useState(-1);
+  const [pointAds, setPointAds] = useState('');
+
+  const handleOnChangeTypeAds = (e, value) => {
+    console.log(value.value);
+    setTypeAds(value.value);
+  };
+
+  const handleOnChangePointAds = (e, value) => {
+    console.log(value);
+    // setPointAds(value);
+  };
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
@@ -86,9 +105,18 @@ const LicenseModalAdd = (props) => {
               <>
                 <h3>1. Thông Tin Điểm Quảng Cáo</h3>
                 <div className={classes['form-block']}>
-                  {formInput.page1.map((item) => (
-                    <AsynInputSeletion key={item.label} labelInput={item.label} />
-                  ))}
+                  <AsynInputSeletion
+                    labelInput="Loại Quảng Cáo"
+                    listItem={listType}
+                    handleOnChange={handleOnChangeTypeAds}
+                  />
+                  <AsynInputSeletion
+                    labelInput="Chọn Điểm Quảng Cáo"
+                    handleOnChange={handleOnChangePointAds}
+                    url={`/point/get_point_type/${typeAds}`}
+                  />
+                  <InputText labelInput="Độ Cao Của Quảng Cáo" />
+                  <InputText labelInput="Độ Dài Của Quảng Cáo" />
                 </div>
               </>
             )}

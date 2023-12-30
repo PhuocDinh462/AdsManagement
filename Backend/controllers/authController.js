@@ -112,4 +112,59 @@ const forgotPassword = async (req, res) => {
   }
 };
 
-module.exports = { createAccount, login, forgotPassword };
+const register = catchAsync(async (req, res, next) => {
+  const { username, password, email, phone, dob, user_type, officer_id } = req.body;
+
+  const insertAcc = 'insert into user (username, password, email, phone,dob, user_type) values (?,?,?,?,?,?)';
+
+  const stringToHash = password;
+
+  bcrypt.hash(stringToHash, 10, (err, hashPassword) => {
+    if (err) {
+      console.error(err);
+    }
+
+    connection.query(insertAcc, [username, hashPassword, email, phone, dob, user_type], (error, result) => {
+      if (error) {
+        console.error('Error executing query: ' + error.stack);
+        return res.status(403).json({
+          error: 'Invalid Information.',
+        });
+      }
+
+      const account = {
+        user_id: result.insertId,
+        username,
+        email,
+        hashPassword,
+        phone,
+        dob,
+        user_type,
+      };
+
+      if (user_type !== 'department') {
+        const updateQuery = `UPDATE ${user_type} SET manager_id = ? WHERE ${user_type}_id = ?`;
+
+        connection.query(updateQuery, [result.insertId, officer_id], (error2, result2) => {
+          if (error2) {
+            console.error('Error executing query: ' + error2.stack);
+            return res.status(401).json({
+              error: 'Invalid Information.',
+            });
+          }
+
+          return res.status(200).json({
+            status: 'success',
+            data: account,
+          });
+        });
+      } else
+        return res.status(200).json({
+          status: 'success',
+          data: account,
+        });
+    });
+  });
+});
+
+module.exports = { register, createAccount, login, forgotPassword };
