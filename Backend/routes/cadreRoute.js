@@ -4,6 +4,10 @@ const cadreFormController = require('../controllers/cadreFormController');
 const cadreAdsPointController = require('../controllers/cadreAdsPointController');
 const requestEditController = require('../controllers/cadreRequestEdit');
 const cadreReportController = require('../controllers/cadreReportController');
+const authController = require('../controllers/authController');
+
+const validationCreateAccount = require('../middlewares/validation/validationCreateAccount.middleware');
+
 const router = express.Router();
 
 router.get('/', cadreController.getAllDistrictWard);
@@ -33,5 +37,9 @@ router.put('/updateStatusEditReq/:id', requestEditController.updateStatus);
 
 router.get('getAllReport', cadreReportController.getAllReport);
 
-module.exports = router;
+router.post('/auth/create', validationCreateAccount.validationRegister, authController.register);
+router.get('/districts/empty', cadreController.getDistrictsEmpty);
+router.get('/districts/ward-empty', cadreController.getDistrictsWithWardEmpty);
+router.get('/wards/district/:id', cadreController.getWardsByDistrictId);
 
+module.exports = router;

@@ -23,6 +23,7 @@ import AnnotationDropdown from '~components/Dropdown/AnnotationDropdown';
 import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
 import { useDispatch, useSelector } from 'react-redux';
 import { setReportCoord, selectReportCoord, selectUser, selectSelectedWards } from '~/src/store/reducers';
+import { Backdrop } from '@mui/material';
 
 const containerStyle = {
   width: '100%',
@@ -53,6 +54,9 @@ export default function Home() {
     language: 'vi',
     region: 'vn',
   });
+
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [imageModalUrl, setImageModalUrl] = useState();
 
   const boundary = [
     { lat: 10.765435, lng: 106.681561 },
@@ -97,7 +101,6 @@ export default function Home() {
       lat: _marker.lat,
       lng: _marker.lng,
     });
-
     setCurrentSpotId(_marker?.point_id);
   };
 
@@ -149,7 +152,7 @@ export default function Home() {
         .then((res) => {
           if (res.data.data.length > 0) {
             for (let j = 0; j < res.data.data.length; j++) {
-              data.push(res.data.data[j])
+              data.push(res.data.data[j]);
             }
           }
         })
@@ -173,7 +176,7 @@ export default function Home() {
       setCenter({ lat: avgLat, lng: avgLng });
     }
     setLoading(false);
-  }
+  };
   useEffect(() => {
     if (user.user_type === 'ward') {
       (async () => {
@@ -345,7 +348,14 @@ export default function Home() {
               }}
             /> */}
 
-            {displayMarker && <Marker position={marker} clickable={false} zIndex={1} />}
+            {displayMarker && (
+              <Marker
+                position={marker}
+                clickable={false}
+                zIndex={1}
+                animation={isClickMarker && window.google.maps.Animation.BOUNCE}
+              />
+            )}
 
             <MarkerClusterer
               minimumClusterSize={2}
@@ -431,8 +441,18 @@ export default function Home() {
           setCollapse={setCollapseSidebar}
           isClickMarker={isClickMarker}
           setAutoCompleteValue={setAutoCompleteValue}
+          setShowImageModal={setShowImageModal}
+          setImageModalUrl={setImageModalUrl}
         />
       )}
+
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={showImageModal}
+        onClick={() => setShowImageModal(false)}
+      >
+        <img className={classes.imageModal} src={imageModalUrl} />
+      </Backdrop>
     </div>
   );
 }

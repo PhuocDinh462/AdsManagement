@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 import { selectUser } from '~/src/store/reducers';
 
 export default function StatusModal(props) {
-  const { setActive, report_id, changeStatusByReportId } = props;
+  const { setActive, report_id, changeStatusByReportId, reportList } = props;
   const [loading, setLoading] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState('pending');
 
@@ -83,6 +83,12 @@ export default function StatusModal(props) {
     },
   ];
 
+  const findDefaultValueIndex = () => {
+    const report = reportList?.find((item) => item.report_id === report_id);
+    if (!report) return 0;
+    return options.findIndex((item) => item.label === report.status);
+  };
+
   return (
     <div className={classes.main_container}>
       <div className={classes.header}>
@@ -94,7 +100,7 @@ export default function StatusModal(props) {
 
       <div className={classes.content}>
         <Select
-          defaultValue={options[0]}
+          defaultValue={options[findDefaultValueIndex()]}
           options={options}
           styles={customStyles}
           onChange={(e) => setSelectedStatus(e.value)}

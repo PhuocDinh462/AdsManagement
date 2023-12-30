@@ -250,13 +250,95 @@ const deleteAddress = catchAsync(async (req, res, next) => {
   }
 });
 
+const getWardsByDistrictId = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+
+  const selectWardsQuery = `
+  SELECT * FROM ward
+  WHERE manager_id IS NULL
+  AND district_id = ?
+`;
+
+  connection.query(selectWardsQuery, [id], (err, results) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({
+        status: 'error',
+        message: 'Internal Server Error',
+      });
+      return;
+    }
+    console.log(results);
+
+    // const response = results[0]
+    return res.status(200).json({
+      status: 'success',
+      data: results,
+    });
+  });
+});
+
+const getDistrictsEmpty = catchAsync(async (req, res, next) => {
+  const selectWardsQuery = `
+  SELECT * FROM district
+  WHERE manager_id IS NULL
+`;
+
+  connection.query(selectWardsQuery, (err, results) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({
+        status: 'error',
+        message: 'Internal Server Error',
+      });
+      return;
+    }
+    console.log(results);
+
+    // const response = results[0]
+    return res.status(200).json({
+      status: 'success',
+      data: results,
+    });
+  });
+});
+
+const getDistrictsWithWardEmpty = catchAsync(async (req, res, next) => {
+  const queryString = `
+  SELECT DISTINCT d.*
+  FROM district d
+  INNER JOIN ward w ON d.district_id = w.district_id
+  WHERE w.manager_id IS NULL;
+`;
+
+  connection.query(queryString, (err, results) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({
+        status: 'error',
+        message: 'Internal Server Error',
+      });
+      return;
+    }
+    console.log(results);
+
+    // const response = results[0]
+    return res.status(200).json({
+      status: 'success',
+      data: results,
+    });
+  });
+});
+
 module.exports = {
+  getDistrictsWithWardEmpty,
+  getDistrictsEmpty,
+  getWardsByDistrictId,
   getAllDistrictWard,
   getDistricts,
   getWards,
-  getUserWithoutMgmt,
   createAddress,
   updateAddress,
   deleteAddress,
+  getUserWithoutMgmt,
 };
-

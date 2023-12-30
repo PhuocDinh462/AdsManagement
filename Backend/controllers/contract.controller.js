@@ -23,6 +23,7 @@ const createContract = catchAsync(async (req, res, next) => {
     end_date,
     representative,
   } = req.body;
+
   const queryInsert = `INSERT INTO contract 
   ( company_name, company_email, company_phone, company_address, company_taxcode, start_date, end_date, representative ) 
   VALUES ( ? ,?, ?, ?, ?, ?, ?, ? );`;
@@ -46,7 +47,9 @@ const createContract = catchAsync(async (req, res, next) => {
           error: 'Invalid Information.',
         });
       }
+
       console.log(result.insertId);
+
       res.status(200).json({
         status: 'success',
         data: { contract_id: result.insertId },
