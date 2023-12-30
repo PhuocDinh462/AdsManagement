@@ -66,3 +66,12 @@
   border-radius: 100rem;
   z-index: 2;
 }
+
+.imageModal {
+  width: fit-content;
+  height: fit-content;
+  max-width: 90%;
+  max-height: 90vh;
+  border-radius: 10px;
+  object-fit: cover;
+}
