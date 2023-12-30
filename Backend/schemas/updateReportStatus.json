@@ -5,7 +5,8 @@
     "status": {
       "type": "string",
       "enum": ["pending", "processing", "processed"]
-    }
+    },
+    "handlingMethod": {}
   },
   "required": ["id", "status"],
   "additionalProperties": false

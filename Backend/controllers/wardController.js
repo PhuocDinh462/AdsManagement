@@ -1,6 +1,7 @@
 const catchAsync = require('../utils/catchAsync');
 const connection = require('../server');
 const socket = require('../app');
+const emailService = require('../service/emailService');
 
 const getAdSpotsByWardId = catchAsync(async (req, res, next) => {
   connection.query('SELECT * FROM advertising_point where ward_id = ?', [req.params.id], (err, results) => {
@@ -165,11 +166,11 @@ const getInfoByPointId = catchAsync(async (req, res, next) => {
               data: {
                 spotInfo: spotInfo[0]
                   ? {
-                    ...spotInfo[0],
-                    reports: reports.filter(
-                      (report) => report.point_id === spotInfo[0].point_id && report.status !== 'processed'
-                    ).length,
-                  }
+                      ...spotInfo[0],
+                      reports: reports.filter(
+                        (report) => report.point_id === spotInfo[0].point_id && report.status !== 'processed'
+                      ).length,
+                    }
                   : null,
                 boardInfo: boardInfo.map((item) => {
                   return {
@@ -435,8 +436,8 @@ const getReportDetailsByPointId = catchAsync(async (req, res, next) => {
                     report.status === 'processed'
                       ? 'Đã xử lý'
                       : report.status === 'processing'
-                        ? 'Đang xử lý'
-                        : 'Chờ xử lý',
+                      ? 'Đang xử lý'
+                      : 'Chờ xử lý',
                 };
               }),
             }));
@@ -507,8 +508,8 @@ const getReportDetailsByLatLng = catchAsync(async (req, res, next) => {
                 report.status === 'processed'
                   ? 'Đã xử lý'
                   : report.status === 'processing'
-                    ? 'Đang xử lý'
-                    : 'Chờ xử lý',
+                  ? 'Đang xử lý'
+                  : 'Chờ xử lý',
             };
           }),
         },
@@ -518,32 +519,67 @@ const getReportDetailsByLatLng = catchAsync(async (req, res, next) => {
 });
 
 const updateReportStatus = catchAsync(async (req, res, next) => {
-  const { id, status } = req.body;
+  const { id, status, handlingMethod } = req.body;
 
-  connection.query('update report set status = ? where report_id = ?', [status, id], (err, results) => {
-    if (err) {
-      console.error('Error executing query: ', err);
-      res.status(500).send('Internal Server Error');
-      return;
-    }
-
-    if (results.affectedRows === 0) res.status(401).json({ status: 'fail', msg: 'report_id is not exist' });
-
-    connection.query(
-      'select * from report rp join detail dt on rp.detail_id = dt.detail_id where report_id = ?',
-      [id],
-      (err, results) => {
-        if (err) {
-          console.error('Error executing query: ', err);
-          res.status(500).send('Internal Server Error');
-          return;
-        }
-
-        socket?.socketIo?.emit('changeReport', { method: 'update', data: results[0] });
-        res.status(200).json({ status: 'success', data: results });
+  connection.query(
+    'update report set status = ?, processing_info = ? where report_id = ?',
+    [status, handlingMethod, id],
+    (err, results) => {
+      if (err) {
+        console.error('Error executing query: ', err);
+        res.status(500).send('Internal Server Error');
+        return;
       }
-    );
-  });
+
+      if (results.affectedRows === 0) res.status(401).json({ status: 'fail', msg: 'report_id is not exist' });
+
+      connection.query(
+        'select * from report rp join detail dt on rp.detail_id = dt.detail_id where report_id = ?',
+        [id],
+        async (err, results) => {
+          if (err) {
+            console.error('Error executing query: ', err);
+            res.status(500).send('Internal Server Error');
+            return;
+          }
+
+          socket?.socketIo?.emit('changeReport', { method: 'update', data: results[0] });
+
+          // Send mail
+          let content;
+
+          if (results[0].status === 'pending')
+            content = `<p>Chào bạn,</p>
+          <p>
+            Chúng tôi đã nhận được báo cáo của bạn. Chúng tôi đang xem xét và sẽ sớm phản hồi cho bạn trong thời gian sớm nhất.
+          </p>
+          <br/>
+          <br/>
+          <p>Trân trọng!</p>`;
+          else if (results[0].status === 'processing')
+            content = `<p>Chào bạn,</p>
+          <p>
+            Sau khi xem xét báo cáo của bạn, chúng tôi đã đưa ra cách giải quyết như sau: ${handlingMethod}
+          </p>
+          <br/>
+          <br/>
+          <p>Trân trọng!</p>`;
+          else
+            content = `<p>Chào bạn,</p>
+          <p>
+            Chúng tôi đã giải quyết xong báo cáo của bạn. Chúc bạn một ngày mới tốt lành.
+          </p>
+          <br/>
+          <br/>
+          <p>Trân trọng!</p>`;
+
+          await emailService.sendMail(results[0].email_rp, 'Báo cáo', content);
+
+          res.status(200).json({ status: 'success', data: results });
+        }
+      );
+    }
+  );
 });
 
 const getAdBoardByBoardId = catchAsync(async (req, res, next) => {
@@ -635,5 +671,5 @@ module.exports = {
   getAdBoardByBoardId,
   getNumberOfReportsByLatLng,
   getAdSpotsListByWardId,
-  getAllWardsByDistrictManager
+  getAllWardsByDistrictManager,
 };
