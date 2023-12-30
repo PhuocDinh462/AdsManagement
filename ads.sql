@@ -184,12 +184,14 @@ CREATE TABLE `report` (
   FOREIGN KEY (`board_id`) REFERENCES `advertising_board`(`board_id`)
 );
 
+
+
 -- Tạo bảng LicensingRequests với các khóa ngoại tham chiếu
 CREATE TABLE `licensing_request` (
   licensing_id INT auto_increment,
   advertisement_content VARCHAR(255),
   advertisement_image_url VARCHAR(255),
-  `status` varchar(255) NOT null,
+  `status` ENUM('Pending', 'Approved','Canceled'),
   rejection_reason VARCHAR(255),
   user_id INT,
   point_id INT,
