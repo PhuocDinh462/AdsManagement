@@ -9,6 +9,7 @@ const router = express.Router();
 router.get('/', cadreController.getAllDistrictWard);
 router.get('/districts', cadreController.getDistricts);
 router.get('/wards', cadreController.getWards);
+router.get('/usersWithoutMgmt', cadreController.getUserWithoutMgmt);
 router.post('/createAddress', cadreController.createAddress);
 router.put('/updateAddress', cadreController.updateAddress);
 router.delete('/deleteAddress', cadreController.deleteAddress);

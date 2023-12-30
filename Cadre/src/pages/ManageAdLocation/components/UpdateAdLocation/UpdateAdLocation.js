@@ -7,12 +7,19 @@ import Swal from 'sweetalert2';
 import { storage } from '~/src/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { v4 } from 'uuid';
+import Coordination from '~/src/components/Coordination/Coordination';
+import Modal from '~/src/components/Modal/Modal';
 
 const UpdateAdLocation = ({ data, onClose }) => {
+  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
   const [indexCur, setIndexCur] = useState(1);
   const [previewImage, setPreviewImage] = useState(data?.image_url || null);
   const [wards, setWards] = useState([]);
   const [adsType, setAdsType] = useState([]);
+  const [isModalMap, setModalMap] = useState(false);
 
   const [longitude, setLongitude] = useState(data?.lng || '');
   const [latitude, setLatitude] = useState(data?.lat || '');
@@ -25,7 +32,7 @@ const UpdateAdLocation = ({ data, onClose }) => {
 
   useEffect(() => {
     axiosClient
-      .get('cadre/wards')
+      .get('cadre/wards', { headers })
       .then((response) => {
         setWards(response);
       })
@@ -36,7 +43,7 @@ const UpdateAdLocation = ({ data, onClose }) => {
 
   useEffect(() => {
     axiosClient
-      .get('cadre/adsType')
+      .get('cadre/adsType', { headers })
       .then((response) => {
         setAdsType(response);
       })
@@ -106,7 +113,7 @@ const UpdateAdLocation = ({ data, onClose }) => {
     }
     console.log(dataToSend);
     try {
-      const response = await axiosClient.put('/cadre/updateAdsPoint', dataToSend);
+      const response = await axiosClient.put('/cadre/updateAdsPoint', dataToSend, { headers });
 
       if (response.status === 'success') {
         Swal.fire({
@@ -138,6 +145,10 @@ const UpdateAdLocation = ({ data, onClose }) => {
     }
   };
 
+  const handleCloseModalMap = () => {
+    setModalMap(false);
+  };
+
   return (
     <div className={classes.adding__overlay}>
       <div className={classes.adding__modal}>
@@ -149,21 +160,35 @@ const UpdateAdLocation = ({ data, onClose }) => {
           <div className={classes.adding__modal__body}>
             {indexCur === 1 && (
               <>
-                <h4>Vĩ độ (Latitude)</h4>
+                <h4>Chọn khu vực:</h4>
+                <select value={selectedWard || ''} onChange={(e) => setSelectedWard(e.target.value)}>
+                  <option value="" disabled>
+                    Chọn phường
+                  </option>
+                  {wards.map((ward) => (
+                    <option key={ward.ward_id} value={ward.ward_id}>
+                      {ward.ward_name}, {ward.district_name}
+                    </option>
+                  ))}
+                </select>
+                <h4>Vĩ độ (Latitude):</h4>
                 <input
                   type="text"
                   placeholder="Nhập vào vĩ độ"
                   value={latitude}
                   onChange={(e) => setLatitude(e.target.value)}
                 />
-                <h4>Kinh độ (Longitude)</h4>
+                <h4>Kinh độ (Longitude):</h4>
                 <input
                   type="text"
                   placeholder="Nhập vào kinh độ"
                   value={longitude}
                   onChange={(e) => setLongitude(e.target.value)}
                 />
-                <h4>Chọn loại vị trí</h4>
+                <div onClick={(e) => setModalMap(true)} style={{ marginTop: '10px' }}>
+                  <span className={classes.choice_map}>Chọn trên bản đồ</span>
+                </div>
+                <h4>Chọn loại vị trí:</h4>
                 <select value={locationType} onChange={(e) => setLocationType(e.target.value)}>
                   <option value="" disabled>
                     Chọn loại vị trí
@@ -176,17 +201,6 @@ const UpdateAdLocation = ({ data, onClose }) => {
                   <option value={'Chợ'}>Chợ</option>
                   <option value={'Cây xăng'}>Cây xăng</option>
                   <option value={'Nhà chờ xe buýt'}>Nhà chờ xe buýt</option>
-                </select>
-                <h4>Chọn phường</h4>
-                <select value={selectedWard || ''} onChange={(e) => setSelectedWard(e.target.value)}>
-                  <option value="" disabled>
-                    Chọn phường
-                  </option>
-                  {wards.map((ward) => (
-                    <option key={ward.ward_id} value={ward.ward_id}>
-                      {ward.ward_name}, {ward.district_name}
-                    </option>
-                  ))}
                 </select>
               </>
             )}
@@ -257,6 +271,19 @@ const UpdateAdLocation = ({ data, onClose }) => {
           </div>
         </form>
       </div>
+
+      {isModalMap && (
+        <Modal>
+          <div style={{ width: '40vw', height: '100%' }}>
+            <Coordination
+              setLatitude={setLatitude}
+              setLongitude={setLongitude}
+              setModalMap={setModalMap}
+              onClose={handleCloseModalMap}
+            />
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };

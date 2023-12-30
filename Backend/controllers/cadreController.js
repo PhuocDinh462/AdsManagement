@@ -3,39 +3,22 @@ const connection = require('../server');
 
 const getAllDistrictWard = catchAsync(async (req, res, next) => {
   const query = `
-  SELECT
-    district.district_id AS districtId,
-    district.district_name AS districtName,
-    district.manager_id AS districtManagerId,
-    ward.ward_id AS wardId,
-    ward.ward_name AS wardName,
-    ward.manager_id AS wardManagerId,
-    user.username AS managerName,
-    user.email,
-    user.phone AS phoneNumber
-  FROM
-    ward
-  LEFT JOIN user ON ward.manager_id = user.user_id
-  LEFT JOIN district ON ward.district_id = district.district_id
-
-  WHERE ward.ward_id IS NOT NULL
-
-  UNION
-
-  SELECT
-    district.district_id AS districtId,
-    district.district_name AS districtName,
-    district.manager_id AS districtManagerId,
-    null AS wardId,
-    null AS wardName,
-    null AS wardManagerId,
-    user.username AS managerName,
-    user.email,
-    user.phone AS phoneNumber
-  FROM
-    district
-  LEFT JOIN user ON district.manager_id = user.user_id
-`;
+    SELECT 
+      district.district_id,
+      district.district_name,
+      district.manager_id AS district_manager_id,
+      user_d.username AS district_manager_username,
+      user_d.email AS district_manager_email,
+      ward.ward_id,
+      ward.ward_name,
+      ward.manager_id AS ward_manager_id,
+      user_w.username AS ward_manager_username,
+      user_w.email AS ward_manager_email
+    FROM district
+    LEFT JOIN user AS user_d ON district.manager_id = user_d.user_id
+    LEFT JOIN ward ON ward.district_id = district.district_id
+    LEFT JOIN user AS user_w ON ward.manager_id = user_w.user_id
+  `;
 
   connection.query(query, (err, results) => {
     if (err) {
@@ -44,50 +27,24 @@ const getAllDistrictWard = catchAsync(async (req, res, next) => {
       return;
     }
 
-    // Group the results by district
-    const groupedResults = results.reduce((acc, result) => {
-      const districtId = result.districtId;
-
-      if (!acc[districtId]) {
-        acc[districtId] = {
-          districtId,
-          districtName: result.districtName,
-          districtManager: {
-            id: result.districtManagerId,
-            name: result.managerName,
-            email: result.email,
-            phone: result.phoneNumber,
-          },
-          wards: [],
-        };
-      }
-
-      // If ward information is present, add it to the wards array
-      if (result.wardId !== null) {
-        acc[districtId].wards.push({
-          id: result.wardId,
-          name: result.wardName,
-          manager: {
-            id: result.wardManagerId,
-            name: result.managerName,
-            email: result.email,
-            phone: result.phoneNumber,
-          },
-        });
-      }
-
-      return acc;
-    }, {});
-
-    // Convert the grouped results to an array
-    const finalResults = Object.values(groupedResults);
-
-    res.json(finalResults);
+    res.json(results);
   });
 });
 
 const getDistricts = catchAsync(async (req, res, next) => {
-  const query = 'SELECT * FROM district';
+  const query = `
+    SELECT 
+      district.*,
+      user_d.user_id AS district_manager_id,
+      user_d.username AS district_manager_username,
+      user_d.email AS district_manager_email,
+      user_d.dob AS district_manager_dob,
+      user_d.phone AS district_manager_phone,
+      user_d.user_type AS district_manager_type
+    FROM district
+    LEFT JOIN user AS user_d ON district.manager_id = user_d.user_id
+  `;
+
   connection.query(query, (err, results) => {
     if (err) {
       console.error('Error executing query: ', err);
@@ -99,8 +56,21 @@ const getDistricts = catchAsync(async (req, res, next) => {
 });
 
 const getWards = catchAsync(async (req, res, next) => {
-  const query =
-    'SELECT ward.*, district.district_name FROM ward JOIN district ON ward.district_id = district.district_id';
+  const query = `
+    SELECT 
+      ward.*,
+      district.district_name,
+      user_w.user_id AS ward_manager_id,
+      user_w.username AS ward_manager_username,
+      user_w.email AS ward_manager_email,
+      user_w.dob AS ward_manager_dob,
+      user_w.phone AS ward_manager_phone,
+      user_w.user_type AS ward_manager_type
+    FROM ward
+    JOIN district ON ward.district_id = district.district_id
+    LEFT JOIN user AS user_d ON district.manager_id = user_d.user_id
+    LEFT JOIN user AS user_w ON ward.manager_id = user_w.user_id
+  `;
 
   connection.query(query, (err, results) => {
     if (err) {
@@ -112,8 +82,26 @@ const getWards = catchAsync(async (req, res, next) => {
   });
 });
 
+const getUserWithoutMgmt = catchAsync(async (req, res, next) => {
+  const query = `
+    SELECT u.user_id, u.username
+    FROM user u
+    LEFT JOIN district d ON u.user_id = d.manager_id
+    LEFT JOIN ward w ON u.user_id = w.manager_id
+    WHERE u.user_type IN ('district', 'ward') AND (d.manager_id IS NULL AND w.manager_id IS NULL) AND u.user_type <> 'admin';
+  `;
+
+  connection.query(query, (error, results) => {
+    if (error) {
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+
+    res.json(results);
+  });
+});
+
 const createAddress = catchAsync(async (req, res, next) => {
-  const { addressType, districtName, selectedDistrict, wardName } = req.body;
+  const { addressType, districtName, selectedDistrict, wardName, user_id } = req.body;
 
   if (addressType === 'district') {
     const checkDistrict = 'SELECT * FROM district WHERE district_name = ?';
@@ -129,13 +117,18 @@ const createAddress = catchAsync(async (req, res, next) => {
         return;
       }
 
-      const insertDistrict = 'INSERT INTO district (district_name) VALUES (?)';
-      connection.query(insertDistrict, [districtName], (error, results) => {
+      const insertDistrict = 'INSERT INTO district (district_name, manager_id) VALUES (?, ?)';
+      connection.query(insertDistrict, [districtName, user_id], (error, results) => {
         if (error) {
           console.error('Error creating district:', error);
           res.status(500).json({ error: 'Internal Server Error' });
         } else {
-          res.status(201).json({ status: 'success', district_id: results.insertId, district_name: districtName });
+          res.status(201).json({
+            status: 'success',
+            district_id: results.insertId,
+            district_name: districtName,
+            manager_id: user_id,
+          });
         }
       });
     });
@@ -155,15 +148,19 @@ const createAddress = catchAsync(async (req, res, next) => {
       }
 
       // Nếu phường chưa tồn tại, thêm vào cơ sở dữ liệu
-      const insertWard = 'INSERT INTO ward (ward_name, district_id) VALUES (?, ?)';
-      connection.query(insertWard, [wardName, selectedDistrict], (error, results) => {
+      const insertWard = 'INSERT INTO ward (ward_name, district_id, manager_id) VALUES (?, ?, ?)';
+      connection.query(insertWard, [wardName, selectedDistrict, user_id], (error, results) => {
         if (error) {
           console.error('Error creating ward:', error);
           res.status(500).json({ error: 'Internal Server Error' });
         } else {
-          res
-            .status(201)
-            .json({ status: 'success', ward_id: results.insertId, ward_name: wardName, district_id: selectedDistrict });
+          res.status(201).json({
+            status: 'success',
+            ward_id: results.insertId,
+            ward_name: wardName,
+            district_id: selectedDistrict,
+            manager_id: user_id,
+          });
         }
       });
     });
@@ -173,9 +170,7 @@ const createAddress = catchAsync(async (req, res, next) => {
 });
 
 const updateAddress = catchAsync(async (req, res, next) => {
-  const { addressType, id, districtName, selectedDistrict, wardName } = req.body;
-  // console.log(req.body);
-  console.log('req.body');
+  const { addressType, id, districtName, selectedDistrict, wardName, user_id } = req.body;
 
   if (!id || !addressType) {
     return res.status(400).json({ error: 'Missing required information.' });
@@ -183,23 +178,31 @@ const updateAddress = catchAsync(async (req, res, next) => {
 
   try {
     if (addressType === 'district') {
-      const updateDistrict = 'UPDATE district SET district_name = ? WHERE district_id = ?';
-      connection.query(updateDistrict, [districtName, id], (error, results) => {
+      const updateDistrict = 'UPDATE district SET district_name = ?, manager_id = ? WHERE district_id = ?';
+      connection.query(updateDistrict, [districtName, user_id, id], (error, results) => {
         if (error) {
           console.error('Error updating district:', error);
           res.status(500).json({ error: 'Internal Server Error' });
         } else {
-          res.status(200).json({ status: 'success', district_id: id, district_name: districtName });
+          res
+            .status(200)
+            .json({ status: 'success', district_id: id, district_name: districtName, manager_id: user_id });
         }
       });
     } else if (addressType === 'ward') {
-      const updateWard = 'UPDATE ward SET ward_name = ?, district_id = ? WHERE ward_id = ?';
-      connection.query(updateWard, [wardName, selectedDistrict, id], (error, results) => {
+      const updateWard = 'UPDATE ward SET ward_name = ?, district_id = ?, manager_id = ? WHERE ward_id = ?';
+      connection.query(updateWard, [wardName, selectedDistrict, user_id, id], (error, results) => {
         if (error) {
           console.error('Error updating ward:', error);
           res.status(500).json({ error: 'Internal Server Error' });
         } else {
-          res.status(200).json({ status: 'success', ward_id: id, ward_name: wardName, district_id: selectedDistrict });
+          res.status(200).json({
+            status: 'success',
+            ward_id: id,
+            ward_name: wardName,
+            district_id: selectedDistrict,
+            manager_id: user_id,
+          });
         }
       });
     } else {
@@ -213,6 +216,7 @@ const updateAddress = catchAsync(async (req, res, next) => {
 
 const deleteAddress = catchAsync(async (req, res, next) => {
   const { id, type } = req.body;
+  console.log(req.body);
 
   if (!id || !type) {
     return res.status(400).json({ error: 'Thiếu thông tin cần thiết.' });
@@ -246,5 +250,13 @@ const deleteAddress = catchAsync(async (req, res, next) => {
   }
 });
 
-module.exports = { getAllDistrictWard, getDistricts, getWards, createAddress, updateAddress, deleteAddress };
+module.exports = {
+  getAllDistrictWard,
+  getDistricts,
+  getWards,
+  getUserWithoutMgmt,
+  createAddress,
+  updateAddress,
+  deleteAddress,
+};
 

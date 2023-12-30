@@ -1,0 +1,41 @@
+.wrap_btn {
+  display: flex;
+  gap: 20px;
+  margin-top: 10px;
+
+  .btn_map_back,
+  .btn_map_choice {
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .btn_map_back {
+    background-color: gray;
+    border: #000 solid 1px;
+
+    &:hover {
+      background-color: #fff;
+      border: #000 solid 1px;
+      color: #000;
+    }
+  }
+
+  .btn_map_choice {
+    background-color: #0a6971;
+    border: #0a6971 solid 1px;
+    &:hover {
+      background-color: #fff;
+      border: #0a6971 solid 1px;
+      color: #0a6971;
+    }
+  }
+}
+
+.search {
+  box-shadow: 1px 1px 8px 1px rgba(black, 0.2);
+  border-radius: 50px;
+  margin-bottom: 10px;
+}
+

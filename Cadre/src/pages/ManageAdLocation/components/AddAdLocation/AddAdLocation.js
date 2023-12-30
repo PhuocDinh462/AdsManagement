@@ -26,10 +26,14 @@ const AddAdLocation = ({ onClose }) => {
   const [planning, setPlanning] = useState(null);
   const [selectedAdsType, setselectedAdsType] = useState(null);
   const [imageUploadUrl, setImageUploadUrl] = useState(null);
+  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
 
   useEffect(() => {
     axiosClient
-      .get('cadre/wards')
+      .get('cadre/wards', { headers })
       .then((response) => {
         setWards(response);
       })
@@ -40,7 +44,7 @@ const AddAdLocation = ({ onClose }) => {
 
   useEffect(() => {
     axiosClient
-      .get('cadre/adsType')
+      .get('cadre/adsType', { headers })
       .then((response) => {
         setAdsType(response);
         console.log(response);
@@ -109,7 +113,7 @@ const AddAdLocation = ({ onClose }) => {
       return;
     }
     try {
-      const response = await axiosClient.post('/cadre/addAdsPoint', dataToSend);
+      const response = await axiosClient.post('/cadre/addAdsPoint', dataToSend, { headers });
 
       if (response.status === 'success') {
         Swal.fire({
@@ -140,7 +144,9 @@ const AddAdLocation = ({ onClose }) => {
       });
     }
   };
-
+  const handleCloseModalMap = () => {
+    setModalMap(false);
+  };
   return (
     <div className={classes.adding__overlay}>
       <div className={classes.adding__modal}>
@@ -154,10 +160,10 @@ const AddAdLocation = ({ onClose }) => {
               <>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                   <div className={classes.flex_left}>
-                    <h4>Chọn phường</h4>
+                    <h4>Chọn khu vực:</h4>
                     <select value={selectedWard || ''} onChange={(e) => setSelectedWard(e.target.value)}>
                       <option value="" disabled>
-                        Chọn phường
+                        Chọn phường:
                       </option>
                       {wards.map((ward) => (
                         <option key={ward.ward_id} value={ward.ward_id}>
@@ -165,22 +171,24 @@ const AddAdLocation = ({ onClose }) => {
                         </option>
                       ))}
                     </select>
-                    <h4>Vĩ độ (Latitude)</h4>
+                    <h4>Vĩ độ (Latitude):</h4>
                     <input
                       type="text"
                       placeholder="Nhập vào vĩ độ"
                       value={latitude}
                       onChange={(e) => setLatitude(e.target.value)}
                     />
-                    <h4>Kinh độ (Longitude)</h4>
+                    <h4>Kinh độ (Longitude):</h4>
                     <input
                       type="text"
                       placeholder="Nhập vào kinh độ"
                       value={longitude}
                       onChange={(e) => setLongitude(e.target.value)}
                     />
-                    <div onClick={(e) => setModalMap(true)}>Chọn trên bản đồ</div>
-                    <h4>Chọn loại vị trí</h4>
+                    <div onClick={(e) => setModalMap(true)} style={{ marginTop: '10px' }}>
+                      <span className={classes.choice_map}>Chọn trên bản đồ</span>
+                    </div>
+                    <h4>Chọn loại vị trí:</h4>
                     <select value={locationType} onChange={(e) => setLocationType(e.target.value)}>
                       <option value="" disabled>
                         Chọn loại vị trí
@@ -200,7 +208,7 @@ const AddAdLocation = ({ onClose }) => {
             )}
             {indexCur === 2 && (
               <div>
-                <h4>Trạng thái quy hoạch</h4>
+                <h4>Trạng thái quy hoạch:</h4>
                 <select value={planning || ''} onChange={(e) => setPlanning(e.target.value)}>
                   <option value="" disabled>
                     Chọn trạng thái
@@ -208,7 +216,7 @@ const AddAdLocation = ({ onClose }) => {
                   <option value={false}>Chưa quy hoạch</option>
                   <option value={true}>Đã quy hoạch</option>
                 </select>
-                <h4>Hình thức quảng cáo</h4>
+                <h4>Hình thức quảng cáo:</h4>
                 <select value={selectedAdsType || ''} onChange={(e) => setselectedAdsType(e.target.value)}>
                   <option value="" disabled>
                     Chọn hình thức quảng cáo
@@ -219,7 +227,7 @@ const AddAdLocation = ({ onClose }) => {
                     </option>
                   ))}
                 </select>
-                <h4>Chọn hình ảnh</h4>
+                <h4>Chọn hình ảnh:</h4>
                 <input type="file" accept="image/*" onChange={handleFileChange} />
                 {previewImage && (
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '20px 0' }}>
@@ -269,7 +277,12 @@ const AddAdLocation = ({ onClose }) => {
       {isModalMap && (
         <Modal>
           <div style={{ width: '40vw', height: '100%' }}>
-            <Coordination setLatitude={setLatitude} setLongitude={setLongitude} setModalMap={setModalMap} />
+            <Coordination
+              setLatitude={setLatitude}
+              setLongitude={setLongitude}
+              setModalMap={setModalMap}
+              onClose={handleCloseModalMap}
+            />
           </div>
         </Modal>
       )}

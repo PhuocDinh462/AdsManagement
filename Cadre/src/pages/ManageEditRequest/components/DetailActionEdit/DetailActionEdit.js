@@ -19,22 +19,25 @@ import Image1 from '~/src/assets/images/google_logo.png';
 import { red } from '@mui/material/colors';
 
 const DetailActionEdit = ({ data, onClose }) => {
+  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
   const [dataPoint, setDataPoint] = useState();
   const [dataBoard, setDataBoard] = useState();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  console.log(data);
 
   const fetchData = async () => {
     try {
       if (data.board_id) {
         // Nếu có board_id, gọi API cho board
-        const responseBoard = await axiosClient.get(`/cadre/detailAdsBoard/${data.board_id}`);
+        const responseBoard = await axiosClient.get(`/cadre/detailAdsBoard/${data.board_id}`, { headers });
         setDataBoard(responseBoard);
         console.log(responseBoard);
       } else if (data.point_id) {
         // Nếu có point_id, gọi API cho point
-        const responsePoint = await axiosClient.get(`/cadre/detailAdsPoint/${data.point_id}`);
+        const responsePoint = await axiosClient.get(`/cadre/detailAdsPoint/${data.point_id}`, { headers });
         setDataPoint(responsePoint.advertisingPoint);
         // console.log(responsePoint.advertisingPoint);
       } else {
@@ -60,10 +63,14 @@ const DetailActionEdit = ({ data, onClose }) => {
   const handleReject = async () => {
     try {
       if (data.board_id) {
-        const res = await axiosClient.put(`/cadre/updateStatusEditReq/${data.id}`, {
-          type: 'board',
-          status: 'canceled',
-        });
+        const res = await axiosClient.put(
+          `/cadre/updateStatusEditReq/${data.id}`,
+          {
+            type: 'board',
+            status: 'canceled',
+          },
+          { headers }
+        );
 
         console.log(res);
 
@@ -77,10 +84,14 @@ const DetailActionEdit = ({ data, onClose }) => {
           onClose();
         }
       } else if (data.point_id) {
-        const res = await axiosClient.put(`/cadre/updateStatusEditReq/${data.id}`, {
-          type: 'point',
-          status: 'canceled',
-        });
+        const res = await axiosClient.put(
+          `/cadre/updateStatusEditReq/${data.id}`,
+          {
+            type: 'point',
+            status: 'canceled',
+          },
+          { headers }
+        );
 
         if (res.status === 'success') {
           Swal.fire({
@@ -101,15 +112,23 @@ const DetailActionEdit = ({ data, onClose }) => {
   const handleApproved = async () => {
     try {
       if (data.board_id) {
-        const res = await axiosClient.put(`/cadre/updateStatusEditReq/${data.id}`, {
-          type: 'board',
-          status: 'approved',
-        });
+        const res = await axiosClient.put(
+          `/cadre/updateStatusEditReq/${data.id}`,
+          {
+            type: 'board',
+            status: 'approved',
+          },
+          { headers }
+        );
       } else if (data.point_id) {
-        const res = await axiosClient.put(`/cadre/updateStatusEditReq/${data.id}`, {
-          type: 'point',
-          status: 'approved',
-        });
+        const res = await axiosClient.put(
+          `/cadre/updateStatusEditReq/${data.id}`,
+          {
+            type: 'point',
+            status: 'approved',
+          },
+          { headers }
+        );
 
         if (res.status === 'success') {
           Swal.fire({
@@ -133,7 +152,7 @@ const DetailActionEdit = ({ data, onClose }) => {
           console.log(dataPointToSend);
 
           try {
-            const response = await axiosClient.put('/cadre/updateAdsPoint', dataPointToSend);
+            const response = await axiosClient.put('/cadre/updateAdsPoint', dataPointToSend, { headers });
             console.log(response);
 
             if (response.status === 'success') {
