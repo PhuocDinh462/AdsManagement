@@ -38,8 +38,8 @@ export default function AsynInputSeletion(props) {
       if (!listItem) {
         console.log(url);
         const response = await axiosClient.get(url, { headers });
-        // list = { ...response };
-        console.log(response);
+        list = [...response.data];
+        console.log(list);
       }
       if (active) {
         setOptions([...list]);

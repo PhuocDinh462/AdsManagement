@@ -23,9 +23,9 @@ const formInput = {
 };
 
 const listType = [
-  { title: 'Cổ động chính trị', value: 0 },
-  { title: 'Quảng cáo thương mại', value: 1 },
-  { title: 'Xã hội hoá', value: 2 },
+  { title: 'Cổ động chính trị', value: 1 },
+  { title: 'Quảng cáo thương mại', value: 2 },
+  { title: 'Xã hội hoá', value: 3 },
 ];
 
 const LicenseModalAdd = (props) => {
@@ -40,8 +40,10 @@ const LicenseModalAdd = (props) => {
   const [pointAds, setPointAds] = useState('');
 
   const handleOnChangeTypeAds = (e, value) => {
-    console.log(value.value);
-    setTypeAds(value.value);
+    if (value) {
+      console.log(value.value);
+      setTypeAds(value.value);
+    }
   };
 
   const handleOnChangePointAds = (e, value) => {

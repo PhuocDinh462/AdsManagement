@@ -20,28 +20,39 @@ const getAllPoint = catchAsync(async (req, res) => {
 
 const getPointByType = catchAsync(async (req, res, next) => {
   const { id } = req.params;
-  console.log(req.user);
-  connection.query(
-    `select * from advertising_point where advertisement_type_id = ? and is_planning = true`,
-    [id],
-    (err, results) => {
-      if (err) {
-        console.error(err);
-        res.status(500).json({
-          status: 'error',
-          message: 'Internal Server Error',
-        });
-        return;
-      }
-      console.log(results);
+  const { user_type, ward_id, district_id } = req.user;
 
-      // const response = results[0]
-      res.status(200).json({
-        status: 'success',
-        data: results[0],
+  const queryString =
+    user_type === 'district'
+      ? `SELECT ap.*
+          FROM advertising_point ap
+          INNER JOIN ward w ON ap.ward_id = w.ward_id
+          WHERE w.district_id = ${district_id}
+            AND ap.advertisement_type_id = ${id}
+            AND ap.is_planning = true;`
+      : `SELECT *
+          FROM advertising_point 
+          WHERE ward_id = ${ward_id}
+            AND advertisement_type_id = ${id}
+            AND is_planning = true;`;
+
+  connection.query(queryString, (err, results) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({
+        status: 'error',
+        message: 'Internal Server Error',
       });
+      return;
     }
-  );
+    console.log(results);
+
+    // const response = results[0]
+    res.status(200).json({
+      status: 'success',
+      data: results,
+    });
+  });
 });
 
 const getInforPoint = catchAsync(async (req, res, next) => {

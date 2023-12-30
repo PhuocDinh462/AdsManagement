@@ -121,7 +121,7 @@ const register = catchAsync(async (req, res, next) => {
     if (err) {
       console.error(err);
     }
-
+    console.log(hashPassword);
     connection.query(insertAcc, [username, hashPassword, email, phone, dob, user_type], (error, result) => {
       if (error) {
         console.error('Error executing query: ' + error.stack);
