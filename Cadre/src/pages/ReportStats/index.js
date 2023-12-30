@@ -4,6 +4,7 @@ import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useSelector } from 'react-redux';
 import { axiosClient } from '~/src/api/axios';
+import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
 import { selectUser } from '~/src/store/reducers';
 import ReportDetails from './ReportDetails';
 import classes from './style.module.scss';
@@ -31,6 +32,16 @@ const ReportStats = () => {
   const headers = {
     Authorization: tokenAuth,
   };
+
+  const handleUpdateStatus = (message) => {
+    if (message.method === 'update') {
+      const res = message.data;
+      const newData = data.map((obj) => (obj.report_id === res.report_id ? { ...obj, status: res.status } : obj));
+      setData({ ...newData });
+      setDataFilter({ ...newData });
+    }
+  };
+  useSocketSubscribe('changeReport', handleUpdateStatus);
 
   const handleOpenModalDetails = (data) => {
     setReportSelected(data);
