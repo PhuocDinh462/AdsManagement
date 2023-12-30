@@ -1,35 +1,39 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import classes from './style.module.scss';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useSelector } from 'react-redux';
+import { axiosClient } from '~/src/api/axios';
+import { selectUser } from '~/src/store/reducers';
 import ReportDetails from './ReportDetails';
-const initialData = [
-  {
-    id: 1,
-    date: '12/10/2022',
-    email: 'abc@gmail.com',
-    address: '135 THD, Quận 1, P. Cầu Ông Lãnh, TP HCM',
-    typeReport: 'Tố giác sai phạm',
-    status: { type: 1, content: 'Đã Xử Lý' },
-  },
-  {
-    id: 2,
-    date: '12/10/2022',
-    email: 'abc@gmail.com',
-    address: '135 THD, Quận 1, P. Cầu Ông Lãnh, TP HCM',
-    typeReport: 'Tố giác sai phạm',
-    status: { type: 2, content: 'Đang Xử Lý' },
-  },
+import classes from './style.module.scss';
 
-  // Thêm dữ liệu khác
-];
+const status = {
+  pending: { type: 1, content: 'Chờ Xử Lý' },
+  processing: { type: 2, content: 'Đang Xử Lý' },
+  processed: { type: 3, content: 'Đã Xử Lý' },
+};
+
+const reportType = ['Tố giác sai phạm', 'Đăng ký nội dung', 'Đóng góp ý kiến'];
+
 const ReportStats = () => {
-  const [data, setData] = useState(initialData);
+  const [data, setData] = useState([]);
+  const [dataFilter, setDataFilter] = useState([]);
   const [isOpenDetails, setIsOpenDetails] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState(0);
 
+  const [reportSelected, setReportSelected] = useState();
+
+  const [numberOf, setNumberOf] = useState({ all: 0, pending: 0, processing: 0, processed: 0 });
+
+  const user = useSelector(selectUser);
+  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
+
   const handleOpenModalDetails = (data) => {
+    setReportSelected(data);
     setIsOpenDetails(true);
   };
 
@@ -38,8 +42,8 @@ const ReportStats = () => {
   };
 
   const handleFilterChange = (type) => {
-    const filteredData = type === 0 ? initialData : initialData.filter((item) => item.status.type === type);
-    setData(filteredData);
+    const filteredData = type === 0 ? data : data.filter((item) => status[item.status].type === type);
+    setDataFilter(filteredData);
     setSelectedFilter(type);
   };
 
@@ -48,6 +52,46 @@ const ReportStats = () => {
     borderBottom: selectedFilter === filter ? '2px solid #0A6971' : 'none',
     cursor: 'pointer',
   });
+
+  const fetchDataGetReports = async () => {
+    const res = await axiosClient.get('/cadre/getAllReport', { headers });
+    setData(res);
+    setDataFilter(res);
+
+    const pendingNum = res.reduce((accumulator, currentValue) => {
+      if (currentValue.status === 'pending') {
+        return accumulator + 1;
+      }
+      return accumulator;
+    }, 0);
+
+    const processingNum = res.reduce((accumulator, currentValue) => {
+      if (currentValue.status === 'processing') {
+        return accumulator + 1;
+      }
+      return accumulator;
+    }, 0);
+
+    const processedNum = res.reduce((accumulator, currentValue) => {
+      if (currentValue.status === 'processed') {
+        return accumulator + 1;
+      }
+      return accumulator;
+    }, 0);
+
+    setNumberOf({
+      ...numberOf,
+      all: res.length,
+      pending: pendingNum,
+      processing: processingNum,
+      processed: processedNum,
+    });
+    console.log(res);
+  };
+
+  useEffect(() => {
+    fetchDataGetReports();
+  }, []);
   return (
     <div className={classes.container__wrap}>
       <div className={classes.container__wrap_header}>
@@ -59,13 +103,16 @@ const ReportStats = () => {
           {/* Tab Filter */}
           <div className={classes.container__header_filter}>
             <div onClick={() => handleFilterChange(0)} style={getFilterStyle(0)}>
-              Tất cả
+              Tất cả ({numberOf.all})
             </div>
             <div onClick={() => handleFilterChange(1)} style={getFilterStyle(1)}>
-              Đang xử lý
+              {status['pending'].content} ({numberOf.pending})
             </div>
             <div onClick={() => handleFilterChange(2)} style={getFilterStyle(2)}>
-              Đã xử lý
+              {status['processing'].content} ({numberOf.processing})
+            </div>
+            <div onClick={() => handleFilterChange(3)} style={getFilterStyle(3)}>
+              {status['processed'].content} ({numberOf.processed})
             </div>
           </div>
           {/* Tab Search */}
@@ -94,23 +141,27 @@ const ReportStats = () => {
         <div className={classes.table__body}>
           <table className={classes.table__body_wrap}>
             <tbody>
-              {data.map((row, rowIndex) => (
-                <tr className={classes.table__body_wrap_row} key={row.id} onClick={() => handleOpenModalDetails(row)}>
+              {dataFilter.map((row, rowIndex) => (
+                <tr
+                  className={classes.table__body_wrap_row}
+                  key={row.report_id}
+                  onClick={() => handleOpenModalDetails(row)}
+                >
                   <td style={{ width: '5%' }}>{rowIndex + 1}</td>
-                  <td style={{ width: '15%' }}>{row.date}</td>
-                  <td style={{ width: '25%' }}>{row.email}</td>
-                  <td style={{ width: '35%' }}>{row.typeReport}</td>
+                  <td style={{ width: '15%' }}>{row.report_time}</td>
+                  <td style={{ width: '25%' }}>{row.email_rp}</td>
+                  <td style={{ width: '35%' }}>{reportType[row.report_type_id]}</td>
                   <td style={{ width: '20%' }}>
                     <div
                       className={` ${classes.status} ${
-                        row.status.type === 1
-                          ? classes.status_accept
-                          : row.status.type === 2
+                        status[row.status].type === 1
                           ? classes.status_pending
-                          : classes.status_cancel
+                          : status[row.status].type === 1
+                          ? classes.status_processing
+                          : classes.status_processed
                       }`}
                     >
-                      {row.status.content}
+                      {status[row.status].content}
                     </div>
                   </td>
                 </tr>
@@ -119,10 +170,9 @@ const ReportStats = () => {
           </table>
         </div>
       </div>
-      {isOpenDetails && <ReportDetails handleCloseModal={handleCloseModal} />}
+      {isOpenDetails && <ReportDetails info={reportSelected} handleCloseModal={handleCloseModal} />}
     </div>
   );
 };
 
 export default ReportStats;
-
