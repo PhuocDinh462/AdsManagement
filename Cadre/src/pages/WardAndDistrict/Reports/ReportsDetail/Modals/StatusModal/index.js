@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { colors, text } from '~styles/colors';
 import { IconTextBtn } from '~components/button';
 import { useState } from 'react';
-import { Backdrop, CircularProgress, styled, TextField } from '@mui/material';
+import { Backdrop, CircularProgress, styled, TextField, Checkbox } from '@mui/material';
 import Swal from 'sweetalert2';
 import { axiosRequest } from '~/src/api/axios';
 import Select from 'react-select';
@@ -12,6 +12,7 @@ import { useSelector } from 'react-redux';
 import { selectUser } from '~/src/store/reducers';
 
 const fontSize = 16;
+const sx = { '& .MuiSvgIcon-root': { fontSize: 18, color: colors.primary_200 } };
 
 const CssTextField = styled(TextField, {
   shouldForwardProp: (props) => props !== 'focusColor',
@@ -41,10 +42,11 @@ const CssTextField = styled(TextField, {
 }));
 
 export default function StatusModal(props) {
-  const { setActive, report_id, changeStatusByReportId, reportList } = props;
+  const { setActive, report_id, changeStatusByReportId, currentReport } = props;
   const [loading, setLoading] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState('pending');
   const [handlingMethod, setHandlingMethod] = useState('');
+  const [sendMail, setSendMail] = useState(true);
 
   const user = useSelector(selectUser);
   const tokenAuth = 'Bearer ' + user.token.split('"').join('');
@@ -58,6 +60,7 @@ export default function StatusModal(props) {
       id: report_id,
       status: selectedStatus,
       handlingMethod: handlingMethod,
+      sendMail: sendMail,
     };
     await axiosRequest
       .patch(`ward/updateReportStatus`, body, { headers: headers })
@@ -115,9 +118,8 @@ export default function StatusModal(props) {
   ];
 
   const findDefaultValueIndex = () => {
-    const report = reportList?.find((item) => item.report_id === report_id);
-    if (!report) return 0;
-    return options.findIndex((item) => item.label === report.status);
+    if (!currentReport) return 0;
+    return options.findIndex((item) => item.label === currentReport.status);
   };
 
   return (
@@ -147,7 +149,7 @@ export default function StatusModal(props) {
 
         <div className={classes.textField}>
           <CssTextField
-            defaultValue={null}
+            defaultValue={currentReport.processing_info}
             variant="outlined"
             label="Cách thức xử lý"
             fullWidth
@@ -157,6 +159,20 @@ export default function StatusModal(props) {
             focusColor={colors.primary_300}
             onChange={(event) => setHandlingMethod(event.target.value)}
           />
+        </div>
+
+        <div className={classes.checkbox_container}>
+          <div className={classes.checkbox}>
+            <Checkbox
+              defaultChecked
+              className={classes.checkbox__ic}
+              sx={sx}
+              onChange={(e) => {
+                setSendMail(e.target.checked);
+              }}
+            />
+            <div className={classes.checkbox__label}>Gửi mail cho người báo cáo</div>
+          </div>
         </div>
       </div>
 

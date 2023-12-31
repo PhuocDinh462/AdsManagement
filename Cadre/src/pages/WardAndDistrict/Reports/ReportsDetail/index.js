@@ -371,7 +371,7 @@ export default function ReportsDetail() {
             setActive={setShowStatusModal}
             report_id={filteredData[currentReportIndex]?.report_id}
             changeStatusByReportId={changeStatusByReportId}
-            reportList={data.reports}
+            currentReport={data.reports?.find((item) => item.report_id === filteredData[currentReportIndex]?.report_id)}
           />
         </Backdrop>
       )}

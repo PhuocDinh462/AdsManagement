@@ -6,7 +6,10 @@
       "type": "string",
       "enum": ["pending", "processing", "processed"]
     },
-    "handlingMethod": {}
+    "handlingMethod": {},
+    "sendMail": {
+      "type": "boolean"
+    }
   },
   "required": ["id", "status"],
   "additionalProperties": false

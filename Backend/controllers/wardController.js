@@ -519,7 +519,7 @@ const getReportDetailsByLatLng = catchAsync(async (req, res, next) => {
 });
 
 const updateReportStatus = catchAsync(async (req, res, next) => {
-  const { id, status, handlingMethod } = req.body;
+  const { id, status, handlingMethod, sendMail } = req.body;
 
   connection.query(
     'update report set status = ?, processing_info = ? where report_id = ?',
@@ -546,26 +546,27 @@ const updateReportStatus = catchAsync(async (req, res, next) => {
           socket?.socketIo?.emit('changeReport', { method: 'update', data: results[0] });
 
           // Send mail
-          let content;
+          if (sendMail) {
+            let content;
 
-          if (results[0].status === 'pending')
-            content = `<p>Chào bạn,</p>
+            if (results[0].status === 'pending')
+              content = `<p>Chào bạn,</p>
           <p>
             Chúng tôi đã nhận được báo cáo của bạn. Chúng tôi đang xem xét và sẽ sớm phản hồi cho bạn trong thời gian sớm nhất.
           </p>
           <br/>
           <br/>
           <p>Trân trọng!</p>`;
-          else if (results[0].status === 'processing')
-            content = `<p>Chào bạn,</p>
+            else if (results[0].status === 'processing')
+              content = `<p>Chào bạn,</p>
           <p>
             Sau khi xem xét báo cáo của bạn, chúng tôi đã đưa ra cách giải quyết như sau: ${handlingMethod}
           </p>
           <br/>
           <br/>
           <p>Trân trọng!</p>`;
-          else
-            content = `<p>Chào bạn,</p>
+            else
+              content = `<p>Chào bạn,</p>
           <p>
             Chúng tôi đã giải quyết xong báo cáo của bạn. Chúc bạn một ngày mới tốt lành.
           </p>
@@ -573,7 +574,8 @@ const updateReportStatus = catchAsync(async (req, res, next) => {
           <br/>
           <p>Trân trọng!</p>`;
 
-          await emailService.sendMail(results[0].email_rp, 'Báo cáo', content);
+            await emailService.sendMail(results[0].email_rp, 'Báo cáo', content);
+          }
 
           res.status(200).json({ status: 'success', data: results });
         }
