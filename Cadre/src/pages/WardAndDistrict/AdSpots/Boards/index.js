@@ -7,11 +7,11 @@ import {
   faAngleUp,
   faAngleDown,
   faAngleLeft,
-  faFile,
   faBan,
   faBlackboard,
   faRectangleAd,
 } from '@fortawesome/free-solid-svg-icons';
+import { faImage } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useEffect, useState } from 'react';
 import { IconTextBtn } from '~components/button';
@@ -178,7 +178,7 @@ export default function Boards() {
                     </td>
                     <td className={classes.userInfo_col} rowspan="2">
                       <div className={classes.itemInfo}>
-                        <FontAwesomeIcon icon={faFile} />
+                        <FontAwesomeIcon icon={faImage} />
                         <span> Hình ảnh:</span>
                         <dir className={classes.itemInfo__text}>
                           <img

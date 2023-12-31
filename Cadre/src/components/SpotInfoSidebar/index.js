@@ -138,7 +138,7 @@ export default function SpotInfoSidebar(props) {
                     <div className={classes.type}>{currentInfo?.boardInfo[currentAdsIndex].type_name}</div>
                     <div className={classes.detail}>
                       <span className={classes.label}>Kích thước: </span>
-                      {`${currentInfo?.boardInfo[currentAdsIndex].width} x ${currentInfo?.boardInfo[currentAdsIndex].height}`}
+                      {`${currentInfo?.boardInfo[currentAdsIndex].width}m x ${currentInfo?.boardInfo[currentAdsIndex].height}m`}
                     </div>
                     <div className={classes.detail}>
                       <span className={classes.label}>Số lượng: </span>
