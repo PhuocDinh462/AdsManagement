@@ -63,6 +63,7 @@ export default function SpotInfoSidebar(props) {
   }, [spotCoord]);
 
   useEffect(() => {
+    setStatus(true);
     if (!isClickMarker) {
       setCurrentInfo(null);
       return;

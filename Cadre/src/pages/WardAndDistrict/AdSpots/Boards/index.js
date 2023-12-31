@@ -176,17 +176,7 @@ export default function Boards() {
                         </dir>
                       </div>
                     </td>
-                    <td className={classes.userInfo_col}>
-                      <div className={classes.itemInfo}>
-                        <FontAwesomeIcon icon={faRectangleAd} />
-                        <dir className={classes.itemInfo__text}>
-                          {'Loại quảng cáo: ' + filteredData[currentBoardIndex]?.type_name}
-                        </dir>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className={classes.userInfo_col}>
+                    <td className={classes.userInfo_col} rowspan="2">
                       <div className={classes.itemInfo}>
                         <FontAwesomeIcon icon={faFile} />
                         <span> Hình ảnh:</span>
@@ -200,6 +190,16 @@ export default function Boards() {
                               setShowImageModal(true);
                             }}
                           />
+                        </dir>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className={classes.userInfo_col}>
+                      <div className={classes.itemInfo}>
+                        <FontAwesomeIcon icon={faRectangleAd} />
+                        <dir className={classes.itemInfo__text}>
+                          {'Loại quảng cáo: ' + filteredData[currentBoardIndex]?.type_name}
                         </dir>
                       </div>
                     </td>
