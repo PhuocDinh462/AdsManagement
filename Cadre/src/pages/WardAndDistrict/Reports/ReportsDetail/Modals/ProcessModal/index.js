@@ -102,7 +102,13 @@ export default function ProcessModal(props) {
       </div>
 
       <div className={classes.btn_container}>
-        <IconTextBtn label="Gửi" rightIc={faShare} onClick={() => handleConfirm()} disabled={!handlingMethod} />
+        <IconTextBtn
+          label="Gửi"
+          width="13rem"
+          rightIc={faShare}
+          onClick={() => handleConfirm()}
+          disabled={!handlingMethod}
+        />
       </div>
 
       <Backdrop sx={{ color: 'white', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loading}>

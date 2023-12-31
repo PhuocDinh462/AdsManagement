@@ -8,8 +8,8 @@ import { Backdrop, CircularProgress, styled, TextField, Checkbox } from '@mui/ma
 import Swal from 'sweetalert2';
 import { axiosRequest } from '~/src/api/axios';
 import Select from 'react-select';
-import { useSelector } from 'react-redux';
-import { selectUser } from '~/src/store/reducers';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectUser, selectSendMailStatus, setSendMailStatus } from '~/src/store/reducers';
 
 const fontSize = 16;
 const sx = { '& .MuiSvgIcon-root': { fontSize: 18, color: colors.primary_200 } };
@@ -46,7 +46,9 @@ export default function StatusModal(props) {
   const [loading, setLoading] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState('pending');
   const [handlingMethod, setHandlingMethod] = useState('');
-  const [sendMail, setSendMail] = useState(true);
+
+  const sendMailStatus = useSelector(selectSendMailStatus);
+  const dispatch = useDispatch();
 
   const user = useSelector(selectUser);
   const tokenAuth = 'Bearer ' + user.token.split('"').join('');
@@ -60,7 +62,7 @@ export default function StatusModal(props) {
       id: report_id,
       status: selectedStatus,
       handlingMethod: handlingMethod,
-      sendMail: sendMail,
+      sendMail: sendMailStatus,
     };
     await axiosRequest
       .patch(`ward/updateReportStatus`, body, { headers: headers })
@@ -164,11 +166,11 @@ export default function StatusModal(props) {
         <div className={classes.checkbox_container}>
           <div className={classes.checkbox}>
             <Checkbox
-              defaultChecked
+              defaultChecked={sendMailStatus}
               className={classes.checkbox__ic}
               sx={sx}
               onChange={(e) => {
-                setSendMail(e.target.checked);
+                dispatch(setSendMailStatus(e.target.checked));
               }}
             />
             <div className={classes.checkbox__label}>Gửi mail cho người báo cáo</div>
@@ -177,7 +179,7 @@ export default function StatusModal(props) {
       </div>
 
       <div className={classes.btn_container}>
-        <IconTextBtn label="Cập nhật" rightIc={faCheck} onClick={() => handleConfirm()} />
+        <IconTextBtn label="Cập nhật" width="13rem" rightIc={faCheck} onClick={() => handleConfirm()} />
       </div>
 
       <Backdrop sx={{ color: 'white', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loading}>

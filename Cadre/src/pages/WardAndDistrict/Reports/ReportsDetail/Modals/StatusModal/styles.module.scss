@@ -17,7 +17,9 @@ $border_radius: 10px;
   align-items: center;
   justify-content: space-between;
   padding: 0 2rem;
-  font-size: 2rem;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: rgb(240, 240, 240);
   user-select: none;
   border-radius: $border_radius $border_radius 0 0;
 
@@ -34,7 +36,7 @@ $border_radius: 10px;
 
 .content {
   width: 100%;
-  padding: 2rem;
+  padding: 2rem 2rem 0.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
