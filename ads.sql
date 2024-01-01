@@ -87,6 +87,7 @@ CREATE TABLE `contract` (
   company_email VARCHAR(255),
   company_phone VARCHAR(255),
   company_address VARCHAR(255),
+  company_taxcode VARCHAR(255),
   start_date DATE,
   end_date DATE,
   representative VARCHAR(255),
@@ -188,7 +189,7 @@ CREATE TABLE `licensing_request` (
   licensing_id INT auto_increment,
   advertisement_content VARCHAR(255),
   advertisement_image_url VARCHAR(255),
-  `status` varchar(255) NOT null,
+  `status` ENUM('pending', 'approved','canceled') NOT null ,
   rejection_reason VARCHAR(255),
   user_id INT,
   point_id INT,
@@ -299,10 +300,10 @@ VALUES
 -- (Đã có dữ liệu mẫu trong đoạn tạo bảng)
 
 -- Dữ liệu mẫu cho bảng Contract
-INSERT INTO `contract` (company_name, company_email, company_phone, company_address, start_date, end_date, representative)
+INSERT INTO `contract` (company_name, company_email, company_phone, company_address,company_taxcode, start_date, end_date, representative)
 VALUES
-  ('Company A', 'companyA@example.com', '123456789', 'Address A', '2023-01-01', '2023-12-31', 'Rep A'),
-  ('Company B', 'companyB@example.com', '987654321', 'Address B', '2023-03-01', '2023-12-31', 'Rep B');
+  ('Company A', 'companyA@example.com', '123456789', 'Address A','123456', '2023-01-01', '2023-12-31', 'Rep A'),
+  ('Company B', 'companyB@example.com', '987654321', 'Address B', '122333','2023-03-01', '2023-12-31', 'Rep B');
 
 -- Dữ liệu mẫu cho bảng AdvertisingPoint
 INSERT INTO `advertising_point` (ward_id, advertisement_type_id, address, location_type, image_url, `lat`, `lng`, is_planning)
@@ -400,8 +401,8 @@ VALUES
 -- Dữ liệu mẫu cho bảng LicensingRequest
 INSERT INTO `licensing_request` (advertisement_content, advertisement_image_url, `status`, rejection_reason, user_id, point_id, width, height, contract_id, report_id)
 VALUES
-  ('License Content A', 'licenseImgA.jpg', 'Approved', NULL, 4, 1, 50.0, 60.0, 1, 1),
-  ('License Content B', 'licenseImgB.jpg', 'Pending', NULL, 5, 2, 55.0, 65.0, 2, 2);
+  ('License Content A', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2F3CD5A2AF-685B-4291-8EDF-FE84B7C397E5.JPGbab08c1e-c9a6-4c22-a95e-e4e45f3f9f3b?alt=media&token=8bd87c2b-20c1-43a8-8bec-a83e1fc56ee1', 'pending', NULL, 4, 1, 50.0, 60.0, 1, 1),
+  ('License Content B', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 'pending', NULL, 5, 2, 55.0, 65.0, 2, 2);
 
 -- Dữ liệu mẫu cho bảng EditRequestBoard
 INSERT INTO `edit_request_board` (board_id, board_type_id, edit_status, advertisement_content, advertisement_image_url, reason,time_request, width, height, created_by)
@@ -417,7 +418,4 @@ VALUES
   (2, 1, 'Trung tâm thương mại', false, 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2F340842304_211052514888451_6814854970581350591_n.jpegd6986e67-e6d8-4f77-a1d5-b88e31a57f19?alt=media&token=45c08982-18fc-43ad-928c-2aa4f2dda397', 'pending', 'Change request C','2023-11-25', 6),
   (3, 1, 'Chợ', false, 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2Fjsx8_8lo8_180725-removebg.png4dc1c29d-a1ee-4603-9f5a-16b456067ac2?alt=media&token=51ea5aa2-4862-4a67-a615-7c9bd0da2f2c', 'canceled', 'Change request D','2023-12-25', 7),
   (4, 1, 'Cây xăng', true, 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FCity%20lights%20(Anime%20Background).jpg0c1069f9-5a1b-40f9-8171-7513dc627248?alt=media&token=24074b26-ce6b-4aa4-93ad-579fbc8e4c0f', 'pending', 'Change request B','2023-11-25', 5);
-
-
-
 

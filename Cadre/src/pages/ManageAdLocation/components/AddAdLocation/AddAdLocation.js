@@ -15,9 +15,9 @@ const AddAdLocation = ({ onClose }) => {
   const [previewImage, setPreviewImage] = useState(null);
   const [wards, setWards] = useState([]);
   const [adsType, setAdsType] = useState([]);
-  const [dataAddress, setDataAddress] = useState();
   const [isModalMap, setModalMap] = useState(false);
 
+  const [address, setAddress] = useState();
   const [longitude, setLongitude] = useState('');
   const [latitude, setLatitude] = useState('');
   const [locationType, setLocationType] = useState('');
@@ -83,13 +83,14 @@ const AddAdLocation = ({ onClose }) => {
     e.preventDefault();
     if (imageUploadUrl === null) {
       console.log('Vui lòng chờ');
-      alert('vui lòng chờ');
+      alert('Đang tải ảnh, vui lòng chờ');
       return;
     }
     const dataToSend = {
       location_type: locationType,
       lng: parseFloat(longitude),
       lat: parseFloat(latitude),
+      address,
       ward_id: selectedWard,
       is_planning: !!planning,
       image_url: imageUploadUrl,
@@ -144,6 +145,7 @@ const AddAdLocation = ({ onClose }) => {
       });
     }
   };
+
   const handleCloseModalMap = () => {
     setModalMap(false);
   };
@@ -171,6 +173,7 @@ const AddAdLocation = ({ onClose }) => {
                         </option>
                       ))}
                     </select>
+
                     <h4>Vĩ độ (Latitude):</h4>
                     <input
                       type="text"
@@ -188,6 +191,13 @@ const AddAdLocation = ({ onClose }) => {
                     <div onClick={(e) => setModalMap(true)} style={{ marginTop: '10px' }}>
                       <span className={classes.choice_map}>Chọn trên bản đồ</span>
                     </div>
+                    <h4>Nhập địa chỉ:</h4>
+                    <input
+                      type="text"
+                      placeholder="Nhập vào địa chỉ"
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                    />
                     <h4>Chọn loại vị trí:</h4>
                     <select value={locationType} onChange={(e) => setLocationType(e.target.value)}>
                       <option value="" disabled>

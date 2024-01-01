@@ -77,13 +77,6 @@ const ManageAdLocation = () => {
     setModalOpen(true);
   };
 
-  const convertToDegrees = (decimalDegrees) => {
-    const degrees = Math.floor(decimalDegrees);
-    const minutes = Math.floor((decimalDegrees - degrees) * 60);
-    const seconds = ((decimalDegrees - degrees - minutes / 60) * 3600).toFixed(2);
-    return `${degrees}°${minutes}'${seconds}"`;
-  };
-
   const handleDeleteClick = async (row) => {
     const confirmResult = await Swal.fire({
       title: 'Xác nhận xóa',
@@ -158,10 +151,10 @@ const ManageAdLocation = () => {
             <thead className={classes.table__header_wrap_thead}>
               <tr>
                 <th style={{ width: '5%' }}>STT</th>
-                <th style={{ width: '20%' }}>Tọa độ (Vĩ độ - Kinh độ)</th>
-                <th style={{ width: '25%' }}>Khu vực</th>
+                <th style={{ width: '30%' }}>Địa chỉ</th>
+                <th style={{ width: '20%' }}>Khu vực</th>
                 <th style={{ width: '20%' }}>Loại vị trí</th>
-                <th style={{ width: '20%' }}>Trạng thái</th>
+                <th style={{ width: '15%' }}>Trạng thái</th>
                 <th style={{ width: '10%' }}>Chỉnh sửa</th>
               </tr>
             </thead>
@@ -183,14 +176,12 @@ const ManageAdLocation = () => {
                     }}
                   >
                     <td style={{ width: '5%' }}>{rowIndex + 1}</td>
+                    <td style={{ width: '30%' }}>{row.address}</td>
                     <td style={{ width: '20%' }}>
-                      {convertToDegrees(row.lat)},{convertToDegrees(row.lng)}
-                    </td>
-                    <td style={{ width: '25%' }}>
                       {row.ward_name}, {row.district_name}
                     </td>
                     <td style={{ width: '20%' }}>{row.location_type}</td>
-                    <td style={{ width: '20%', color: row.is_planning === 1 ? '#2A591E' : '#EF1414' }}>
+                    <td style={{ width: '15%', color: row.is_planning === 1 ? '#2A591E' : '#EF1414' }}>
                       {row.is_planning === 1 ? 'Đã quy hoạch' : 'Chưa quy hoạch'}
                     </td>
                     <td style={{ width: '10%' }}>

@@ -25,6 +25,7 @@ router.delete('/deleteForm', cadreFormController.deleteForm);
 
 router.get('/adsPoint', cadreAdsPointController.getAllAdsPoint);
 router.get('/adsType', cadreAdsPointController.getAdvertisementTypes);
+router.get('/adsType/:id', cadreAdsPointController.getDetailAdsType);
 router.post('/addAdsPoint', cadreAdsPointController.addAdsPoint);
 router.put('/updateAdsPoint', cadreAdsPointController.updateAdsPoint);
 router.delete('/deleteAdsPoint', cadreAdsPointController.deleteAdsPoint);
@@ -43,3 +44,4 @@ router.get('/districts/ward-empty', cadreController.getDistrictsWithWardEmpty);
 router.get('/wards/district/:id', cadreController.getWardsByDistrictId);
 
 module.exports = router;
+

@@ -216,7 +216,6 @@ const updateAddress = catchAsync(async (req, res, next) => {
 
 const deleteAddress = catchAsync(async (req, res, next) => {
   const { id, type } = req.body;
-  console.log(req.body);
 
   if (!id || !type) {
     return res.status(400).json({ error: 'Thiếu thông tin cần thiết.' });
@@ -268,7 +267,6 @@ const getWardsByDistrictId = catchAsync(async (req, res, next) => {
       });
       return;
     }
-    console.log(results);
 
     // const response = results[0]
     return res.status(200).json({
@@ -293,7 +291,6 @@ const getDistrictsEmpty = catchAsync(async (req, res, next) => {
       });
       return;
     }
-    console.log(results);
 
     // const response = results[0]
     return res.status(200).json({
@@ -320,7 +317,6 @@ const getDistrictsWithWardEmpty = catchAsync(async (req, res, next) => {
       });
       return;
     }
-    console.log(results);
 
     // const response = results[0]
     return res.status(200).json({
@@ -342,3 +338,4 @@ module.exports = {
   deleteAddress,
   getUserWithoutMgmt,
 };
+

@@ -43,8 +43,28 @@ const getAdvertisementTypes = catchAsync(async (req, res, next) => {
   });
 });
 
+const getDetailAdsType = catchAsync(async (req, res, next) => {
+  const typeId = req.params.id;
+  const query = 'SELECT * FROM advertisement_type WHERE advertisement_type_id = ?';
+
+  connection.query(query, [typeId], (error, results) => {
+    if (error) {
+      console.error(error);
+      res.status(500).json({ status: 'error', message: 'Internal Server Error' });
+      return;
+    }
+
+    if (results.length === 0) {
+      res.status(404).json({ status: 'error', message: 'Không tìm thấy loại quảng cáo với ID cung cấp' });
+    } else {
+      const advertisementType = results[0];
+      res.status(200).json({ status: 'success', advertisementType });
+    }
+  });
+});
+
 const addAdsPoint = catchAsync(async (req, res, next) => {
-  const { location_type, image_url, lat, lng, is_planning, ward_id, advertisement_type_id } = req.body;
+  const { location_type, image_url, lat, lng, is_planning, ward_id, advertisement_type_id, address } = req.body;
 
   // Kiểm tra xem đã tồn tại bản ghi với cùng giá trị lat và lng chưa
   const checkExistQuery = `
@@ -69,13 +89,13 @@ const addAdsPoint = catchAsync(async (req, res, next) => {
     // Nếu không có bản ghi trùng, tiếp tục thêm bản ghi mới
     const insertQuery = `
       INSERT INTO advertising_point 
-        (location_type, image_url, lat, lng, is_planning, ward_id, advertisement_type_id) 
-      VALUES (?, ?, ?, ?, ?, ?, ?);
+        (location_type, image_url, lat, lng, is_planning, ward_id, advertisement_type_id, address) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?);
     `;
 
     connection.query(
       insertQuery,
-      [location_type, image_url, lat, lng, is_planning, ward_id, advertisement_type_id],
+      [location_type, image_url, lat, lng, is_planning, ward_id, advertisement_type_id, address],
       (insertError, result) => {
         if (insertError) {
           console.error('Error executing insert query:', insertError);
@@ -94,6 +114,7 @@ const addAdsPoint = catchAsync(async (req, res, next) => {
             is_planning,
             ward_id,
             advertisement_type_id,
+            address,
           },
         });
       }
@@ -102,9 +123,10 @@ const addAdsPoint = catchAsync(async (req, res, next) => {
 });
 
 const updateAdsPoint = catchAsync(async (req, res, next) => {
-  const { point_id, location_type, image_url, lat, lng, is_planning, ward_id, advertisement_type_id } = req.body;
+  const { point_id, location_type, image_url, lat, lng, is_planning, ward_id, advertisement_type_id, address } =
+    req.body;
 
-  // Kiểm tra xem đã tồn tại bản ghi với cùng giá trị lat và lng chưa
+  // Kiểm tra xem đã tồn tại bản ghi với cùng giá trị lat và lng chưa (không tính chính nó)
   const checkExistQuery = `
     SELECT * 
     FROM advertising_point 
@@ -118,13 +140,13 @@ const updateAdsPoint = catchAsync(async (req, res, next) => {
       return;
     }
 
-    // Nếu đã tồn tại bản ghi, trả về lỗi
+    // Nếu đã tồn tại bản ghi với phần tử khác, trả về lỗi
     if (checkResults.length > 0) {
       res.status(400).json({ error: 'Vị trí bị trùng lặp' });
       return;
     }
 
-    // Nếu không có bản ghi trùng, tiếp tục cập nhật bản ghi
+    // Nếu không có bản ghi trùng với phần tử khác, tiếp tục cập nhật bản ghi
     const updateQuery = `
         UPDATE advertising_point
         SET
@@ -134,13 +156,14 @@ const updateAdsPoint = catchAsync(async (req, res, next) => {
           lng = ?,
           is_planning = ?,
           ward_id = ?,
-          advertisement_type_id = ?
+          advertisement_type_id = ?,
+          address = ?
         WHERE point_id = ?;
       `;
 
     connection.query(
       updateQuery,
-      [location_type, image_url, lat, lng, is_planning, ward_id, advertisement_type_id, point_id],
+      [location_type, image_url, lat, lng, is_planning, ward_id, advertisement_type_id, address, point_id],
       (updateError, result) => {
         if (updateError) {
           console.error('Error executing update query:', updateError);
@@ -180,5 +203,12 @@ const deleteAdsPoint = catchAsync(async (req, res, next) => {
   });
 });
 
-module.exports = { getAllAdsPoint, getAdvertisementTypes, addAdsPoint, updateAdsPoint, deleteAdsPoint };
+module.exports = {
+  getAllAdsPoint,
+  getAdvertisementTypes,
+  getDetailAdsType,
+  addAdsPoint,
+  updateAdsPoint,
+  deleteAdsPoint,
+};
 

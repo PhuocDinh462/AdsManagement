@@ -21,6 +21,7 @@ const UpdateAdLocation = ({ data, onClose }) => {
   const [adsType, setAdsType] = useState([]);
   const [isModalMap, setModalMap] = useState(false);
 
+  const [address, setAddress] = useState(data?.address);
   const [longitude, setLongitude] = useState(data?.lng || '');
   const [latitude, setLatitude] = useState(data?.lat || '');
   const [locationType, setLocationType] = useState(data?.location_type || '');
@@ -89,6 +90,7 @@ const UpdateAdLocation = ({ data, onClose }) => {
       location_type: locationType,
       lng: parseFloat(longitude),
       lat: parseFloat(latitude),
+      address,
       ward_id: selectedWard,
       is_planning: planning,
       image_url: imageUploadUrl,
@@ -99,6 +101,7 @@ const UpdateAdLocation = ({ data, onClose }) => {
       !dataToSend.lat ||
       !dataToSend.location_type ||
       !dataToSend.ward_id ||
+      !dataToSend.address ||
       !dataToSend.image_url ||
       !dataToSend.advertisement_type_id ||
       !dataToSend.point_id ||
@@ -184,6 +187,13 @@ const UpdateAdLocation = ({ data, onClose }) => {
                   placeholder="Nhập vào kinh độ"
                   value={longitude}
                   onChange={(e) => setLongitude(e.target.value)}
+                />
+                <h4>Nhập địa chỉ:</h4>
+                <input
+                  type="text"
+                  placeholder="Nhập vào địa chỉ"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
                 />
                 <div onClick={(e) => setModalMap(true)} style={{ marginTop: '10px' }}>
                   <span className={classes.choice_map}>Chọn trên bản đồ</span>
