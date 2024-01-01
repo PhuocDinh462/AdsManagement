@@ -1,12 +1,10 @@
 import classes from './styles.module.scss';
 import { faXmark, faShare } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import TextField from '@mui/material/TextField';
-import { styled } from '@mui/material/styles';
 import { colors } from '~styles/colors';
 import { IconTextBtn } from '~components/button';
 import { useState } from 'react';
-import { Backdrop, CircularProgress } from '@mui/material';
+import { Backdrop, CircularProgress, styled, TextField } from '@mui/material';
 import Swal from 'sweetalert2';
 import { axiosRequest } from '~/src/api/axios';
 import { useSelector } from 'react-redux';
@@ -42,7 +40,7 @@ const CssTextField = styled(TextField, {
 }));
 
 export default function ProcessModal(props) {
-  const { setActive, email, report_id } = props;
+  const { setActive, email } = props;
   const [loading, setLoading] = useState(false);
   const [handlingMethod, setHandlingMethod] = useState('');
 
@@ -55,7 +53,6 @@ export default function ProcessModal(props) {
   const handleConfirm = async () => {
     setLoading(true);
     const body = {
-      report_id: report_id,
       email: email,
       content: handlingMethod,
     };
@@ -105,7 +102,13 @@ export default function ProcessModal(props) {
       </div>
 
       <div className={classes.btn_container}>
-        <IconTextBtn label="Gửi" rightIc={faShare} onClick={() => handleConfirm()} disabled={!handlingMethod} />
+        <IconTextBtn
+          label="Gửi"
+          width="13rem"
+          rightIc={faShare}
+          onClick={() => handleConfirm()}
+          disabled={!handlingMethod}
+        />
       </div>
 
       <Backdrop sx={{ color: 'white', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loading}>

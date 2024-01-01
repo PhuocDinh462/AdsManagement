@@ -20,7 +20,6 @@ export default function DropdownWard(props) {
     try {
       const res = await request('/ward/get_wards_managing', { headers: headers })
       setWards(res.data.wards)
-      dispatch(setSelectedWards(res.data.wards))
     } catch (error) {
       console.log("Error fetching data: " + error.message)
     }
@@ -38,6 +37,11 @@ export default function DropdownWard(props) {
       dispatch(setSelectedWards(selectedWards.filter((selectedWard) => selectedWard.ward_id !== ward.ward_id)));
     }
   };
+  const checkedSelected = (ward) => {
+    const checked = selectedWards.some((selected) => selected.ward_id === ward.ward_id)
+    return checked;
+
+  }
 
   return (
     <div className={classes.main_container}>
@@ -46,7 +50,7 @@ export default function DropdownWard(props) {
         {wards.map((ward) => (
           <div key={ward.ward_id} className={classes.checkbox}>
             <Checkbox
-              defaultChecked
+              checked={checkedSelected(ward)}
               className={classes.checkbox__ic}
               sx={sx}
               onChange={handleSelected(ward)}

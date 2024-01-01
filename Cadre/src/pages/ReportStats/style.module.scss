@@ -72,16 +72,16 @@
               font-size: 14px;
               padding: 0.7rem 0;
 
-              &_accept {
-                background-color: #00c64f;
+              &_processing {
+                background-color: #0095d5;
               }
 
               &_pending {
-                background-color: #ffa927;
+                background-color: #ff3a3a;
               }
 
-              &_cancel {
-                background-color: #ff2727;
+              &_processed {
+                background-color: #00AE46;
               }
             }
           }
@@ -101,7 +101,7 @@
       &_filter {
         display: flex;
         flex-direction: row;
-        gap: 20px;
+        gap: 30px;
         font-weight: 600;
         font-family: Arial, Helvetica, sans-serif;
       }

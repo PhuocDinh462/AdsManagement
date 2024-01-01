@@ -136,15 +136,17 @@
 
     .userInfo_col {
       width: 50%;
+
       .itemInfo {
         span {
           margin-left: 1rem;
         }
         .board_image {
-          margin-left: 20px;
-          width: 200px;
-          height: 100px;
-          margin-right: 10px;
+          margin-left: 2rem;
+          width: 15rem;
+          height: 8rem;
+          border: 1px solid $text_300;
+          border-radius: 5px;
           object-fit: cover;
           cursor: pointer;
           transition: all 0.2s;

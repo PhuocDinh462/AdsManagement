@@ -2,8 +2,10 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import { axiosClient } from '~/src/api/axios';
+import { selectUser } from '~/src/store/reducers';
 import setLocalStorageFromCookie from '~/src/utils/setLocalStorageFromCookie';
 import classes from './CreateAcount.module.scss';
 
@@ -16,7 +18,8 @@ const CreateAcount = () => {
   const [listDictrict, setListDictrict] = useState([]);
   const [listWard, setListWard] = useState([]);
 
-  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
+  const user = useSelector(selectUser);
+  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
   const headers = {
     Authorization: tokenAuth,
   };

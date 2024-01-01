@@ -5,6 +5,7 @@ const getAllReport = catchAsync(async (req, res, next) => {
   try {
     const query = `
       SELECT
+        r.report_type_id,
         r.report_id,
         r.report_time,
         r.processing_info,
@@ -66,4 +67,3 @@ const getAllReport = catchAsync(async (req, res, next) => {
 });
 
 module.exports = { getAllReport };
-

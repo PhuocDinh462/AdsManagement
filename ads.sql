@@ -419,3 +419,6 @@ VALUES
   (3, 1, 'Chợ', false, 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2Fjsx8_8lo8_180725-removebg.png4dc1c29d-a1ee-4603-9f5a-16b456067ac2?alt=media&token=51ea5aa2-4862-4a67-a615-7c9bd0da2f2c', 'canceled', 'Change request D','2023-12-25', 7),
   (4, 1, 'Cây xăng', true, 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FCity%20lights%20(Anime%20Background).jpg0c1069f9-5a1b-40f9-8171-7513dc627248?alt=media&token=24074b26-ce6b-4aa4-93ad-579fbc8e4c0f', 'pending', 'Change request B','2023-11-25', 5);
 
+
+
+

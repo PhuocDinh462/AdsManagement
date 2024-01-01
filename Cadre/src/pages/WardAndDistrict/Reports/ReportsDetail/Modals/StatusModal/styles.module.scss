@@ -17,7 +17,9 @@ $border_radius: 10px;
   align-items: center;
   justify-content: space-between;
   padding: 0 2rem;
-  font-size: 2rem;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: rgb(240, 240, 240);
   user-select: none;
   border-radius: $border_radius $border_radius 0 0;
 
@@ -34,7 +36,7 @@ $border_radius: 10px;
 
 .content {
   width: 100%;
-  padding: 2rem;
+  padding: 2rem 2rem 0.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -43,11 +45,9 @@ $border_radius: 10px;
 }
 
 .textField {
-  width: 90%;
-}
-
-.textField + .textField {
-  margin-top: 3rem;
+  width: 100%;
+  margin-top: 2rem;
+  z-index: 0;
 }
 
 .btn_container {
@@ -55,4 +55,28 @@ $border_radius: 10px;
   align-items: center;
   justify-content: center;
   margin-bottom: 2rem;
+}
+
+.checkbox_container {
+  display: flex;
+  justify-content: right;
+  width: 100%;
+  margin-top: 1rem;
+
+  .checkbox {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0;
+
+    .checkbox__ic {
+      font-size: 2rem;
+      padding: 0;
+    }
+
+    .checkbox__label {
+      font-size: 1.55rem;
+      color: $text_700;
+      margin-left: 5px;
+    }
+  }
 }

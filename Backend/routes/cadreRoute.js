@@ -36,7 +36,7 @@ router.get('/detailAdsBoard/:id', requestEditController.getDetailInforBoard);
 router.get('/detailAdsPoint/:id', requestEditController.getDetailAdvertisingPoint);
 router.put('/updateStatusEditReq/:id', requestEditController.updateStatus);
 
-router.get('getAllReport', cadreReportController.getAllReport);
+router.get('/getAllReport', cadreReportController.getAllReport);
 
 router.post('/auth/create', validationCreateAccount.validationRegister, authController.register);
 router.get('/districts/empty', cadreController.getDistrictsEmpty);
