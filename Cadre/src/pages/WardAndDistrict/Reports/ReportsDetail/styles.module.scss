@@ -169,6 +169,7 @@
         display: flex;
         align-items: center;
         margin-top: 1rem;
+        user-select: none;
 
         .img + .img {
           margin-left: 2rem;
@@ -226,6 +227,7 @@
   max-height: 90vh;
   border-radius: 10px;
   object-fit: cover;
+  user-select: none;
 }
 
 .reportStatus_container {
