@@ -21,6 +21,7 @@ const ManageDistrictWard = () => {
   const [isModalDetail, setIsModalDetail] = useState(false);
   const [modalType, setModalType] = useState(null);
   const [selectedRowData, setSelectedRowData] = useState(null);
+
   useEffect(() => {
     setLocalStorageFromCookie('user-state');
     setLocalStorageFromCookie('user_type');
@@ -79,8 +80,6 @@ const ManageDistrictWard = () => {
       ...data,
       [type.toLowerCase()]: filteredData,
     });
-
-    console.log(data);
 
     setSelectedFilter(type);
   };
@@ -181,10 +180,16 @@ const ManageDistrictWard = () => {
               Phường
             </div>
           </div>
-          <div className={classes.container__header_search}>
+          {/* <div className={classes.container__header_search}>
             <FontAwesomeIcon icon={faMagnifyingGlass} className={classes.ic} />
-            <input type="text" id="inputSearch" placeholder="Tìm kiếm..." className={classes.text_input} />
-          </div>
+            <input
+              type="text"
+              id="inputSearch"
+              placeholder="Tìm kiếm..."
+              className={classes.text_input}
+              onChange={handleSearchChange}
+            />
+          </div> */}
         </div>
 
         {/* Table Header */}

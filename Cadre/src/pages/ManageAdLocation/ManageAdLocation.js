@@ -51,8 +51,8 @@ const ManageAdLocation = () => {
     }
 
     const filteredData = originalData.filter((item) => {
-      const ward = (item && item.ward_name) || '';
-      return ward.toLowerCase().indexOf(searchValue.toLowerCase()) !== -1;
+      const address = (item && item.address) || '';
+      return address.toLowerCase().indexOf(searchValue.toLowerCase()) !== -1;
     });
 
     setData(filteredData);

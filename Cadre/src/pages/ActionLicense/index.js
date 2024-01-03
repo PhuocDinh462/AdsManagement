@@ -5,8 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import LicenseDetails from './LicenseDetails';
 import { axiosClient } from '../../api/axios';
-import Swal from 'sweetalert2';
-import Modal from '~/src/components/Modal/Modal';
+import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
 
 const ActionLicense = () => {
   const [data, setData] = useState([]);
@@ -37,6 +36,13 @@ const ActionLicense = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const handleSocketEvent = (eventData) => {
+    fetchData();
+  };
+
+  // Subscribe to the socket events when the component mounts
+  useSocketSubscribe('licensingAds', handleSocketEvent);
 
   const handleOpenModalDetails = (data) => {
     setIsOpenDetails(true);

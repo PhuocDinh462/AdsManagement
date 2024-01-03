@@ -7,6 +7,7 @@ import Modal from '~/src/components/Modal/Modal';
 import { axiosClient } from '../../api/axios';
 import Swal from 'sweetalert2';
 import DetailActionEdit from './components/DetailActionEdit/DetailActionEdit';
+import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
 
 const ManageForm = () => {
   const [data, setData] = useState({ boards: [], points: [] });
@@ -47,10 +48,16 @@ const ManageForm = () => {
     fetchData();
   }, []);
 
-  const updateDataAfterAdd = async (newData) => {
-    await fetchData();
-    setModalOpen(false);
+  const handlePointSocketEvent = (eventData) => {
+    fetchData();
   };
+
+  const handleBoardSocketEvent = (eventData) => {
+    fetchData();
+  };
+  // Subscribe to the socket events when the component mounts
+  useSocketSubscribe('createEditPointRequest', handlePointSocketEvent);
+  useSocketSubscribe('createEditBoardRequest', handleBoardSocketEvent);
 
   const handleFilterChange = (type) => {
     let filteredData;
