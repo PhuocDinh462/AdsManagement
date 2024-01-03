@@ -1,3 +1,5 @@
+@import '/src/styles/colors.scss';
+
 $primaryColor: #3498db;
 $fontColor: #333;
 
@@ -67,7 +69,7 @@ $fontColor: #333;
 }
 
 .custom-button {
-  background-color: #95e1d3; /* Màu nền xanh lá cây */
+  background-color: $primary_300; /* Màu nền xanh lá cây */
   color: white; /* Màu chữ trắng */
   padding: 16px 48px; /* Kích thước padding */
   font-size: 18px; /* Kích thước chữ */
@@ -77,6 +79,8 @@ $fontColor: #333;
   font-weight: 700;
   width: 100%;
   margin-bottom: 12px;
+  transition: opacity 0.2s;
+  margin-top: 3rem;
 
   &:hover {
     opacity: 0.7;
@@ -86,4 +90,3 @@ $fontColor: #333;
     cursor: not-allowed; /* Con trỏ không cho sự kiện không hoạt động */
   }
 }
-
