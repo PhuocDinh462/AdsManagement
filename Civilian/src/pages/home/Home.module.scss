@@ -40,6 +40,7 @@
                             font-style: italic;
                             font-weight: 600;
                             color: #0a6971;
+                            margin-right: 2rem;
                         }
                         .info__report {
                             font-size: 16px;
@@ -227,10 +228,12 @@
             background-color: white;
             padding-bottom: 2vh;
             box-shadow: 0 0.1rem 0.1rem 0 #969696;
+            width: 100%;
 
             img {
-                width: calc(100% - 10px);
-                height: 100%;
+                width: 100%;
+                height: 283px;
+                object-fit: cover;
             }
         }
     }

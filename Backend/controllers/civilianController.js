@@ -4,86 +4,75 @@ const catchAsync = require('../utils/catchAsync');
 
 const getAllDistrictWard = catchAsync(async (req, res, next) => {
   const query = `
-    SELECT
-      district.district_id AS districtId,
-      district.district_name AS districtName,
-      district.manager_id AS districtManagerId,
-      ward.ward_id AS wardId,
-      ward.ward_name AS wardName,
-      ward.manager_id AS wardManagerId,
-      user.username AS managerName,
-      user.email,
-      user.phone AS phoneNumber
-    FROM
-      ward
-    LEFT JOIN user ON ward.manager_id = user.user_id
-    LEFT JOIN district ON ward.district_id = district.district_id
-  
-    WHERE ward.ward_id IS NOT NULL
-  
-    UNION
-  
-    SELECT
-      district.district_id AS districtId,
-      district.district_name AS districtName,
-      district.manager_id AS districtManagerId,
-      null AS wardId,
-      null AS wardName,
-      null AS wardManagerId,
-      user.username AS managerName,
-      user.email,
-      user.phone AS phoneNumber
-    FROM
-      district
-    LEFT JOIN user ON district.manager_id = user.user_id
+    SELECT 
+      ap.*,
+      w.ward_name,
+      w.district_id,
+      d.district_name,
+      at.type_name AS advertisement_type_name
+    FROM advertising_point ap
+    INNER JOIN ward w ON ap.ward_id = w.ward_id
+    INNER JOIN district d ON w.district_id = d.district_id
+    INNER JOIN advertisement_type at ON ap.advertisement_type_id = at.advertisement_type_id;
   `;
 
-  connection.query(query, (err, results) => {
-    if (err) {
-      console.error('Error executing query: ', err);
-      res.status(500).send('Internal Server Error');
+  connection.query(query, (error, results) => {
+    if (error) {
+      console.error('Error executing query:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
       return;
     }
 
-    // Group the results by district
-    const groupedResults = results.reduce((acc, result) => {
-      const districtId = result.districtId;
+    res.status(200).json(results);
+  });
+});
 
-      if (!acc[districtId]) {
-        acc[districtId] = {
-          districtId,
-          districtName: result.districtName,
-          districtManager: {
-            id: result.districtManagerId,
-            name: result.managerName,
-            email: result.email,
-            phone: result.phoneNumber,
-          },
-          wards: [],
-        };
-      }
+const getAllAdsBoard = catchAsync(async (req, res, next) => {
+  const query = `
+  SELECT * FROM advertising_board
+  `;
 
-      // If ward information is present, add it to the wards array
-      if (result.wardId !== null) {
-        acc[districtId].wards.push({
-          id: result.wardId,
-          name: result.wardName,
-          manager: {
-            id: result.wardManagerId,
-            name: result.managerName,
-            email: result.email,
-            phone: result.phoneNumber,
-          },
-        });
-      }
+  connection.query(query, (error, results) => {
+    if (error) {
+      console.error('Error executing query:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+    }
 
-      return acc;
-    }, {});
+    res.status(200).json(results);
+  });
+});
 
-    // Convert the grouped results to an array
-    const finalResults = Object.values(groupedResults);
+const getAllReport = catchAsync(async (req, res, next) => {
+  const query = `
+  SELECT * FROM report as r, detail as d WHERE r.detail_id = d.detail_id;
+  `;
 
-    res.json(finalResults);
+  connection.query(query, (error, results) => {
+    if (error) {
+      console.error('Error executing query:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+    }
+
+    res.status(200).json(results);
+  });
+});
+
+const getAdvertisementTypes = catchAsync(async (req, res, next) => {
+  const query = `
+    SELECT *
+    FROM advertisement_type;
+  `;
+
+  connection.query(query, (error, results) => {
+    if (error) {
+      console.error('Error executing query:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+    }
+
+    res.status(200).json(results);
   });
 });
 
@@ -103,7 +92,11 @@ const createReport = catchAsync(async (req, res, next) => {
     phoneRp,
     status,
     reportTypeId,
+    point_id,
+    board_id,
   } = req.body;
+
+  console.log(req.body);
 
   // Bắt đầu bằng việc thêm dữ liệu vào bảng Detail
   connection.query(
@@ -120,18 +113,18 @@ const createReport = catchAsync(async (req, res, next) => {
 
       // Tiếp theo, thêm dữ liệu vào bảng Report, sử dụng LAST_INSERT_ID() để lấy id từ bảng Detail
       connection.query(
-        'INSERT INTO report (report_time, processing_info, fullname_rp, email_rp, phone_rp, status, detail_id, report_type_id) VALUES (?, ?, ?, ?, ?, ?, LAST_INSERT_ID(), ?)',
-        [reportTime, processingInfo, fullnameRp, emailRp, phoneRp, status, reportTypeId],
-        (err) => {
+        'INSERT INTO report (report_time, processing_info, fullname_rp, email_rp, phone_rp, status, detail_id, report_type_id, point_id, board_id) VALUES (?, ?, ?, ?, ?, ?, LAST_INSERT_ID(), ?, ?, ?)',
+        [reportTime, processingInfo, fullnameRp, emailRp, phoneRp, status, reportTypeId, point_id, board_id],
+        (err, result) => {
           if (err) {
             console.error('Error executing query: ' + err.stack);
             return res.status(500).json({ error: 'Database error' });
           }
 
+          socket?.socketIo?.emit('create', 'Create New Report');
+
           // Nếu không có lỗi, trả về thành công
-          res.status(200).json({
-            detailId: detailId,
-          });
+          res.status(200).json(result);
         }
       );
     }
@@ -140,5 +133,8 @@ const createReport = catchAsync(async (req, res, next) => {
 
 module.exports = {
   getAllDistrictWard,
+  getAllAdsBoard,
+  getAllReport,
+  getAdvertisementTypes,
   createReport,
 };
