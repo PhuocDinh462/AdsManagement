@@ -1,8 +1,5 @@
-import React, { useState } from 'react';
 import ItemSide from './ItemSide/ItemSide';
 import classes from './SideBars.module.scss';
-import { useNavigate } from 'react-router';
-import { matchRoutes, useLocation } from 'react-router-dom';
 
 const data = [
   {
@@ -40,6 +37,11 @@ const data = [
     title: 'Thống kê báo cáo & xử lý',
     path: '/report-stats',
   },
+  {
+    id: 8,
+    title: 'Tạo tài khoản',
+    path: '/create-account',
+  },
 ];
 const SideBars = () => {
   return (
@@ -53,4 +55,3 @@ const SideBars = () => {
 };
 
 export default SideBars;
-

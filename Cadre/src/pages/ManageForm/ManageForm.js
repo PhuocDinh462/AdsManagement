@@ -129,6 +129,21 @@ const ManageForm = () => {
     }
   };
 
+  const handleSearchChange = (event) => {
+    const searchValue = event.target.value;
+
+    if (!originalData) {
+      return;
+    }
+
+    const filteredData = originalData.filter((item) => {
+      const name = (item && item.typeName) || '';
+      return name.toLowerCase().indexOf(searchValue.toLowerCase()) !== -1;
+    });
+
+    setData(filteredData);
+  };
+
   return (
     <div className={classes.container_wrap}>
       <div className={classes.header}>
@@ -160,7 +175,13 @@ const ManageForm = () => {
           </div>
           <div className={classes.container__header_search}>
             <FontAwesomeIcon icon={faMagnifyingGlass} className={classes.ic} />
-            <input type="text" id="inputSearch" placeholder="Tìm kiếm..." className={classes.text_input} />
+            <input
+              type="text"
+              id="inputSearch"
+              placeholder="Tìm kiếm..."
+              className={classes.text_input}
+              onChange={handleSearchChange}
+            />
           </div>
         </div>
 

@@ -37,7 +37,7 @@ CREATE TABLE `user` (
 CREATE TABLE `district` (
   district_id INT auto_increment,
   district_name VARCHAR(255) NOT NULL,
-  manager_id INT,
+  manager_id INT ,
   created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at timestamp DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (district_id),
@@ -53,9 +53,10 @@ CREATE TABLE `ward` (
   created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at timestamp DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (ward_id),
-  FOREIGN KEY (district_id) REFERENCES district(district_id),
+  FOREIGN KEY (district_id) REFERENCES district(district_id) ON DELETE CASCADE,
   FOREIGN KEY (manager_id) REFERENCES `user`(user_id)
 );
+
 CREATE TABLE `board_type` (
   `board_type_id` INT PRIMARY KEY AUTO_INCREMENT,
   `type_name` VARCHAR(255),
@@ -86,6 +87,7 @@ CREATE TABLE `contract` (
   company_email VARCHAR(255),
   company_phone VARCHAR(255),
   company_address VARCHAR(255),
+  company_taxcode VARCHAR(255),
   start_date DATE,
   end_date DATE,
   representative VARCHAR(255),
@@ -99,6 +101,7 @@ CREATE TABLE `advertising_point` (
   point_id INT auto_increment,
   ward_id INT,
   advertisement_type_id INT,
+  address VARCHAR(255),
   location_type 
   ENUM('Đất công/Công viên/Hành lang an toàn giao thông', 'Đất tư nhân/Nhà ở riêng lẻ', 'Trung tâm thương mại', 'Chợ', 'Cây xăng', 'Nhà chờ xe buýt'),
   image_url VARCHAR(255),
@@ -138,8 +141,6 @@ CREATE TABLE `detail` (
   updated_at timestamp DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (detail_id)
 );
-
-
 
 -- Tạo bảng AdvertisingBoards
 CREATE TABLE `advertising_board` (
@@ -188,7 +189,7 @@ CREATE TABLE `licensing_request` (
   licensing_id INT auto_increment,
   advertisement_content VARCHAR(255),
   advertisement_image_url VARCHAR(255),
-  `status` varchar(255) NOT null,
+  `status` ENUM('pending', 'approved','canceled') NOT null ,
   rejection_reason VARCHAR(255),
   user_id INT,
   point_id INT,
@@ -239,7 +240,7 @@ CREATE TABLE `edit_request_point` (
   updated_at timestamp DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   FOREIGN KEY (created_by) REFERENCES `user`(user_id) ON DELETE SET NULL,
-  FOREIGN KEY (`point_id`) REFERENCES `advertising_point`(`point_id`) ON DELETE SET NULL,
+  FOREIGN KEY (`point_id`) REFERENCES `advertising_point`(`point_id`) ON DELETE CASCADE,
   FOREIGN KEY (advertisement_type_id) REFERENCES advertisement_type(advertisement_type_id) ON DELETE SET NULL
 );
 
@@ -247,20 +248,30 @@ CREATE TABLE `edit_request_point` (
 INSERT INTO `user` (username, `password`, email, phone, dob, user_type, created_by, updated_by)
 VALUES
   ('admin', 'admin123', 'admin@example.com', '123456789', '1990-01-01', 'admin', NULL, NULL),
-  ('Nguyen Van A', 'manager123', 'manager1@example.com', '987654321', '1995-05-15', 'manager', 1, 1),
-  ('Tran Anh B', 'manager456', 'manager2@example.com', '987123456', '1998-10-20', 'manager', 1, 1),
-  ('Tran Anh Phuong', 'manager456', 'anhphuong@example.com', '987123456', '1991-10-20', 'manager', 1, 1),
-  ('Tran Thi Hong', 'manager456', 'thihong@example.com', '987123456', '1998-10-20', 'manager', 1, 1),
-  ('Tran Hong', 'manager456', 'tranhong@example.com', '987123456', '1990-10-20', 'manager', 1, 1),
-  ('Tran Anh Hoang', 'manager456', 'anhhoang@example.com', '987123456', '1992-10-20', 'manager', 1, 1),
-  ('Tran Kim Hong', 'manager456', 'kimhong@example.com', '987123456', '1999-10-20', 'manager', 1, 1),
-  ('Tran Kim Phuong', 'manager456', 'kimphuong@example.com', '987123456', '1998-10-20', 'manager', 1, 1),
-  ('Tran Anh Thanh', 'manager456', 'anhthanh@example.com', '987123456', '1995-10-20', 'manager', 1, 1),
-  ('Tran Phi Long', 'manager456', 'philong@example.com', '987123456', '1998-10-20', 'manager', 1, 1),
-  ('Tran Anh Tuan', 'manager456', 'anhtuan@example.com', '987123456', '1998-11-20', 'manager', 1, 1),
-  ('Tran Y Nhu', 'manager456', 'ynhu@example.com', '987123456', '1992-10-21', 'manager', 1, 1),
-  ('Tran Tuan Anh', 'manager456', 'tuananh@example.com', '987123456', '1998-01-20', 'manager', 1, 1),
-  ('Nguyen Thien Toan', 'manager456', 'thientoan@example.com', '987123456', '1996-05-20', 'manager', 1, 1);
+  ('Nguyen Van A', 'manager123', 'manager1@example.com', '987654321', '1995-05-15', 'district', 1, 1),
+  ('Tran Anh B', 'manager456', 'manager2@example.com', '987123456', '1998-10-20', 'district', 1, 1),
+  ('Tran Anh Phuong', 'manager456', 'anhphuong@example.com', '987123456', '1991-10-20', 'district', 1, 1),
+  ('Tran Thi Hong', 'manager456', 'thihong@example.com', '987123456', '1998-10-20', 'ward', 1, 1),
+  ('Tran Hong', 'manager456', 'tranhong@example.com', '987123456', '1990-10-20', 'ward', 1, 1),
+  ('Tran Anh Hoang', 'manager456', 'anhhoang@example.com', '987123456', '1992-10-20', 'ward', 1, 1),
+  ('Tran Kim Hong', 'manager456', 'kimhong@example.com', '987123456', '1999-10-20', 'ward', 1, 1),
+  ('Tran Kim Phuong', 'manager456', 'kimphuong@example.com', '987123456', '1998-10-20', 'ward', 1, 1),
+  ('Tran Anh Thanh', 'manager456', 'anhthanh@example.com', '987123456', '1995-10-20', 'ward', 1, 1),
+  ('Tran Phi Long', 'manager456', 'philong@example.com', '987123456', '1998-10-20', 'ward', 1, 1),
+  ('Tran Anh Tuan', 'manager456', 'anhtuan@example.com', '987123456', '1998-11-20', 'ward', 1, 1),
+  ('Tran Y Nhu', 'manager456', 'ynhu@example.com', '987123456', '1992-10-21', 'ward', 1, 1),
+  ('Tran Tuan Anh', 'manager456', 'tuananh@example.com', '987123456', '1998-01-20', 'ward', 1, 1),
+  ('Ha Anh Tuan', 'manager456', 'haanhtuan@example.com', '987123456', '1998-01-20', 'ward', 1, 1),
+  ('Tanq Ngoc Chau Nhi', 'manager456', 'chaunhi@example.com', '987123456', '1998-01-20', 'ward', 1, 1),
+  ('Tran Sy Hung', 'manager456', 'syhung@example.com', '987123456', '1998-01-20', 'ward', 1, 1),
+  ('Pham Bang Bang', 'manager456', 'bangbang@example.com', '987123456', '1998-01-20', 'ward', 1, 1),
+  ('Nguyen Thanh Tung', 'manager456', 'thanhtung@example.com', '987123456', '1998-01-20', 'ward', 1, 1),
+  ('Dam Vinh Hung', 'manager456', 'damvinhhung@example.com', '987123456', '1998-01-20', 'ward', 1, 1),
+  ('Vo Vu Truong Giang', 'manager456', 'truonggiang@example.com', '987123456', '1998-01-20', 'ward', 1, 1),
+  ('Le Hong Ngoc', 'manager456', 'lehongngoc@example.com', '987123456', '1998-01-20', 'ward', 1, 1),
+  ('Lam Vy Da', 'manager456', 'vyda@example.com', '987123456', '1998-01-20', 'ward', 1, 1),
+  ('Phan Le Vi Thanh', 'manager456', 'cris7@example.com', '987123456', '1998-01-20', 'ward', 1, 1),
+  ('Nguyen Thien Toan', 'manager456', 'thientoan@example.com', '987123456', '1996-05-20', 'ward', 1, 1);
 
 -- Dữ liệu mẫu cho bảng District
 INSERT INTO `district` (district_name, manager_id)
@@ -289,82 +300,82 @@ VALUES
 -- (Đã có dữ liệu mẫu trong đoạn tạo bảng)
 
 -- Dữ liệu mẫu cho bảng Contract
-INSERT INTO `contract` (company_name, company_email, company_phone, company_address, start_date, end_date, representative)
+INSERT INTO `contract` (company_name, company_email, company_phone, company_address,company_taxcode, start_date, end_date, representative)
 VALUES
-  ('Company A', 'companyA@example.com', '123456789', 'Address A', '2023-01-01', '2023-12-31', 'Rep A'),
-  ('Company B', 'companyB@example.com', '987654321', 'Address B', '2023-03-01', '2023-12-31', 'Rep B');
+  ('Company A', 'companyA@example.com', '123456789', 'Address A','123456', '2023-01-01', '2023-12-31', 'Rep A'),
+  ('Company B', 'companyB@example.com', '987654321', 'Address B', '122333','2023-03-01', '2023-12-31', 'Rep B');
 
 -- Dữ liệu mẫu cho bảng AdvertisingPoint
-INSERT INTO `advertising_point` (ward_id, advertisement_type_id, location_type, image_url, `lat`, `lng`, is_planning)
+INSERT INTO `advertising_point` (ward_id, advertisement_type_id, address, location_type, image_url, `lat`, `lng`, is_planning)
 VALUES
-  (1, 1, 'Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2Fpexels-david-geib-3220846.jpgd31e8cb4-b0eb-4c79-8668-4dcb93005aa3?alt=media&token=38790acd-3bbb-43c4-a96f-4e888211153a', 10.773557545517933, 106.69448664500696, false),
-  (1, 3, 'Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Street-Column-Advertising-Mockup-PSD.jpege1e620af-64ec-466f-aa84-5d062a7341e7?alt=media&token=95e9ee75-1837-4a3b-b9fa-e8da8c113cb7', 10.774477837706945, 106.69554860577976, false),
-  (1, 1, 'Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2Fcoca.jpeg94004bd8-6df6-4c65-86ef-de2e60369249?alt=media&token=ee6ae96b-e063-4b77-bc26-b1b8333d44fc', 10.773287803727186, 106.69758468171688, false),
-  (1, 2, 'Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.771039787108553, 106.69301796220137, true),
-  (1, 2, 'Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.772321557336298, 106.69150241907668, true),
+  (1, 1, '117-115 Đ. Nguyễn Du, Phường Bến Thành, Quận 1, Thành phố Hồ Chí Minh, Việt Nam', 'Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2Fpexels-david-geib-3220846.jpgd31e8cb4-b0eb-4c79-8668-4dcb93005aa3?alt=media&token=38790acd-3bbb-43c4-a96f-4e888211153a', 10.773557545517933, 106.69448664500696, false),
+  (1, 3, 'Bến Thành, Phường Bến Thành, Quận 1, Thành phố Hồ Chí Minh, Việt Nam', 'Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Street-Column-Advertising-Mockup-PSD.jpege1e620af-64ec-466f-aa84-5d062a7341e7?alt=media&token=95e9ee75-1837-4a3b-b9fa-e8da8c113cb7', 10.774477837706945, 106.69554860577976, false),
+  (1, 1, '8 Thủ Khoa Huân, Phường Bến Thành, Quận 1, Thành phố Hồ Chí Minh, Việt Nam', 'Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2Fcoca.jpeg94004bd8-6df6-4c65-86ef-de2e60369249?alt=media&token=ee6ae96b-e063-4b77-bc26-b1b8333d44fc', 10.773287803727186, 106.69758468171688, false),
+  (1, 2, '6 Huyền Trân Công Chúa, Phường Bến Thành, Quận 1, Thành phố Hồ Chí Minh, Việt Nam, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.775018678900556, 106.69583583527508, true),
+  (1, 2, '139 Đ. Nguyễn Du, Phường Bến Thành, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.772763316554093, 106.69374979259123, true),
   
-  (2, 2, 'Chợ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.764089825704806, 106.69382697031256, true),
-  (2, 2, 'Cây xăng', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.76260180395761, 106.69202970553981, false),
-  (2, 2, 'Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.763295833627492, 106.69508166353674, false),
-  (2, 2, 'Trung tâm thương mại', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.762892613865203, 106.6935502923477, true),
+  (2, 2, 'Cô Giang, Phường Cô Giang, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Chợ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.764089825704806, 106.69382697031256, true),
+  (2, 2, '185-171 Đ. Cô Bắc, Phường Cô Giang, Quận 1, Thành phố Hồ Chí Minh, Việt Nam', 'Cây xăng', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.76260180395761, 106.69202970553981, false),
+  (2, 2, '121-81 Cô Giang, Phường Cô Giang, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.763295833627492, 106.69508166353674, false),
+  (2, 2, '100/0 Cô Giang, Phường Cô Giang, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Trung tâm thương mại', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.763202030203516, 106.694321522979, true),
   
-  (3, 2, 'Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.759551792108674, 106.68895113745646, true),
-  (3, 2, 'Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.759527954863646, 106.68819286225688, false),
-  (3, 2, 'Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.759182300974503, 106.68782889076304, true),
+  (3, 2, 'Hẻm 391 Trần Hưng Đạo, Cầu Kho, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.759551792108674, 106.68895113745646, true),
+  (3, 2, 'Hẻm 393, Cầu Kho, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.759527954863646, 106.68819286225688, false),
+  (3, 2, '32 Đ. Trần Hưng Đạo, Cầu Kho, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.759182300974503, 106.68782889076304, true),
   
-  (4, 2, 'Cây xăng', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.78263195002901, 106.70178179891825, true),
-  (4, 2, 'Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.784403770238747, 106.70343169421437, false),
-  (4, 2, 'Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.782604442626198, 106.70557093039417, true),  
-  (4, 2, 'Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.780887508168815, 106.70743052678033, true),
-  (4, 2, 'Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.782232969987437, 106.70040196122936, true),
+  (4, 2, '33 Đ. Nguyễn Du, Bến Nghé, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Cây xăng', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.78263195002901, 106.70178179891825, true),
+  (4, 2, 'Đ. Nguyễn Du, Bến Nghé, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.784403770238747, 106.70343169421437, false),
+  (4, 2, 'Đ. Tôn Đức Thắng, Bến Nghé, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.782604442626198, 106.70557093039417, true),  
+  (4, 2, '18 Đ. Nguyễn Siêu, Bến Nghé, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.780887508168815, 106.70743052678033, true),
+  (4, 2, '28-32 Lê Văn Hưu, Bến Nghé, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.782232969987437, 106.70040196122936, true),
   
-  (5, 2, 'Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.754528849095365, 106.68411604272457, true),  
-  (5, 2, 'Cây xăng', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.754717666981415, 106.67913706759444, true),
-  (5, 2, 'Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.75323625849358, 106.6800757170383, false),
-  (5, 2, 'Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.753207343190315, 106.68201876919596, false),  
-  (5, 2, 'Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.752625604210039, 106.68076801882599, true),
+  (5, 2, 'Đ. Nguyễn Biểu, Phường 1, Quận 5, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.754528849095365, 106.68411604272457, true),  
+  (5, 2, '907-903 Đ. Trần Hưng Đạo, Phường 1, Quận 5, Thành phố Hồ Chí Minh, Việt Nam','Cây xăng', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.754717666981415, 106.67913706759444, true),
+  (5, 2, 'Chung cư Phúc Thịnh, 341 Đ. Cao Đạt, Phường 1, Quận 5, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.75323625849358, 106.6800757170383, false),
+  (5, 2, '317 Đ. Cao Đạt, Phường 1, Quận 5, Thành phố Hồ Chí Minh, Việt Nam','Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.75381890951151, 106.68073192761604, false),  
+  (5, 2, '86-114 Đ. Trần Bình Trọng, Phường 1, Quận 5, Thành phố Hồ Chí Minh, Việt Nam','Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.755261819648139, 106.68150443949514, true),
   
-  (6, 2, 'Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.75663031647467, 106.67706286932429, false),  
-  (6, 2, 'Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.75608110554023, 106.67715193917813, true),
-  (6, 2, 'Chợ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.755820730410948, 106.67860949724485, true),
-  (6, 2, 'Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.755734069901376, 106.67866789301668, true),  
-  (6, 2, 'Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.757329018572866, 106.68313724791697, true),
+  (6, 2, 'Hẻm 233 Nguyễn Trãi, Phường 2, Quận 5, Thành phố Hồ Chí Minh, Việt Nam','Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.75663031647467, 106.67706286932429, false),  
+  (6, 2, 'Huỳnh Mẫn Đạt/34 Hẻm 92, Khu phố 6, Quận 5, Thành phố Hồ Chí Minh, Việt Nam', 'Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.75608110554023, 106.67715193917813, true),
+  (6, 2, '4-58 Đ. Lê Hồng Phong, Phường 2, Quận 5, Thành phố Hồ Chí Minh, Việt Nam','Chợ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.755820730410948, 106.67860949724485, true),
+  (6, 2, '58 Đ. Lê Hồng Phong, Phường 2, Quận 5, Thành phố Hồ Chí Minh, Việt Nam','Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.755734069901376, 106.67866789301668, true),  
+  (6, 2, '95-85 Phan Văn Trị, Phường 2, Quận 5, Thành phố Hồ Chí Minh, Việt Nam','Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.757329018572866, 106.68313724791697, true),
   
-  (7, 2, 'Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.758001830635475, 106.67569229601611, true),  
-  (7, 2, 'Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.757038686301533, 106.67616152672363, true),
-  (7, 2, 'Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.757908329323548, 106.67786790810364, false),
-  (7, 2, 'Chợ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.759142993099948, 106.67873198530305, true),  
-  (7, 2, 'Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.759264285847065, 106.68032975751856, true),
+  (7, 2, '217-189 Huỳnh Mẫn Đạt, Phường 3, Quận 5, Thành phố Hồ Chí Minh, Việt Nam','Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.757851378971724, 106.6757593607054, true),  
+  (7, 2, '152 Huỳnh Mẫn Đạt, Phường 3, Quận 5, Thành phố Hồ Chí Minh, Việt Nam','Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.757273818884698, 106.67607262997986, true),
+  (7, 2, '256 Đ. Nguyễn Trãi, Phường 3, Quận 5, Thành phố Hồ Chí Minh 100000, Việt Nam', 'Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.757438278679597, 106.6771133545359, false),
+  (7, 2, '217-189 Huỳnh Mẫn Đạt, Phường 3, Quận 5, Thành phố Hồ Chí Minh, Việt Nam','Chợ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.75797205545914, 106.6757029179611, true),  
+  (7, 2, '176 Đ. Trần Bình Trọng, Phường 3, Quận 5, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.759264285847065, 106.68032975751856, true),
   
-  (8, 2, 'Chợ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.761650107933509, 106.67934527400716, true),  
-  (8, 2, 'Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.761677315874431, 106.67949067789725, true),
-  (8, 2, 'Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.761145804555388, 106.67781654948834, true),
-  (8, 2, 'Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.760464751904083, 106.6771766047319, true),  
-  (8, 2, 'Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.759464362192498, 106.67752512440036, false),
+  (8, 2, '240-204 Đ. Trần Bình Trọng, Phường 4, Quận 5, Thành phố Hồ Chí Minh, Việt Nam','Chợ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.761620563828691, 106.67938109316296, true),  
+  (8, 2, '220-238 Đ. Trần Bình Trọng, Phường 1, Quận 5, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.761225167230146, 106.67955025989906, true),
+  (8, 2, '85 Đ. Trần Phú, Phường 4, Quận 5, Thành phố Hồ Chí Minh 700000, Việt Nam', 'Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.761145804555388, 106.67781654948834, true),
+  (8, 2, '212-240 Đ. Lê Hồng Phong, Phường 4, Quận 5, Thành phố Hồ Chí Minh, Việt Nam', 'Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.760464751904083, 106.6771766047319, true),  
+  (8, 2, '210 Đ. Lê Hồng Phong, Phường 4, Quận 5, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.75958339452077, 106.67748496309471, false),
   
-  (9, 2, 'Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.750515569064774, 106.68851813837233, true),  
-  (9, 2, 'Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.747414308770935, 106.6889913849157, true),
-  (9, 2, 'Chợ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.746368809341359, 106.68928281672004, true),
-  (9, 2, 'Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.741828076618843, 106.68845069075851, false),  
-  (9, 2, 'Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.744098774826544, 106.69043824662278, false),
+  (9, 2, '52 Phạm Thế Hiển, Phường 1, Quận 8, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.75053580051193, 106.68855907411607, true),  
+  (9, 2, '141 D. Bá Trạc, Phường 1, Quận 8, Thành phố Hồ Chí Minh, Việt Nam','Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.747725645605072, 106.68892415914593, true),
+  (9, 2, 'Hẻm 219 Dương Bá Trạc, Phường 1, Quận 8, Thành phố Hồ Chí Minh, Việt Nam','Chợ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.746368809341359, 106.68928281672004, true),
+  (9, 2, '456-355 D. Bá Trạc, Phường 2, Quận 8, Thành phố Hồ Chí Minh, Việt Nam','Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.741872775609895, 106.68847882589102, false),  
+  (9, 2, '374 Hẻm 288 D. Bá Trạc, Phường 1, Quận 8, Thành phố Hồ Chí Minh, Việt Nam','Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.744192003533188, 106.69034231792875, false),
   
-  (10, 2, 'Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.749172758854053, 106.68570872725917, true),  
-  (10, 2, 'Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.749836908394876, 106.68793830483695, true),
-  (10, 2, 'Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.74820124650892, 106.68614286975533, false),
-  (10, 2, 'Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.747912437341522, 106.68539896454288, true),  
-  (10, 2, 'Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.746380841056657, 106.68609083328701, false),
+  (10, 2, '83-41 Đ. Dạ Nam, Phường 2, Quận 8, Thành phố Hồ Chí Minh, Việt Nam','Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.749172758854053, 106.68570872725917, true),  
+  (10, 2, 'D. Bá Trạc, Phường 2, Quận 8, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.749500210660884, 106.68802852720496, true),
+  (10, 2, '51 Hẻm 47 Nguyễn Thị Tần, Phường 2, Quận 8, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.748175631484312, 106.68597368425162, false),
+  (10, 2, '47 Nguyễn Thị Tần, Phường 2, Quận 8, Thành phố Hồ Chí Minh 70000, Việt Nam','Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.747966270502895, 106.6853563780479, true),  
+  (10, 2, 'Lô F Nguyễn Thị Tần, Phường 2, Quận 8, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.747150696826662, 106.68666825986077, false),
   
-  (11, 2, 'Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.748219754143781, 106.68183880884358, true),  
-  (11, 2, 'Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.748636843507814, 106.68254375143715, true),
-  (11, 2, 'Chợ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.759527954863646, 106.68819286225688, false),
-  (11, 2, 'Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.747493918756918, 106.6804436121384, true),  
-  (11, 2, 'Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.748379271319354, 106.68427660876355, true),
+  (11, 2, '2-7 Đ. Âu Dương Lân, Phường 3, Quận 8, Thành phố Hồ Chí Minh, Việt Nam','Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.748219754143781, 106.68183880884358, true),  
+  (11, 2, '306 Phạm Thế Hiển, Phường 3, 8, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.748636843507814, 106.68254375143715, true),
+  (11, 2, '28, 46 Đ. Âu Dương Lân, Phường 3, Quận 8, Thành phố Hồ Chí Minh, Việt Nam','Chợ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.747335253251334, 106.68215567587563, false),
+  (11, 2, 'Hẻm 451 Phạm Thế Hiển, Phường 3, Quận 8, Thành phố Hồ Chí Minh, Việt Nam','Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.747493918756918, 106.6804436121384, true),  
+  (11, 2, '22/10 Phạm Thế Hiển, Phường 3, Quận 8, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.748379271319354, 106.68427660876355, true),
   
-  (12, 2, 'Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.743028323620706, 106.67636312275546, true),  
-  (12, 2, 'Chợ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.742153337641415, 106.6768169843276, false),
-  (12, 2, 'Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.743266147522215, 106.67631689953923, true),
-  (12, 2, 'Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.741718414034755, 106.67337103029278, true),  
-  (12, 2, 'Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.740345755662574, 106.67561085849688, true);
+  (12, 2, '30-68 Đ. Cao Lỗ, Phường 4, Quận 8, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.743028323620706, 106.67636312275546, true),  
+  (12, 2, '78-82 Đ. Cao Lỗ, Phường 4, Quận 8, Thành phố Hồ Chí Minh, Việt Nam','Chợ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.742153337641415, 106.6768169843276, false),
+  (12, 2, '30-68 Đ. Cao Lỗ, Phường 4, Quận 8, Thành phố Hồ Chí Minh, Việt Nam','Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.743266147522215, 106.67631689953923, true),
+  (12, 2, 'Hẻm 23 Đ. Hồ Thành Biên, Phường 4, Quận 8, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.741718414034755, 106.67337103029278, true),  
+  (12, 2, '90 Đ. 102 Cao Lỗ, Phường 4, Quận 8, Thành phố Hồ Chí Minh, Việt Nam','Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.740345755662574, 106.67561085849688, true);
 
 -- Dữ liệu mẫu cho bảng ReportType
 -- (Đã có dữ liệu mẫu trong đoạn tạo bảng)
@@ -390,8 +401,8 @@ VALUES
 -- Dữ liệu mẫu cho bảng LicensingRequest
 INSERT INTO `licensing_request` (advertisement_content, advertisement_image_url, `status`, rejection_reason, user_id, point_id, width, height, contract_id, report_id)
 VALUES
-  ('License Content A', 'licenseImgA.jpg', 'Approved', NULL, 4, 1, 50.0, 60.0, 1, 1),
-  ('License Content B', 'licenseImgB.jpg', 'Pending', NULL, 5, 2, 55.0, 65.0, 2, 2);
+  ('License Content A', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2F3CD5A2AF-685B-4291-8EDF-FE84B7C397E5.JPGbab08c1e-c9a6-4c22-a95e-e4e45f3f9f3b?alt=media&token=8bd87c2b-20c1-43a8-8bec-a83e1fc56ee1', 'pending', NULL, 4, 1, 50.0, 60.0, 1, 1),
+  ('License Content B', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 'pending', NULL, 5, 2, 55.0, 65.0, 2, 2);
 
 -- Dữ liệu mẫu cho bảng EditRequestBoard
 INSERT INTO `edit_request_board` (board_id, board_type_id, edit_status, advertisement_content, advertisement_image_url, reason,time_request, width, height, created_by)
@@ -404,9 +415,9 @@ VALUES
 INSERT INTO `edit_request_point` (point_id, advertisement_type_id, location_type, is_planning, image_url, edit_status, reason, time_request, created_by)
 VALUES
   (1, 1, 'Chợ', false, 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Street-Column-Advertising-Mockup-PSD.jpege1e620af-64ec-466f-aa84-5d062a7341e7?alt=media&token=95e9ee75-1837-4a3b-b9fa-e8da8c113cb7', 'pending', 'Change request A','2023-12-20', 4),
-  (1, 1, 'Trung tâm thương mại', false, 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2F340842304_211052514888451_6814854970581350591_n.jpegd6986e67-e6d8-4f77-a1d5-b88e31a57f19?alt=media&token=45c08982-18fc-43ad-928c-2aa4f2dda397', 'pending', 'Change request C','2023-11-25', 6),
-  (1, 1, 'Chợ', false, 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2Fjsx8_8lo8_180725-removebg.png4dc1c29d-a1ee-4603-9f5a-16b456067ac2?alt=media&token=51ea5aa2-4862-4a67-a615-7c9bd0da2f2c', 'canceled', 'Change request D','2023-12-25', 7),
-  (1, 1, 'Cây xăng', true, 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FCity%20lights%20(Anime%20Background).jpg0c1069f9-5a1b-40f9-8171-7513dc627248?alt=media&token=24074b26-ce6b-4aa4-93ad-579fbc8e4c0f', 'pending', 'Change request B','2023-11-25', 5);
+  (2, 1, 'Trung tâm thương mại', false, 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2F340842304_211052514888451_6814854970581350591_n.jpegd6986e67-e6d8-4f77-a1d5-b88e31a57f19?alt=media&token=45c08982-18fc-43ad-928c-2aa4f2dda397', 'pending', 'Change request C','2023-11-25', 6),
+  (3, 1, 'Chợ', false, 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2Fjsx8_8lo8_180725-removebg.png4dc1c29d-a1ee-4603-9f5a-16b456067ac2?alt=media&token=51ea5aa2-4862-4a67-a615-7c9bd0da2f2c', 'canceled', 'Change request D','2023-12-25', 7),
+  (4, 1, 'Cây xăng', true, 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FCity%20lights%20(Anime%20Background).jpg0c1069f9-5a1b-40f9-8171-7513dc627248?alt=media&token=24074b26-ce6b-4aa4-93ad-579fbc8e4c0f', 'pending', 'Change request B','2023-11-25', 5);
 
 
 

@@ -95,16 +95,17 @@
 
 .img_ads {
   min-height: 180px;
-  max-height: 200px;
+  max-height: 250px;
   width: 100%;
   display: flex;
   justify-content: center;
   margin-top: 10px;
   overflow: hidden;
   img {
-    max-width: 100%;
+    width: 100%;
     height: auto;
     border-radius: 10px;
+    object-fit: contain;
   }
 }
 

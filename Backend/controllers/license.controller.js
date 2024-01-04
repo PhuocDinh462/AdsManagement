@@ -28,15 +28,37 @@ const createLicensingRequest = catchAsync(async (req, res, next) => {
 });
 
 const getAllLicenseRequest = catchAsync(async (req, res) => {
-  const queryData = `SELECT 
-  lr.licensing_id, lr.advertisement_content, lr.advertisement_image_url, 
-  lr.status, lr.rejection_reason, lr.user_id, ap.point_id, ap.ward_id, 
-  ap.advertisement_type_id, ap.location_type, ap.image_url, ap.lat, ap.lng, 
-  ap.is_planning, c.contract_id, c.company_name, c.company_email, c.company_phone, 
-  c.company_address, c.company_taxcode, c.start_date, c.end_date, c.representative 
-  FROM licensing_request lr 
-  JOIN advertising_point ap ON lr.point_id = ap.point_id 
-  JOIN contract c ON lr.contract_id = c.contract_id;`;
+  const queryData = `
+    SELECT 
+      lr.licensing_id, 
+      lr.advertisement_content, 
+      lr.advertisement_image_url, 
+      lr.status, 
+      lr.rejection_reason, 
+      lr.user_id, 
+      lr.point_id, 
+      lr.height,
+      lr.width,
+      ap.ward_id, 
+      ap.address,
+      ap.advertisement_type_id, 
+      ap.location_type, 
+      ap.image_url, 
+      ap.lat, 
+      ap.lng, 
+      ap.is_planning, 
+      c.contract_id, 
+      c.company_name, 
+      c.company_email, 
+      c.company_phone, 
+      c.company_address, 
+      c.company_taxcode, 
+      c.start_date, 
+      c.end_date, 
+      c.representative 
+    FROM licensing_request lr 
+    JOIN advertising_point ap ON lr.point_id = ap.point_id 
+    JOIN contract c ON lr.contract_id = c.contract_id;`;
 
   connection.query(queryData, (err, results) => {
     if (err) {
@@ -55,4 +77,32 @@ const getAllLicenseRequest = catchAsync(async (req, res) => {
   });
 });
 
-module.exports = { createLicensingRequest, getAllLicenseRequest };
+const updateStatusLicenseRequest = catchAsync(async (req, res, next) => {
+  const licensingId = req.params.licensingId;
+  const newStatus = req.body.status;
+
+  // Kiểm tra trạng thái mới có hợp lệ không
+  if (!['pending', 'approved', 'canceled'].includes(newStatus)) {
+    return res.status(400).json({ error: 'Trạng thái không hợp lệ' });
+  }
+
+  // Cập nhật trạng thái trong cơ sở dữ liệu
+  const updateQuery = 'UPDATE licensing_request SET `status` = ? WHERE licensing_id = ?';
+
+  connection.query(updateQuery, [newStatus, licensingId], (error, results) => {
+    if (error) {
+      console.error('Error updating status:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+    }
+
+    if (results.affectedRows === 0) {
+      res.status(404).json({ error: 'Không tìm thấy bản ghi với licensing ID cung cấp' });
+    } else {
+      res.status(200).json({ status: 'success', updatedId: licensingId });
+    }
+  });
+});
+
+module.exports = { createLicensingRequest, getAllLicenseRequest, updateStatusLicenseRequest };
+

@@ -12,15 +12,16 @@ import setLocalStorageFromCookie from '~/src/utils/setLocalStorageFromCookie';
 import DetailAddress from './components/DetailModal/DetailAddress';
 
 const ManageDistrictWard = () => {
-  const [data, setData] = useState([]);
-  const [originalData, setOriginalData] = useState();
+  const [data, setData] = useState({ districts: [], wards: [] });
+  const [originalData, setOriginalData] = useState({ districts: [], wards: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedFilter, setSelectedFilter] = useState('All');
+  const [selectedFilter, setSelectedFilter] = useState('Quận');
   const [isModalOpen, setModalOpen] = useState(false);
   const [isModalDetail, setIsModalDetail] = useState(false);
   const [modalType, setModalType] = useState(null);
   const [selectedRowData, setSelectedRowData] = useState(null);
+
   useEffect(() => {
     setLocalStorageFromCookie('user-state');
     setLocalStorageFromCookie('user_type');
@@ -35,38 +36,17 @@ const ManageDistrictWard = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axiosClient.get('/cadre', { headers });
-      console.log(response);
-      const convertedData = response.reduce((accumulator, district) => {
-        const districtManager = district.districtManager || {};
-        const districtInfo = {
-          id: district.districtId,
-          area: district.districtName,
-          managerName: districtManager.name || '',
-          email: districtManager.email || '',
-          phoneNumber: districtManager.phone || '',
-          level: 'Quận',
-        };
+      const responseDistrict = await axiosClient.get('/cadre/districts', { headers });
+      const responseWards = await axiosClient.get('/cadre/wards', { headers });
 
-        const wardInfoArray = district.wards.map((ward) => {
-          const wardManager = ward.manager || {};
-          return {
-            id: ward.id,
-            area: ward.name,
-            managerName: wardManager.name || '',
-            district_id: district.districtId,
-            district_name: district.districtName,
-            email: wardManager.email || '',
-            phoneNumber: wardManager.phone || '',
-            level: 'Phường',
-          };
-        });
-
-        return [...accumulator, districtInfo, ...wardInfoArray];
-      }, []);
-
-      setData(convertedData);
-      setOriginalData(convertedData);
+      setData({
+        districts: responseDistrict,
+        wards: responseWards,
+      });
+      setOriginalData({
+        districts: responseDistrict,
+        wards: responseWards,
+      });
     } catch (error) {
       setError(error);
     } finally {
@@ -88,10 +68,20 @@ const ManageDistrictWard = () => {
     setModalOpen(false);
   };
 
-  const handleFilterChange = (level) => {
-    const filteredData = level === 'All' ? originalData : originalData.filter((item) => item.level === level);
-    setData(filteredData);
-    setSelectedFilter(level);
+  const handleFilterChange = (type) => {
+    let filteredData;
+    if (type === 'Quận') {
+      filteredData = originalData.districts;
+    } else if (type === 'Phường') {
+      filteredData = originalData.wards;
+    }
+
+    setData({
+      ...data,
+      [type.toLowerCase()]: filteredData,
+    });
+
+    setSelectedFilter(type);
   };
 
   const getFilterStyle = (filter) => ({
@@ -183,20 +173,23 @@ const ManageDistrictWard = () => {
         {/* Tab Filter */}
         <div className={classes.container__header}>
           <div className={classes.container__header_filter}>
-            <div onClick={() => handleFilterChange('All')} style={getFilterStyle('All')}>
-              All
+            <div onClick={() => handleFilterChange('Quận')} style={getFilterStyle('Quận')}>
+              Quận
             </div>
             <div onClick={() => handleFilterChange('Phường')} style={getFilterStyle('Phường')}>
               Phường
             </div>
-            <div onClick={() => handleFilterChange('Quận')} style={getFilterStyle('Quận')}>
-              Quận
-            </div>
           </div>
-          <div className={classes.container__header_search}>
+          {/* <div className={classes.container__header_search}>
             <FontAwesomeIcon icon={faMagnifyingGlass} className={classes.ic} />
-            <input type="text" id="inputSearch" placeholder="Tìm kiếm..." className={classes.text_input} />
-          </div>
+            <input
+              type="text"
+              id="inputSearch"
+              placeholder="Tìm kiếm..."
+              className={classes.text_input}
+              onChange={handleSearchChange}
+            />
+          </div> */}
         </div>
 
         {/* Table Header */}
@@ -205,11 +198,10 @@ const ManageDistrictWard = () => {
             <thead className={classes.table__header_wrap_thead}>
               <tr>
                 <th style={{ width: '5%' }}>STT</th>
-                <th style={{ width: '20%' }}>Khu vực</th>
-                <th style={{ width: '20%' }}>Tên cán bộ quản lý</th>
+                <th style={{ width: '25%' }}>Khu vực</th>
+                <th style={{ width: '25%' }}>Tên cán bộ quản lý</th>
                 <th style={{ width: '15%' }}>Email</th>
                 <th style={{ width: '15%' }}>Số điện thoại</th>
-                <th style={{ width: '10%' }}>Cấp</th>
                 <th style={{ width: '15%' }}>Chỉnh sửa</th>
               </tr>
             </thead>
@@ -220,43 +212,83 @@ const ManageDistrictWard = () => {
         <div className={classes.table__body}>
           <table className={classes.table__body_wrap}>
             <tbody>
-              {data.map((row, rowIndex) => (
-                <tr
-                  className={classes.table__body_wrap_row}
-                  key={rowIndex}
-                  onClick={() => {
-                    setSelectedRowData(row);
-                    setIsModalDetail(true);
-                  }}
-                >
-                  <td style={{ width: '5%' }}>{rowIndex + 1}</td>
-                  <td style={{ width: '20%' }}>{row.area}</td>
-                  <td style={{ width: '20%' }}>{row.managerName}</td>
-                  <td style={{ width: '15%' }}>{row.email}</td>
-                  <td style={{ width: '15%' }}>{row.phoneNumber}</td>
-                  <td style={{ width: '10%' }}>{row.level}</td>
-                  <td style={{ width: '15%' }}>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteClick(row.id, row.level === 'Phường' ? 'ward' : 'district');
-                      }}
-                      className={classes.btn_trash}
-                    >
-                      <FontAwesomeIcon icon={faTrash} />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleEditClick(row);
-                      }}
-                      className={classes.btn_pen}
-                    >
-                      <FontAwesomeIcon icon={faPen} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {selectedFilter === 'Quận' &&
+                data.districts.map((row, rowIndex) => (
+                  <tr
+                    className={classes.table__body_wrap_row}
+                    key={rowIndex}
+                    onClick={() => {
+                      setSelectedRowData(row);
+                      setIsModalDetail(true);
+                    }}
+                  >
+                    <td style={{ width: '5%' }}>{rowIndex + 1}</td>
+                    <td style={{ width: '25%' }}>{row.district_name}</td>
+                    <td style={{ width: '25%' }}>{row.district_manager_username}</td>
+                    <td style={{ width: '15%' }}>{row.district_manager_email}</td>
+                    <td style={{ width: '15%' }}>{row.district_manager_phone}</td>
+                    <td style={{ width: '15%' }}>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteClick(row.district_id, 'district');
+                        }}
+                        className={classes.btn_trash}
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditClick(row);
+                        }}
+                        className={classes.btn_pen}
+                      >
+                        <FontAwesomeIcon icon={faPen} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+
+              {selectedFilter === 'Phường' &&
+                data.wards.map((row, rowIndex) => (
+                  <tr
+                    className={classes.table__body_wrap_row}
+                    key={rowIndex}
+                    onClick={() => {
+                      setSelectedRowData(row);
+                      setIsModalDetail(true);
+                    }}
+                  >
+                    <td style={{ width: '5%' }}>{rowIndex + 1}</td>
+                    <td style={{ width: '25%' }}>
+                      {row.ward_name}, {row.district_name}
+                    </td>
+                    <td style={{ width: '25%' }}>{row.ward_manager_username}</td>
+                    <td style={{ width: '15%' }}>{row.ward_manager_email}</td>
+                    <td style={{ width: '15%' }}>{row.ward_manager_phone}</td>
+                    <td style={{ width: '15%' }}>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteClick(row.ward_id, 'ward');
+                        }}
+                        className={classes.btn_trash}
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditClick(row);
+                        }}
+                        className={classes.btn_pen}
+                      >
+                        <FontAwesomeIcon icon={faPen} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
@@ -264,7 +296,7 @@ const ManageDistrictWard = () => {
 
       {isModalDetail && (
         <Modal onClose={handleCloseDetailModal}>
-          <DetailAddress data={selectedRowData} onClose={updateDataAfterDetail} />
+          <DetailAddress data={selectedRowData} onClose={updateDataAfterDetail} filteredData={selectedFilter} />
         </Modal>
       )}
 
@@ -273,7 +305,7 @@ const ManageDistrictWard = () => {
           {modalType === 'add' ? (
             <ModalAdd onClose={updateDataAfterAdd} />
           ) : modalType === 'update' ? (
-            <ModalUpdate data={selectedRowData} onClose={updateDataAfterAdd} />
+            <ModalUpdate data={selectedRowData} onClose={updateDataAfterAdd} filteredData={selectedFilter} />
           ) : null}
         </Modal>
       )}

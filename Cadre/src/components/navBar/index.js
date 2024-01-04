@@ -7,22 +7,38 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faList } from '@fortawesome/free-solid-svg-icons';
+import { setSelectedWards } from '~/src/store/reducers';
+import { useDispatch, useSelector } from 'react-redux';
+
 import DropdownWard from '../Dropdown/DropdownWard';
 
 export default function NavBar(props) {
   const location = useLocation();
+  const dispatch = useDispatch()
   const currentPath = '/' + location.pathname.split('/')[1];
   const [activeAccountDropdown, setActiveAccountDropdown] = useState(false);
   const [filterWardActive, setFilterWardActive] = useState(false);
   const [checkUserDistrict, setCheckUserDistrict] = useState(false);
   const { categories } = props;
   const navigate = useNavigate();
+  const fetchWards = async () => {
+    try {
+      const res = await request('/ward/get_wards_managing', { headers: headers })
+      dispatch(setSelectedWards(res.data.wards))
+    } catch (error) {
+      console.log("Error fetching data: " + error.message)
+    }
+  }
+
   useEffect(() => {
     const type = localStorage.getItem('user_type')
     if (type === 'district') {
       setCheckUserDistrict(true)
+      fetchWards();
     }
   }, [])
+
+
   return (
     <div className={classes.main_container}>
       <div className={classes.logo_container}>

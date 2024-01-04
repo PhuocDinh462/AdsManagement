@@ -5,6 +5,10 @@ import classes from './ModalAdd.module.scss';
 
 const ModalUpdate = ({ data, onClose }) => {
   const [content, setContent] = useState(data.typeName);
+  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -16,7 +20,7 @@ const ModalUpdate = ({ data, onClose }) => {
     console.log(dataUpdate);
 
     try {
-      const response = await axiosClient.put('/cadre/updateForm', dataUpdate);
+      const response = await axiosClient.put('/cadre/updateForm', dataUpdate, { headers });
 
       if (response.status === 'success') {
         Swal.fire({

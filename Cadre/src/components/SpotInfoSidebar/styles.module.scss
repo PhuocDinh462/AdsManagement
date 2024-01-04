@@ -60,6 +60,16 @@ $borderWidth: 1px;
     height: 20rem;
     object-fit: cover;
     border-bottom: $borderWidth solid $text_300;
+    user-select: none;
+
+    &--enable {
+      cursor: pointer;
+      transition: filter 0.3s;
+
+      &:hover {
+        filter: brightness(0.8);
+      }
+    }
   }
 
   .pagination {

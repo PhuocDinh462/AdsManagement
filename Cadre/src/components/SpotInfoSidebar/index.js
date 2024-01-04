@@ -11,7 +11,17 @@ import { useSelector, useDispatch } from 'react-redux';
 import { selectUser, selectBoardId, setBoardId } from '~/src/store/reducers';
 
 export default function SpotInfoSidebar(props) {
-  const { spotCoord, spotId, setCollapse, adSpots, isClickMarker, setAutoCompleteValue } = props;
+  const {
+    spotCoord,
+    spotId,
+    setCollapse,
+    adSpots,
+    isClickMarker,
+    setAutoCompleteValue,
+    setShowImageModal,
+    setImageModalUrl,
+  } = props;
+
   const [status, setStatus] = useState(true);
   const [currentAdsIndex, setCurrentAdsIndex] = useState(0);
   const [spotName, setSpotName] = useState();
@@ -53,6 +63,7 @@ export default function SpotInfoSidebar(props) {
   }, [spotCoord]);
 
   useEffect(() => {
+    setStatus(true);
     if (!isClickMarker) {
       setCurrentInfo(null);
       return;
@@ -105,7 +116,16 @@ export default function SpotInfoSidebar(props) {
       {!loading && (
         <div className={classes.body}>
           <div className={classes.adInfo}>
-            <img className={classes.img} src={currentInfo?.spotInfo?.image_url || noImage} />
+            <img
+              className={[classes.img, currentInfo?.spotInfo?.image_url && classes['img--enable']].join(' ')}
+              src={currentInfo?.spotInfo?.image_url || noImage}
+              onClick={() => {
+                const url = currentInfo?.spotInfo?.image_url;
+                if (!url) return;
+                setImageModalUrl(url);
+                setShowImageModal(true);
+              }}
+            />
 
             <div className={classes.content}>
               <div className={[classes.ic, classes.ad_ic].join(' ')}>
@@ -118,7 +138,7 @@ export default function SpotInfoSidebar(props) {
                     <div className={classes.type}>{currentInfo?.boardInfo[currentAdsIndex].type_name}</div>
                     <div className={classes.detail}>
                       <span className={classes.label}>Kích thước: </span>
-                      {`${currentInfo?.boardInfo[currentAdsIndex].width} x ${currentInfo?.boardInfo[currentAdsIndex].height}`}
+                      {`${currentInfo?.boardInfo[currentAdsIndex].width}m x ${currentInfo?.boardInfo[currentAdsIndex].height}m`}
                     </div>
                     <div className={classes.detail}>
                       <span className={classes.label}>Số lượng: </span>

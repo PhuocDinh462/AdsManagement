@@ -1,40 +1,55 @@
 import React from 'react';
 import classes from './DetailAddress.module.scss';
 
-const DetailAddress = ({ data, onClose }) => {
+const DetailAddress = ({ data, onClose, filteredData }) => {
   console.log(data);
+
+  function formatDateTime(dateTimeString) {
+    const options = {
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+    };
+    const formattedDate = new Date(dateTimeString).toLocaleDateString('en-US', options);
+    return formattedDate;
+  }
   return (
     <div className={classes.container}>
       <p className={classes.tilte_modal}>
         CHI TIẾT <span className={classes.tilte_modal}>{data.area}</span>{' '}
       </p>
       <div className={classes.wrap_content}>
-        {data.level === 'Quận' && (
+        {filteredData === 'Quận' && (
           <div style={{ padding: '20px' }}>
             <p className={classes.item_info}>
               Tên
               quận&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:{' '}
-              <span>{data.area}</span>
+              <span>{data.district_name}</span>
             </p>
             <p className={classes.item_info}>
-              Tên người quản lý&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span>{data.managerName}</span>
+              Tên người quản lý&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span>{data.district_manager_username}</span>
             </p>
             <p className={classes.item_info}>
-              Email người quản lý&nbsp;&nbsp;&nbsp;&nbsp;: <span>{data.email}</span>
+              Ngày
+              sinh&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:{' '}
+              <span>{formatDateTime(data.district_manager_dob)}</span>
+            </p>
+            <p className={classes.item_info}>
+              Email người quản lý&nbsp;&nbsp;&nbsp;&nbsp;: <span>{data.district_manager_email}</span>
             </p>
             <p className={classes.item_info}>
               Số điện thoại&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:{' '}
-              <span>{data.phoneNumber}</span>
+              <span>{data.district_manager_phone}</span>
             </p>
           </div>
         )}
 
-        {data.level === 'Phường' && (
+        {filteredData === 'Phường' && (
           <div style={{ padding: '20px' }}>
             <p className={classes.item_info}>
               Tên
               phường&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:{' '}
-              <span>{data.area}</span>
+              <span>{data.ward_name}</span>
             </p>
             <p className={classes.item_info}>
               Thuộc quận
@@ -43,15 +58,21 @@ const DetailAddress = ({ data, onClose }) => {
             </p>
             <p className={classes.item_info}>
               Tên người quản lý&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:{' '}
-              <span>{data.managerName}</span>
+              <span>{data.ward_manager_username}</span>
             </p>
             <p className={classes.item_info}>
-              Email người quản lý&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span>{data.email}</span>
+              Ngày
+              sinh&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:{' '}
+              <span>{formatDateTime(data.ward_manager_dob)}</span>
+            </p>
+            <p className={classes.item_info}>
+              Email người quản lý&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:{' '}
+              <span>{data.ward_manager_email}</span>
             </p>
             <p className={classes.item_info}>
               Số điện
               thoại&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:{' '}
-              <span>{data.phoneNumber}</span>
+              <span>{data.ward_manager_phone}</span>
             </p>
           </div>
         )}

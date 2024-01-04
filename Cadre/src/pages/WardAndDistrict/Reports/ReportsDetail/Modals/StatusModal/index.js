@@ -4,17 +4,51 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { colors, text } from '~styles/colors';
 import { IconTextBtn } from '~components/button';
 import { useState } from 'react';
-import { Backdrop, CircularProgress } from '@mui/material';
+import { Backdrop, CircularProgress, styled, TextField, Checkbox } from '@mui/material';
 import Swal from 'sweetalert2';
 import { axiosRequest } from '~/src/api/axios';
 import Select from 'react-select';
-import { useSelector } from 'react-redux';
-import { selectUser } from '~/src/store/reducers';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectUser, selectSendMailStatus, setSendMailStatus } from '~/src/store/reducers';
+
+const fontSize = 16;
+const sx = { '& .MuiSvgIcon-root': { fontSize: 18, color: colors.primary_200 } };
+
+const CssTextField = styled(TextField, {
+  shouldForwardProp: (props) => props !== 'focusColor',
+})((p) => ({
+  // input label when focused
+  '& label.Mui-focused': {
+    color: p.focusColor,
+  },
+  // focused color for input with variant='standard'
+  '& .MuiInput-underline:after': {
+    borderBottomColor: p.focusColor,
+  },
+  // focused color for input with variant='filled'
+  '& .MuiFilledInput-underline:after': {
+    borderBottomColor: p.focusColor,
+  },
+  // focused color for input with variant='outlined'
+  '& .MuiOutlinedInput-root': {
+    '&.Mui-focused fieldset': {
+      borderColor: p.focusColor,
+    },
+  },
+  // Label
+  '& .MuiFormLabel-root': {
+    fontSize: fontSize,
+  },
+}));
 
 export default function StatusModal(props) {
-  const { setActive, report_id } = props;
+  const { setActive, report_id, changeStatusByReportId, currentReport } = props;
   const [loading, setLoading] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState('pending');
+  const [handlingMethod, setHandlingMethod] = useState('');
+
+  const sendMailStatus = useSelector(selectSendMailStatus);
+  const dispatch = useDispatch();
 
   const user = useSelector(selectUser);
   const tokenAuth = 'Bearer ' + user.token.split('"').join('');
@@ -23,28 +57,28 @@ export default function StatusModal(props) {
   };
 
   const handleConfirm = async () => {
-    console.log(selectedStatus);
     setLoading(true);
     const body = {
       id: report_id,
       status: selectedStatus,
+      handlingMethod: handlingMethod,
+      sendMail: sendMailStatus,
     };
     await axiosRequest
       .patch(`ward/updateReportStatus`, body, { headers: headers })
       .then((res) => {
         setActive(false);
+        changeStatusByReportId(report_id, options.find((item) => item.value === selectedStatus).label);
         Swal.fire({
           icon: 'success',
           title: 'Thông báo',
           text: 'Cập nhật trạng thái thành công',
           width: '50rem',
           confirmButtonColor: colors.primary_300,
-        }).then(() => {
-          window.location.reload(false);
         });
       })
       .catch((error) => {
-        console.log('Update report status error: ', error);
+        console.log('Update report status error: ');
       })
       .finally(() => {
         setLoading(false);
@@ -85,6 +119,11 @@ export default function StatusModal(props) {
     },
   ];
 
+  const findDefaultValueIndex = () => {
+    if (!currentReport) return 0;
+    return options.findIndex((item) => item.label === currentReport.status);
+  };
+
   return (
     <div className={classes.main_container}>
       <div className={classes.header}>
@@ -96,7 +135,7 @@ export default function StatusModal(props) {
 
       <div className={classes.content}>
         <Select
-          defaultValue={options[0]}
+          defaultValue={options[findDefaultValueIndex()]}
           options={options}
           styles={customStyles}
           onChange={(e) => setSelectedStatus(e.value)}
@@ -109,10 +148,38 @@ export default function StatusModal(props) {
             },
           })}
         />
+
+        <div className={classes.textField}>
+          <CssTextField
+            defaultValue={currentReport.processing_info}
+            variant="outlined"
+            label="Cách thức xử lý"
+            fullWidth
+            multiline
+            rows={10}
+            InputProps={{ style: { fontSize: fontSize } }}
+            focusColor={colors.primary_300}
+            onChange={(event) => setHandlingMethod(event.target.value)}
+          />
+        </div>
+
+        <div className={classes.checkbox_container}>
+          <div className={classes.checkbox}>
+            <Checkbox
+              defaultChecked={sendMailStatus}
+              className={classes.checkbox__ic}
+              sx={sx}
+              onChange={(e) => {
+                dispatch(setSendMailStatus(e.target.checked));
+              }}
+            />
+            <div className={classes.checkbox__label}>Gửi mail cho người báo cáo</div>
+          </div>
+        </div>
       </div>
 
       <div className={classes.btn_container}>
-        <IconTextBtn label="Cập nhật" rightIc={faCheck} onClick={() => handleConfirm()} />
+        <IconTextBtn label="Cập nhật" width="13rem" rightIc={faCheck} onClick={() => handleConfirm()} />
       </div>
 
       <Backdrop sx={{ color: 'white', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loading}>

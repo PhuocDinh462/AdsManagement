@@ -5,6 +5,10 @@
     "status": {
       "type": "string",
       "enum": ["pending", "processing", "processed"]
+    },
+    "handlingMethod": {},
+    "sendMail": {
+      "type": "boolean"
     }
   },
   "required": ["id", "status"],

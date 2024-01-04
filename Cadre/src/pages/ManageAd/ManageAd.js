@@ -1,10 +1,7 @@
-import React, { useState } from 'react';
-import HeaderTable from '../../components/headerTable/HeaderTable';
-import classes from './ManageAd.module.scss';
+import { faMagnifyingGlass, faPenToSquare, faPlus, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
-import { faPlus, faClose, faTrashCan, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
-import AddAdLocation from './components/AddAd/AddAdLocation';
+import { useState } from 'react';
+import classes from './ManageAd.module.scss';
 import DetailsAd from './components/DetailsAd/DetailsAd';
 import UpdateAd from './components/UpdateAdLocation/UpdateAd';
 
@@ -158,4 +155,3 @@ const ManageAd = () => {
 };
 
 export default ManageAd;
-

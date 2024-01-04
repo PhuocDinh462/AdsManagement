@@ -15,6 +15,9 @@ import {
   faBan,
   faPaperclip,
   faPaperPlane,
+  faCheck,
+  faXmark,
+  faClockRotateLeft,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState, useEffect } from 'react';
@@ -111,13 +114,21 @@ export default function ReportsDetail() {
     setCurrentReportIndex(0);
   };
 
+  const changeStatusByReportId = (id, newStatus) => {
+    setData({
+      ...data,
+      reports: data.reports.map((item) => (item.report_id === id ? { ...item, status: newStatus } : { ...item })),
+    });
+    setFilteredData(filteredData.map((item) => (item.report_id === id ? { ...item, status: newStatus } : { ...item })));
+  };
+
   return (
     <div className={classes.main_container}>
       <div className={classes.sideBar_container}>
         <div className={classes.searchBar_container}>
-          <a href="/reports" className={[classes.back_btn, classes.btn].join(' ')}>
+          <div className={[classes.back_btn, classes.btn].join(' ')} onClick={() => navigate(-1)}>
             <FontAwesomeIcon icon={faArrowLeft} />
-          </a>
+          </div>
           <SearchBar placeholder="Tìm kiếm..." width="20rem" onChange={(keyword) => handleFilter(keyword)} />
         </div>
 
@@ -161,7 +172,7 @@ export default function ReportsDetail() {
           {filteredData?.map((item, index) => (
             <div
               className={classes.report_item}
-              key={index}
+              key={item.report_id}
               onClick={() => {
                 setCurrentReportIndex(index);
                 dispatch(setReportIndex(index));
@@ -248,9 +259,35 @@ export default function ReportsDetail() {
                       <td className={classes.userInfo_col}>
                         <div className={classes.itemInfo}>
                           <FontAwesomeIcon icon={faDiagramProject} />
-                          <dir className={classes.itemInfo__text}>
-                            {'Trạng thái: ' + filteredData[currentReportIndex]?.status}
-                          </dir>
+                          <div className={classes.itemInfo__text}>
+                            <div className={classes.reportStatus_container}>
+                              Trạng thái:&nbsp;
+                              <div
+                                className={classes.reportStatus}
+                                style={{
+                                  backgroundColor:
+                                    filteredData[currentReportIndex]?.status === 'Chờ xử lý'
+                                      ? '#ff3a3a'
+                                      : filteredData[currentReportIndex]?.status === 'Đang xử lý'
+                                      ? '#0095d5'
+                                      : '#00AE46',
+                                }}
+                              >
+                                {filteredData[currentReportIndex]?.status}
+                                <div className={classes.reportStatus__ic}>
+                                  <FontAwesomeIcon
+                                    icon={
+                                      filteredData[currentReportIndex]?.status === 'Chờ xử lý'
+                                        ? faXmark
+                                        : filteredData[currentReportIndex]?.status === 'Đang xử lý'
+                                        ? faClockRotateLeft
+                                        : faCheck
+                                    }
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </td>
                     </tr>
@@ -325,16 +362,19 @@ export default function ReportsDetail() {
       </Backdrop>
 
       <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={showProcessModal}>
-        <ProcessModal
-          setActive={setShowProcessModal}
-          report_id={filteredData[currentReportIndex]?.report_id}
-          email={filteredData[currentReportIndex]?.email_rp}
-        />
+        <ProcessModal setActive={setShowProcessModal} email={filteredData[currentReportIndex]?.email_rp} />
       </Backdrop>
 
-      <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={showStatusModal}>
-        <StatusModal setActive={setShowStatusModal} report_id={filteredData[currentReportIndex]?.report_id} />
-      </Backdrop>
+      {showStatusModal && (
+        <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={showStatusModal}>
+          <StatusModal
+            setActive={setShowStatusModal}
+            report_id={filteredData[currentReportIndex]?.report_id}
+            changeStatusByReportId={changeStatusByReportId}
+            currentReport={data.reports?.find((item) => item.report_id === filteredData[currentReportIndex]?.report_id)}
+          />
+        </Backdrop>
+      )}
     </div>
   );
 }

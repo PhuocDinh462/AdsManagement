@@ -1,18 +1,18 @@
-// .home {
-//   height: 500px;
-// }
+@import '/src/styles/colors.scss';
+
+$wrapper-left-size: 25%;
 
 .wrapper {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   display: flex;
   background-color: #0a6971;
+  background-image: url(https://th.bing.com/th/id/OIG.CtbaIaNdet39XnxVYk4N?pid=ImgGn);
   overflow: unset;
 
   .wrapper-left {
-    position: relative;
     margin: 24px;
-    width: 30%;
+    width: $wrapper-left-size;
 
     .header-left {
       width: 100%;
@@ -25,23 +25,21 @@
     }
   }
   .wrapper-manage-send-request {
-    width: 70%;
+    width: calc(100% - $wrapper-left-size);
     height: 100%;
     background-color: #f3f3f3;
-    border-left: 1px solid;
     .wrapper-send-request {
-      border-top-left-radius: 16px;
-      border-bottom-left-radius: 16px;
       padding: 8px 24px;
       width: 100%;
       height: 100%;
       background-color: #fff;
 
       .header-manage-send-request {
-        margin: 40px 0;
+        margin: 1.5rem 0;
         p {
           font-size: 32px;
           font-weight: 600;
+          color: $text_700;
         }
       }
 
@@ -57,4 +55,3 @@
 .iconLock {
   margin-left: 12px;
 }
-

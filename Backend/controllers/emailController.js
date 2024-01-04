@@ -34,24 +34,13 @@ const createOTP = async (req, res) => {
 };
 
 const replyReport = async (req, res) => {
-  const { email, content, report_id } = req.body;
+  const { email, content } = req.body;
   if (!email) res.status(400).json({ msg: 'Please provide an email' });
   else if (!content) res.status(400).json({ msg: 'Content is blank' });
 
-  connection.query(
-    `update report set processing_info = ? where report_id = ?`,
-    [content, report_id],
-    async (err, results) => {
-      if (err) {
-        console.error('Error executing query: ' + err.stack);
-        return res.status(500).json({ error: 'Database error' });
-      }
-
-      const info = await emailService.sendMail(email, 'Báo cáo', content);
-      if (!info) res.status(400).json({ msg: 'Sending mail fail' });
-      else res.status(200).json({ info: info.info });
-    }
-  );
+  const info = await emailService.sendMail(email, 'Báo cáo', content);
+  if (!info) res.status(400).json({ msg: 'Sending mail fail' });
+  else res.status(200).json({ info: info.info });
 };
 
 module.exports = { createOTP, replyReport };

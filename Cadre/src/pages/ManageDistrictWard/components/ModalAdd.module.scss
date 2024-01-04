@@ -6,6 +6,7 @@
   font-style: normal;
   font-weight: 600;
   line-height: normal;
+  margin-bottom: 20px;
 }
 
 .modal_wrap {
@@ -19,9 +20,8 @@
   flex-direction: column;
   align-items: center;
   min-height: 200px;
-  height: 40vh;
   padding: 0 20px;
-  justify-content: space-evenly;
+  gap: 20px;
 
   .level_wrap {
     display: flex;
@@ -29,7 +29,6 @@
     align-items: center;
     width: 100%;
     gap: 50px;
-    margin: 20px 0;
 
     &_title {
       color: #0a6971;
@@ -51,9 +50,9 @@
   .district_wrap {
     width: 100%;
     display: flex;
-    align-items: center;
-    gap: 30px;
-    margin-bottom: 30px;
+    flex-direction: column;
+    gap: 10px;
+    margin: 10px 0;
 
     .title_label {
       color: #0a6971;
@@ -68,7 +67,7 @@
       border-radius: 5px;
       font-size: 16px;
       background: white;
-      width: 50%;
+      width: 100%;
       border: 0;
       padding: 8px 10px;
       border: #0a6971 solid 1px;

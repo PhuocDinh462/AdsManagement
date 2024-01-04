@@ -6,7 +6,7 @@ import Pagination from '~components/Pagination';
 import SearchBar from '~components/SearchBar';
 import { axiosRequest } from '~/src/api/axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectUser, setBoardIndex } from '~/src/store/reducers';
+import { selectSelectedWards, selectUser, setBoardIndex } from '~/src/store/reducers';
 import { useNavigate } from 'react-router';
 
 export default function AdSpots() {
@@ -17,25 +17,50 @@ export default function AdSpots() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
+  const selectedWards = useSelector(selectSelectedWards);
   const tokenAuth = 'Bearer ' + user.token.split('"').join('');
   const headers = {
     Authorization: tokenAuth,
   };
-
-  useEffect(() => {
-    (async () => {
+  const fetchWardsSpots = async () => {
+    let spots = [];
+    for (let i = 0; i < selectedWards.length; i++) {
       await axiosRequest
-        .get(`ward/getAdSpotsListByWardId/${user.ward_id}`, { headers: headers })
+        .get(`ward/getAdSpotsListByWardId/${selectedWards[i].ward_id}`, { headers: headers })
         .then((res) => {
-          const data = res.data.data;
-          setData(data);
-          setFilterData(data);
+          if (res.data.data.length > 0) {
+            for (let j = 0; j < res.data.data.length; j++) {
+              spots.push(res.data.data[j])
+            }
+          }
         })
         .catch((error) => {
           console.log('Get report lists error: ', error);
         });
-    })();
-  }, []);
+    }
+    setData(spots);
+    setFilterData(spots);
+  }
+
+  useEffect(() => {
+    if (user.user_type === 'ward') {
+      (async () => {
+        await axiosRequest
+          .get(`ward/getAdSpotsListByWardId/${user.ward_id}`, { headers: headers })
+          .then((res) => {
+            const data = res.data.data;
+            setData(data);
+            setFilterData(data);
+          })
+          .catch((error) => {
+            console.log('Get report lists error: ', error);
+          });
+      })();
+    }
+    else if (user.user_type === 'district') {
+      fetchWardsSpots();
+    }
+  }, [selectedWards]);
 
   useEffect(() => {
     if (!filterKeyword) {

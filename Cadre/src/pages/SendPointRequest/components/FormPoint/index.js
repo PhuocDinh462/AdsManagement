@@ -9,15 +9,22 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '~/src/firebase';
 import { v4 } from 'uuid';
 import { Backdrop, CircularProgress } from '@mui/material';
-const locationOptions = ["Đất công/Công viên/Hành lang an toàn giao thông", "Đất tư nhân/Nhà ở riêng lẻ", "Trung tâm thương mại", "Chợ", "Cây xăng", "Nhà chờ xe buýt"]
+const locationOptions = [
+  'Đất công/Công viên/Hành lang an toàn giao thông',
+  'Đất tư nhân/Nhà ở riêng lẻ',
+  'Trung tâm thương mại',
+  'Chợ',
+  'Cây xăng',
+  'Nhà chờ xe buýt',
+];
 
 const FormPoint = () => {
   const apiKey = 'AIzaSyAQxG3Ubdo-Nhf6tjGYmXhYDe3yr4vGeDw';
   const pointNavigate = useNavigate();
   const user_type = localStorage.getItem('user_type');
   const { point_id } = useParams();
-  const [pointInfor, setPointInfor] = useState({})
-  const [advertisementTypes, setAdvertisementTypes] = useState([])
+  const [pointInfor, setPointInfor] = useState({});
+  const [advertisementTypes, setAdvertisementTypes] = useState([]);
   const [address, setAddress] = useState(null);
   const [loading, setLoading] = useState(false);
   const [imageUploadUrl, setImageUploadUrl] = useState(null);
@@ -43,36 +50,33 @@ const FormPoint = () => {
     fetchData();
   }, [pointInfor]);
 
-
   const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
   const headers = {
     Authorization: tokenAuth,
   };
 
   const fetchPointInfor = async () => {
-
     try {
       const response = await request.get(`point/get_point/${point_id}`, { headers: headers });
       setPointInfor(response.data.point);
-      setImageUploadUrl(response.data.point.image_url)
+      setImageUploadUrl(response.data.point.image_url);
     } catch (error) {
       console.error('Error fetching surfaces:', error);
     }
-  }
+  };
 
   const fetchAdvertisementTypes = async () => {
-
     try {
       const response = await request.get(`advertisement_type`);
       setAdvertisementTypes(response.data.advertisement_types);
     } catch (error) {
-      console.error('Error fetching surfaces:', error)
+      console.error('Error fetching surfaces:', error);
     }
   };
   useEffect(() => {
     fetchPointInfor();
     fetchAdvertisementTypes();
-  }, [])
+  }, []);
 
   const formik = useFormik({
     initialValues: {
@@ -84,11 +88,11 @@ const FormPoint = () => {
       location_type: '',
       isPlanning: true,
       reason: '',
-      edit_status: 'pending'
+      edit_status: 'pending',
     },
     validationSchema: Yup.object({
       requestTime: Yup.string().required('Vui lòng chọn thời điểm xin chỉnh sửa'),
-      reason: Yup.string().required('Vui lòng nhập lý do chỉnh sửa')
+      reason: Yup.string().required('Vui lòng nhập lý do chỉnh sửa'),
     }),
     onSubmit: async (values, { setSubmitting }) => {
       try {
@@ -98,10 +102,10 @@ const FormPoint = () => {
           is_planning: values.isPlanning,
           image_url: imageUploadUrl,
           point_id: point_id,
-          edit_status: "pending",
+          edit_status: 'pending',
           request_time: values.requestTime,
-          reason: values.reason
-        }
+          reason: values.reason,
+        };
         await request.post('edit_point/create', params, { headers: headers });
 
         setSubmitting(false);
@@ -111,7 +115,7 @@ const FormPoint = () => {
           confirmButtonText: 'Hoàn tất',
           width: '50rem',
         });
-        pointNavigate('/advertising-spots')
+        pointNavigate('/advertising-spots');
       } catch (error) {
         console.log(error);
         setSubmitting(false);
@@ -134,7 +138,7 @@ const FormPoint = () => {
       location_type: pointInfor.location_type,
       isPlanning: pointInfor.is_planning > 0 ? true : false,
       reason: '',
-      edit_status: 'pending'
+      edit_status: 'pending',
     });
   }, [address]);
   const handleFileChange = (e) => {
@@ -178,7 +182,12 @@ const FormPoint = () => {
           </label>
           <label className={classes['title-input']}>
             Thời điểm:
-            <input type="date" name="requestTime" value={formik.values.requestTime || ''} onChange={formik.handleChange} />
+            <input
+              type="date"
+              name="requestTime"
+              value={formik.values.requestTime || ''}
+              onChange={formik.handleChange}
+            />
             {formik.touched.requestTime && formik.errors.requestTime ? (
               <div className={classes.error}>{formik.errors.requestTime}</div>
             ) : null}
@@ -192,25 +201,30 @@ const FormPoint = () => {
           </label>
         </div>
 
-
         <div className={classes['third-row']}>
           <label className={classes['title-input']}>
             Hình ảnh:
             <input type="file" accept="image/*" name="image" onChange={handleFileChange} />
-
           </label>
         </div>
 
         <div className={classes['fourth-row']}>
           <label className={classes['title-input']}>
             Loại hình thức quảng cáo:
-            <select name="advertisement_type_id" value={formik.values.advertisement_type_id || ''} onChange={formik.handleChange}>
-              <option value="" disabled hidden>Chọn loại hình thức quảng cáo</option>
+            <select
+              name="advertisement_type_id"
+              value={formik.values.advertisement_type_id || ''}
+              onChange={formik.handleChange}
+            >
+              <option value="" disabled hidden>
+                Chọn loại hình thức quảng cáo
+              </option>
               {advertisementTypes.map((advertisementType, index) => (
-                <option key={advertisementType.advertisement_type_id} value={advertisementType.advertisement_type_id}>{advertisementType.type_name}</option>
+                <option key={advertisementType.advertisement_type_id} value={advertisementType.advertisement_type_id}>
+                  {advertisementType.type_name}
+                </option>
               ))}
             </select>
-
           </label>
         </div>
 
@@ -218,12 +232,15 @@ const FormPoint = () => {
           <label className={classes['title-input']}>
             Loại vị trí:
             <select name="location_type" value={formik.values.location_type || ''} onChange={formik.handleChange}>
-              <option value="" disabled hidden>Chọn loại địa điểm</option>
+              <option value="" disabled hidden>
+                Chọn loại địa điểm
+              </option>
               {locationOptions.map((location, index) => (
-                <option key={index} value={location}>{location}</option>
+                <option key={index} value={location}>
+                  {location}
+                </option>
               ))}
             </select>
-
           </label>
         </div>
 
@@ -248,7 +265,7 @@ const FormPoint = () => {
         </div>
 
         <button className={classes['custom-button']} type="submit" disabled={formik.isSubmitting}>
-          Submit Form
+          Gửi yêu cầu
         </button>
       </form>
       <Backdrop sx={{ color: 'white', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loading}>

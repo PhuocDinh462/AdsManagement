@@ -5,7 +5,11 @@ const router = express.Router();
 const validate = require('../middlewares/validation/validationSchema');
 const updateReportStatus = require('../schemas/updateReportStatus.json');
 const validationLicenseReq = require('../middlewares/validation/LicenseReq.middleware');
-const { createLicensingRequest, getAllLicenseRequest } = require('../controllers/license.controller');
+const {
+  createLicensingRequest,
+  getAllLicenseRequest,
+  updateStatusLicenseRequest,
+} = require('../controllers/license.controller');
 
 router.get('/getAdSpotsByWardId/:id', wardController.getAdSpotsByWardId);
 router.get('/getInfoByPointId/:id', wardController.getInfoByPointId);
@@ -19,7 +23,9 @@ router.get('/getAdBoardByBoardId/:id', wardController.getAdBoardByBoardId);
 router.post('/getNumberOfReportsByLatLng', wardController.getNumberOfReportsByLatLng);
 router.post('/license/create-license', validationLicenseReq, createLicensingRequest);
 router.get('/license', getAllLicenseRequest);
+router.put('/license/:licensingId', updateStatusLicenseRequest);
 router.get('/getAdSpotsListByWardId/:id', wardController.getAdSpotsListByWardId);
 router.get('/get_wards_managing', wardController.getAllWardsByDistrictManager);
 
 module.exports = router;
+

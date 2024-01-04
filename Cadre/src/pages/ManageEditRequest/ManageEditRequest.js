@@ -7,6 +7,7 @@ import Modal from '~/src/components/Modal/Modal';
 import { axiosClient } from '../../api/axios';
 import Swal from 'sweetalert2';
 import DetailActionEdit from './components/DetailActionEdit/DetailActionEdit';
+import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
 
 const ManageForm = () => {
   const [data, setData] = useState({ boards: [], points: [] });
@@ -47,10 +48,16 @@ const ManageForm = () => {
     fetchData();
   }, []);
 
-  const updateDataAfterAdd = async (newData) => {
-    await fetchData();
-    setModalOpen(false);
+  const handlePointSocketEvent = (eventData) => {
+    fetchData();
   };
+
+  const handleBoardSocketEvent = (eventData) => {
+    fetchData();
+  };
+  // Subscribe to the socket events when the component mounts
+  useSocketSubscribe('createEditPointRequest', handlePointSocketEvent);
+  useSocketSubscribe('createEditBoardRequest', handleBoardSocketEvent);
 
   const handleFilterChange = (type) => {
     let filteredData;
@@ -83,45 +90,45 @@ const ManageForm = () => {
     setModalOpen(false);
   };
 
-  const handleDeleteClick = async (row) => {
-    const confirmResult = await Swal.fire({
-      title: 'Xác nhận xóa',
-      text: 'Bạn có chắc muốn xóa?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Xóa',
-      cancelButtonText: 'Hủy',
-    });
-    if (confirmResult.isConfirmed) {
-      try {
-        const response = await axiosClient.delete('cadre/deleteForm', { data: { type: row.type, id: row.typeId } });
+  // const handleDeleteClick = async (row) => {
+  //   const confirmResult = await Swal.fire({
+  //     title: 'Xác nhận xóa',
+  //     text: 'Bạn có chắc muốn xóa?',
+  //     icon: 'warning',
+  //     showCancelButton: true,
+  //     confirmButtonColor: '#d33',
+  //     cancelButtonColor: '#3085d6',
+  //     confirmButtonText: 'Xóa',
+  //     cancelButtonText: 'Hủy',
+  //   });
+  //   if (confirmResult.isConfirmed) {
+  //     try {
+  //       const response = await axiosClient.delete('cadre/deleteForm', { data: { type: row.type, id: row.typeId } });
 
-        if (response.status === 'success') {
-          Swal.fire({
-            icon: 'success',
-            title: 'Xóa thành công!',
-            text: 'Đã xóa thành công.',
-          });
-          fetchData();
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Xóa thất bại!',
-            text: 'Có lỗi xảy ra khi xóa. Vui lòng thử lại.',
-          });
-          console.error('Failed to delete element');
-        }
-      } catch (error) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Xóa thất bại!',
-        });
-        console.error('Error deleting element: ', error);
-      }
-    }
-  };
+  //       if (response.status === 'success') {
+  //         Swal.fire({
+  //           icon: 'success',
+  //           title: 'Xóa thành công!',
+  //           text: 'Đã xóa thành công.',
+  //         });
+  //         fetchData();
+  //       } else {
+  //         Swal.fire({
+  //           icon: 'error',
+  //           title: 'Xóa thất bại!',
+  //           text: 'Có lỗi xảy ra khi xóa. Vui lòng thử lại.',
+  //         });
+  //         console.error('Failed to delete element');
+  //       }
+  //     } catch (error) {
+  //       Swal.fire({
+  //         icon: 'error',
+  //         title: 'Xóa thất bại!',
+  //       });
+  //       console.error('Error deleting element: ', error);
+  //     }
+  //   }
+  // };
 
   return (
     <div className={classes.container_wrap}>
