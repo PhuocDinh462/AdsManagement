@@ -193,7 +193,7 @@ export default function Home() {
               if (index !== -1) {
                 handleMarkerClick(data[index]);
                 setCenter({ lat: data[index].lat, lng: data[index].lng });
-                // setZoom(16);
+                setZoom(18);
               }
               dispatch(setReportCoord(null));
             } else {
@@ -456,4 +456,3 @@ export default function Home() {
     </div>
   );
 }
-

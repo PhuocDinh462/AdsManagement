@@ -12,7 +12,7 @@ const getAdSpotsByWardId = catchAsync(async (req, res, next) => {
     }
     const spots = results;
 
-    connection.query('SELECT * FROM advertising_board', [req.params.id], (err, results) => {
+    connection.query('SELECT * FROM advertising_board', (err, results) => {
       if (err) {
         console.error('Error executing query: ', err);
         res.status(500).send('Internal Server Error');
@@ -22,7 +22,6 @@ const getAdSpotsByWardId = catchAsync(async (req, res, next) => {
 
       connection.query(
         'SELECT * FROM report rp JOIN detail dt ON rp.detail_id = dt.detail_id',
-        [req.params.id],
         async (err, results) => {
           if (err) {
             console.error('Error executing query: ', err);
@@ -344,7 +343,7 @@ const getReportListsByWardId = catchAsync(async (req, res, next) => {
           });
 
           connection.query(
-            'SELECT * FROM ward JOIN district ON ward.district_id = district.district_id',
+            'SELECT * FROM ward w JOIN district d ON w.district_id = d.district_id where w.ward_id = ?',
             [req.params.id],
             async (err, results) => {
               if (err) {
@@ -352,7 +351,7 @@ const getReportListsByWardId = catchAsync(async (req, res, next) => {
                 res.status(500).send('Internal Server Error');
                 return;
               }
-              const wardName = results[0].ward_name;
+              const wardName = results[0].ward_name.replace('Phường', '');
               const districtName = results[0].district_name;
 
               res.status(200).json({
