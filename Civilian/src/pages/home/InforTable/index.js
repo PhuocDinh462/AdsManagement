@@ -4,9 +4,6 @@ import { ic_infor, ic_location, ic_not_planned, ic_report, ic_warning } from '~/
 import ButtonCT from '~/src/components/button/ButtonCT';
 
 const InforTable = (props) => {
-    // When table have the infomation
-    const isHaveInfor = true;
-
     return (
         <div className={classes.container__table}>
             <div className={classes['container__table-info']}>
@@ -46,6 +43,8 @@ const InforTable = (props) => {
                             iconLeft={ic_report}
                             redWarning={true}
                             primary={true}
+                            disabled={props.info.infoBoard.list_report_board.length === 0 ? true : false}
+                            onClick={() => props.onClickShowDetailReportBoard()}
                         />
                     </div>
                 </div>
@@ -67,6 +66,7 @@ const InforTable = (props) => {
                     iconLeft={ic_report}
                     redWarning={true}
                     primary={true}
+                    onClick={() => props.onClickShowDetailReportPoint()}
                 />
 
                 {props.info.infoPoint.is_planning === 1 ? (

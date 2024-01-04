@@ -96,8 +96,6 @@ const createReport = catchAsync(async (req, res, next) => {
     board_id,
   } = req.body;
 
-  console.log(req.body);
-
   // Bắt đầu bằng việc thêm dữ liệu vào bảng Detail
   connection.query(
     'INSERT INTO detail (report_content, image_url_1, image_url_2, width, height, lat, lng) VALUES (?, ?, ?, ?, ?, ?, ?)',
@@ -121,7 +119,7 @@ const createReport = catchAsync(async (req, res, next) => {
             return res.status(500).json({ error: 'Database error' });
           }
 
-          socket?.socketIo?.emit('create', 'Create New Report');
+          socket?.socketIo?.emit('createReport', result);
 
           // Nếu không có lỗi, trả về thành công
           res.status(200).json(result);

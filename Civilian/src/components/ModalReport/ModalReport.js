@@ -7,6 +7,9 @@ import { useFormik } from 'formik';
 import ReCAPTCHA from 'react-google-recaptcha';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import { storage } from '~/src/firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { v4 } from 'uuid';
 
 const ModalReport = (props) => {
     const fileInputRef = useRef(null);
@@ -131,9 +134,22 @@ const ModalReport = (props) => {
             // Hiển thị ảnh trên giao diện (tùy thuộc vào yêu cầu của bạn)
             if (image1) {
                 const reader1 = new FileReader();
-                reader1.onload = () => {
+                reader1.onload = async () => {
                     if (image1Ref.current) {
                         image1Ref.current.src = reader1.result;
+
+                        const imageRef = ref(storage, `images/${image1.name + v4()}`);
+
+                        try {
+                            // Tải ảnh lên Firebase
+                            await uploadBytes(imageRef, image1);
+                            // Lấy URL của ảnh
+                            const imageUrl = await getDownloadURL(imageRef);
+                            // Lưu URL vào state hoặc làm bất cứ điều gì bạn muốn
+                            formik.setFieldValue('imageUrl1', imageUrl);
+                        } catch (error) {
+                            console.error('Error uploading image:', error);
+                        }
                     }
                 };
                 reader1.readAsDataURL(image1);
@@ -141,15 +157,27 @@ const ModalReport = (props) => {
 
             if (image2) {
                 const reader2 = new FileReader();
-                reader2.onload = () => {
+                reader2.onload = async () => {
                     if (image2Ref.current) {
                         image2Ref.current.src = reader2.result;
+
+                        const imageRef = ref(storage, `images/${image2.name + v4()}`);
+
+                        try {
+                            // Tải ảnh lên Firebase
+                            await uploadBytes(imageRef, image2);
+                            // Lấy URL của ảnh
+                            const imageUrl = await getDownloadURL(imageRef);
+                            // Lưu URL vào state hoặc làm bất cứ điều gì bạn muốn
+                            formik.setFieldValue('imageUrl2', imageUrl);
+                        } catch (error) {
+                            console.error('Error uploading image:', error);
+                        }
                     }
                 };
                 reader2.readAsDataURL(image2);
             }
 
-            formik.setFieldValue('imageUrl1', image1 ? URL.createObjectURL(image1) : '');
             formik.setFieldValue('imageUrl2', image2 ? URL.createObjectURL(image2) : '');
 
             setIsUploaded({ show: true, image1, image2 });
