@@ -6,6 +6,7 @@ import classes from './ModalReport.module.scss';
 import { useFormik } from 'formik';
 import ReCAPTCHA from 'react-google-recaptcha';
 import Swal from 'sweetalert2';
+import axios from 'axios';
 
 const ModalReport = (props) => {
     const fileInputRef = useRef(null);
@@ -15,38 +16,53 @@ const ModalReport = (props) => {
     const [isUploaded, setIsUploaded] = useState({ show: false, image1: null, image2: null });
     const [isCaptchaVerified, setCaptchaVerified] = useState(false);
 
+    const formatDateToYYYYMMDD = (date) => {
+        const year = date.getFullYear();
+        const month = ('0' + (date.getMonth() + 1)).slice(-2);
+        const day = ('0' + date.getDate()).slice(-2);
+
+        return year + '-' + month + '-' + day;
+    };
+
     const formik = useFormik({
         initialValues: {
-            fullName: '',
-            email: '',
-            phoneNumber: '',
-            reason: '',
-            image_url_1: null,
-            image_url_2: null,
+            reportContent: '',
+            imageUrl1: null,
+            imageUrl2: null,
+            width: props.type === 'Board' ? props.info.width : null,
+            height: props.type === 'Board' ? props.info.height : null,
+            lat: props.location.lat,
+            lng: props.location.lng,
+            reportTime: formatDateToYYYYMMDD(new Date()),
+            fullnameRp: '',
+            emailRp: '',
+            phoneRp: '',
+            point_id: props.type === 'Point' ? props.info.point_id : null,
+            board_id: props.type === 'Board' ? props.info.board_id : null,
         },
-        onSubmit: async (values) => {
+        onSubmit: async (values, { resetForm }) => {
             // Kiểm tra xem có lỗi không
             const errors = {};
 
-            if (!values.fullName) {
-                errors.fullName = 'Họ và tên không được bỏ trống';
+            if (!values.fullnameRp) {
+                errors.fullnameRp = 'Họ và tên không được bỏ trống';
             }
 
-            if (!values.email) {
-                errors.email = 'Email không được bỏ trống';
+            if (!values.emailRp) {
+                errors.emailRp = 'Email không được bỏ trống';
             }
 
-            if (!values.phoneNumber) {
-                errors.phoneNumber = 'Số điện thoại không được bỏ trống';
+            if (!values.phoneRp) {
+                errors.phoneRp = 'Số điện thoại không được bỏ trống';
             }
 
-            if (!values.reason) {
-                errors.reason = 'Lý do không được bỏ trống';
+            if (!values.reportContent) {
+                errors.reportContent = 'Lý do không được bỏ trống';
             }
 
-            if (!values.image_url_1 && !values.image_url_2) {
-                errors.image_url_1 = 'Hình ảnh không được bỏ trống';
-                errors.image_url_2 = 'Hình ảnh không được bỏ trống';
+            if (!values.imageUrl1 && !values.imageUrl2) {
+                errors.imageUrl1 = 'Hình ảnh không được bỏ trống';
+                errors.imageUrl2 = 'Hình ảnh không được bỏ trống';
             }
 
             // Hiển thị thông báo lỗi nếu có
@@ -69,8 +85,34 @@ const ModalReport = (props) => {
                 return;
             }
 
-            // Nếu không có lỗi, thực hiện logic gửi form
-            console.log('Form submitted with values:', values);
+            try {
+                await axios
+                    .post(`${process.env.REACT_APP_API_ENDPOINT}/civilian/report`, values)
+                    .then((res) => {
+                        console.log(res);
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công',
+                            text: 'Bạn đã gửi report thành công',
+                        });
+                    })
+                    .catch((error) => {
+                        console.log('Get tasks error: ', error);
+                    });
+
+                resetForm();
+                setIsUploaded(false);
+                setIndexCur(1);
+            } catch (err) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Có lỗi xảy ra',
+                    text: 'Vui lòng gửi lại biểu mẫu',
+                });
+                console.error(err);
+            }
+
+            // console.log('Form submitted with values:', values);
         },
     });
 
@@ -107,8 +149,8 @@ const ModalReport = (props) => {
                 reader2.readAsDataURL(image2);
             }
 
-            formik.setFieldValue('image_url_1', image1 ? URL.createObjectURL(image1) : '');
-            formik.setFieldValue('image_url_2', image2 ? URL.createObjectURL(image2) : '');
+            formik.setFieldValue('imageUrl1', image1 ? URL.createObjectURL(image1) : '');
+            formik.setFieldValue('imageUrl2', image2 ? URL.createObjectURL(image2) : '');
 
             setIsUploaded({ show: true, image1, image2 });
         }
@@ -118,7 +160,7 @@ const ModalReport = (props) => {
         <div className={classes.adding__overlay}>
             <div className={classes.adding__modal}>
                 <div className={classes.adding__modal__heading}>
-                    {props.title === 'Table' ? 'BÁO CÁO BẢNG QUẢNG CÁO' : 'BÁO CÁO ĐIỂM QUẢNG CÁO'}
+                    {props.type === 'Board' ? 'BÁO CÁO BẢNG QUẢNG CÁO' : 'BÁO CÁO ĐIỂM QUẢNG CÁO'}
                     <FontAwesomeIcon icon={faClose} className={classes['adding__modal-ic']} onClick={props.onClose} />
                 </div>
 
@@ -129,29 +171,29 @@ const ModalReport = (props) => {
                             <input
                                 type="text"
                                 placeholder="Nhập vào Họ và tên"
-                                name="fullName"
+                                name="fullnameRp"
                                 onChange={formik.handleChange}
-                                value={formik.values.fullName}
+                                value={formik.values.fullnameRp}
                             />
-                            {formik.errors.fullName && <p className={classes.error}>{formik.errors.fullName}</p>}
+                            {formik.errors.fullnameRp && <p className={classes.error}>{formik.errors.fullnameRp}</p>}
                             <h4>Email</h4>
                             <input
                                 type="text"
                                 placeholder="Nhập vào Email"
-                                name="email"
+                                name="emailRp"
                                 onChange={formik.handleChange}
-                                value={formik.values.email}
+                                value={formik.values.emailRp}
                             />
-                            {formik.errors.email && <p className={classes.error}>{formik.errors.email}</p>}
+                            {formik.errors.emailRp && <p className={classes.error}>{formik.errors.emailRp}</p>}
                             <h4>Số điện thoại</h4>
                             <input
                                 type="text"
                                 placeholder="Nhập vào Số điện thoại"
-                                name="phoneNumber"
+                                name="phoneRp"
                                 onChange={formik.handleChange}
-                                value={formik.values.phoneNumber}
+                                value={formik.values.phoneRp}
                             />
-                            {formik.errors.phoneNumber && <p className={classes.error}>{formik.errors.phoneNumber}</p>}
+                            {formik.errors.phoneRp && <p className={classes.error}>{formik.errors.phoneRp}</p>}
                         </>
                     )}
                     {indexCur === 2 && (
@@ -160,11 +202,13 @@ const ModalReport = (props) => {
                                 <h4>Lý do</h4>
                                 <textarea
                                     placeholder="Nhập vào lý do"
-                                    name="reason"
+                                    name="reportContent"
                                     onChange={formik.handleChange}
-                                    value={formik.values.reason}
+                                    value={formik.values.reportContent}
                                 />
-                                {formik.errors.reason && <p className={classes.error}>{formik.errors.reason}</p>}
+                                {formik.errors.reportContent && (
+                                    <p className={classes.error}>{formik.errors.reportContent}</p>
+                                )}
                                 <h4>Hình ảnh</h4>
                                 <input
                                     type="file"
@@ -176,12 +220,8 @@ const ModalReport = (props) => {
                                     onChange={handleFileChange}
                                 />
                                 {/* Hiển thị lỗi cho trường ảnh */}
-                                {formik.errors.image_url_1 && (
-                                    <p className={classes.error}>{formik.errors.image_url_1}</p>
-                                )}
-                                {formik.errors.image_url_2 && (
-                                    <p className={classes.error}>{formik.errors.image_url_2}</p>
-                                )}
+                                {formik.errors.imageUrl1 && <p className={classes.error}>{formik.errors.imageUrl1}</p>}
+                                {formik.errors.imageUrl2 && <p className={classes.error}>{formik.errors.imageUrl2}</p>}
                                 {/* Add image upload logic here */}
                                 {isUploaded.show ? (
                                     <>

@@ -10,26 +10,30 @@ const CardInfor = (props) => {
     return (
         <div className={classes.container__infor}>
             <div className={classes['container__infor-heading']}>
-                <h3>Trụ, cụm pano {props.title}</h3>
-                <p>Đồng Khởi aaaaaaaaaa- Nguyễn Du (Sở Văn hóa và Thể thao)</p>
+                <h3>{props.info.infoBoard.advertisement_content}</h3>
+                <p>
+                    {props.info.infoPoint.ward_name} - {props.info.infoPoint.district_name}
+                </p>
             </div>
             <div className={classes['container__infor-content']}>
                 <ul>
                     <li>
                         <label>Kích thước:</label>
-                        <p>2.5m x 1.2m</p>
+                        <p>
+                            {props.info.infoBoard.width}m x {props.info.infoBoard.height}m
+                        </p>
                     </li>
-                    <li>
+                    {/* <li>
                         <label>Số lượng:</label>
                         <p>2.5m x 1.2m</p>
-                    </li>
+                    </li> */}
                     <li>
                         <label>Hình thức:</label>
-                        <p>2.5m x 1.2m</p>
+                        <p>{props.info.infoPoint.advertisement_type_name}</p>
                     </li>
                     <li>
                         <label>Phân loại:</label>
-                        <p>Đất công nghiệp/Công viên/Hành lang an toàn giao thông</p>
+                        <p>{props.info.infoPoint.location_type}</p>
                     </li>
                 </ul>
             </div>

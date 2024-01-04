@@ -1,16 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GoogleMap, Marker, useJsApiLoader, InfoWindow } from '@react-google-maps/api';
 import classes from './Home.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose, faFilter, faListUl } from '@fortawesome/free-solid-svg-icons';
 import SearchBar from '~/src/components/SearchBar';
-import ic_position from '../../assets/svg/address.svg';
-import ic_ad from '../../assets/imgs/ad.png';
-import ic_no_ad from '../../assets/imgs/noad.png';
 import CardInfor from './CardInfor';
 import InforTable from './InforTable';
 import Checklist from '~/src/components/CheckList/CheckList';
 import ModalReport from '~/src/components/ModalReport/ModalReport';
+import axios from 'axios';
+import {
+    AdSpotPlanned,
+    AdSpotNotPlan,
+    AdSpotBeReported,
+    AdSpotSolvedReport,
+    SpotBeReported,
+    SpotSolvedReport,
+} from '~assets/markers/index';
 
 const infoAds = {
     PANEL: 'Panel',
@@ -22,6 +28,8 @@ const containerStyle = {
     height: '100%',
 };
 
+const iconSize = 25;
+
 const coordinatesList = [
     { id: 1, lat: 10.7769, lng: 106.7009, state: 0 },
     { id: 2, lat: 10.7797, lng: 106.6994, state: 1 },
@@ -29,21 +37,78 @@ const coordinatesList = [
     { id: 4, lat: 10.7766, lng: 106.7001, state: 1 },
 ];
 
-const locationAdList = [
-    { id: 1, lat: 10.7722, lng: 106.6989 },
-    { id: 2, lat: 10.7728, lng: 106.6983 },
-    { id: 3, lat: 10.7736, lng: 106.6914 },
-    { id: 4, lat: 10.7782, lng: 106.6945 },
-];
-
 const Home = () => {
-    const [listInforPosition, setListInforPosition] = useState([{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }]);
-    const [showInfo, setShowInfo] = useState({ id: -1, show: false, info: '' });
-    const [showAdDetail, setShowAdDetail] = useState({ id: -1, show: false });
+    const [showInfo, setShowInfo] = useState({ id: -1, show: false, info: '', data: {} });
+    const [showAdDetail, setShowAdDetail] = useState({ id: -1, show: false, data: {} });
     const [selectedMarker, setSelectedMarker] = useState(null);
     const [isShowFilter, setIsShowFilter] = useState(false);
     const [isShowReport, setIsShowReport] = useState({ id: '', show: false, type: '' });
-    const [AdRender, setAdRender] = useState(coordinatesList);
+    const [AdRender, setAdRender] = useState([]);
+    const [AdRenderSave, setAdRenderSave] = useState([]);
+    const [adsBoard, setAdsBoard] = useState([]);
+    const [listReport, setListReport] = useState([]);
+
+    useEffect(() => {
+        (async () => {
+            await axios
+                .get(process.env.REACT_APP_API_ENDPOINT + '/civilian', {})
+                .then((res) => {
+                    const data = res.data;
+                    setAdRender(data);
+                })
+                .catch((error) => {
+                    console.log('Get tasks error: ', error);
+                });
+        })();
+
+        (async () => {
+            await axios
+                .get(process.env.REACT_APP_API_ENDPOINT + '/civilian/adsBoard', {})
+                .then((res) => {
+                    const data = res.data;
+                    setAdsBoard(data);
+                })
+                .catch((error) => {
+                    console.log('Get tasks error: ', error);
+                });
+        })();
+
+        (async () => {
+            await axios
+                .get(process.env.REACT_APP_API_ENDPOINT + '/civilian/getReport', {})
+                .then((res) => {
+                    const data = res.data;
+                    console.log(data);
+                    setListReport(data);
+                })
+                .catch((error) => {
+                    console.log('Get tasks error: ', error);
+                });
+        })();
+    }, []);
+
+    useEffect(() => {
+        if (adsBoard.length !== 0 && AdRender.length !== 0 && listReport.length !== 0) {
+            AdRender.forEach((point) => {
+                const matchingBoards = adsBoard.filter((board) => board.point_id === point.point_id);
+                const matchingPointReport = listReport.filter((report) => report.point_id === point.point_id);
+
+                matchingBoards.forEach((board) => {
+                    const matchingBoardReport = listReport.filter((report) => report.board_id === board.board_id);
+
+                    board.list_report_board = matchingBoardReport;
+                });
+
+                point.list_board_ads = matchingBoards;
+                point.list_report = matchingPointReport;
+            });
+        }
+
+        console.log(AdRender);
+
+        setAdRender(AdRender);
+        setAdRenderSave(AdRender);
+    }, [listReport]);
 
     // When table have the infomation
     const isHaveInfor = false;
@@ -64,29 +129,50 @@ const Home = () => {
         });
     };
 
+    const selectIcon = (spot) => {
+        if (spot.point_id) {
+            if (spot.is_planning) return AdSpotPlanned;
+
+            return AdSpotNotPlan;
+            // else if (spot.reportStatus === 'noProcess') return AdSpotBeReported;
+            // else if (spot.reportStatus === 'processed') return AdSpotSolvedReport;
+        }
+        //  else {
+        //     if (spot.reportStatus === 'noProcess') return SpotBeReported;
+        //     else return SpotSolvedReport;
+        // }
+    };
+
     const showInfoAd = (marker) => {
         setSelectedMarker(marker);
     };
 
     const closeInfoWindow = () => {
         setSelectedMarker(null);
-        setShowInfo({ id: -1, show: false, infoAds: '' });
+        setShowInfo({ id: -1, show: false, infoAds: '', data: {} });
+        setShowAdDetail({ id: -1, show: false, infoAds: '', data: {} });
     };
 
     const handleCheckboxChange = (data) => {
+        if (showInfo.show || showAdDetail.show) {
+            setShowInfo({
+                id: -1,
+                show: false,
+                info: '',
+                data: {},
+            });
+            setShowAdDetail({ id: -1, show: false, info: '', data: {} });
+            setSelectedMarker(null);
+        }
         if (data[0].checked && !data[1].checked) {
-            setAdRender(coordinatesList.filter((item) => item.state !== 0));
+            setAdRender(AdRenderSave.filter((item) => item.is_planning !== 0));
         } else if (!data[0].checked && data[1].checked) {
-            setAdRender(coordinatesList.filter((item) => item.state !== 1));
+            setAdRender(AdRenderSave.filter((item) => item.is_planning !== 1));
         } else if (data[0].checked && data[1].checked) {
-            setAdRender(coordinatesList);
+            setAdRender(AdRenderSave);
         } else {
             setAdRender([]);
         }
-    };
-
-    const handleShowDetail = (index) => {
-        setShowAdDetail({ id: index, show: true });
     };
 
     return (
@@ -102,41 +188,50 @@ const Home = () => {
                                 zoom={15}
                                 onClick={handleMapClickPosition}
                             >
-                                {AdRender.map((coordinate, index) => (
+                                {AdRender.map((item, index) => (
                                     <Marker
-                                        key={coordinate.id}
-                                        position={{ lat: coordinate.lat, lng: coordinate.lng }}
+                                        key={+index}
+                                        position={{ lat: item.lat, lng: item.lng }}
                                         onClick={() => {
-                                            showInfoAd(coordinate);
-                                            coordinate.state === 1
+                                            showInfoAd(item);
+                                            item.is_planning === 1
                                                 ? setShowInfo({
                                                       id: index,
                                                       show: true,
                                                       info: infoAds.PANEL,
+                                                      data: item,
                                                   })
                                                 : setShowInfo({
-                                                      id: index,
+                                                      id: -1,
                                                       show: false,
                                                       info: infoAds.TABLE,
+                                                      data: item,
                                                   });
+                                            setShowAdDetail({ id: -1, show: false, info: '', data: {} });
                                         }}
-                                        icon={coordinate.state === 1 ? ic_ad : ic_no_ad}
+                                        icon={{
+                                            url: selectIcon(item),
+                                            scaledSize: isLoaded
+                                                ? new window.google.maps.Size(iconSize, iconSize)
+                                                : null,
+                                            anchor: new google.maps.Point(iconSize / 2, iconSize / 2),
+                                            origin: new google.maps.Point(0, 0),
+                                        }}
+                                        zIndex={0}
                                     >
-                                        {selectedMarker === coordinate && (
+                                        {selectedMarker === item && (
                                             <InfoWindow onCloseClick={closeInfoWindow}>
                                                 <div className={classes.info}>
-                                                    <p>{coordinate.id}</p>
-                                                    <h2 className={classes.info__title}>Cổ động chính trị</h2>
-                                                    <p className={classes.info__type}>
-                                                        Đất công/Công viên/Hành lang an toàn giao thông
-                                                    </p>
+                                                    <h2 className={classes.info__title}>
+                                                        {item.advertisement_type_name}
+                                                    </h2>
+                                                    <p className={classes.info__type}>{item.location_type}</p>
                                                     <p className={classes.info__location}>
-                                                        Đồng khởi - Nguyễn Du (Sở văn hóa và Thể thao), Phường Bến Nghé,
-                                                        Quận 1
+                                                        {item.ward_name}, {item.district_name}
                                                     </p>
                                                     <div>
                                                         <p className={classes.info__state}>
-                                                            {coordinate.state === 1 ? 'ĐÃ QUY HOẠCH' : 'CHƯA QUY HOẠCH'}
+                                                            {item.is_planning === 1 ? 'ĐÃ QUY HOẠCH' : 'CHƯA QUY HOẠCH'}
                                                         </p>
                                                         <p
                                                             className={classes.info__report}
@@ -144,7 +239,7 @@ const Home = () => {
                                                                 setIsShowReport({
                                                                     id: index + '',
                                                                     show: true,
-                                                                    type: 'PANEL',
+                                                                    type: 'Point',
                                                                 });
                                                             }}
                                                         >
@@ -185,29 +280,31 @@ const Home = () => {
                             className={classes.icon}
                             style={{ color: showInfo.info === infoAds.TABLE ? '#fff' : '#000' }}
                             onClick={() => {
-                                setShowInfo({ show: false, infoAds: '' });
+                                setShowInfo({ show: false, infoAds: '', data: {} });
                                 setSelectedMarker(null);
                             }}
                         />
 
-                        {showInfo.info === infoAds.TABLE && isHaveInfor && (
-                            <div className={classes['container__home-inf-imgAds']}>
-                                <img src="https://s.pro.vn/018b" alt="none" />
-                            </div>
-                        )}
                         <div className={classes['container__home-inf-content']}>
                             {showInfo.info === infoAds.PANEL && (
                                 <div className={classes['container__home-inf-content-items']}>
-                                    {listInforPosition.map((item, index) => (
-                                        <CardInfor
-                                            key={item.id}
-                                            title={locationAdList[showInfo.id].id}
-                                            onClickShowDetail={() => handleShowDetail(index)}
-                                            onClickShowReport={() => {
-                                                setIsShowReport({ id: index + '', show: true, type: 'Table' });
-                                            }}
-                                        />
-                                    ))}
+                                    {showInfo.data &&
+                                        showInfo.data.list_board_ads.map((item, index) => (
+                                            <CardInfor
+                                                key={+index}
+                                                info={{ infoBoard: item, infoPoint: showInfo.data }}
+                                                onClickShowDetail={() => {
+                                                    setShowAdDetail({ id: index, show: true, data: item });
+                                                }}
+                                                onClickShowReport={() => {
+                                                    setIsShowReport({ id: index + '', show: true, type: 'Board' });
+                                                    setShowAdDetail({ id: -1, show: false, data: item });
+                                                }}
+                                            />
+                                        ))}
+                                    {showInfo.data && showInfo.data.list_board_ads.length === 0 && (
+                                        <p style={{ textAlign: 'center' }}>Không có dữ liệu</p>
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -223,16 +320,16 @@ const Home = () => {
                         className={classes.icon}
                         style={{ color: '#fff' }}
                         onClick={() => {
-                            setShowAdDetail({ id: -1, show: false });
+                            setShowAdDetail({ id: -1, show: false, data: {} });
                         }}
                     />
 
                     <div className={classes['container__home-inf-imgAds']}>
-                        <img src="https://s.pro.vn/018b" alt="none" />
+                        <img src={showAdDetail.data.advertisement_image_url} alt="none" />
                     </div>
                     <div className={classes['container__home-inf-content']}>
                         <div className={classes[`container__home-inf-content-table-show-img`]}>
-                            <InforTable title={listInforPosition[showAdDetail.id].id} />
+                            <InforTable info={{ infoBoard: showAdDetail.data, infoPoint: showInfo.data }} />
                         </div>
                     </div>
                 </div>
@@ -240,7 +337,9 @@ const Home = () => {
 
             {isShowReport.show && (
                 <ModalReport
-                    title={isShowReport.type}
+                    type={isShowReport.type}
+                    location={{ lat: showInfo.data.lat, lng: showInfo.data.lng }}
+                    info={isShowReport.type === 'Point' ? showInfo.data : showAdDetail.data}
                     onClose={() => setIsShowReport({ id: '', show: false, type: '' })}
                 />
             )}

@@ -14,36 +14,39 @@ const InforTable = (props) => {
                     <div className={classes['container__table-heading-icon']}>
                         <img src={ic_infor} alt="none" />
                     </div>
-                    <h3>Thông tin bảng quảng cáo {props.title}</h3>
+                    <h3>Thông tin bảng quảng cáo</h3>
                 </div>
                 <div className={classes['container__table-info-content']}>
-                    <h3>{isHaveInfor ? 'Trụ, cụm pano' : 'Chưa có dữ liệu'}</h3>
+                    <h3>{props.info.infoBoard.advertisement_content}</h3>
                     <div className={classes['container__table-info-content-detail']}>
-                        {isHaveInfor ? (
-                            <ul>
-                                <li>
-                                    <label>Kích thước:</label>
-                                    <p>2.5m x 1.2m</p>
-                                </li>
-                                <li>
+                        <ul>
+                            <li>
+                                <label>Kích thước:</label>
+                                <p>
+                                    {props.info.infoBoard.width}m x {props.info.infoBoard.height}m
+                                </p>
+                            </li>
+                            {/* <li>
                                     <label>Số lượng:</label>
                                     <p>2.5m x 1.2m</p>
-                                </li>
-                                <li>
-                                    <label>Hình thức:</label>
-                                    <p>2.5m x 1.2m</p>
-                                </li>
-                                <li>
-                                    <label>Phân loại:</label>
-                                    <p>Đất công nghiệp/Công viên/Hành lang an toàn giao thông</p>
-                                </li>
-                            </ul>
-                        ) : (
-                            <p>Điểm này chưa có thông tin của bảng quảng cáo.</p>
-                        )}
+                                </li> */}
+                            <li>
+                                <label>Hình thức:</label>
+                                <p>{props.info.infoPoint.advertisement_type_name}</p>
+                            </li>
+                            <li>
+                                <label>Phân loại:</label>
+                                <p>{props.info.infoPoint.location_type}</p>
+                            </li>
+                        </ul>
                     </div>
                     <div className={classes['container__table-info-content-action']}>
-                        <ButtonCT content="2 báo cáo" iconLeft={ic_report} redWarning={true} primary={true} />
+                        <ButtonCT
+                            content={`${props.info.infoBoard.list_report_board.length} báo cáo`}
+                            iconLeft={ic_report}
+                            redWarning={true}
+                            primary={true}
+                        />
                     </div>
                 </div>
             </div>
@@ -55,19 +58,28 @@ const InforTable = (props) => {
                     <h3>Thông tin địa điểm</h3>
                 </div>
                 <div className={classes['container__table-address-content']}>
-                    15, Đường Lê Thánh Tôn, Phường Bến Nghé, Quận 1, TP.HCM
+                    {props.info.infoPoint.ward_name}, {props.info.infoPoint.district_name}
                 </div>
             </div>
             <div className={classes['container__table-action']}>
-                <ButtonCT content="2 báo cáo" iconLeft={ic_report} redWarning={true} primary={true} />
-
                 <ButtonCT
-                    content="CHƯA QUY HOẠCH"
-                    className={'uppercase'}
-                    iconLeft={ic_not_planned}
-                    notPlanned={true}
+                    content={`${props.info.infoPoint.list_report.length} báo cáo`}
+                    iconLeft={ic_report}
+                    redWarning={true}
                     primary={true}
                 />
+
+                {props.info.infoPoint.is_planning === 1 ? (
+                    <ButtonCT content="ĐÃ QUY HOẠCH" className={'uppercase'} notPlanned={true} primary={true} />
+                ) : (
+                    <ButtonCT
+                        content="CHƯA QUY HOẠCH"
+                        className={'uppercase'}
+                        iconLeft={ic_not_planned}
+                        notPlanned={true}
+                        primary={true}
+                    />
+                )}
             </div>
         </div>
     );
