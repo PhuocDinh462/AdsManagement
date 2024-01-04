@@ -2,13 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Navigate, Outlet } from 'react-router-dom';
 
-const PrivateRoute = ({ isAllowed, redirectPath = '/', children }) => {
+const PrivateRoute = React.memo(({ isAllowed, redirectPath = '/', children }) => {
   if (!isAllowed) {
     return <Navigate to={redirectPath} replace />;
   }
 
   return children || <Outlet />;
-};
+});
 
 PrivateRoute.propTypes = {
   isAllowed: PropTypes.bool,

@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import PrivateRoute from './privateRoute';
 
 // import Home from '../pages/home/Home';
@@ -25,11 +25,18 @@ import Reports from '../pages/WardAndDistrict/Reports';
 import ReportsDetail from '../pages/WardAndDistrict/Reports/ReportsDetail';
 import CreateAccount from '../pages/createAccount/CreateAccount';
 import Layout from '../layouts/index';
+import { useEffect, useState } from 'react';
 
 const Navigation = () => {
   const authenticated = localStorage.getItem('user_type');
-  const isWardOrDistrict = ['ward', 'district'].includes(authenticated.toLowerCase());
-  const isDepartment = authenticated.toLowerCase() === 'department';
+  const isWardOrDistrict = ['ward', 'district'].includes(authenticated?.toLowerCase());
+  console.log(['ward', 'district'].includes(authenticated?.toLowerCase()));
+  const isDepartment = authenticated?.toLowerCase() === 'department';
+  console.log(authenticated?.toLowerCase() === 'department');
+  const location = useLocation();
+  // useEffect(() => {
+  //   console.log(location);
+  // }, [location]);
 
   return (
     <main>
@@ -40,21 +47,17 @@ const Navigation = () => {
         <Route path="/not_found" name="not_found" element={<NotFoundPage />} />
         {isDepartment ? (
           <Route element={<LayoutNavBarCadre />}>
-            <Route element={<PrivateRoute isAllowed={isDepartment || isWardOrDistrict} redirectPath="/login" />}>
-              <Route path="/infor" name="infor" element={<Infor />} />
-            </Route>
+            <Route path="/infor" name="infor" element={<Infor />} />
           </Route>
         ) : (
           <Route element={<LayoutNavBar />}>
-            <Route element={<PrivateRoute isAllowed={isDepartment || isWardOrDistrict} redirectPath="/login" />}>
-              <Route path="/infor" name="infor" element={<Infor />} />
-            </Route>
+            <Route path="/infor" name="infor" element={<Infor />} />
           </Route>
         )}
 
         {/* Layout dành cho trang có sidebar và có thanh navbar */}
         <Route element={<Layout />}>
-          <Route element={<PrivateRoute isAllowed={authenticated === 'department'} redirectPath="/login" />}>
+          <Route element={<PrivateRoute isAllowed={isDepartment} redirectPath="/login" />}>
             <Route path="/district-ward" name="district ward" element={<ManageDistrictWard />} />
             <Route path="/form" name="form" element={<ManageForm />} />
 
@@ -72,7 +75,7 @@ const Navigation = () => {
         {/* Layout dành cho trang không có sidebar, chỉ có thanh navbar */}
         <Route element={<LayoutNavBar />}>
           <Route element={<PrivateRoute isAllowed={isWardOrDistrict} redirectPath="/login" />}>
-            <Route path="/" name="home" element={<WardAndDistrictHome />} />
+            <Route path="/home" name="home" element={<WardAndDistrictHome />} />
             <Route path="/advertising-spots" name="advertising-spots" element={<AdSpots />} />
             <Route path="/advertising-spots/:id" name="advertising-spots/boards" element={<Boards />} />
             <Route path="/manage-license" name="licenses" element={<Licenses />} />

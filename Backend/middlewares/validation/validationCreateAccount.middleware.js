@@ -76,3 +76,4 @@ const validationRegister = async (req, res, next) => {
 };
 
 module.exports = { validationCreate, validationRegister };
+
