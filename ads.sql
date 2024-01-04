@@ -213,7 +213,7 @@ CREATE TABLE `edit_request_board` (
   advertisement_content VARCHAR(255),
   advertisement_image_url VARCHAR(255),
   reason VARCHAR(255),
-  time_request date,
+  request_time date,
   width FLOAT,
   height FLOAT,
   created_by INT,
@@ -234,7 +234,7 @@ CREATE TABLE `edit_request_point` (
   image_url VARCHAR(255),
   edit_status ENUM('pending', 'approved','canceled'),
   reason VARCHAR(255),
-  time_request date,
+  request_time date,
   created_by INT,
   created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at timestamp DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
@@ -283,7 +283,7 @@ VALUES
 -- Dữ liệu mẫu cho bảng Ward
 INSERT INTO `ward` (ward_name, district_id, manager_id)
 VALUES
-  ('Phường Bến Thành', 3, 9),
+  ('Phường Bến Thành', 3, 1),
   ('Phường Cô Giang', 3, 10),
   ('Phường Cầu Kho', 3, 8),
   ('Phường Bến Nghé', 3, 9), 
@@ -405,14 +405,14 @@ VALUES
   ('License Content B', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 'pending', NULL, 5, 2, 55.0, 65.0, 2, 2);
 
 -- Dữ liệu mẫu cho bảng EditRequestBoard
-INSERT INTO `edit_request_board` (board_id, board_type_id, edit_status, advertisement_content, advertisement_image_url, reason,time_request, width, height, created_by)
+INSERT INTO `edit_request_board` (board_id, board_type_id, edit_status, advertisement_content, advertisement_image_url, reason, request_time, width, height, created_by)
 VALUES
   (1, 2, 'pending', 'Edit Content A', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2F1662892613618.jpg919448b3-25d1-4488-b565-3b426c980c6a?alt=media&token=92d64588-0c7a-451c-9363-01648d5c4c74', 'Change request A', '2023-12-24', 10.0, 8.0, 4),
   (1, 2, 'canceled', 'Edit Content A', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FCity%20lights%20(Anime%20Background).jpg0c1069f9-5a1b-40f9-8171-7513dc627248?alt=media&token=24074b26-ce6b-4aa4-93ad-579fbc8e4c0f', 'Change request A','2023-12-21', 6.0, 7.0, 4),
   (2, 2, 'approved', 'Edit Content B', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2F370296844_352828990475963_7472452677685245752_n%20(1).jpg8bbe4926-7c8f-4969-a5cd-5d9f65c2685b?alt=media&token=f8d9bd8d-29f0-4450-8a02-5cd036776bc0', 'Change request B','2023-12-20', 20.0, 10.0, 5);
 
 -- Dữ liệu mẫu cho bảng EditRequestPoint
-INSERT INTO `edit_request_point` (point_id, advertisement_type_id, location_type, is_planning, image_url, edit_status, reason, time_request, created_by)
+INSERT INTO `edit_request_point` (point_id, advertisement_type_id, location_type, is_planning, image_url, edit_status, reason, request_time, created_by)
 VALUES
   (1, 1, 'Chợ', false, 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Street-Column-Advertising-Mockup-PSD.jpege1e620af-64ec-466f-aa84-5d062a7341e7?alt=media&token=95e9ee75-1837-4a3b-b9fa-e8da8c113cb7', 'pending', 'Change request A','2023-12-20', 4),
   (2, 1, 'Trung tâm thương mại', false, 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2F340842304_211052514888451_6814854970581350591_n.jpegd6986e67-e6d8-4f77-a1d5-b88e31a57f19?alt=media&token=45c08982-18fc-43ad-928c-2aa4f2dda397', 'pending', 'Change request C','2023-11-25', 6),

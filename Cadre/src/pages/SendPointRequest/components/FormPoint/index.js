@@ -106,6 +106,7 @@ const FormPoint = () => {
           request_time: values.requestTime,
           reason: values.reason,
         };
+        console.log(params);
         await request.post('edit_point/create', params, { headers: headers });
 
         setSubmitting(false);
@@ -276,3 +277,4 @@ const FormPoint = () => {
 };
 
 export default FormPoint;
+
