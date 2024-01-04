@@ -277,4 +277,3 @@ const FormPoint = () => {
 };
 
 export default FormPoint;
-

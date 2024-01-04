@@ -121,7 +121,7 @@ export default function Boards() {
           </div>
         </div>
 
-        <dir className={classes.reports_container}>
+        <div className={classes.reports_container}>
           {filteredData?.map((item, index) => (
             <div
               className={classes.report_item}
@@ -131,7 +131,7 @@ export default function Boards() {
                 dispatch(setBoardIndex(index));
               }}
             >
-              <dir className={classes.divider} />
+              <div className={classes.divider} />
               <div className={classes.username}>
                 <div
                   className={[
@@ -152,7 +152,7 @@ export default function Boards() {
               </div>
             </div>
           ))}
-        </dir>
+        </div>
       </div>
 
       <div className={classes.content_container}>
@@ -167,20 +167,20 @@ export default function Boards() {
                     <td className={classes.userInfo_col}>
                       <div className={classes.itemInfo}>
                         <FontAwesomeIcon icon={faBlackboard} />
-                        <dir className={classes.itemInfo__text}>
+                        <div className={classes.itemInfo__text}>
                           {'Kích thước: ' +
                             filteredData[currentBoardIndex]?.width +
                             'm x ' +
                             filteredData[currentBoardIndex]?.height +
                             'm'}
-                        </dir>
+                        </div>
                       </div>
                     </td>
                     <td className={classes.userInfo_col} rowspan="2">
                       <div className={classes.itemInfo}>
                         <FontAwesomeIcon icon={faImage} />
                         <span> Hình ảnh:</span>
-                        <dir className={classes.itemInfo__text}>
+                        <div className={classes.itemInfo__text}>
                           <img
                             src={filteredData[currentBoardIndex]?.advertisement_image_url}
                             alt="Image Board"
@@ -190,7 +190,7 @@ export default function Boards() {
                               setShowImageModal(true);
                             }}
                           />
-                        </dir>
+                        </div>
                       </div>
                     </td>
                   </tr>
@@ -198,9 +198,9 @@ export default function Boards() {
                     <td className={classes.userInfo_col}>
                       <div className={classes.itemInfo}>
                         <FontAwesomeIcon icon={faRectangleAd} />
-                        <dir className={classes.itemInfo__text}>
+                        <div className={classes.itemInfo__text}>
                           {'Loại quảng cáo: ' + filteredData[currentBoardIndex]?.type_name}
-                        </dir>
+                        </div>
                       </div>
                     </td>
                   </tr>
