@@ -57,7 +57,7 @@ const getAdSpotsByWardId = catchAsync(async (req, res, next) => {
           });
 
           connection.query(
-            'SELECT * FROM ward JOIN district ON ward.district_id = district.district_id',
+            'SELECT * FROM ward w JOIN district d ON w.district_id = d.district_id where w.ward_id = ?',
             [req.params.id],
             async (err, results) => {
               if (err) {
@@ -65,7 +65,7 @@ const getAdSpotsByWardId = catchAsync(async (req, res, next) => {
                 res.status(500).send('Internal Server Error');
                 return;
               }
-              const wardName = results[0].ward_name;
+              const wardName = results[0].ward_name.replace('Phường', '');
               const districtName = results[0].district_name;
 
               // Find spots have report but isn't adSpot
