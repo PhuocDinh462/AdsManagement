@@ -135,7 +135,7 @@ export default function ReportsDetail() {
           <SearchBar
             placeholder="Tìm kiếm..."
             width="20rem"
-            bgColor={text.color_100}
+            bgColor={text.color_50}
             onChange={(keyword) => handleFilter(keyword)}
           />
         </div>

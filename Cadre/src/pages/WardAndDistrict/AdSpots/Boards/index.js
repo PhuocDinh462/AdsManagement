@@ -20,6 +20,7 @@ import { axiosRequest } from '~/src/api/axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { setBoardIndex, selectBoardIndex, setReportCoord, selectUser, setBoardId } from '~/src/store/reducers';
 import { Backdrop } from '@mui/material';
+import { text } from '~styles/colors';
 import { sidebarBg } from '~assets/imgs/Imgs';
 
 export default function Boards() {
@@ -85,7 +86,12 @@ export default function Boards() {
           <div className={[classes.back_btn, classes.btn].join(' ')} onClick={() => navigate(-1)}>
             <FontAwesomeIcon icon={faArrowLeft} />
           </div>
-          <SearchBar placeholder="Tìm kiếm..." width="20rem" onChange={(keyword) => handleFilter(keyword)} />
+          <SearchBar
+            placeholder="Tìm kiếm..."
+            width="20rem"
+            bgColor={text.color_50}
+            onChange={(keyword) => handleFilter(keyword)}
+          />
         </div>
 
         <div className={classes.nav_btn_container}>
