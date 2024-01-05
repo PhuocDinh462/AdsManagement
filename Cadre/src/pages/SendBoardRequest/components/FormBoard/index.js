@@ -17,32 +17,10 @@ const FormBoard = () => {
   const { board_id } = useParams();
   const [boardTypes, setBoardTypes] = useState([])
   const [boardInfor, setBoardInfor] = useState({})
-  const [pointInfor, setPointInfor] = useState({})
   const [address, setAddress] = useState(null);
   const [loading, setLoading] = useState(false);
   const [imageUploadUrl, setImageUploadUrl] = useState(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${pointInfor.lat},${pointInfor.lng}&key=${apiKey}`;
-        const response = await fetch(apiUrl);
-        const result = await response.json();
-
-        if (result.status === 'OK' && result.results.length > 0) {
-          const detailedAddress = result.results[0].formatted_address;
-          setAddress(detailedAddress);
-        } else {
-          setAddress('Không có địa chỉ được tìm thấy');
-        }
-      } catch (error) {
-        console.error('Lỗi khi lấy địa chỉ:', error);
-        setAddress('Lỗi khi lấy địa chỉ');
-      }
-    };
-
-    fetchData();
-  }, [pointInfor]);
 
 
   const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
@@ -65,7 +43,7 @@ const FormBoard = () => {
       const responseBoard = await request.get(`board/get_board/${board_id}`, { headers: headers });
       const responsePoint = await request.get(`point/get_point/${responseBoard.data.board.point_id}`, { headers: headers });
       setBoardInfor(responseBoard.data.board);
-      setPointInfor(responsePoint.data.point)
+      setAddress(responsePoint.data.point.address);
       setImageUploadUrl(responseBoard.data.board.advertisement_image_url)
     } catch (error) {
       console.error('Error fetching data:', error);

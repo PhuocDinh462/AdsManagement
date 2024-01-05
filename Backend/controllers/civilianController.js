@@ -118,7 +118,7 @@ const createReport = catchAsync(async (req, res, next) => {
             console.error('Error executing query: ' + err.stack);
             return res.status(500).json({ error: 'Database error' });
           }
-
+          console.log(result)
           socket?.socketIo?.emit('createReport', result);
 
           // Nếu không có lỗi, trả về thành công

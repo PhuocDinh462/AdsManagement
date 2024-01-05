@@ -28,27 +28,7 @@ const FormPoint = () => {
   const [address, setAddress] = useState(null);
   const [loading, setLoading] = useState(false);
   const [imageUploadUrl, setImageUploadUrl] = useState(null);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${pointInfor.lat},${pointInfor.lng}&key=${apiKey}`;
-        const response = await fetch(apiUrl);
-        const result = await response.json();
 
-        if (result.status === 'OK' && result.results.length > 0) {
-          const detailedAddress = result.results[0].formatted_address;
-          setAddress(detailedAddress);
-        } else {
-          setAddress('Không có địa chỉ được tìm thấy');
-        }
-      } catch (error) {
-        console.error('Lỗi khi lấy địa chỉ:', error);
-        setAddress('Lỗi khi lấy địa chỉ');
-      }
-    };
-
-    fetchData();
-  }, [pointInfor]);
 
   const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
   const headers = {
@@ -60,6 +40,7 @@ const FormPoint = () => {
       const response = await request.get(`point/get_point/${point_id}`, { headers: headers });
       setPointInfor(response.data.point);
       setImageUploadUrl(response.data.point.image_url);
+      setAddress(response.data.point.address)
     } catch (error) {
       console.error('Error fetching surfaces:', error);
     }
