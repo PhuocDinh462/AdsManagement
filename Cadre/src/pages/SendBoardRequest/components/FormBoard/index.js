@@ -47,6 +47,15 @@ const FormBoard = () => {
       setImageUploadUrl(responseBoard.data.board.advertisement_image_url)
     } catch (error) {
       console.error('Error fetching data:', error);
+      if (error.response.status === 403) {
+        localStorage.clear();
+        boardNavigate('/login')
+        Swal.fire({
+          icon: 'error',
+          title: 'Lỗi do hết hạn quyền truy cập',
+          width: '50rem',
+        });
+      }
     }
   }
 
@@ -107,14 +116,23 @@ const FormBoard = () => {
         });
         boardNavigate('/advertising-spots')
       } catch (error) {
-        console.log(error);
+        console.error(error);
         setSubmitting(false);
-
-        Swal.fire({
-          icon: 'error',
-          title: 'Lỗi khi tạo yêu cầu chỉnh sửa',
-          width: '50rem',
-        });
+        if (error.response.status === 403) {
+          localStorage.clear();
+          boardNavigate('/login')
+          Swal.fire({
+            icon: 'error',
+            title: 'Lỗi do hết hạn quyền truy cập',
+            width: '50rem',
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Lỗi khi tạo yêu cầu chỉnh sửa',
+            width: '50rem',
+          });
+        }
       }
     },
   });

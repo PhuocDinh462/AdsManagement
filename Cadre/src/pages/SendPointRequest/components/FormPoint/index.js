@@ -43,6 +43,15 @@ const FormPoint = () => {
       setAddress(response.data.point.address)
     } catch (error) {
       console.error('Error fetching surfaces:', error);
+      if (error.response.status === 403) {
+        localStorage.clear();
+        pointNavigate('/login')
+        Swal.fire({
+          icon: 'error',
+          title: 'Lỗi do hết hạn quyền truy cập',
+          width: '50rem',
+        });
+      }
     }
   };
 
@@ -87,7 +96,6 @@ const FormPoint = () => {
           request_time: values.requestTime,
           reason: values.reason,
         };
-        console.log(params);
         await request.post('edit_point/create', params, { headers: headers });
 
         setSubmitting(false);
@@ -99,14 +107,24 @@ const FormPoint = () => {
         });
         pointNavigate('/advertising-spots');
       } catch (error) {
-        console.log(error);
+        console.error(error);
         setSubmitting(false);
 
-        Swal.fire({
-          icon: 'error',
-          title: 'Lỗi khi tạo yêu cầu chỉnh sửa',
-          width: '50rem',
-        });
+        if (error.response.status === 403) {
+          localStorage.clear();
+          pointNavigate('/login')
+          Swal.fire({
+            icon: 'error',
+            title: 'Lỗi do hết hạn quyền truy cập',
+            width: '50rem',
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Lỗi khi tạo yêu cầu chỉnh sửa',
+            width: '50rem',
+          });
+        }
       }
     },
   });
