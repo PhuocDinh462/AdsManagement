@@ -9,6 +9,7 @@ import { format } from 'date-fns';
 import { useDispatch, useSelector } from 'react-redux';
 import { setReportIndex, setReportCoord, selectUser, selectSelectedWards } from '~/src/store/reducers';
 import { useNavigate } from 'react-router';
+import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
 
 export default function Reports() {
   const [loading, setLoading] = useState(false);
@@ -44,6 +45,33 @@ export default function Reports() {
     setFilterData(reports);
     setLoading(false);
   }
+  const fetchSingleWardReports = async () => {
+    await axiosRequest
+      .get(`ward/getReportListsByWardId/${user.ward_id}`, { headers: headers })
+      .then((res) => {
+        const data = res.data.data;
+        setData(data);
+        setFilterData(data);
+      })
+      .catch((error) => {
+        console.log('Get report lists error: ', error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
+
+
+  const handleSocketEvent = (eventData) => {
+    if (user.user_type === 'ward') {
+      fetchSingleWardReports()
+    } else if (user.user_type === 'district') {
+      fetchWardsReports();
+    }
+  };
+
+  // Subscribe to the socket events when the component mounts
+  useSocketSubscribe('createReport', handleSocketEvent);
   useEffect(() => {
     if (user.user_type === 'ward') {
       (async () => {
@@ -66,7 +94,8 @@ export default function Reports() {
       fetchWardsReports()
     }
   }, [selectedWards]);
-
+  console.log("Data", data)
+  console.log("Filter Data", filteredData)
   const [filterKeyword, setFilterKeyword] = useState('');
 
   const pageSize = 10;

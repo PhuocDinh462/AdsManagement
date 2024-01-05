@@ -118,8 +118,13 @@ const createReport = catchAsync(async (req, res, next) => {
             console.error('Error executing query: ' + err.stack);
             return res.status(500).json({ error: 'Database error' });
           }
-          console.log(result)
-          socket?.socketIo?.emit('createReport', result);
+          connection.query('SELECT * FROM report WHERE report_id =?', [result.insertId], (err, results) => {
+            if (err) {
+              console.error('Error executing query: ' + err.stack);
+              return res.status(500).json({ error: 'Database error' });
+            }
+            socket?.socketIo?.emit('createReport', results[0]);
+          })
 
           // Nếu không có lỗi, trả về thành công
           res.status(200).json(result);
