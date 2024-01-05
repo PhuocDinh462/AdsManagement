@@ -31,6 +31,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setReportIndex, selectReportIndex, setReportCoord, selectUser, setBoardId } from '~/src/store/reducers';
 import { useNavigate } from 'react-router';
 import { text } from '~styles/colors';
+import { sidebarBg } from '~assets/imgs/Imgs';
 
 export default function ReportsDetail() {
   const { id } = useParams();
@@ -125,7 +126,7 @@ export default function ReportsDetail() {
 
   return (
     <div className={classes.main_container}>
-      <img className={classes.bg_img} src="https://upload.wikimedia.org/wikipedia/commons/5/53/Designsz.png" />
+      <img className={classes.bg_img} src={sidebarBg} />
       <div className={classes.sideBar_container}>
         <div className={classes.searchBar_container}>
           <div className={[classes.back_btn, classes.btn].join(' ')} onClick={() => navigate(-1)}>
