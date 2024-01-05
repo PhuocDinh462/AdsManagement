@@ -70,17 +70,29 @@ export default function Reports() {
     }
   }
 
+  const checkUserDistrict = async (point_id) => {
+    try {
+      const res = await request.get(`/cadre/checkUserDistrict/${point_id}`, { headers: headers })
+      return res.data.checked;
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   const handleSocketEvent = async (eventData) => {
     console.log(eventData)
     if (user.user_type === 'ward') {
       fetchSingleWardReports()
       const checked = await checkUserWard(eventData.point_id)
-      console.log(checked)
       if (checked) {
-        alert('New Report Sent')
+        alert('New Report Sent to Ward')
       }
     } else if (user.user_type === 'district') {
       fetchWardsReports();
+      const checked = await checkUserDistrict(eventData.point_id)
+      if (checked) {
+        alert('New Report Sent to District')
+      }
     }
   };
 
@@ -108,8 +120,6 @@ export default function Reports() {
       fetchWardsReports()
     }
   }, [selectedWards]);
-  console.log("Data", data)
-  console.log("Filter Data", filteredData)
   const [filterKeyword, setFilterKeyword] = useState('');
 
   const pageSize = 10;

@@ -8,7 +8,6 @@ router.get('/', civilianController.getAllDistrictWard);
 router.get('/adsBoard', civilianController.getAllAdsBoard);
 router.get('/getReport', civilianController.getAllReport);
 router.get('/adsType', civilianController.getAdvertisementTypes);
-router.post('/report', civilianController.createReport);
-// router.post('/report', recaptcha, civilianController.createReport);
+router.post('/report', recaptcha, civilianController.createReport);
 
 module.exports = router;
