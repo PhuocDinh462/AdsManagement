@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setReportIndex, setReportCoord, selectUser, selectSelectedWards } from '~/src/store/reducers';
 import { useNavigate } from 'react-router';
 import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
+import request from '~/src/utils/request';
 
 export default function Reports() {
   const [loading, setLoading] = useState(false);
@@ -60,11 +61,24 @@ export default function Reports() {
         setLoading(false);
       });
   }
+  const checkUserWard = async (point_id) => {
+    try {
+      const res = await request.get(`/cadre/checkUserWard/${point_id}`, { headers: headers })
+      return res.data.checked;
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
-
-  const handleSocketEvent = (eventData) => {
+  const handleSocketEvent = async (eventData) => {
+    console.log(eventData)
     if (user.user_type === 'ward') {
       fetchSingleWardReports()
+      const checked = await checkUserWard(eventData.point_id)
+      console.log(checked)
+      if (checked) {
+        alert('New Report Sent')
+      }
     } else if (user.user_type === 'district') {
       fetchWardsReports();
     }

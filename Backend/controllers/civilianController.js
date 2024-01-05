@@ -124,15 +124,15 @@ const createReport = catchAsync(async (req, res, next) => {
               return res.status(500).json({ error: 'Database error' });
             }
             socket?.socketIo?.emit('createReport', results[0]);
+            res.status(200).json(results[0]);
           })
-
-          // Nếu không có lỗi, trả về thành công
-          res.status(200).json(result);
         }
       );
     }
   );
 });
+
+
 
 module.exports = {
   getAllDistrictWard,
