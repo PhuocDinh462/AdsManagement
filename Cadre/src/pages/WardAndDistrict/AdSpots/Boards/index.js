@@ -20,6 +20,8 @@ import { axiosRequest } from '~/src/api/axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { setBoardIndex, selectBoardIndex, setReportCoord, selectUser, setBoardId } from '~/src/store/reducers';
 import { Backdrop } from '@mui/material';
+import { text } from '~styles/colors';
+import { sidebarBg } from '~assets/imgs/Imgs';
 
 export default function Boards() {
   const { id } = useParams();
@@ -78,12 +80,18 @@ export default function Boards() {
 
   return (
     <div className={classes.main_container}>
+      <img className={classes.bg_img} src={sidebarBg} />
       <div className={classes.sideBar_container}>
         <div className={classes.searchBar_container}>
           <div className={[classes.back_btn, classes.btn].join(' ')} onClick={() => navigate(-1)}>
             <FontAwesomeIcon icon={faArrowLeft} />
           </div>
-          <SearchBar placeholder="Tìm kiếm..." width="20rem" onChange={(keyword) => handleFilter(keyword)} />
+          <SearchBar
+            placeholder="Tìm kiếm..."
+            width="20rem"
+            bgColor={text.color_50}
+            onChange={(keyword) => handleFilter(keyword)}
+          />
         </div>
 
         <div className={classes.nav_btn_container}>
@@ -121,26 +129,20 @@ export default function Boards() {
           </div>
         </div>
 
+        <div className={classes.divider} />
+
         <div className={classes.reports_container}>
           {filteredData?.map((item, index) => (
             <div
-              className={classes.report_item}
+              className={[classes.report_item, currentBoardIndex === index && classes['report_item--active']].join(' ')}
               key={index}
               onClick={() => {
                 setCurrentBoardIndex(index);
                 dispatch(setBoardIndex(index));
               }}
             >
-              <div className={classes.divider} />
               <div className={classes.username}>
-                <div
-                  className={[
-                    classes.username__text,
-                    currentBoardIndex === index && classes['username__text--active'],
-                  ].join(' ')}
-                >
-                  {index + 1 + '. Bảng ' + item.board_id}
-                </div>
+                <div className={classes.username__text}>{index + 1 + '. Bảng ' + item.board_id}</div>
                 <div
                   className={[
                     classes.username__ic,
@@ -177,7 +179,7 @@ export default function Boards() {
                       </div>
                     </td>
                     <td className={classes.userInfo_col} rowspan="2">
-                      <div className={classes.itemInfo}>
+                      <div className={classes.itemInfo} style={{ marginLeft: '10rem' }}>
                         <FontAwesomeIcon icon={faImage} />
                         <span> Hình ảnh:</span>
                         <div className={classes.itemInfo__text}>
