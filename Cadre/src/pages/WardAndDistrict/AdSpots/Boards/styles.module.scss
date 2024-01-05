@@ -51,7 +51,7 @@
     .report_item {
       -webkit-user-select: none;
       user-select: none;
-      transition: opacity 0.2s;
+      transition: all 0.2s;
       color: $text_600;
       margin-bottom: 1rem;
       padding: 0.2rem 1rem;
@@ -84,7 +84,7 @@
       }
 
       &:hover:not(&--active) {
-        opacity: 0.5;
+        background-color: rgba($color: white, $alpha: 0.05);
         cursor: pointer;
       }
     }
