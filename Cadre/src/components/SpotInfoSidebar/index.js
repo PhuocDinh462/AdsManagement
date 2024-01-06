@@ -49,6 +49,7 @@ export default function SpotInfoSidebar(props) {
         )
         .then((res) => {
           const data = res.data.results;
+          console.log(data);
           setAutoCompleteValue(data[0].formatted_address);
           setSpotName(data[0]?.name);
           setSpotAddress(data[0]?.address);
@@ -263,3 +264,4 @@ export default function SpotInfoSidebar(props) {
     </div>
   );
 }
+
