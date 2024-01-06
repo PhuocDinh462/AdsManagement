@@ -1,5 +1,6 @@
 const catchAsync = require('../utils/catchAsync');
 const connection = require('../server');
+const socket = require('../app');
 
 const getRequestEditBoards = catchAsync(async (req, res, next) => {
   const query = `
@@ -79,7 +80,6 @@ const getDetailInforBoard = catchAsync(async (req, res, next) => {
       ap.image_url AS point_image_url, 
       ap.lat, 
       ap.lng, 
-      ap.point_id,
       ap.is_planning, 
       ap.created_at AS point_created_at, 
       ap.updated_at AS point_updated_at, 
