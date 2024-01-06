@@ -8,6 +8,7 @@ const initialState = {
   boardId: null,
   selectedWards: [],
   sendMailStatus: true,
+  formLicenseReq: { start_date: new Date().toISOString(), end_date: new Date().toISOString() },
 };
 
 export const rootSlice = createSlice({
@@ -35,6 +36,12 @@ export const rootSlice = createSlice({
     setSendMailStatus: (state, action) => {
       state.sendMailStatus = action.payload;
     },
+    setFormLicenseReq: (state, action) => {
+      state.formLicenseReq = { ...state.formLicenseReq, ...action.payload };
+    },
+    removeFormLicenseReq: (state, action) => {
+      state.formLicenseReq = { start_date: new Date().toISOString(), end_date: new Date().toISOString() };
+    },
   },
 });
 
@@ -47,6 +54,8 @@ export const {
   setBoardId,
   setSelectedWards,
   setSendMailStatus,
+  setFormLicenseReq,
+  removeFormLicenseReq,
 } = rootSlice.actions;
 
 // Selectors
@@ -57,5 +66,6 @@ export const selectBoardIndex = (state) => state.root.boardIndex;
 export const selectBoardId = (state) => state.root.boardId;
 export const selectSelectedWards = (state) => state.root.selectedWards;
 export const selectSendMailStatus = (state) => state.root.sendMailStatus;
+export const selectFormLicenseReq = (state) => state.root.formLicenseReq;
 
 export default rootSlice.reducer;

@@ -180,4 +180,3 @@ const getBoardsByPoint = catchAsync(async (req, res, next) => {
   });
 });
 module.exports = { getInforBoard, updateBoard, getBoardsByPoint };
-

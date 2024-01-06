@@ -11,6 +11,7 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@goongmaps/goong-geocoder-react": "^0.1.1",
     "@goongmaps/goong-map-react": "^1.1.2",
+    "@hookform/resolvers": "^3.3.4",
     "@mui/material": "^5.15.1",
     "@mui/styled-engine-sc": "^6.0.0-alpha.9",
     "@mui/x-date-pickers": "^6.18.6",

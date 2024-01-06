@@ -23,6 +23,7 @@ const createContract = catchAsync(async (req, res, next) => {
     end_date,
     representative,
   } = req.body;
+  console.log(req.body);
 
   const queryInsert = `INSERT INTO contract 
   ( company_name, company_email, company_phone, company_address, company_taxcode, start_date, end_date, representative ) 

@@ -10,6 +10,7 @@ const validationContract = async (req, res, next) => {
     end_date,
     representative,
   } = req.body;
+
   try {
     // Định nghĩa schema validation
     const validationSchema = Yup.object({
@@ -20,9 +21,9 @@ const validationContract = async (req, res, next) => {
         .required('Phone is required'),
       company_address: Yup.string().required('Address is required'),
       company_taxcode: Yup.number().required('Taxcode is required'),
-      start_date: Yup.date().required('Date start id is required'), // Kiểm tra ngày sinh
-      end_date: Yup.date().required('Date end id is required'), // Kiểm tra ngày sinh
-      representative: Yup.string().required('Representative id is required'), // Kiểm tra ngày sinh
+      start_date: Yup.date().required('Date start id is required'),
+      end_date: Yup.date().required('Date end id is required'),
+      representative: Yup.string().required('Representative id is required'),
     });
 
     // Thực hiện validation
