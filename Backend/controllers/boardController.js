@@ -52,6 +52,54 @@ const getInforBoard = catchAsync(async (req, res, next) => {
   // });
 });
 
+// const updateBoard = catchAsync(async (req, res, next) => {
+//   const { id } = req.params;
+//   const { board_type_id, advertisement_content, advertisement_image_url, width, height, point_id } = req.body;
+//   console.log('sdfhsdhfjksh');
+//   // Kiểm tra xem bảng quảng cáo có tồn tại không
+//   const checkBoardQuery = 'SELECT * FROM advertising_board WHERE board_id = ?';
+//   connection.query(checkBoardQuery, id, (checkErr, checkResults) => {
+//     if (checkErr) {
+//       console.error('Error checking board existence:', checkErr);
+//       res.status(500).json({ status: 'error', error: 'Internal Server Error' });
+//       return;
+//     }
+
+//     if (checkResults.length === 0) {
+//       res.status(404).json({ status: 'error', error: 'Board not found' });
+//       return;
+//     }
+
+//     // Nếu tồn tại, thực hiện cập nhật
+//     const updateBoardQuery = `
+//       UPDATE advertising_board
+//       SET
+//         board_type_id = ?,
+//         advertisement_content = ?,
+//         advertisement_image_url = ?,
+//         width = ?,
+//         height = ?,
+//         point_id = ?
+//       WHERE
+//         board_id = ?
+//     `;
+
+//     connection.query(
+//       updateBoardQuery,
+//       [board_type_id, advertisement_content, advertisement_image_url, width, height, point_id, id],
+//       (updateErr, updateResults) => {
+//         if (updateErr) {
+//           console.error('Error updating board:', updateErr);
+//           res.status(500).json({ status: 'error', error: 'Internal Server Error' });
+//           return;
+//         }
+
+//         res.status(200).json({ status: 'success', message: 'Board updated successfully' });
+//       }
+//     );
+//   });
+// });
+
 const updateBoard = catchAsync(async (req, res, next) => {
   const { id } = req.params;
   const { board_type_id, advertisement_content, advertisement_image_url, width, height, point_id } = req.body;
@@ -71,32 +119,54 @@ const updateBoard = catchAsync(async (req, res, next) => {
     }
 
     // Nếu tồn tại, thực hiện cập nhật
-    const updateBoardQuery = `
-      UPDATE advertising_board
-      SET
-        board_type_id = ?,
-        advertisement_content = ?,
-        advertisement_image_url = ?,
-        width = ?,
-        height = ?,
-        point_id = ?
-      WHERE
-        board_id = ?
-    `;
+    let updateBoardQuery = 'UPDATE advertising_board SET ';
+    const updateValues = [];
 
-    connection.query(
-      updateBoardQuery,
-      [board_type_id, advertisement_content, advertisement_image_url, width, height, point_id, id],
-      (updateErr, updateResults) => {
-        if (updateErr) {
-          console.error('Error updating board:', updateErr);
-          res.status(500).json({ status: 'error', error: 'Internal Server Error' });
-          return;
-        }
+    if (board_type_id !== undefined) {
+      updateBoardQuery += 'board_type_id = ?, ';
+      updateValues.push(board_type_id);
+    }
 
-        res.status(200).json({ status: 'success', message: 'Board updated successfully' });
+    if (advertisement_content !== undefined) {
+      updateBoardQuery += 'advertisement_content = ?, ';
+      updateValues.push(advertisement_content);
+    }
+
+    if (advertisement_image_url !== undefined) {
+      updateBoardQuery += 'advertisement_image_url = ?, ';
+      updateValues.push(advertisement_image_url);
+    }
+
+    if (width !== undefined) {
+      updateBoardQuery += 'width = ?, ';
+      updateValues.push(width);
+    }
+
+    if (height !== undefined) {
+      updateBoardQuery += 'height = ?, ';
+      updateValues.push(height);
+    }
+
+    if (point_id !== undefined) {
+      updateBoardQuery += 'point_id = ?, ';
+      updateValues.push(point_id);
+    }
+
+    // Xóa dấu ',' cuối cùng nếu có
+    updateBoardQuery = updateBoardQuery.replace(/,\s*$/, '');
+
+    updateBoardQuery += ' WHERE board_id = ?';
+    updateValues.push(id);
+
+    connection.query(updateBoardQuery, updateValues, (updateErr, updateResults) => {
+      if (updateErr) {
+        console.error('Error updating board:', updateErr);
+        res.status(500).json({ status: 'error', error: 'Internal Server Error' });
+        return;
       }
-    );
+
+      res.status(200).json({ status: 'success', message: 'Board updated successfully' });
+    });
   });
 });
 
