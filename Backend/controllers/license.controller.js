@@ -59,10 +59,11 @@ const getAllLicenseRequest = catchAsync(async (req, res) => {
       c.end_date, 
       c.representative 
     FROM licensing_request lr 
-    JOIN advertising_point ap ON lr.point_id = ap.point_id AND ap.ward_id = ? 
-    JOIN contract c ON lr.contract_id = c.contract_id `;
+    JOIN advertising_point ap ON lr.point_id = ap.point_id 
+    JOIN contract c ON lr.contract_id = c.contract_id 
+    JOIN ward w ON w.manager_id = ${user_id} AND w.ward_id = ap.ward_id`;
 
-  connection.query(queryData, [user_id], (err, results) => {
+  connection.query(queryData, (err, results) => {
     if (err) {
       console.error(err);
       res.status(500).json({
