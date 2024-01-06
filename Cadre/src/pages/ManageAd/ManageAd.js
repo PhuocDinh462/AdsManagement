@@ -89,10 +89,11 @@ const ManageAd = () => {
             <thead className={classes.table__header_wrap_thead}>
               <tr>
                 <th style={{ width: '5%' }}>STT</th>
-                <th style={{ width: '30%' }}>Địa chỉ</th>
-                <th style={{ width: '30%' }}>Điểm đặt</th>
-                <th style={{ width: '25%' }}>Trạng thái</th>
-                <th style={{ width: '10%' }}>Chỉnh sửa</th>
+                <th style={{ width: '22%' }}>Loại bảng</th>
+                <th style={{ width: '15%' }}>Hình ảnh minh họa</th>
+                <th style={{ width: '33%' }}>Địa chỉ</th>
+                <th style={{ width: '10%' }}>Kích thước</th>
+                <th style={{ width: '15%' }}>Chỉnh sửa</th>
               </tr>
             </thead>
           </table>
@@ -111,12 +112,11 @@ const ManageAd = () => {
                   }}
                 >
                   <td style={{ width: '5%' }}>{row.stt}</td>
-                  <td style={{ width: '30%' }}>{row.content}</td>
-                  <td style={{ width: '30%' }}>{row.area}</td>
-                  <td style={{ width: '25%', color: row.status === 'Đã quy hoạch' ? '#2A591E' : '#EF1414' }}>
-                    {row.status}
-                  </td>
-                  <td style={{ width: '10%' }}>
+                  <td style={{ width: '22%' }}>{row.content}</td>
+                  <td style={{ width: '15%' }}>{row.content}</td>
+                  <td style={{ width: '33%' }}>{row.content}</td>
+                  <td style={{ width: '10%' }}>{row.area}</td>
+                  <td style={{ width: '15%' }}>
                     <button className={classes.btn_trash}>
                       <FontAwesomeIcon icon={faTrashCan} className={classes.icon} />
                     </button>

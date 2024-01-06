@@ -179,4 +179,7 @@ const getBoardsByPoint = catchAsync(async (req, res, next) => {
     });
   });
 });
-module.exports = { getInforBoard, updateBoard, getBoardsByPoint };
+
+const getAllBoards = catchAsync(async (req, res, next) => {});
+
+module.exports = { getInforBoard, updateBoard, getBoardsByPoint, getAllBoards };

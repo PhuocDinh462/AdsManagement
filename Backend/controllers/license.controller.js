@@ -59,8 +59,8 @@ const getAllLicenseRequest = catchAsync(async (req, res) => {
       c.end_date, 
       c.representative 
     FROM licensing_request lr 
-    JOIN advertising_point ap ON lr.point_id = ap.point_id AND lr.user_id = ? 
-    JOIN contract c ON lr.contract_id = c.contract_id;`;
+    JOIN advertising_point ap ON lr.point_id = ap.point_id AND ap.ward_id = ? 
+    JOIN contract c ON lr.contract_id = c.contract_id `;
 
   connection.query(queryData, [user_id], (err, results) => {
     if (err) {
