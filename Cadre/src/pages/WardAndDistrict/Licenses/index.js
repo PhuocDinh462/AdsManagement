@@ -86,7 +86,7 @@ const Licenses = () => {
   const fetchDataLicenseReq = async () => {
     setIsLoading(true);
     try {
-      const res = await axiosClient.get('/ward/license', { headers });
+      const res = await axiosClient.get('/ward/license-by-ward', { headers });
       console.log(res);
 
       setData(res.data);

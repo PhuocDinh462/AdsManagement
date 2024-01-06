@@ -27,7 +27,7 @@ const createLicensingRequest = catchAsync(async (req, res, next) => {
   );
 });
 
-const getAllLicenseRequest = catchAsync(async (req, res) => {
+const getAllLicenseRequestByWard = catchAsync(async (req, res) => {
   const { user_id } = req.user;
 
   const queryData = `
@@ -107,4 +107,4 @@ const updateStatusLicenseRequest = catchAsync(async (req, res, next) => {
   });
 });
 
-module.exports = { createLicensingRequest, getAllLicenseRequest, updateStatusLicenseRequest };
+module.exports = { createLicensingRequest, getAllLicenseRequestByWard, updateStatusLicenseRequest };
