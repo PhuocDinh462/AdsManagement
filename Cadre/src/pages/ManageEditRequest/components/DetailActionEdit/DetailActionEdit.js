@@ -119,6 +119,59 @@ const DetailActionEdit = ({ data, onClose }) => {
           },
           { headers }
         );
+
+        if (res.status === 'success') {
+          Swal.fire({
+            icon: 'success',
+            title: 'Cập nhật trạng thái thành công!',
+            timer: 1500,
+            showConfirmButton: false,
+          });
+
+          const dataBoardToSend = {
+            board_type_id: data.board_type_id,
+            advertisement_content: data.advertisement_content,
+            advertisement_image_url: data.advertisement_image_url,
+            width: data.width,
+            height: data.height,
+            point_id: dataBoard.point_id,
+          };
+
+          try {
+            const response = await axiosClient.put(`/board/update_board/${data.board_id}`, dataBoardToSend, {
+              headers,
+            });
+            console.log(response);
+
+            if (response.status === 'success') {
+              Swal.fire({
+                icon: 'success',
+                title: 'Chỉnh sửa bảng quảng cáo thành công!',
+                timer: 1500,
+                showConfirmButton: false,
+              });
+
+              onClose();
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Chỉnh sửa bảng quảng cáo thất bại!',
+                timer: 1500,
+                text: 'Có lỗi xảy ra khi thêm nội dung. Vui lòng thử lại.',
+              });
+            }
+
+            onClose();
+          } catch (error) {
+            console.error('Error:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Cập nhật thất bại!',
+              timer: 1500,
+              text: 'Có lỗi xảy ra khi thêm nội dung. Vui lòng thử lại.',
+            });
+          }
+        }
       } else if (data.point_id) {
         const res = await axiosClient.put(
           `/cadre/updateStatusEditReq/${data.id}`,

@@ -79,6 +79,7 @@ const getDetailInforBoard = catchAsync(async (req, res, next) => {
       ap.image_url AS point_image_url, 
       ap.lat, 
       ap.lng, 
+      ap.point_id,
       ap.is_planning, 
       ap.created_at AS point_created_at, 
       ap.updated_at AS point_updated_at, 

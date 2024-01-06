@@ -13,7 +13,7 @@ const ActionLicense = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isOpenDetails, setIsOpenDetails] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState(0);
+  const [selectedFilter, setSelectedFilter] = useState('all');
   const [selectedRowData, setSelectedRowData] = useState(null);
 
   const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
