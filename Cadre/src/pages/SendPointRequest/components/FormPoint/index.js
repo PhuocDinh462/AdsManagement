@@ -9,6 +9,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '~/src/firebase';
 import { v4 } from 'uuid';
 import { Backdrop, CircularProgress } from '@mui/material';
+
 const locationOptions = [
   'Đất công/Công viên/Hành lang an toàn giao thông',
   'Đất tư nhân/Nhà ở riêng lẻ',
@@ -29,7 +30,6 @@ const FormPoint = () => {
   const [loading, setLoading] = useState(false);
   const [imageUploadUrl, setImageUploadUrl] = useState(null);
 
-
   const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
   const headers = {
     Authorization: tokenAuth,
@@ -40,12 +40,12 @@ const FormPoint = () => {
       const response = await request.get(`point/get_point/${point_id}`, { headers: headers });
       setPointInfor(response.data.point);
       setImageUploadUrl(response.data.point.image_url);
-      setAddress(response.data.point.address)
+      setAddress(response.data.point.address);
     } catch (error) {
       console.error('Error fetching surfaces:', error);
       if (error.response.status === 403) {
         localStorage.clear();
-        pointNavigate('/login')
+        pointNavigate('/login');
         Swal.fire({
           icon: 'error',
           title: 'Lỗi do hết hạn quyền truy cập',
@@ -112,7 +112,7 @@ const FormPoint = () => {
 
         if (error.response.status === 403) {
           localStorage.clear();
-          pointNavigate('/login')
+          pointNavigate('/login');
           Swal.fire({
             icon: 'error',
             title: 'Lỗi do hết hạn quyền truy cập',

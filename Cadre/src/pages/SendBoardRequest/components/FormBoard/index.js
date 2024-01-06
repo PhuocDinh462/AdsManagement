@@ -12,16 +12,14 @@ import { Backdrop, CircularProgress } from '@mui/material';
 
 const FormBoard = () => {
   const apiKey = 'AIzaSyAQxG3Ubdo-Nhf6tjGYmXhYDe3yr4vGeDw';
-  const boardNavigate = useNavigate()
+  const boardNavigate = useNavigate();
   const user_type = localStorage.getItem('user_type');
   const { board_id } = useParams();
-  const [boardTypes, setBoardTypes] = useState([])
-  const [boardInfor, setBoardInfor] = useState({})
+  const [boardTypes, setBoardTypes] = useState([]);
+  const [boardInfor, setBoardInfor] = useState({});
   const [address, setAddress] = useState(null);
   const [loading, setLoading] = useState(false);
   const [imageUploadUrl, setImageUploadUrl] = useState(null);
-
-
 
   const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
   const headers = {
@@ -29,27 +27,27 @@ const FormBoard = () => {
   };
 
   const fetchBoardTypes = async () => {
-
     try {
       const response = await request.get(`board_type`);
       setBoardTypes(response.data.board_types);
     } catch (error) {
-      console.error('Error fetching data:', error)
+      console.error('Error fetching data:', error);
     }
   };
   const fetchInfor = async () => {
-
     try {
       const responseBoard = await request.get(`board/get_board/${board_id}`, { headers: headers });
-      const responsePoint = await request.get(`point/get_point/${responseBoard.data.board.point_id}`, { headers: headers });
+      const responsePoint = await request.get(`point/get_point/${responseBoard.data.board.point_id}`, {
+        headers: headers,
+      });
       setBoardInfor(responseBoard.data.board);
       setAddress(responsePoint.data.point.address);
-      setImageUploadUrl(responseBoard.data.board.advertisement_image_url)
+      setImageUploadUrl(responseBoard.data.board.advertisement_image_url);
     } catch (error) {
       console.error('Error fetching data:', error);
       if (error.response.status === 403) {
         localStorage.clear();
-        boardNavigate('/login')
+        boardNavigate('/login');
         Swal.fire({
           icon: 'error',
           title: 'Lỗi do hết hạn quyền truy cập',
@@ -57,12 +55,12 @@ const FormBoard = () => {
         });
       }
     }
-  }
+  };
 
   useEffect(() => {
     fetchBoardTypes();
     fetchInfor();
-  }, [])
+  }, []);
 
   const formik = useFormik({
     initialValues: {
@@ -75,7 +73,7 @@ const FormBoard = () => {
       height: '',
       content: '',
       reason: '',
-      edit_status: 'pending'
+      edit_status: 'pending',
     },
     validationSchema: Yup.object({
       requestTime: Yup.string().required('Thời điểm là bắt buộc'),
@@ -103,8 +101,8 @@ const FormBoard = () => {
           request_time: values.requestTime,
           reason: values.reason,
           width: values.width,
-          height: values.height
-        }
+          height: values.height,
+        };
         await request.post('edit_board/create', params, { headers: headers });
 
         setSubmitting(false);
@@ -114,13 +112,13 @@ const FormBoard = () => {
           confirmButtonText: 'Hoàn tất',
           width: '50rem',
         });
-        boardNavigate('/advertising-spots')
+        boardNavigate('/advertising-spots');
       } catch (error) {
         console.error(error);
         setSubmitting(false);
         if (error.response.status === 403) {
           localStorage.clear();
-          boardNavigate('/login')
+          boardNavigate('/login');
           Swal.fire({
             icon: 'error',
             title: 'Lỗi do hết hạn quyền truy cập',
@@ -147,7 +145,7 @@ const FormBoard = () => {
       height: boardInfor.height,
       content: boardInfor.advertisement_content,
       reason: '',
-      edit_status: 'pending'
+      edit_status: 'pending',
     });
   }, [address]);
   const handleFileChange = (e) => {
@@ -178,7 +176,6 @@ const FormBoard = () => {
     }
   };
 
-
   return (
     <>
       <form onSubmit={formik.handleSubmit}>
@@ -193,7 +190,12 @@ const FormBoard = () => {
 
           <label className={classes['title-input']}>
             Thời điểm:
-            <input type="date" name="requestTime" value={formik.values.requestTime || ''} onChange={formik.handleChange} />
+            <input
+              type="date"
+              name="requestTime"
+              value={formik.values.requestTime || ''}
+              onChange={formik.handleChange}
+            />
             {formik.touched.requestTime && formik.errors.requestTime ? (
               <div className={classes.error}>{formik.errors.requestTime}</div>
             ) : null}
@@ -231,14 +233,26 @@ const FormBoard = () => {
         <div className={classes['fourth-row']}>
           <label className={classes['title-input']}>
             Chiều rộng:
-            <input type="number" step={0.01} name="width" value={formik.values.width || ''} onChange={formik.handleChange} />
+            <input
+              type="number"
+              step={0.01}
+              name="width"
+              value={formik.values.width || ''}
+              onChange={formik.handleChange}
+            />
             {formik.touched.width && formik.errors.width ? (
               <div className={classes.error}>{formik.errors.width}</div>
             ) : null}
           </label>
           <label className={classes['title-input']}>
             Chiều cao:
-            <input type="number" step={0.01} name="height" value={formik.values.height || ''} onChange={formik.handleChange} />
+            <input
+              type="number"
+              step={0.01}
+              name="height"
+              value={formik.values.height || ''}
+              onChange={formik.handleChange}
+            />
             {formik.touched.height && formik.errors.height ? (
               <div className={classes.error}>{formik.errors.height}</div>
             ) : null}
@@ -266,7 +280,7 @@ const FormBoard = () => {
         </div>
 
         <button className={classes['custom-button']} type="submit" disabled={formik.isSubmitting}>
-          Submit Form
+          Gửi yêu cầu
         </button>
       </form>
       <Backdrop sx={{ color: 'white', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loading}>
