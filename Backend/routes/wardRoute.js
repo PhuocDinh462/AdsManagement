@@ -23,7 +23,7 @@ router.get('/getAdBoardByBoardId/:id', wardController.getAdBoardByBoardId);
 router.post('/getNumberOfReportsByLatLng', wardController.getNumberOfReportsByLatLng);
 router.post('/license/create-license', validationLicenseReq, createLicensingRequest);
 router.get('/license', getAllLicenseRequest);
-router.put('/license/:licensingId', updateStatusLicenseRequest);
+router.patch('/license/:licensingId', updateStatusLicenseRequest);
 router.get('/getAdSpotsListByWardId/:id', wardController.getAdSpotsListByWardId);
 router.get('/get_wards_managing', wardController.getAllWardsByDistrictManager);
 

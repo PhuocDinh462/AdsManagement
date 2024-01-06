@@ -44,7 +44,7 @@ const LicenseDetails = ({ data, handleCloseModal }) => {
       status,
     };
     try {
-      const response = await axiosClient.put(`/ward/license/${data.licensing_id}`, dataToSend, { headers });
+      const response = await axiosClient.patch(`/ward/license/${data.licensing_id}`, dataToSend, { headers });
       console.log(`/ward/license/${data.licensing_id}`);
       if (response.status === 'success') {
         if (status === 'approved') {

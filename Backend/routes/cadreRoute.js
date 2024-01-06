@@ -21,7 +21,6 @@ router.delete('/deleteAddress', cadreController.deleteAddress);
 router.get('/checkUserWard/:point_id', cadreController.checkUserWard);
 router.get('/checkUserDistrict/:point_id', cadreController.checkUserDistrict);
 
-
 router.get('/form', cadreFormController.getType);
 router.post('/addForm', cadreFormController.addFormType);
 router.put('/updateForm', cadreFormController.updateForm);
@@ -38,7 +37,7 @@ router.get('/getRequestEditBoard', requestEditController.getRequestEditBoards);
 router.get('/getRequestEditPoint', requestEditController.getRequestEditPoints);
 router.get('/detailAdsBoard/:id', requestEditController.getDetailInforBoard);
 router.get('/detailAdsPoint/:id', requestEditController.getDetailAdvertisingPoint);
-router.put('/updateStatusEditReq/:id', requestEditController.updateStatus);
+router.patch('/updateStatusEditReq/:id', requestEditController.updateStatus);
 
 router.get('/getAllReport', cadreReportController.getAllReport);
 

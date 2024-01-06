@@ -27,7 +27,6 @@ const DetailActionEdit = ({ data, onClose }) => {
   const [dataBoard, setDataBoard] = useState();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  console.log(data);
 
   const fetchData = async () => {
     try {
@@ -63,7 +62,7 @@ const DetailActionEdit = ({ data, onClose }) => {
   const handleReject = async () => {
     try {
       if (data.board_id) {
-        const res = await axiosClient.put(
+        const res = await axiosClient.patch(
           `/cadre/updateStatusEditReq/${data.id}`,
           {
             type: 'board',
@@ -84,7 +83,7 @@ const DetailActionEdit = ({ data, onClose }) => {
           onClose();
         }
       } else if (data.point_id) {
-        const res = await axiosClient.put(
+        const res = await axiosClient.patch(
           `/cadre/updateStatusEditReq/${data.id}`,
           {
             type: 'point',
@@ -111,7 +110,7 @@ const DetailActionEdit = ({ data, onClose }) => {
   const handleApproved = async () => {
     try {
       if (data.board_id) {
-        const res = await axiosClient.put(
+        const res = await axiosClient.patch(
           `/cadre/updateStatusEditReq/${data.id}`,
           {
             type: 'board',
@@ -173,7 +172,7 @@ const DetailActionEdit = ({ data, onClose }) => {
           }
         }
       } else if (data.point_id) {
-        const res = await axiosClient.put(
+        const res = await axiosClient.patch(
           `/cadre/updateStatusEditReq/${data.id}`,
           {
             type: 'point',
