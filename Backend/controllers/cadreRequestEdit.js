@@ -37,6 +37,7 @@ const getRequestEditPoints = catchAsync(async (req, res, next) => {
       erp.*,
       at.type_name AS advertisement_type_name,
       ap.ward_id,
+      ap.address,
       w.ward_name,
       ap.lat,
       ap.lng,

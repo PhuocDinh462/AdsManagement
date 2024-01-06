@@ -31,15 +31,13 @@ const Navigation = () => {
   const location = useLocation();
   const authenticated = localStorage.getItem('user_type');
   const isWardOrDistrict = ['ward', 'district'].includes(authenticated?.toLowerCase());
-  console.log(['ward', 'district'].includes(authenticated?.toLowerCase()));
   const isDepartment = authenticated?.toLowerCase() === 'department';
-  console.log(authenticated?.toLowerCase() === 'department');
 
   return (
     <main>
       <Routes>
         {/* Chỗ này để trang home khi mới vào hay trang gốc (T đang để ManageForm để demo) */}
-        <Route path="/login" name="login" element={<LoginPage />} />
+        <Route path="/" name="login" element={<LoginPage />} />
         <Route path="/forgot" name="forgot" element={<ForgotPassword />} />
         <Route path="/not_found" name="not_found" element={<NotFoundPage />} />
         {isDepartment ? (
@@ -54,7 +52,7 @@ const Navigation = () => {
 
         {/* Layout dành cho trang có sidebar và có thanh navbar */}
         <Route element={<Layout />}>
-          <Route element={<PrivateRoute isAllowed={isDepartment} redirectPath="/login" />}>
+          <Route element={<PrivateRoute isAllowed={isDepartment} redirectPath="/" />}>
             <Route path="/district-ward" name="district ward" element={<ManageDistrictWard />} />
             <Route path="/form" name="form" element={<ManageForm />} />
 
@@ -71,7 +69,7 @@ const Navigation = () => {
 
         {/* Layout dành cho trang không có sidebar, chỉ có thanh navbar */}
         <Route element={<LayoutNavBar />}>
-          <Route element={<PrivateRoute isAllowed={isWardOrDistrict} redirectPath="/login" />}>
+          <Route element={<PrivateRoute isAllowed={isWardOrDistrict} redirectPath="/" />}>
             <Route path="/home" name="home" element={<WardAndDistrictHome />} />
             <Route path="/advertising-spots" name="advertising-spots" element={<AdSpots />} />
             <Route path="/advertising-spots/:id" name="advertising-spots/boards" element={<Boards />} />

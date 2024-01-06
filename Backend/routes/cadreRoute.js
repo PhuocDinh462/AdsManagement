@@ -18,6 +18,10 @@ router.post('/createAddress', cadreController.createAddress);
 router.put('/updateAddress', cadreController.updateAddress);
 router.delete('/deleteAddress', cadreController.deleteAddress);
 
+router.get('/checkUserWard/:point_id', cadreController.checkUserWard);
+router.get('/checkUserDistrict/:point_id', cadreController.checkUserDistrict);
+
+
 router.get('/form', cadreFormController.getType);
 router.post('/addForm', cadreFormController.addFormType);
 router.put('/updateForm', cadreFormController.updateForm);

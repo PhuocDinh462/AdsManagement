@@ -30,6 +30,8 @@ import { axiosRequest } from '~/src/api/axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { setReportIndex, selectReportIndex, setReportCoord, selectUser, setBoardId } from '~/src/store/reducers';
 import { useNavigate } from 'react-router';
+import { text } from '~styles/colors';
+import { sidebarBg } from '~assets/imgs/Imgs';
 
 export default function ReportsDetail() {
   const { id } = useParams();
@@ -124,12 +126,18 @@ export default function ReportsDetail() {
 
   return (
     <div className={classes.main_container}>
+      <img className={classes.bg_img} src={sidebarBg} />
       <div className={classes.sideBar_container}>
         <div className={classes.searchBar_container}>
           <div className={[classes.back_btn, classes.btn].join(' ')} onClick={() => navigate(-1)}>
             <FontAwesomeIcon icon={faArrowLeft} />
           </div>
-          <SearchBar placeholder="Tìm kiếm..." width="20rem" onChange={(keyword) => handleFilter(keyword)} />
+          <SearchBar
+            placeholder="Tìm kiếm..."
+            width="20rem"
+            bgColor={text.color_50}
+            onChange={(keyword) => handleFilter(keyword)}
+          />
         </div>
 
         <div className={classes.nav_btn_container}>
@@ -168,26 +176,22 @@ export default function ReportsDetail() {
           </div>
         </div>
 
-        <dir className={classes.reports_container}>
+        <div className={classes.divider} />
+
+        <div className={classes.reports_container}>
           {filteredData?.map((item, index) => (
             <div
-              className={classes.report_item}
+              className={[classes.report_item, currentReportIndex === index && classes['report_item--active']].join(
+                ' '
+              )}
               key={item.report_id}
               onClick={() => {
                 setCurrentReportIndex(index);
                 dispatch(setReportIndex(index));
               }}
             >
-              <dir className={classes.divider} />
               <div className={classes.username}>
-                <div
-                  className={[
-                    classes.username__text,
-                    currentReportIndex === index && classes['username__text--active'],
-                  ].join(' ')}
-                >
-                  {index + 1 + '. ' + item.fullname_rp}
-                </div>
+                <div className={classes.username__text}>{index + 1 + '. ' + item.fullname_rp}</div>
                 <div
                   className={[
                     classes.username__ic,
@@ -199,7 +203,7 @@ export default function ReportsDetail() {
               </div>
             </div>
           ))}
-        </dir>
+        </div>
       </div>
 
       {!loading && (
@@ -215,17 +219,17 @@ export default function ReportsDetail() {
                       <td className={classes.userInfo_col}>
                         <div className={classes.itemInfo}>
                           <FontAwesomeIcon icon={faUser} />
-                          <dir className={classes.itemInfo__text}>
+                          <div className={classes.itemInfo__text}>
                             {'Người báo cáo: ' + filteredData[currentReportIndex]?.fullname_rp}
-                          </dir>
+                          </div>
                         </div>
                       </td>
                       <td className={classes.userInfo_col}>
                         <div className={classes.itemInfo}>
                           <FontAwesomeIcon icon={faFlag} />
-                          <dir className={classes.itemInfo__text}>
+                          <div className={classes.itemInfo__text}>
                             {'Đối tượng bị báo cáo: ' + filteredData[currentReportIndex]?.reportedObject}
-                          </dir>
+                          </div>
                         </div>
                       </td>
                     </tr>
@@ -233,17 +237,17 @@ export default function ReportsDetail() {
                       <td className={classes.userInfo_col}>
                         <div className={classes.itemInfo}>
                           <FontAwesomeIcon icon={faPhone} />
-                          <dir className={classes.itemInfo__text}>
+                          <div className={classes.itemInfo__text}>
                             {'Số điện thoại: ' + filteredData[currentReportIndex]?.phone_rp}
-                          </dir>
+                          </div>
                         </div>
                       </td>
                       <td className={classes.userInfo_col}>
                         <div className={classes.itemInfo}>
                           <FontAwesomeIcon icon={faFile} />
-                          <dir className={classes.itemInfo__text}>
+                          <div className={classes.itemInfo__text}>
                             {'Hình thức báo cáo: ' + filteredData[currentReportIndex]?.report_type_name}
-                          </dir>
+                          </div>
                         </div>
                       </td>
                     </tr>
@@ -251,9 +255,9 @@ export default function ReportsDetail() {
                       <td className={classes.userInfo_col}>
                         <div className={classes.itemInfo}>
                           <FontAwesomeIcon icon={faEnvelope} />
-                          <dir className={classes.itemInfo__text}>
+                          <div className={classes.itemInfo__text}>
                             {'Email: ' + filteredData[currentReportIndex]?.email_rp}
-                          </dir>
+                          </div>
                         </div>
                       </td>
                       <td className={classes.userInfo_col}>

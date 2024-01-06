@@ -96,8 +96,6 @@ const createReport = catchAsync(async (req, res, next) => {
     board_id,
   } = req.body;
 
-  console.log(req.body);
-
   // Bắt đầu bằng việc thêm dữ liệu vào bảng Detail
   connection.query(
     'INSERT INTO detail (report_content, image_url_1, image_url_2, width, height, lat, lng) VALUES (?, ?, ?, ?, ?, ?, ?)',
@@ -120,16 +118,21 @@ const createReport = catchAsync(async (req, res, next) => {
             console.error('Error executing query: ' + err.stack);
             return res.status(500).json({ error: 'Database error' });
           }
-
-          socket?.socketIo?.emit('create', 'Create New Report');
-
-          // Nếu không có lỗi, trả về thành công
-          res.status(200).json(result);
+          connection.query('SELECT * FROM report WHERE report_id =?', [result.insertId], (err, results) => {
+            if (err) {
+              console.error('Error executing query: ' + err.stack);
+              return res.status(500).json({ error: 'Database error' });
+            }
+            socket?.socketIo?.emit('createReport', results[0]);
+            res.status(200).json(results[0]);
+          })
         }
       );
     }
   );
 });
+
+
 
 module.exports = {
   getAllDistrictWard,

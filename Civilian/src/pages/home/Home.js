@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { GoogleMap, Marker, useJsApiLoader, InfoWindow } from '@react-google-maps/api';
 import classes from './Home.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClose, faFilter, faListUl } from '@fortawesome/free-solid-svg-icons';
+import { faClose, faFilter } from '@fortawesome/free-solid-svg-icons';
 import SearchBar from '~/src/components/SearchBar';
 import CardInfor from './CardInfor';
 import InforTable from './InforTable';
+import DetailReport from './DetailReport';
 import Checklist from '~/src/components/CheckList/CheckList';
 import ModalReport from '~/src/components/ModalReport/ModalReport';
 import axios from 'axios';
+import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
 import {
     AdSpotPlanned,
     AdSpotNotPlan,
@@ -47,8 +49,9 @@ const Home = () => {
     const [AdRenderSave, setAdRenderSave] = useState([]);
     const [adsBoard, setAdsBoard] = useState([]);
     const [listReport, setListReport] = useState([]);
+    const [showDetailReport, setShowDetailReport] = useState({ show: false, type: '' });
 
-    useEffect(() => {
+    const fetchData = () => {
         (async () => {
             await axios
                 .get(process.env.REACT_APP_API_ENDPOINT + '/civilian', {})
@@ -78,14 +81,23 @@ const Home = () => {
                 .get(process.env.REACT_APP_API_ENDPOINT + '/civilian/getReport', {})
                 .then((res) => {
                     const data = res.data;
-                    console.log(data);
                     setListReport(data);
                 })
                 .catch((error) => {
                     console.log('Get tasks error: ', error);
                 });
         })();
+    };
+
+    useEffect(() => {
+        fetchData();
     }, []);
+
+    const handleCreateReport = (eventData) => {
+        fetchData();
+    };
+
+    // useSocketSubscribe('createReport', handleCreateReport);
 
     useEffect(() => {
         if (adsBoard.length !== 0 && AdRender.length !== 0 && listReport.length !== 0) {
@@ -151,6 +163,7 @@ const Home = () => {
         setSelectedMarker(null);
         setShowInfo({ id: -1, show: false, infoAds: '', data: {} });
         setShowAdDetail({ id: -1, show: false, infoAds: '', data: {} });
+        setShowDetailReport({ show: false, type: '' });
     };
 
     const handleCheckboxChange = (data) => {
@@ -208,6 +221,7 @@ const Home = () => {
                                                       data: item,
                                                   });
                                             setShowAdDetail({ id: -1, show: false, info: '', data: {} });
+                                            setShowDetailReport({ show: false, type: '' });
                                         }}
                                         icon={{
                                             url: selectIcon(item),
@@ -329,7 +343,44 @@ const Home = () => {
                     </div>
                     <div className={classes['container__home-inf-content']}>
                         <div className={classes[`container__home-inf-content-table-show-img`]}>
-                            <InforTable info={{ infoBoard: showAdDetail.data, infoPoint: showInfo.data }} />
+                            <InforTable
+                                info={{ infoBoard: showAdDetail.data, infoPoint: showInfo.data }}
+                                onClickShowDetailReportPoint={() => {
+                                    setShowDetailReport({ show: true, type: 'Point' });
+                                }}
+                                onClickShowDetailReportBoard={() => {
+                                    setShowDetailReport({ show: true, type: 'Board' });
+                                }}
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {showDetailReport.show && (
+                <div className={classes['container__home-inf']}>
+                    {/* Xem chi tiết của một trụ, cột*/}
+                    <FontAwesomeIcon
+                        icon={faClose}
+                        className={classes.icon}
+                        style={{ color: '#000' }}
+                        onClick={() => {
+                            setShowDetailReport({ show: false, type: '' });
+                        }}
+                    />
+
+                    <div className={classes['container__home-inf-content']}>
+                        <div
+                            className={classes[`container__home-inf-content-table-show-img`]}
+                            style={{ marginTop: '8rem' }}
+                        >
+                            <DetailReport
+                                info={
+                                    showDetailReport.type === 'Point'
+                                        ? showInfo.data.list_report
+                                        : showAdDetail.data.list_report_board
+                                }
+                            />
                         </div>
                     </div>
                 </div>
