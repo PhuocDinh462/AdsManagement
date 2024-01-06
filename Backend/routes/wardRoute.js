@@ -7,7 +7,7 @@ const updateReportStatus = require('../schemas/updateReportStatus.json');
 const validationLicenseReq = require('../middlewares/validation/LicenseReq.middleware');
 const {
   createLicensingRequest,
-  getAllLicenseRequest,
+  getAllLicenseRequestByWard,
   updateStatusLicenseRequest,
 } = require('../controllers/license.controller');
 
@@ -22,10 +22,9 @@ router.patch('/updateReportStatus', validate(updateReportStatus), wardController
 router.get('/getAdBoardByBoardId/:id', wardController.getAdBoardByBoardId);
 router.post('/getNumberOfReportsByLatLng', wardController.getNumberOfReportsByLatLng);
 router.post('/license/create-license', validationLicenseReq, createLicensingRequest);
-router.get('/license', getAllLicenseRequest);
+router.get('/license-by-ward', getAllLicenseRequestByWard);
 router.patch('/license/:licensingId', updateStatusLicenseRequest);
 router.get('/getAdSpotsListByWardId/:id', wardController.getAdSpotsListByWardId);
 router.get('/get_wards_managing', wardController.getAllWardsByDistrictManager);
 
 module.exports = router;
-
