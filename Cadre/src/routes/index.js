@@ -28,15 +28,12 @@ import Layout from '../layouts/index';
 import { useEffect, useState } from 'react';
 
 const Navigation = () => {
+  const location = useLocation();
   const authenticated = localStorage.getItem('user_type');
   const isWardOrDistrict = ['ward', 'district'].includes(authenticated?.toLowerCase());
   console.log(['ward', 'district'].includes(authenticated?.toLowerCase()));
   const isDepartment = authenticated?.toLowerCase() === 'department';
   console.log(authenticated?.toLowerCase() === 'department');
-  const location = useLocation();
-  // useEffect(() => {
-  //   console.log(location);
-  // }, [location]);
 
   return (
     <main>
