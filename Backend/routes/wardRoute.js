@@ -22,13 +22,8 @@ router.patch('/updateReportStatus', validate(updateReportStatus), wardController
 router.get('/getAdBoardByBoardId/:id', wardController.getAdBoardByBoardId);
 router.post('/getNumberOfReportsByLatLng', wardController.getNumberOfReportsByLatLng);
 router.post('/license/create-license', validationLicenseReq, createLicensingRequest);
-<<<<<<< HEAD
 router.get('/license-by-ward', getAllLicenseRequestByWard);
-router.put('/license/:licensingId', updateStatusLicenseRequest);
-=======
-router.get('/license', getAllLicenseRequest);
 router.patch('/license/:licensingId', updateStatusLicenseRequest);
->>>>>>> 5f417c0038928abbfa69bf92d5ea05c8da78c2d8
 router.get('/getAdSpotsListByWardId/:id', wardController.getAdSpotsListByWardId);
 router.get('/get_wards_managing', wardController.getAllWardsByDistrictManager);
 
