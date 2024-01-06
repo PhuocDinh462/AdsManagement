@@ -28,6 +28,8 @@ const createLicensingRequest = catchAsync(async (req, res, next) => {
 });
 
 const getAllLicenseRequest = catchAsync(async (req, res) => {
+  const { user_id } = req.user;
+
   const queryData = `
     SELECT 
       lr.licensing_id, 
@@ -57,10 +59,10 @@ const getAllLicenseRequest = catchAsync(async (req, res) => {
       c.end_date, 
       c.representative 
     FROM licensing_request lr 
-    JOIN advertising_point ap ON lr.point_id = ap.point_id 
+    JOIN advertising_point ap ON lr.point_id = ap.point_id AND lr.user_id = ? 
     JOIN contract c ON lr.contract_id = c.contract_id;`;
 
-  connection.query(queryData, (err, results) => {
+  connection.query(queryData, [user_id], (err, results) => {
     if (err) {
       console.error(err);
       res.status(500).json({
