@@ -80,17 +80,16 @@ export default function Reports() {
   }
 
   const handleSocketEvent = async (eventData) => {
-    console.log(eventData)
     if (user.user_type === 'ward') {
-      fetchSingleWardReports()
       const checked = await checkUserWard(eventData.point_id)
       if (checked) {
+        fetchSingleWardReports()
         alert('New Report Sent to Ward')
       }
     } else if (user.user_type === 'district') {
-      fetchWardsReports();
       const checked = await checkUserDistrict(eventData.point_id)
       if (checked) {
+        fetchWardsReports();
         alert('New Report Sent to District')
       }
     }
