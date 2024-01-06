@@ -106,7 +106,10 @@
         &_row {
           height: 56px;
           cursor: pointer;
-
+          
+          &:hover{
+            background-color: #7fcad1 !important;
+        }
           &:nth-child(odd) {
             background-color: #f6f7f9;
           }
