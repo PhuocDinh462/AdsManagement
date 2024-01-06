@@ -99,7 +99,7 @@ const updateStatusLicenseRequest = catchAsync(async (req, res, next) => {
     if (results.affectedRows === 0) {
       res.status(404).json({ error: 'Không tìm thấy bản ghi với licensing ID cung cấp' });
     } else {
-      socket?.socketIo?.emit('updateStatusLicense', { licensing_id: licensingId, status: newStatus });
+      socket?.socketIo?.emit('updateStatusLicenseRequest', { licensing_id: licensingId, status: newStatus });
       res.status(200).json({ status: 'success', data: { licensing_id: licensingId, status: newStatus } });
     }
   });
