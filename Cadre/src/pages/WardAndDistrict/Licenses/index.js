@@ -1,119 +1,37 @@
-import React, { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
-import classes from './style.module.scss';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
-import LicenseDetails from './LicenseDetails';
-import SearchBar from '~/src/components/SearchBar';
-import Pagination from '~/src/components/Pagination';
-import ButtonCT from '~/src/components/button/ButtonCT';
+import { Backdrop, CircularProgress } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
+import Swal from 'sweetalert2';
+import { axiosClient } from '~/src/api/axios';
 import { ic_add } from '~/src/assets';
+import Pagination from '~/src/components/Pagination';
+import SearchBar from '~/src/components/SearchBar';
+import ButtonCT from '~/src/components/button/ButtonCT';
+import { removeFormLicenseReq, selectUser } from '~/src/store/reducers';
+import { calculateDaysBetweenDates } from '~/src/utils/support';
+import LicenseDetails from './LicenseDetails';
 import LicenseModalAdd from './LicenseModalAdd';
-const initialData = [
-  {
-    id: 1,
-    company: 'HCMUS',
-    img: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
-    address: '135 THD, Quận 1, P. Cầu Ông Lãnh, TP HCM',
-    numOfDate: '300',
-    status: { type: 1, content: 'Đã Cấp Phép' },
-  },
-  {
-    id: 2,
-    company: 'HCMUS',
-    img: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
-    address: '135 THD, Quận 1, P. Cầu Ông Lãnh, TP HCM',
-    numOfDate: '300',
-    status: { type: 2, content: 'Chưa Cấp Phép' },
-  },
-  {
-    id: 3,
-    company: 'HCMUS',
-    img: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
-    address: '135 THD, Quận 1, P. Cầu Ông Lãnh, TP HCM',
-    numOfDate: '300',
-    status: { type: 3, content: 'Đã Hủy' },
-  },
-  {
-    id: 4,
-    company: 'HCMUS',
-    img: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
-    address: '135 THD, Quận 1, P. Cầu Ông Lãnh, TP HCM',
-    numOfDate: '300',
-    status: { type: 3, content: 'Đã Hủy' },
-  },
-  {
-    id: 5,
-    company: 'HCMUS',
-    img: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
-    address: '135 THD, Quận 1, P. Cầu Ông Lãnh, TP HCM',
-    numOfDate: '300',
-    status: { type: 3, content: 'Đã Hủy' },
-  },
-  {
-    id: 6,
-    company: 'HCMUS',
-    img: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
-    address: '135 THD, Quận 1, P. Cầu Ông Lãnh, TP HCM',
-    numOfDate: '300',
-    status: { type: 3, content: 'Đã Hủy' },
-  },
-  {
-    id: 7,
-    company: 'HCMUS',
-    img: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
-    address: '135 THD, Quận 1, P. Cầu Ông Lãnh, TP HCM',
-    numOfDate: '300',
-    status: { type: 3, content: 'Đã Hủy' },
-  },
-  {
-    id: 8,
-    company: 'HCMUS',
-    img: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
-    address: '135 THD, Quận 1, P. Cầu Ông Lãnh, TP HCM',
-    numOfDate: '300',
-    status: { type: 3, content: 'Đã Hủy' },
-  },
-  {
-    id: 9,
-    company: 'HCMUS',
-    img: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
-    address: '135 THD, Quận 1, P. Cầu Ông Lãnh, TP HCM',
-    numOfDate: '300',
-    status: { type: 3, content: 'Đã Hủy' },
-  },
-  {
-    id: 10,
-    company: 'HCMUS',
-    img: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
-    address: '135 THD, Quận 1, P. Cầu Ông Lãnh, TP HCM',
-    numOfDate: '300',
-    status: { type: 3, content: 'Đã Hủy' },
-  },
-  {
-    id: 11,
-    company: 'HCMUS',
-    img: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
-    address: '135 THD, Quận 1, P. Cầu Ông Lãnh, TP HCM',
-    numOfDate: '300',
-    status: { type: 3, content: 'Đã Hủy' },
-  },
-  {
-    id: 12,
-    company: 'HCMUS',
-    img: 'https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg',
-    address: '135 THD, Quận 1, P. Cầu Ông Lãnh, TP HCM',
-    numOfDate: '300',
-    status: { type: 3, content: 'Đã Hủy' },
-  },
+import classes from './style.module.scss';
 
-  // Thêm dữ liệu khác
-];
+const statusLicense = {
+  pending: { label: 'Chờ xử lý', value: 1 },
+  approved: {
+    label: 'Đã cấp phép',
+    value: 2,
+  },
+  canceled: {
+    label: 'Đã hủy',
+  },
+};
+
 const Licenses = () => {
-  const [data, setData] = useState(initialData);
+  const [data, setData] = useState([]);
   const [isOpenDetails, setIsOpenDetails] = useState(false);
   const [isOpenAdd, setIsOpenAdd] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selected, setSelected] = useState({});
 
   const pageSize = 10;
   const [currentPage, setCurrentPage] = useState(1);
@@ -123,8 +41,16 @@ const Licenses = () => {
     return data.slice(firstPageIndex, lastPageIndex);
   }, [pageSize, currentPage, data]);
 
+  const user = useSelector(selectUser);
+  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
+
+  const dispatch = useDispatch();
   const handleOpenModalDetails = (data) => {
     setIsOpenDetails(true);
+    setSelected(data);
   };
 
   const handleCloseModalDetails = () => {
@@ -133,10 +59,14 @@ const Licenses = () => {
 
   const handleOpenModalAdd = (data) => {
     setIsOpenAdd(true);
+    dispatch(removeFormLicenseReq());
   };
 
-  const handleCloseModalAdd = () => {
+  const handleCloseModalAdd = (isSubmit = false) => {
     setIsOpenAdd(false);
+    dispatch(removeFormLicenseReq());
+
+    if (isSubmit === true) notiSuccess('Yêu cầu cấp phép đã được gửi, vui lòng chờ xét duyệt...');
   };
 
   const handleFilterChange = (type) => {
@@ -150,6 +80,33 @@ const Licenses = () => {
     borderBottom: selectedFilter === filter ? '2px solid #0A6971' : 'none',
     cursor: 'pointer',
   });
+
+  const notiSuccess = (title) => {
+    Swal.fire({
+      position: 'center',
+      icon: 'success',
+      title: `${title}`,
+      showConfirmButton: false,
+      timer: 3000,
+    });
+  };
+
+  const fetchDataLicenseReq = async () => {
+    setIsLoading(true);
+    try {
+      const res = await axiosClient.get('/ward/license', { headers });
+      console.log(res);
+      setData(res.data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDataLicenseReq();
+  }, []);
   return (
     <div className={classes.container__wrap}>
       <div className={classes.container}>
@@ -193,7 +150,7 @@ const Licenses = () => {
                 <th style={{ width: '15%' }}>Công ty</th>
                 <th style={{ width: '15%' }}>Ảnh minh họa</th>
                 <th style={{ width: '30%' }}>Địa chỉ đặt</th>
-                <th style={{ width: '15%' }}>Thời hạn đăng ký</th>
+                <th style={{ width: '15%' }}>Thời hạn đăng ký (Ngày)</th>
                 <th style={{ width: '15%' }}>Trạng thái</th>
               </tr>
             </thead>
@@ -205,25 +162,29 @@ const Licenses = () => {
           <table className={classes.table__body_wrap}>
             <tbody>
               {currentTableData.map((row, rowIndex) => (
-                <tr className={classes.table__body_wrap_row} key={row.id} onClick={() => handleOpenModalDetails(row)}>
+                <tr
+                  className={classes.table__body_wrap_row}
+                  key={row.licensing_id}
+                  onClick={() => handleOpenModalDetails(row)}
+                >
                   <td style={{ width: '5%' }}>{rowIndex + 1}</td>
-                  <td style={{ width: '15%' }}>{row.company}</td>
+                  <td style={{ width: '15%' }}>{row.company_name}</td>
                   <td style={{ width: '15%' }}>
-                    <img src={row.img} alt="none" />
+                    <img src={row.advertisement_image_url} alt="none" />
                   </td>
                   <td style={{ width: '30%' }}>{row.address}</td>
-                  <td style={{ width: '15%' }}>{row.numOfDate}</td>
+                  <td style={{ width: '15%' }}>{calculateDaysBetweenDates(row.start_date, row.end_date)}</td>
                   <td style={{ width: '15%' }}>
                     <div
                       className={` ${classes.status} ${
-                        row.status.type === 1
+                        statusLicense[row.status].value === 1
                           ? classes.status_accept
-                          : row.status.type === 2
+                          : statusLicense[row.status].value === 2
                           ? classes.status_pending
                           : classes.status_cancel
                       }`}
                     >
-                      {row.status.content}
+                      {statusLicense[row.status].label}
                     </div>
                   </td>
                 </tr>
@@ -241,7 +202,10 @@ const Licenses = () => {
         />
       </div>
       {isOpenAdd && <LicenseModalAdd handleCloseModal={handleCloseModalAdd} />}
-      {isOpenDetails && <LicenseDetails disabledButton={true} handleCloseModal={handleCloseModalDetails} />}
+      {isOpenDetails && <LicenseDetails data={selected} handleCloseModal={handleCloseModalDetails} />}
+      <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
   );
 };

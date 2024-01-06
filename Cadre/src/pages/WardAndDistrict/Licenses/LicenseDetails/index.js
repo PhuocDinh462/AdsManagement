@@ -1,10 +1,34 @@
-import React from 'react';
-import classes from './style.module.scss';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ButtonCT from '~/src/components/button/ButtonCT';
+import { calculateDaysBetweenDates, formatDate } from '~/src/utils/support';
+import classes from './style.module.scss';
 
-const LicenseDetails = ({ handleCloseModal, disabledButton }) => {
+const statusLicense = {
+  pending: { label: 'Chờ xử lý', value: 1 },
+  approved: {
+    label: 'Đã cấp phép',
+    value: 2,
+  },
+  canceled: {
+    label: 'Đã hủy',
+  },
+};
+
+const adsType = ['', 'Cổ động chính trị', 'Quảng cáo thương mại', 'Xã hội hoá'];
+
+const LicenseDetails = ({ handleCloseModal, data }) => {
+  const handleCancelLicense = async () => {
+    try {
+      const response = await axiosClient.patch(
+        `/ward/license/${data.licensing_id}`,
+        { status: 'canceled' },
+        { headers }
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <>
       <div className={classes.container}>
@@ -14,7 +38,7 @@ const LicenseDetails = ({ handleCloseModal, disabledButton }) => {
           <FontAwesomeIcon icon={faXmark} className={classes.ic_cancel} onClick={handleCloseModal} />
         </div>
         <div className={classes.container__content}>
-          <p className={classes.container__content_title}>Trạng thái: Chưa cấp phép</p>
+          <p className={classes.container__content_title}>Trạng thái: {statusLicense[data.status].label}</p>
           <div className={classes.content_block}>
             <div className={classes.content}>
               <div className={classes.content_element}>
@@ -22,27 +46,20 @@ const LicenseDetails = ({ handleCloseModal, disabledButton }) => {
                 <ul className={classes.m_left_10}>
                   <li>
                     <strong>Địa chỉ</strong>
-                    <p>: Đồng Khởi - Nguyễn Du (Sở Văn hóa và Thể thao)</p>
+                    <p>: {data.address}</p>
                   </li>
                   <li>
-                    <strong>Điểm đặt</strong>
-                    <p>: Phía A</p>
+                    <strong>Loại vị trí</strong>
+                    <p>: {data.location_type}</p>
                   </li>
                   <li>
                     <strong>Kích thước </strong>
-                    <p>: 2.5m x 1.2m</p>
+                    <p>: {`${data.width}m x ${data.height}m`}</p>
                   </li>
-                  <li>
-                    <strong>Số lượng </strong>
-                    <p>: 1 trụ/bảng</p>
-                  </li>
+
                   <li>
                     <strong>Hình thức</strong>
-                    <p>: Cổ động chính trị</p>
-                  </li>
-                  <li>
-                    <strong>Phân loại</strong>
-                    <p>: Đất công nghiệp/Công viên/Hành lang an toàn giao thông</p>
+                    <p>: {adsType[data.advertisement_type_id]}</p>
                   </li>
                 </ul>
               </div>
@@ -51,18 +68,12 @@ const LicenseDetails = ({ handleCloseModal, disabledButton }) => {
                 <div className={classes.m_left_10}>
                   <div>
                     <strong>Nội dung</strong>
-                    <p>
-                      Chất Lượng Đỉnh Cao: Sản phẩm/dịch vụ của chúng tôi đảm bảo chất lượng tốt nhất, được chọn lựa từ
-                      những nguồn cung cấp uy tín.
-                    </p>
+                    <p>{data.advertisement_content}</p>
                   </div>
                   <div className={classes.m_top_10}>
                     <strong>Hình ảnh minh họa</strong>
                     <div className={classes.d_flex_center}>
-                      <img
-                        src="https://images.fpt.shop/unsafe/filters:quality(90)/fptshop.com.vn/uploads/images/tin-tuc/138170/Originals/facebook-ads-la-gi.jpg"
-                        alt="none"
-                      />
+                      <img src={data.advertisement_image_url} alt="none" />
                     </div>
                   </div>
                 </div>
@@ -72,47 +83,54 @@ const LicenseDetails = ({ handleCloseModal, disabledButton }) => {
                 <ul className={classes.m_left_10}>
                   <li>
                     <strong>Tên</strong>
-                    <p>: CÔNG TY CỔ PHẦN ĐẦU TƯ H2O </p>
+                    <p>: {data.company_name} </p>
                   </li>
                   <li>
                     <strong>Mã số thuể</strong>
-                    <p>: 123456789</p>
+                    <p>: {data.company_taxcode}</p>
                   </li>
                   <li>
                     <strong>Đại diện pháp luật </strong>
-                    <p>: Hutavi</p>
+                    <p>: {data.representative}</p>
                   </li>
                   <li>
                     <strong>Email </strong>
-                    <p>: 1 trụ/bảng</p>
+                    <p>: {data.company_email}</p>
                   </li>
                   <li>
                     <strong>Điện thoại</strong>
-                    <p>: 123456789</p>
+                    <p>: {data.company_phone}</p>
                   </li>
                   <li>
                     <strong>Địa chỉ </strong>
-                    <p>: 123 TBL, quận 20, TP TBL</p>
+                    <p>: {data.company_address}</p>
                   </li>
                 </ul>
               </div>
               <div className={classes.content_element}>
-                <h3>Thời gian hợp đồng (365 ngày)</h3>
+                <h3>Thời gian hợp đồng ({calculateDaysBetweenDates(data.start_date, data.end_date)} ngày)</h3>
                 <ul className={classes.m_left_10}>
                   <li>
                     <strong>Ngày bắt đầu</strong>
-                    <p>: 02/10/2024 </p>
+                    <p>: {formatDate(data.start_date)} </p>
                   </li>
                   <li>
                     <strong>Ngày kết thúc</strong>
-                    <p>: 02/10/2025</p>
+                    <p>: {formatDate(data.end_date)}</p>
                   </li>
                 </ul>
               </div>
             </div>
           </div>
           <div className={`${classes.d_flex_end} ${classes.container__action}`}>
-            <ButtonCT disabled={disabledButton} borderRadius5 primary medium content="Hủy yêu cầu" />
+            <ButtonCT
+              disabled={data.status !== 'pending'}
+              borderRadius5
+              primary
+              medium
+              content={data.status !== 'pending' ? statusLicense[data.status].label : 'Hủy cấp phép'}
+              onClick={data.status !== 'pending' ? () => {} : handleCancelLicense}
+            />
           </div>
         </div>
       </div>

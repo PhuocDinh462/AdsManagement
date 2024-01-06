@@ -105,11 +105,14 @@ const CreateAcount = () => {
       timer: 1500,
     });
   };
+
   const fecthDataCreateAccount = async (data) => {
     try {
       await axiosClient.post('/cadre/auth/create', data, { headers });
       reset();
       notiSuccess('Đăng ký tài khoản thành công!');
+      setListWard([]);
+      setListDictrict([]);
     } catch (err) {
       notiError('Lỗi đăng ký!', 'Thông tin cung cấp chưa chính xác');
       console.log(err);

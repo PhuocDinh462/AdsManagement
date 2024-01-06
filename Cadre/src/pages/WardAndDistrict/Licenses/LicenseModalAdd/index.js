@@ -1,10 +1,18 @@
 import { faClose } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Typography } from '@mui/material';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Backdrop, CircularProgress, Typography } from '@mui/material';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
+import Swal from 'sweetalert2';
 import { v4 } from 'uuid';
+import * as yup from 'yup';
+import { axiosClient } from '~/src/api/axios';
 import { storage } from '~/src/firebase';
+import { selectFormLicenseReq, selectUser, setFormLicenseReq } from '~/src/store/reducers';
+import { convertISOString } from '~/src/utils/support';
 import AsynInputSeletion from './AsynInputSeletion';
 import DatePicker from './DatePicker';
 import InputText from './InputText';
@@ -28,27 +36,53 @@ const listType = [
   { title: 'Xã hội hoá', value: 3 },
 ];
 
+const schema = yup.object().shape({
+  company_name: yup.string().required('Thông tin hợp đồng chưa đầy đủ!'),
+  company_email: yup.string().required('Thông tin hợp đồng chưa đầy đủ!'),
+  company_phone: yup.string().required('Thông tin hợp đồng chưa đầy đủ!'),
+  representative: yup.string().required('Thông tin hợp đồng chưa đầy đủ!'),
+  company_taxcode: yup.number().typeError('Mã số thuể phải là số').required('Thông tin hợp đồng chưa đầy đủ!'),
+  company_address: yup.string().required('Thông tin hợp đồng chưa đầy đủ!'),
+  width: yup.number().typeError('Độ dài bảng quảng cáo phải là số').required('Thông tin bảng quảng cáo chưa đầy đủ!'),
+  height: yup.number().typeError('Độ cao quảng cáo phải là số').required('Thông tin bảng quảng cáo chưa đầy đủ!'),
+  advertisement_content: yup.string().required('Thông tin bảng quảng cáo chưa đầy đủ!'),
+});
+
 const LicenseModalAdd = (props) => {
   const { handleCloseModal } = props;
 
+  const user = useSelector(selectUser);
+  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
+
   const [indexCur, setIndexCur] = useState(1);
   const [previewImage, setPreviewImage] = useState(null);
-
   const [imageUploadUrl, setImageUploadUrl] = useState(null);
+  const selectForm = useSelector(selectFormLicenseReq);
 
-  const [typeAds, setTypeAds] = useState(-1);
-  const [pointAds, setPointAds] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const dispatch = useDispatch();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    formState: { errors },
+  } = useForm({ resolver: yupResolver(schema) });
 
   const handleOnChangeTypeAds = (e, value) => {
     if (value) {
       console.log(value.value);
-      setTypeAds(value.value);
+      dispatch(setFormLicenseReq({ type: value, point: null }));
     }
   };
 
   const handleOnChangePointAds = (e, value) => {
     console.log(value);
-    // setPointAds(value);
+    dispatch(setFormLicenseReq({ point: value }));
   };
 
   const handleFileChange = async (event) => {
@@ -77,27 +111,77 @@ const LicenseModalAdd = (props) => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (imageUploadUrl === null) {
-      console.log('Vui lòng chờ');
+  const handleShowError = () => {
+    const keys = Object.keys(errors);
+    console.log(errors);
+    if (keys.length > 0) {
+      notiError('Thông tin không hợp lệ!', errors[keys[0]].message);
+    }
+  };
+
+  const onSubmit = async (dataInput) => {
+    // console.log(dataInput, selectForm);
+
+    if (!imageUploadUrl) {
+      notiError('Lỗi!', 'Ảnh đang được tải lên, vui lòng chờ trong giây lát...');
       return;
     }
-    // const dataToSend = {
-    //   lng: longitude,
-    //   lat: latitude,
-    //   location_type: locationType,
-    //   form_ads: advertisingType,
-    //   ward_id: selectedWard,
-    //   is_planning: planning,
-    //   image_url: imageUploadUrl,
-    // };
-    console.log(dataToSend);
+
+    if (!selectForm?.type) {
+      notiError('Lỗi!', 'Chưa có thông của Loại Quảng Cáo.');
+      return;
+    }
+
+    if (!selectForm?.point) {
+      notiError('Lỗi!', 'Chưa có thông của Điểm Quảng Cáo.');
+      return;
+    }
+
+    if (selectForm.start_date >= selectForm.end_date) {
+      notiError('Lỗi!', 'Thời hạn hợp đồng không hợp lệ.');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const dataContract = {
+        ...dataInput,
+        start_date: convertISOString(selectForm.start_date),
+        end_date: convertISOString(selectForm.end_date),
+      };
+      const res1 = await axiosClient.post('/contract/create', dataContract, { headers });
+
+      const dataLicense = {
+        ...dataInput,
+        status: 'pending',
+        point_id: selectForm?.point.point_id,
+        contract_id: res1.data.contract_id,
+        advertisement_image_url: imageUploadUrl,
+      };
+      const res2 = await axiosClient.post('/ward/license/create-license', dataLicense, { headers });
+
+      reset();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+      handleCloseModal(true);
+    }
   };
+
+  const notiError = (title, content) => {
+    Swal.fire({
+      icon: 'error',
+      title: `${title}`,
+      text: `${content}`,
+    });
+  };
+
   return (
     <div className={classes.adding__overlay}>
       <div className={classes.adding__modal}>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className={classes.adding__modal__heading}>
             TẠO YÊU CẦU CẤP PHÉP
             <FontAwesomeIcon icon={faClose} className={classes['adding__modal-ic']} onClick={handleCloseModal} />
@@ -108,39 +192,54 @@ const LicenseModalAdd = (props) => {
                 <h3>1. Thông Tin Điểm Quảng Cáo</h3>
                 <div className={classes['form-block']}>
                   <AsynInputSeletion
+                    name="type"
                     labelInput="Loại Quảng Cáo"
                     listItem={listType}
                     handleOnChange={handleOnChangeTypeAds}
                   />
                   <AsynInputSeletion
+                    name="point"
                     labelInput="Chọn Điểm Quảng Cáo"
                     handleOnChange={handleOnChangePointAds}
-                    url={`/point/get_point_type/${typeAds}`}
                   />
-                  <InputText labelInput="Độ Cao Của Quảng Cáo" />
-                  <InputText labelInput="Độ Dài Của Quảng Cáo" />
+                  <InputText
+                    error={errors}
+                    register={register}
+                    name="width"
+                    labelInput="Độ Dài Của Bảng Quảng Cáo (đơn vị: m)"
+                  />
+                  <InputText
+                    error={errors}
+                    register={register}
+                    name="height"
+                    labelInput="Độ Cao Của Bảng Quảng Cáo (đơn vị: m)"
+                  />
                 </div>
               </>
             )}
-            {indexCur === 2 && (
+            {indexCur === 3 && (
               <>
-                <h3>2. Thông Tin Hợp Đồng</h3>
+                <h3>3. Thông Tin Hợp Đồng</h3>
                 <div className={`${classes['form-block']} ${classes['flex-center-block']}`}>
                   <div style={{ width: '50%' }}>
-                    {formInput.page2.map((item, index) => index % 2 === 0 && <InputText labelInput={item.label} />)}
-                    <DatePicker labelInput="Ngày Bắt Đầu" />
+                    <InputText error={errors} register={register} name="company_name" labelInput="Tên Công Ty" />
+                    <InputText error={errors} register={register} name="company_email" labelInput="Email" />
+                    <InputText error={errors} register={register} name="company_phone" labelInput="Số Điện Thoại" />
+                    <DatePicker error={errors} setValue={setValue} name="start_date" labelInput="Ngày Bắt đầu" />
                   </div>
                   <div style={{ width: '50%' }}>
-                    {formInput.page2.map((item, index) => index % 2 !== 0 && <InputText labelInput={item.label} />)}
-                    <DatePicker labelInput="Ngày Kết Thúc" />
+                    <InputText error={errors} register={register} name="representative" labelInput="Người Đại Diện" />
+                    <InputText error={errors} register={register} name="company_taxcode" labelInput="Mã Số Thuế" />
+                    <InputText error={errors} register={register} name="company_address" labelInput="Địa chỉ" />
+                    <DatePicker error={errors} setValue={setValue} name="end_date" labelInput="Ngày Kết Thúc" />
                   </div>
                 </div>
               </>
             )}
 
-            {indexCur === 3 && (
+            {indexCur === 2 && (
               <>
-                <h3>3. Thông Tin Quảng Cáo</h3>
+                <h3>2. Thông Tin Quảng Cáo</h3>
                 <div className={`${classes['form-block']} ${classes['flex-center-block']}`}>
                   <div style={{ width: '50%' }}>
                     <Typography
@@ -153,7 +252,11 @@ const LicenseModalAdd = (props) => {
                     >
                       Nội Dung Quảng Cáo
                     </Typography>
-                    <textarea placeholder="Nhập thông tin" className={classes['textarea-custom']} />
+                    <textarea
+                      {...register('advertisement_content')}
+                      placeholder="Nhập thông tin"
+                      className={classes['textarea-custom']}
+                    />
                   </div>
                   <div style={{ width: '50%' }}>
                     <Typography
@@ -199,6 +302,7 @@ const LicenseModalAdd = (props) => {
               {indexCur === 1 && <button onClick={handleCloseModal}>Hủy</button>}
               {indexCur > 1 && (
                 <button
+                  type="button"
                   onClick={() => {
                     setIndexCur(indexCur - 1);
                   }}
@@ -206,9 +310,9 @@ const LicenseModalAdd = (props) => {
                   Quay lại
                 </button>
               )}
-              {indexCur === 2 && <button>Đăng ký</button>}
               {indexCur < 3 && (
                 <button
+                  type="button"
                   onClick={() => {
                     setIndexCur(indexCur + 1);
                   }}
@@ -217,11 +321,18 @@ const LicenseModalAdd = (props) => {
                 </button>
               )}
 
-              {indexCur === 3 && <button type="submit">Tạo Yêu Cầu</button>}
+              {indexCur === 3 && (
+                <button type="submit" onClick={handleShowError}>
+                  Tạo Yêu Cầu
+                </button>
+              )}
             </div>
           </div>
         </form>
       </div>
+      <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
   );
 };
