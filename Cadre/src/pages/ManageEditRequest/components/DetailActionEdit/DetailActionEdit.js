@@ -27,6 +27,7 @@ const DetailActionEdit = ({ data, onClose }) => {
   const [dataBoard, setDataBoard] = useState();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  console.log(data);
 
   const fetchData = async () => {
     try {
@@ -34,7 +35,6 @@ const DetailActionEdit = ({ data, onClose }) => {
         // Nếu có board_id, gọi API cho board
         const responseBoard = await axiosClient.get(`/cadre/detailAdsBoard/${data.board_id}`, { headers });
         setDataBoard(responseBoard);
-        console.log(responseBoard);
       } else if (data.point_id) {
         // Nếu có point_id, gọi API cho point
         const responsePoint = await axiosClient.get(`/cadre/detailAdsPoint/${data.point_id}`, { headers });
@@ -103,7 +103,6 @@ const DetailActionEdit = ({ data, onClose }) => {
           onClose();
         }
       }
-      console.log('Trạng thái đã được cập nhật thành canceled');
     } catch (error) {
       console.error('Lỗi khi cập nhật trạng thái:', error);
     }
@@ -120,6 +119,59 @@ const DetailActionEdit = ({ data, onClose }) => {
           },
           { headers }
         );
+
+        if (res.status === 'success') {
+          Swal.fire({
+            icon: 'success',
+            title: 'Cập nhật trạng thái thành công!',
+            timer: 1500,
+            showConfirmButton: false,
+          });
+
+          const dataBoardToSend = {
+            board_type_id: data.board_type_id,
+            advertisement_content: data.advertisement_content,
+            advertisement_image_url: data.advertisement_image_url,
+            width: data.width,
+            height: data.height,
+            point_id: dataBoard.point_id,
+          };
+
+          try {
+            const response = await axiosClient.put(`/board/update_board/${data.board_id}`, dataBoardToSend, {
+              headers,
+            });
+            console.log(response);
+
+            if (response.status === 'success') {
+              Swal.fire({
+                icon: 'success',
+                title: 'Chỉnh sửa bảng quảng cáo thành công!',
+                timer: 1500,
+                showConfirmButton: false,
+              });
+
+              onClose();
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Chỉnh sửa bảng quảng cáo thất bại!',
+                timer: 1500,
+                text: 'Có lỗi xảy ra khi thêm nội dung. Vui lòng thử lại.',
+              });
+            }
+
+            onClose();
+          } catch (error) {
+            console.error('Error:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Cập nhật thất bại!',
+              timer: 1500,
+              text: 'Có lỗi xảy ra khi thêm nội dung. Vui lòng thử lại.',
+            });
+          }
+        }
       } else if (data.point_id) {
         const res = await axiosClient.put(
           `/cadre/updateStatusEditReq/${data.id}`,
@@ -143,6 +195,7 @@ const DetailActionEdit = ({ data, onClose }) => {
             location_type: data.location_type,
             lng: data.lng,
             lat: data.lat,
+            address: data.address,
             ward_id: data.ward_id,
             is_planning: !!data.is_planning,
             image_url: data.image_url,
@@ -185,7 +238,6 @@ const DetailActionEdit = ({ data, onClose }) => {
           }
         }
       }
-      console.log('Trạng thái đã được cập nhật thành canceled');
     } catch (error) {
       console.error('Lỗi khi cập nhật trạng thái:', error);
     }
@@ -239,7 +291,7 @@ const DetailActionEdit = ({ data, onClose }) => {
                   Ngày yêu
                   cầu&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:
                 </span>{' '}
-                <span>{formatDateString(data.time_request, 'yyyy-MM-dd')}</span>
+                <span>{formatDateString(data.request_time, 'yyyy-MM-dd')}</span>
               </li>
               <li>
                 <span>
