@@ -6,13 +6,12 @@ import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import Swal from 'sweetalert2';
 import { v4 } from 'uuid';
 import * as yup from 'yup';
 import { axiosClient } from '~/src/api/axios';
 import { storage } from '~/src/firebase';
 import { selectFormLicenseReq, selectUser, setFormLicenseReq } from '~/src/store/reducers';
-import { convertISOString } from '~/src/utils/support';
+import { convertISOString, notiError } from '~/src/utils/support';
 import AsynInputSeletion from './AsynInputSeletion';
 import DatePicker from './DatePicker';
 import InputText from './InputText';
@@ -168,14 +167,6 @@ const LicenseModalAdd = (props) => {
       setIsLoading(false);
       handleCloseModal(true);
     }
-  };
-
-  const notiError = (title, content) => {
-    Swal.fire({
-      icon: 'error',
-      title: `${title}`,
-      text: `${content}`,
-    });
   };
 
   return (

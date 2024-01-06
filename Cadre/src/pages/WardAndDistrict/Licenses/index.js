@@ -2,14 +2,13 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { Backdrop, CircularProgress } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import Swal from 'sweetalert2';
 import { axiosClient } from '~/src/api/axios';
 import { ic_add } from '~/src/assets';
 import Pagination from '~/src/components/Pagination';
 import SearchBar from '~/src/components/SearchBar';
 import ButtonCT from '~/src/components/button/ButtonCT';
 import { removeFormLicenseReq, selectUser } from '~/src/store/reducers';
-import { calculateDaysBetweenDates } from '~/src/utils/support';
+import { calculateDaysBetweenDates, notiSuccess } from '~/src/utils/support';
 import LicenseDetails from './LicenseDetails';
 import LicenseModalAdd from './LicenseModalAdd';
 import classes from './style.module.scss';
@@ -22,11 +21,13 @@ const statusLicense = {
   },
   canceled: {
     label: 'Đã hủy',
+    value: 3,
   },
 };
 
 const Licenses = () => {
-  const [data, setData] = useState([]);
+  const [initData, setInitData] = useState([]);
+  const [data, setData] = useState(initData);
   const [isOpenDetails, setIsOpenDetails] = useState(false);
   const [isOpenAdd, setIsOpenAdd] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState(0);
@@ -38,6 +39,7 @@ const Licenses = () => {
   const currentTableData = useMemo(() => {
     const firstPageIndex = (currentPage - 1) * pageSize;
     const lastPageIndex = firstPageIndex + pageSize;
+
     return data.slice(firstPageIndex, lastPageIndex);
   }, [pageSize, currentPage, data]);
 
@@ -70,7 +72,7 @@ const Licenses = () => {
   };
 
   const handleFilterChange = (type) => {
-    const filteredData = type === 0 ? initialData : initialData.filter((item) => item.status.type === type);
+    const filteredData = type === 0 ? initData : initData.filter((item) => statusLicense[item.status].value === type);
     setData(filteredData);
     setSelectedFilter(type);
   };
@@ -81,22 +83,14 @@ const Licenses = () => {
     cursor: 'pointer',
   });
 
-  const notiSuccess = (title) => {
-    Swal.fire({
-      position: 'center',
-      icon: 'success',
-      title: `${title}`,
-      showConfirmButton: false,
-      timer: 3000,
-    });
-  };
-
   const fetchDataLicenseReq = async () => {
     setIsLoading(true);
     try {
       const res = await axiosClient.get('/ward/license', { headers });
       console.log(res);
+
       setData(res.data);
+      setInitData(res.data);
     } catch (error) {
       console.log(error);
     } finally {
@@ -202,7 +196,9 @@ const Licenses = () => {
         />
       </div>
       {isOpenAdd && <LicenseModalAdd handleCloseModal={handleCloseModalAdd} />}
-      {isOpenDetails && <LicenseDetails data={selected} handleCloseModal={handleCloseModalDetails} />}
+      {isOpenDetails && (
+        <LicenseDetails data={selected} handleCloseModal={handleCloseModalDetails} fetchData={fetchDataLicenseReq} />
+      )}
       <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
         <CircularProgress color="inherit" />
       </Backdrop>

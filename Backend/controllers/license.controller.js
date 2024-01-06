@@ -72,7 +72,7 @@ const getAllLicenseRequest = catchAsync(async (req, res) => {
 
     res.status(200).json({
       status: 'success',
-      points: results,
+      data: results,
     });
   });
 });
@@ -105,4 +105,3 @@ const updateStatusLicenseRequest = catchAsync(async (req, res, next) => {
 });
 
 module.exports = { createLicensingRequest, getAllLicenseRequest, updateStatusLicenseRequest };
-

@@ -1,7 +1,9 @@
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Backdrop, CircularProgress } from '@mui/material';
+import { useState } from 'react';
 import ButtonCT from '~/src/components/button/ButtonCT';
-import { calculateDaysBetweenDates, formatDate } from '~/src/utils/support';
+import { calculateDaysBetweenDates, formatDate, notiError, notiSuccess } from '~/src/utils/support';
 import classes from './style.module.scss';
 
 const statusLicense = {
@@ -17,16 +19,25 @@ const statusLicense = {
 
 const adsType = ['', 'Cổ động chính trị', 'Quảng cáo thương mại', 'Xã hội hoá'];
 
-const LicenseDetails = ({ handleCloseModal, data }) => {
+const LicenseDetails = ({ handleCloseModal, data, fetchData }) => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleCancelLicense = async () => {
+    setIsLoading(true);
     try {
       const response = await axiosClient.patch(
         `/ward/license/${data.licensing_id}`,
         { status: 'canceled' },
         { headers }
       );
+      notiSuccess('Yêu cầu cấp phép đã được hủy');
+      fetchData();
     } catch (error) {
       console.log(error);
+      notiError('Lỗi!', 'Trạng thái chưa được cập nhật');
+    } finally {
+      setIsLoading(true);
+      handleCloseModal();
     }
   };
   return (
@@ -38,7 +49,20 @@ const LicenseDetails = ({ handleCloseModal, data }) => {
           <FontAwesomeIcon icon={faXmark} className={classes.ic_cancel} onClick={handleCloseModal} />
         </div>
         <div className={classes.container__content}>
-          <p className={classes.container__content_title}>Trạng thái: {statusLicense[data.status].label}</p>
+          <p className={classes.container__content_title}>
+            Trạng thái:
+            <span
+              className={` ${classes.status} ${
+                statusLicense[data.status].value === 1
+                  ? classes.status_accept
+                  : statusLicense[data.status].value === 2
+                  ? classes.status_pending
+                  : classes.status_cancel
+              }`}
+            >
+              {statusLicense[data.status].label}
+            </span>
+          </p>
           <div className={classes.content_block}>
             <div className={classes.content}>
               <div className={classes.content_element}>
@@ -135,6 +159,9 @@ const LicenseDetails = ({ handleCloseModal, data }) => {
         </div>
       </div>
       <div className={classes.bg}></div>
+      <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </>
   );
 };

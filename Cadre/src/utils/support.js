@@ -1,3 +1,5 @@
+import Swal from 'sweetalert2';
+
 export function convertISOString(isoString) {
   const date = new Date(isoString);
   const year = date.getFullYear();
@@ -28,4 +30,22 @@ export function formatDate(inputDate) {
   const formattedDate = `${day}-${month}-${year}`;
 
   return formattedDate;
+}
+
+export function notiSuccess(title) {
+  Swal.fire({
+    position: 'center',
+    icon: 'success',
+    title: `${title}`,
+    showConfirmButton: false,
+    timer: 3000,
+  });
+}
+
+export function notiError(title, content) {
+  Swal.fire({
+    icon: 'error',
+    title: `${title}`,
+    text: `${content}`,
+  });
 }
