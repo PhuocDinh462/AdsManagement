@@ -11,6 +11,8 @@ import { setReportIndex, setReportCoord, selectUser, selectSelectedWards } from 
 import { useNavigate } from 'react-router';
 import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
 import request from '~/src/utils/request';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Reports() {
   const [loading, setLoading] = useState(false);
@@ -34,7 +36,7 @@ export default function Reports() {
         .then((res) => {
           if (res.data.data.length > 0) {
             for (let j = 0; j < res.data.data.length; j++) {
-              reports.push(res.data.data[j])
+              reports.push(res.data.data[j]);
             }
           }
         })
@@ -45,7 +47,7 @@ export default function Reports() {
     setData(reports);
     setFilterData(reports);
     setLoading(false);
-  }
+  };
   const fetchSingleWardReports = async () => {
     await axiosRequest
       .get(`ward/getReportListsByWardId/${user.ward_id}`, { headers: headers })
@@ -60,47 +62,104 @@ export default function Reports() {
       .finally(() => {
         setLoading(false);
       });
-  }
+  };
   const checkUserWard = async (point_id) => {
     try {
-      const res = await request.get(`/cadre/checkUserWard/${point_id}`, { headers: headers })
+      const res = await request.get(`/cadre/checkUserWard/${point_id}`, { headers: headers });
       return res.data.checked;
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   const checkUserDistrict = async (point_id) => {
     try {
-      const res = await request.get(`/cadre/checkUserDistrict/${point_id}`, { headers: headers })
+      const res = await request.get(`/cadre/checkUserDistrict/${point_id}`, { headers: headers });
       return res.data.checked;
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   const handleSocketEvent = async (eventData) => {
-    if (user.user_type === 'ward') {
-      const checked = await checkUserWard(eventData.point_id)
-      if (checked) {
-        fetchSingleWardReports()
-        alert('New Report Sent to Ward')
-      }
-    } else if (user.user_type === 'district') {
-      const checked = await checkUserDistrict(eventData.point_id)
-      if (checked) {
-        fetchWardsReports();
-        alert('New Report Sent to District')
-      }
+    // if (user.user_type === 'ward') {
+    //   const checked = await checkUserWard(eventData.point_id);
+    //   if (checked) {
+    //     fetchSingleWardReports();
+    //     alert('New Report Sent to Ward');
+    //   }
+    // } else if (user.user_type === 'district') {
+    //   const checked = await checkUserDistrict(eventData.point_id);
+    //   if (checked) {
+    //     fetchWardsReports();
+    //     alert('New Report Sent to District');
+    //   }
+    // }
+
+    toast.info('Một báo cáo vừa được gửi đến cho bạn', {
+      position: 'top-left',
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'light',
+    });
+
+    // Add report to data and filteredData
+    if (eventData.point_id) {
+      setData(
+        data.map((item) => {
+          return { ...item, numberOfReports: item.numberOfReports + +(item.point_id === eventData.point_id) };
+        })
+      );
+      setFilterData(
+        filteredData.map((item) => {
+          return { ...item, numberOfReports: item.numberOfReports + +(item.point_id === eventData.point_id) };
+        })
+      );
+    } else if (eventData.board_id) {
+      await axiosRequest
+        .get(`ward/getAdBoardByBoardId/${eventData.board_id}`, { headers: headers })
+        .then(async (res) => {
+          setData(
+            data.map((item) => {
+              return { ...item, numberOfReports: item.numberOfReports + +(item.point_id === res.data.data.point_id) };
+            })
+          );
+          setFilterData(
+            filteredData.map((item) => {
+              return { ...item, numberOfReports: item.numberOfReports + +(item.point_id === res.data.data.point_id) };
+            })
+          );
+        });
+    } else {
+      setData(
+        data.map((item) => {
+          return {
+            ...item,
+            numberOfReports: item.numberOfReports + +(item.lat === eventData.lat && item.lng === eventData.lng),
+          };
+        })
+      );
+      setFilterData(
+        filteredData.map((item) => {
+          return {
+            ...item,
+            numberOfReports: item.numberOfReports + +(item.lat === eventData.lat && item.lng === eventData.lng),
+          };
+        })
+      );
     }
   };
 
   // Subscribe to the socket events when the component mounts
   useSocketSubscribe('createReport', handleSocketEvent);
+
   useEffect(() => {
     if (user.user_type === 'ward') {
       (async () => {
-
         await axiosRequest
           .get(`ward/getReportListsByWardId/${user.ward_id}`, { headers: headers })
           .then((res) => {
@@ -116,9 +175,10 @@ export default function Reports() {
           });
       })();
     } else if (user.user_type === 'district') {
-      fetchWardsReports()
+      fetchWardsReports();
     }
   }, [selectedWards]);
+
   const [filterKeyword, setFilterKeyword] = useState('');
 
   const pageSize = 10;
@@ -220,6 +280,19 @@ export default function Reports() {
           onPageChange={(page) => setCurrentPage(page)}
         />
       </div>
+
+      <ToastContainer
+        position="top-left"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 }

@@ -337,10 +337,11 @@ const checkUserWard = catchAsync(async (req, res, next) => {
         return res.status(500).json({ error: 'Database error' });
       }
       res.status(200).json({
-        checked: detailResult[0].user_id === req.user.user_id
+        checked: detailResult[0]?.user_id === req?.user?.user_id,
       });
-    })
-})
+    }
+  );
+});
 
 const checkUserDistrict = catchAsync(async (req, res, next) => {
   const { point_id } = req.params;
@@ -353,10 +354,11 @@ const checkUserDistrict = catchAsync(async (req, res, next) => {
         return res.status(500).json({ error: 'Database error' });
       }
       res.status(200).json({
-        checked: detailResult[0].user_id === req.user.user_id
+        checked: detailResult[0].user_id === req.user.user_id,
       });
-    })
-})
+    }
+  );
+});
 
 module.exports = {
   getDistrictsWithWardEmpty,
@@ -370,6 +372,5 @@ module.exports = {
   deleteAddress,
   getUserWithoutMgmt,
   checkUserWard,
-  checkUserDistrict
+  checkUserDistrict,
 };
-
