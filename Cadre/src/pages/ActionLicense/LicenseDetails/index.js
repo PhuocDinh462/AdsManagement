@@ -45,7 +45,6 @@ const LicenseDetails = ({ data, handleCloseModal }) => {
     };
     try {
       const response = await axiosClient.patch(`/ward/license/${data.licensing_id}`, dataToSend, { headers });
-      console.log(`/ward/license/${data.licensing_id}`);
       if (response.status === 'success') {
         if (status === 'approved') {
           Swal.fire({
@@ -54,6 +53,17 @@ const LicenseDetails = ({ data, handleCloseModal }) => {
             timer: 1500,
             showConfirmButton: false,
           });
+
+          const res = await axiosClient.post('/board/create', dataBoard, { headers });
+          console.log(res);
+          if (res.status === 'Create success') {
+            Swal.fire({
+              icon: 'success',
+              title: 'Đã tạo bảng quảng cáo!',
+              timer: 1500,
+              showConfirmButton: false,
+            });
+          }
         }
         if (status === 'canceled') {
           Swal.fire({

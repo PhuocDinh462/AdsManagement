@@ -283,3 +283,4 @@ const deleteBoardById = catchAsync(async (req, res, next) => {
 });
 
 module.exports = { createBoard, getInforBoard, updateBoard, getBoardsByPoint, getAllBoards, deleteBoardById };
+

@@ -36,6 +36,7 @@ const getAllLicenseRequest = catchAsync(async (req, res) => {
         lr.status, 
         lr.rejection_reason, 
         lr.user_id, 
+        lr.board_type_id,
         lr.point_id, 
         lr.height,
         lr.width,
