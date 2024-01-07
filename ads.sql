@@ -202,6 +202,7 @@ CREATE TABLE `licensing_request` (
   PRIMARY KEY (licensing_id),
   FOREIGN KEY (contract_id) REFERENCES contract(contract_id) ON DELETE SET NULL,
   FOREIGN KEY (report_id) REFERENCES report(report_id) ON DELETE SET NULL,
+  FOREIGN KEY (point_id) REFERENCES advertising_point(point_id) ON DELETE SET NULL,
   FOREIGN KEY (user_id) REFERENCES `user`(user_id) ON DELETE SET NULL
 );
 
@@ -399,7 +400,7 @@ VALUES
   ('2023-02-20', 'Processing B', 'Jane Doe', 'jane@example.com', '444555666', 'pending', 2, 2, NULL, 1);
 
 -- Dữ liệu mẫu cho bảng LicensingRequest
-INSERT INTO `licensing_request` (advertisement_content, advertisement_image_url, `status`, rejection_reason, user_id,   , width, height, contract_id, report_id)
+INSERT INTO `licensing_request` (advertisement_content, advertisement_image_url, `status`, rejection_reason, user_id, point_id, width, height, contract_id, report_id)
 VALUES
   ('License Content A', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2F3CD5A2AF-685B-4291-8EDF-FE84B7C397E5.JPGbab08c1e-c9a6-4c22-a95e-e4e45f3f9f3b?alt=media&token=8bd87c2b-20c1-43a8-8bec-a83e1fc56ee1', 'pending', NULL, 4, 1, 50.0, 60.0, 1, 1),
   ('License Content B', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 'pending', NULL, 5, 2, 55.0, 65.0, 2, 2);
