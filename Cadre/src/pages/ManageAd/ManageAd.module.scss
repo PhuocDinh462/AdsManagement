@@ -46,7 +46,7 @@
 
   .container {
     background: #ffffff;
-    height: calc(100vh - 160px);
+    height: calc(100vh - 200px);
     display: flex;
     flex-direction: column;
     padding: 0 20px;
@@ -114,6 +114,15 @@
             background-color: #f6f7f9;
           }
 
+          td {
+            text-align: -webkit-center;
+
+            img {
+                height: 46px;
+                width: auto;
+            }
+          }
+
           .btn_trash,
           .btn_pen {
             width: 40px;
@@ -156,3 +165,8 @@
   }
 }
 
+.paginationBar_container {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}

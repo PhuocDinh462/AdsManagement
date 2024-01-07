@@ -161,7 +161,7 @@ const Licenses = () => {
                   key={row.licensing_id}
                   onClick={() => handleOpenModalDetails(row)}
                 >
-                  <td style={{ width: '5%' }}>{rowIndex + 1}</td>
+                  <td style={{ width: '5%' }}>{rowIndex + 1 + (currentPage - 1) * pageSize}</td>
                   <td style={{ width: '15%' }}>{row.company_name}</td>
                   <td style={{ width: '15%' }}>
                     <img src={row.advertisement_image_url} alt="none" />
