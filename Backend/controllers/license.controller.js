@@ -27,6 +27,59 @@ const createLicensingRequest = catchAsync(async (req, res, next) => {
   );
 });
 
+const getAllLicenseRequest = catchAsync(async (req, res) => {
+  const query = `
+      SELECT 
+        lr.licensing_id, 
+        lr.advertisement_content, 
+        lr.advertisement_image_url, 
+        lr.status, 
+        lr.rejection_reason, 
+        lr.user_id, 
+        lr.point_id, 
+        lr.height,
+        lr.width,
+        lr.contract_id,
+        lr.report_id,
+        lr.created_at,
+        lr.updated_at,
+        ap.ward_id, 
+        ap.address,
+        ap.advertisement_type_id, 
+        ap.location_type, 
+        ap.image_url, 
+        ap.lat, 
+        ap.lng, 
+        ap.is_planning, 
+        c.company_name, 
+        c.company_email, 
+        c.company_phone, 
+        c.company_address, 
+        c.company_taxcode, 
+        c.start_date, 
+        c.end_date, 
+        c.representative 
+      FROM licensing_request lr 
+      LEFT JOIN advertising_point ap ON lr.point_id = ap.point_id 
+      LEFT JOIN contract c ON lr.contract_id = c.contract_id;`;
+
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({
+        status: 'error',
+        message: 'Internal Server Error',
+      });
+      return;
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: results,
+    });
+  });
+});
+
 const getAllLicenseRequestByWard = catchAsync(async (req, res) => {
   const { user_id } = req.user;
 
@@ -79,7 +132,6 @@ const getAllLicenseRequestByWard = catchAsync(async (req, res) => {
     });
   });
 });
-
 
 const getAllLicenseRequestByWardId = catchAsync(async (req, res) => {
   const { ward_id } = req.params;
@@ -134,6 +186,7 @@ const getAllLicenseRequestByWardId = catchAsync(async (req, res) => {
     });
   });
 });
+
 const updateStatusLicenseRequest = catchAsync(async (req, res, next) => {
   const licensingId = req.params.licensingId;
   const newStatus = req.body.status;
@@ -162,4 +215,11 @@ const updateStatusLicenseRequest = catchAsync(async (req, res, next) => {
   });
 });
 
-module.exports = { createLicensingRequest, getAllLicenseRequestByWard, updateStatusLicenseRequest, getAllLicenseRequestByWardId };
+module.exports = {
+  createLicensingRequest,
+  getAllLicenseRequest,
+  getAllLicenseRequestByWard,
+  getAllLicenseRequestByWardId,
+  updateStatusLicenseRequest,
+};
+

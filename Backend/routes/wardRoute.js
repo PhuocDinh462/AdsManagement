@@ -8,6 +8,7 @@ const validationLicenseReq = require('../middlewares/validation/LicenseReq.middl
 const {
   createLicensingRequest,
   getAllLicenseRequestByWard,
+  getAllLicenseRequest,
   updateStatusLicenseRequest,
   getAllLicenseRequestByWardId,
 } = require('../controllers/license.controller');
@@ -23,6 +24,7 @@ router.patch('/updateReportStatus', validate(updateReportStatus), wardController
 router.get('/getAdBoardByBoardId/:id', wardController.getAdBoardByBoardId);
 router.post('/getNumberOfReportsByLatLng', wardController.getNumberOfReportsByLatLng);
 router.post('/license/create-license', validationLicenseReq, createLicensingRequest);
+router.get('/license', getAllLicenseRequest);
 router.get('/license-by-ward', getAllLicenseRequestByWard);
 router.get('/license-by-ward-id/:ward_id', getAllLicenseRequestByWardId);
 router.patch('/license/:licensingId', updateStatusLicenseRequest);
@@ -30,3 +32,4 @@ router.get('/getAdSpotsListByWardId/:id', wardController.getAdSpotsListByWardId)
 router.get('/get_wards_managing', wardController.getAllWardsByDistrictManager);
 
 module.exports = router;
+
