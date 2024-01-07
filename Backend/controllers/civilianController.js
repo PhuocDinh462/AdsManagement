@@ -118,21 +118,54 @@ const createReport = catchAsync(async (req, res, next) => {
             console.error('Error executing query: ' + err.stack);
             return res.status(500).json({ error: 'Database error' });
           }
-          connection.query('SELECT * FROM report WHERE report_id =?', [result.insertId], (err, results) => {
-            if (err) {
-              console.error('Error executing query: ' + err.stack);
-              return res.status(500).json({ error: 'Database error' });
+          connection.query(
+            'SELECT * FROM report rp join detail dt on rp.detail_id = dt.detail_id WHERE rp.report_id =?',
+            [result.insertId],
+            async (err, results) => {
+              if (err) {
+                console.error('Error executing query: ' + err.stack);
+                return res.status(500).json({ error: 'Database error' });
+              }
+
+              socket?.socketIo?.emit('createReport', results[0]);
+
+              // Use when user reports a spot that isn't adSpot
+              if (!results[0].point_id && !results[0].board_id)
+                connection.query(
+                  'select * from ward w join district d on w.district_id = d.district_id',
+                  async (err, wardList) => {
+                    if (err) {
+                      console.error('Error executing query: ', err);
+                      res.status(500).send('Internal Server Error');
+                      return;
+                    }
+
+                    const url = `https://rsapi.goong.io/Geocode?latlng=${results[0].lat},${results[0].lng}&api_key=${process.env.GOONG_APIKEY}`;
+                    const response = await fetch(url);
+                    const data = await response.json();
+                    const reportAddress =
+                      !data?.error && data?.status === 'OK'
+                        ? data.results[0]?.formatted_address.replace('Phường', '')
+                        : null;
+
+                    const ward_id = wardList.filter(
+                      (ward) =>
+                        reportAddress.toLowerCase().includes(ward.ward_name.replace('Phường', '').toLowerCase()) &&
+                        reportAddress.toLowerCase().includes(ward.district_name.toLowerCase())
+                    )[0]?.ward_id;
+
+                    if (ward_id) socket?.socketIo?.emit(`createReport_wardId=${ward_id}`, results[0]);
+                  }
+                );
+
+              res.status(200).json(results[0]);
             }
-            socket?.socketIo?.emit('createReport', results[0]);
-            res.status(200).json(results[0]);
-          })
+          );
         }
       );
     }
   );
 });
-
-
 
 module.exports = {
   getAllDistrictWard,

@@ -68,6 +68,10 @@ const ManageAdLocation = () => {
     setIsOpenUpdate(false);
   };
 
+  const cancelUpdate = async () => {
+    setIsOpenUpdate(false);
+  };
+
   const handleCloseModal = () => {
     setModalOpen(false);
   };
@@ -225,6 +229,7 @@ const ManageAdLocation = () => {
             onClose={() => {
               updateDataAfterUpdate();
             }}
+            cancel={cancelUpdate}
           />
         </Modal>
       )}
@@ -241,7 +246,7 @@ const ManageAdLocation = () => {
 
       {isModalOpen && (
         <Modal onClose={handleCloseModal}>
-          <AddAdLocation onClose={updateDataAfterAdd} />
+          <AddAdLocation onClose={updateDataAfterAdd} cancel={handleCloseModal} />
         </Modal>
       )}
     </div>

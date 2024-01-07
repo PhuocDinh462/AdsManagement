@@ -4,10 +4,11 @@ import classes from './Coordination.module.scss';
 import GoongAutoComplete from '../GoongAutoComplete/index';
 import axios from 'axios';
 
-const Coordination = ({ setLatitude, setLongitude, setModalMap, onClose }) => {
+const Coordination = ({ setLatitude, setLongitude, setAddress, setModalMap, onClose }) => {
   const [selectedPosition, setSelectedPosition] = useState(null);
   const [initialPosition, setInitialPosition] = useState(null);
   const [autoCompleteValue, setAutoCompleteValue] = useState();
+  const [displayInitialPosition, setDisplayInitialPosition] = useState(true);
 
   const handleMapClick = (e) => {
     const { latLng } = e;
@@ -17,30 +18,26 @@ const Coordination = ({ setLatitude, setLongitude, setModalMap, onClose }) => {
     setSelectedPosition({ lat, lng });
     setLatitude(lat);
     setLongitude(lng);
+    setDisplayInitialPosition(false);
+
+    (async () => {
+      await axios
+        .get(
+          `https://rsapi.goong.io/Geocode?latlng=${latLng.lat()},${latLng.lng()}&api_key=${
+            process.env.REACT_APP_GOONG_APIKEY
+          }`
+        )
+        .then((res) => {
+          const data = res.data.results;
+          setAddress(data[0]?.formatted_address);
+          setAutoCompleteValue(data[0]?.formatted_address);
+        })
+        .catch((error) => {
+          console.log('Get spot info error: ', error);
+        })
+        .finally(() => {});
+    })();
   };
-
-  // const performSearch = async () => {
-  //   try {
-  //     const response = await fetch(
-  //       `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
-  //         searchTerm
-  //       )}&key=AIzaSyCaizca2oRuJ43J6xCTcafhZm6BCSYUAM0`
-  //     );
-  //     const data = await response.json();
-  //     if (data.results && data.results.length > 0) {
-  //       const location = data.results[0].geometry.location;
-  //       setInitialPosition({ lat: location.lat, lng: location.lng });
-  //     }
-  //   } catch (error) {
-  //     console.error('Error fetching coordinates for search term:', error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (searchTerm) {
-  //     performSearch();
-  //   }
-  // }, [searchTerm]);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -56,8 +53,10 @@ const Coordination = ({ setLatitude, setLongitude, setModalMap, onClose }) => {
 
   const handleSearch = async (place_id) => {
     if (!place_id) {
-      setDisplayMarker(false);
-      setCollapseSidebar(true);
+      setSelectedPosition(null);
+      setDisplayInitialPosition(true);
+      setLatitude(null);
+      setLongitude(null);
       return;
     }
 
@@ -65,7 +64,10 @@ const Coordination = ({ setLatitude, setLongitude, setModalMap, onClose }) => {
       .get(`https://rsapi.goong.io/geocode?place_id=${place_id}&api_key=${process.env.REACT_APP_GOONG_APIKEY}`)
       .then((res) => {
         const coord = res.data.results[0].geometry.location;
-        setInitialPosition(coord);
+        setSelectedPosition(coord);
+        setDisplayInitialPosition(false);
+        setLatitude(coord.lat);
+        setLongitude(coord.lng);
       })
       .catch((error) => {
         console.log('Get place detail error: ', error);
@@ -92,7 +94,7 @@ const Coordination = ({ setLatitude, setLongitude, setModalMap, onClose }) => {
             onClick={handleMapClick}
           >
             {selectedPosition && <Marker position={selectedPosition} />}
-            {initialPosition && <Marker position={initialPosition} />}
+            {displayInitialPosition && initialPosition && <Marker position={initialPosition} />}
           </GoogleMap>
         </LoadScript>
         <div className={classes.wrap_btn}>

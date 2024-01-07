@@ -391,7 +391,7 @@ const getReportDetailsByPointId = catchAsync(async (req, res, next) => {
       const boards = results;
 
       connection.query(
-        'SELECT * FROM report rp JOIN detail dt ON rp.detail_id = dt.detail_id JOIN report_type rt ON rp.report_type_id = rt.report_type_id',
+        'SELECT * FROM report rp JOIN detail dt ON rp.detail_id = dt.detail_id left join report_type rt ON rp.report_type_id = rt.report_type_id',
         async (err, results) => {
           if (err) {
             console.error('Error executing query: ', err);

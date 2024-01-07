@@ -222,6 +222,29 @@ export default function Home() {
   const [notPlanStatus, setNotPlanStatus] = useState(true);
 
   // Socket
+  useSocketSubscribe('createReport', async (res) => {
+    if (res.point_id)
+      updateAdSpotsReportStatus(
+        adSpots.findIndex((spot) => spot.point_id === res.point_id),
+        'noProcess'
+      );
+    else if (res.board_id)
+      await axiosRequest.get(`ward/getAdBoardByBoardId/${res.board_id}`, { headers: headers }).then(async (res) => {
+        updateAdSpotsReportStatus(
+          adSpots.findIndex((spot) => spot.point_id === res.data.data.point_id),
+          'noProcess'
+        );
+      });
+  });
+
+  useSocketSubscribe(`createReport_wardId=${user.ward_id}`, async (res) => {
+    // Create new spot
+    if (adSpots.every((spot) => spot?.lat !== res.lat && spot?.lng !== res.lng))
+      setAdSpots([...adSpots, { lat: res.lat, lng: res.lng, reportStatus: 'noProcess' }]);
+    // Refresh sidebar
+    else setAdSpots([...adSpots]);
+  });
+
   useSocketSubscribe('changeReport', async (res) => {
     const data = res.data;
 

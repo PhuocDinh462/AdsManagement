@@ -10,7 +10,7 @@ import { v4 } from 'uuid';
 import Coordination from '~/src/components/Coordination/Coordination';
 import Modal from '~/src/components/Modal/Modal';
 
-const AddAdLocation = ({ onClose }) => {
+const AddAdLocation = ({ onClose, cancel }) => {
   const [indexCur, setIndexCur] = useState(1);
   const [previewImage, setPreviewImage] = useState(null);
   const [wards, setWards] = useState([]);
@@ -260,7 +260,7 @@ const AddAdLocation = ({ onClose }) => {
             ))}
           </div>
           <div className={classes.adding__modal__buttons}>
-            {indexCur === 1 && <button onClick={onClose}>Hủy</button>}
+            {indexCur === 1 && <button onClick={() => cancel()}>Hủy</button>}
             {indexCur === 2 && (
               <button
                 onClick={() => {
@@ -290,6 +290,7 @@ const AddAdLocation = ({ onClose }) => {
             <Coordination
               setLatitude={setLatitude}
               setLongitude={setLongitude}
+              setAddress={setAddress}
               setModalMap={setModalMap}
               onClose={handleCloseModalMap}
             />
