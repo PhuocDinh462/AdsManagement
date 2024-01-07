@@ -180,6 +180,106 @@ const getBoardsByPoint = catchAsync(async (req, res, next) => {
   });
 });
 
-const getAllBoards = catchAsync(async (req, res, next) => {});
+const createBoard = catchAsync(async (req, res, next) => {
+  const { board_type_id, advertisement_content, advertisement_image_url, width, height, point_id } = req.body;
 
-module.exports = { getInforBoard, updateBoard, getBoardsByPoint, getAllBoards };
+  const queryInsert = `
+  INSERT INTO advertising_board 
+  (board_type_id, advertisement_content, 
+  advertisement_image_url, width, height, point_id)
+  VALUES (?, ?, ?, ?, ?, ?)
+`;
+
+  connection.query(
+    queryInsert,
+    [board_type_id, advertisement_content, advertisement_image_url, width, height, point_id],
+    (error, result) => {
+      if (error) {
+        console.error('Error executing query: ' + error.stack);
+        return res.status(403).json({
+          error: 'Invalid Information.',
+        });
+      }
+
+      const dataResult = {
+        board_id: result.insertId,
+        board_type_id,
+        advertisement_content,
+        advertisement_image_url,
+        width,
+        height,
+        point_id,
+      };
+
+      return res.status(200).json({
+        status: 'Create success',
+        data: dataResult,
+      });
+    }
+  );
+});
+
+const getAllBoards = catchAsync(async (req, res, next) => {
+  const query = `
+  SELECT
+  ab.board_id,
+  ap.address,
+  ab.advertisement_image_url,
+  ab.advertisement_content,
+  ab.width,
+  ab.height,
+  bt.type_name,
+  ap.location_type
+    FROM advertising_board ab
+    JOIN advertising_point ap ON ab.point_id = ap.point_id
+    JOIN board_type bt ON ab.board_type_id = bt.board_type_id;
+    `;
+
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      res.status(500).json({ status: 'error', error: 'Internal Server Error' });
+      return;
+    }
+
+    res.status(200).json({
+      status: 'success',
+      boards: results,
+    });
+  });
+});
+
+const deleteBoardById = catchAsync(async (req, res, next) => {
+  const { board_id } = req.params.board_id;
+
+  const query = `
+  SELECT * FROM  advertising_board WHERE board_id = ${board_id}`;
+
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      res.status(404).json({ status: 'error', error: 'Board is not exist' });
+      return;
+    }
+
+    const deleteQuery = `
+    DELETE FROM advertising_board
+    WHERE board_id = ${board_id};
+  `;
+
+    connection.query(deleteQuery, (err, results) => {
+      if (err) {
+        console.error('Error executing query:', err);
+        res.status(500).json({ status: 'error', error: 'Internal Server Error' });
+        return;
+      }
+
+      res.status(200).json({
+        status: 'Delete success',
+        data: results,
+      });
+    });
+  });
+});
+
+module.exports = { createBoard, getInforBoard, updateBoard, getBoardsByPoint, getAllBoards, deleteBoardById };

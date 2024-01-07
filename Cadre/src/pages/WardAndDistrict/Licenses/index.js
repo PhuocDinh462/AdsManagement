@@ -7,7 +7,7 @@ import { ic_add } from '~/src/assets';
 import Pagination from '~/src/components/Pagination';
 import SearchBar from '~/src/components/SearchBar';
 import ButtonCT from '~/src/components/button/ButtonCT';
-import { removeFormLicenseReq, selectUser } from '~/src/store/reducers';
+import { removeFormLicenseReq, selectSelectedWards, selectUser } from '~/src/store/reducers';
 import { calculateDaysBetweenDates, notiSuccess } from '~/src/utils/support';
 import LicenseDetails from './LicenseDetails';
 import LicenseModalAdd from './LicenseModalAdd';
@@ -31,9 +31,9 @@ const Licenses = () => {
   const [isOpenDetails, setIsOpenDetails] = useState(false);
   const [isOpenAdd, setIsOpenAdd] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState(0);
+  const selectedWards = useSelector(selectSelectedWards);
   const [isLoading, setIsLoading] = useState(false);
   const [selected, setSelected] = useState({});
-
   const pageSize = 10;
   const [currentPage, setCurrentPage] = useState(1);
   const currentTableData = useMemo(() => {
@@ -97,10 +97,34 @@ const Licenses = () => {
       setIsLoading(false);
     }
   };
+  const fetchDataLicenseReqByDistrict = async () => {
+    setIsLoading(true);
+    let licenses = [];
+    try {
+      for (let i = 0; i < selectedWards.length; i++) {
+        const res = await axiosClient.get(`/ward/license-by-ward-id/${selectedWards[i].ward_id}`, { headers });
+        if (res.data.length > 0) {
+          for (let j = 0; j < res.data.length; j++) {
+            licenses.push(res.data[j])
+          }
+        }
+      }
+      setData(licenses);
+      setInitData(licenses);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   useEffect(() => {
-    fetchDataLicenseReq();
-  }, []);
+    if (user.user_type === 'ward') {
+      fetchDataLicenseReq();
+    } else if (user.user_type === 'district') {
+      fetchDataLicenseReqByDistrict()
+    }
+  }, [selectedWards]);
   return (
     <div className={classes.container__wrap}>
       <div className={classes.container}>
@@ -161,7 +185,7 @@ const Licenses = () => {
                   key={row.licensing_id}
                   onClick={() => handleOpenModalDetails(row)}
                 >
-                  <td style={{ width: '5%' }}>{rowIndex + 1}</td>
+                  <td style={{ width: '5%' }}>{rowIndex + 1 + (currentPage - 1) * pageSize}</td>
                   <td style={{ width: '15%' }}>{row.company_name}</td>
                   <td style={{ width: '15%' }}>
                     <img src={row.advertisement_image_url} alt="none" />
@@ -170,13 +194,12 @@ const Licenses = () => {
                   <td style={{ width: '15%' }}>{calculateDaysBetweenDates(row.start_date, row.end_date)}</td>
                   <td style={{ width: '15%' }}>
                     <div
-                      className={` ${classes.status} ${
-                        statusLicense[row.status].value === 1
-                          ? classes.status_accept
-                          : statusLicense[row.status].value === 2
+                      className={` ${classes.status} ${statusLicense[row.status].value === 1
+                        ? classes.status_accept
+                        : statusLicense[row.status].value === 2
                           ? classes.status_pending
                           : classes.status_cancel
-                      }`}
+                        }`}
                     >
                       {statusLicense[row.status].label}
                     </div>
