@@ -17,7 +17,7 @@ const ManageForm = () => {
   const [selectedFilter, setSelectedFilter] = useState('Bảng quảng cáo');
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState(null);
-  const [modalType, setModalType] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
   const headers = {
@@ -64,8 +64,10 @@ const ManageForm = () => {
 
     if (type === 'Bảng quảng cáo') {
       filteredData = originalData.boards;
+      setSearchTerm('');
     } else if (type === 'Điểm đặt quảng cáo') {
       filteredData = originalData.points;
+      setSearchTerm('');
     }
 
     setData({
@@ -88,6 +90,14 @@ const ManageForm = () => {
   const updateDataAfterUpdate = async (newData) => {
     await fetchData();
     setModalOpen(false);
+  };
+
+  const filterData = (data) => {
+    if (selectedFilter === 'Bảng quảng cáo') {
+      return data.filter((row) => row.advertisement_content.toLowerCase().includes(searchTerm.toLowerCase()));
+    } else {
+      return data.filter((row) => row.location_type.toLowerCase().includes(searchTerm.toLowerCase()));
+    }
   };
 
   // const handleDeleteClick = async (row) => {
@@ -148,7 +158,15 @@ const ManageForm = () => {
           </div>
           <div className={classes.container__header_search}>
             <FontAwesomeIcon icon={faMagnifyingGlass} className={classes.ic} />
-            <input type="text" id="inputSearch" placeholder="Tìm kiếm..." className={classes.text_input} />
+            <input
+              type="text"
+              id="inputSearch"
+              placeholder={selectedFilter === 'Bảng quảng cáo' ? 'Tìm kiếm theo nội dung' : 'Tìm kiếm theo loại vị trí'}
+              // placeholder="Tìm kiếm..."
+              className={classes.text_input}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
         </div>
 
@@ -185,7 +203,7 @@ const ManageForm = () => {
           <table className={classes.table__body_wrap}>
             <tbody>
               {selectedFilter === 'Bảng quảng cáo' &&
-                data.boards.map((row, rowIndex) => (
+                filterData(data.boards).map((row, rowIndex) => (
                   <tr className={classes.table__body_wrap_row} key={rowIndex}>
                     <td style={{ width: '5%' }}>{rowIndex + 1}</td>
                     <td style={{ width: '25%' }}>{row.advertisement_content}</td>
@@ -214,7 +232,7 @@ const ManageForm = () => {
                   </tr>
                 ))}
               {selectedFilter === 'Điểm đặt quảng cáo' &&
-                data.points.map((row, rowIndex) => (
+                filterData(data.points).map((row, rowIndex) => (
                   <tr className={classes.table__body_wrap_row} key={rowIndex}>
                     <td style={{ width: '5%' }}>{rowIndex + 1}</td>
                     <td style={{ width: '25%' }}>{row.location_type}</td>

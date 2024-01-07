@@ -146,6 +146,7 @@ CREATE TABLE `detail` (
 CREATE TABLE `advertising_board` (
   board_id INT auto_increment,
   board_type_id INT,
+  contract_id INT,
   advertisement_content VARCHAR(255),
   advertisement_image_url VARCHAR(255),
   width FLOAT,
@@ -155,6 +156,7 @@ CREATE TABLE `advertising_board` (
   point_id INT,
   PRIMARY KEY (board_id),
  --  FOREIGN KEY (`licensing_id`) REFERENCES `licensing_request`(`licensing_id`),
+  FOREIGN KEY (contract_id) REFERENCES contract(contract_id) ON DELETE SET NULL,
   FOREIGN KEY (`board_type_id`) REFERENCES `board_type`(`board_type_id`) ON DELETE SET NULL,
   FOREIGN KEY (`point_id`) REFERENCES `advertising_point`(`point_id`) ON DELETE SET NULL
 );
@@ -390,11 +392,10 @@ VALUES
   ('Content B', 'img1B.jpg', 'img2B.jpg', 35.0, 45.0, 18.0, 28.0);
 
 -- Dữ liệu mẫu cho bảng AdvertisingBoard
-INSERT INTO `advertising_board` (board_type_id, advertisement_content, advertisement_image_url, width, height, point_id)
+INSERT INTO `advertising_board` (board_type_id, advertisement_content, advertisement_image_url, width, height, point_id, contract_id)
 VALUES
-  (1, 'Ad Content A', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2F3CD5A2AF-685B-4291-8EDF-FE84B7C397E5.JPGbab08c1e-c9a6-4c22-a95e-e4e45f3f9f3b?alt=media&token=8bd87c2b-20c1-43a8-8bec-a83e1fc56ee1', 50.0, 60.0, 1),
-  (2, 'Ad Content B', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 55.0, 65.0, 2);
-
+  (1, 'Ad Content A', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2F3CD5A2AF-685B-4291-8EDF-FE84B7C397E5.JPGbab08c1e-c9a6-4c22-a95e-e4e45f3f9f3b?alt=media&token=8bd87c2b-20c1-43a8-8bec-a83e1fc56ee1', 50.0, 60.0, 1, 1),
+  (2, 'Ad Content B', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 55.0, 65.0, 2, 2);
 -- Dữ liệu mẫu cho bảng Report
 INSERT INTO `report` (report_time, processing_info, fullname_rp, email_rp, phone_rp, `status`, detail_id, report_type_id, point_id, board_id)
 VALUES

@@ -156,7 +156,7 @@ const ActionLicense = () => {
                     <td style={{ width: '5%' }}>{rowIndex + 1}</td>
                     <td style={{ width: '15%' }}>{row.company_name}</td>
                     <td style={{ width: '10%' }}>
-                      <img src={row.image_url} alt="none" />
+                      <img src={row.advertisement_image_url} alt="none" />
                     </td>
                     <td style={{ width: '35%' }}>
                       <span style={{ padding: '0 5px' }}> {row.address} </span>

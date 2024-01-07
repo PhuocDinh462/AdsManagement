@@ -54,6 +54,16 @@ const LicenseDetails = ({ data, handleCloseModal }) => {
             showConfirmButton: false,
           });
 
+          const dataBoard = {
+            board_type_id: data.board_type_id,
+            advertisement_content: data.advertisement_content,
+            advertisement_image_url: data.advertisement_image_url,
+            width: data.width,
+            height: data.height,
+            point_id: data.point_id,
+          };
+          console.log(dataBoard);
+
           const res = await axiosClient.post('/board/create', dataBoard, { headers });
           console.log(res);
           if (res.status === 'Create success') {
