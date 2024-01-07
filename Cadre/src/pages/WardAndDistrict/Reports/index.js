@@ -27,6 +27,18 @@ export default function Reports() {
     Authorization: tokenAuth,
   };
 
+  const info = (msg) =>
+    toast.info(msg, {
+      position: 'top-left',
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'light',
+    });
+
   const fetchWardsReports = async () => {
     let reports = [];
     setLoading(true);
@@ -96,21 +108,11 @@ export default function Reports() {
     //   }
     // }
 
-    toast.info('Một báo cáo vừa được gửi đến cho bạn', {
-      position: 'top-left',
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: 'light',
-    });
-
     // Add report to data and filteredData
     if (eventData.point_id) {
       setData(
         data.map((item) => {
+          if (item.point_id === eventData.point_id) info('Một báo cáo vừa được gửi đến cho bạn');
           return { ...item, numberOfReports: item.numberOfReports + +(item.point_id === eventData.point_id) };
         })
       );
@@ -125,6 +127,7 @@ export default function Reports() {
         .then(async (res) => {
           setData(
             data.map((item) => {
+              if (item.point_id === res.data.data.point_id) info('Một báo cáo vừa được gửi đến cho bạn');
               return { ...item, numberOfReports: item.numberOfReports + +(item.point_id === res.data.data.point_id) };
             })
           );
@@ -137,6 +140,7 @@ export default function Reports() {
     } else {
       setData(
         data.map((item) => {
+          if (item.lat === eventData.lat && item.lng === eventData.lng) info('Một báo cáo vừa được gửi đến cho bạn');
           return {
             ...item,
             numberOfReports: item.numberOfReports + +(item.lat === eventData.lat && item.lng === eventData.lng),
