@@ -452,7 +452,7 @@ const getReportDetailsByPointId = catchAsync(async (req, res, next) => {
                 lat: spot.lat,
                 lng: spot.lng,
                 address: data?.error ? null : data.results[0].formatted_address,
-                reports: spot.reports,
+                reports: spot.reports.sort((a, b) => a.report_id - b.report_id),
               };
             })
           );
@@ -497,20 +497,22 @@ const getReportDetailsByLatLng = catchAsync(async (req, res, next) => {
           address: address,
           lat: lat,
           lng: lng,
-          reports: reports.map((report) => {
-            const { image_url_1, image_url_2, ...restReport } = report;
-            return {
-              ...restReport,
-              reportedObject: 'Địa điểm',
-              image_urls: [report.image_url_1, report.image_url_2],
-              status:
-                report.status === 'processed'
-                  ? 'Đã xử lý'
-                  : report.status === 'processing'
-                  ? 'Đang xử lý'
-                  : 'Chờ xử lý',
-            };
-          }),
+          reports: reports
+            .map((report) => {
+              const { image_url_1, image_url_2, ...restReport } = report;
+              return {
+                ...restReport,
+                reportedObject: 'Địa điểm',
+                image_urls: [report.image_url_1, report.image_url_2],
+                status:
+                  report.status === 'processed'
+                    ? 'Đã xử lý'
+                    : report.status === 'processing'
+                    ? 'Đang xử lý'
+                    : 'Chờ xử lý',
+              };
+            })
+            .sort((a, b) => a.report_id - b.report_id),
         },
       });
     }

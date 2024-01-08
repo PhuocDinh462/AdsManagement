@@ -26,6 +26,8 @@ export default function Reports() {
   const headers = {
     Authorization: tokenAuth,
   };
+  const [toastId, setToastId] = useState();
+  const [toastIndex, setToastIndex] = useState();
 
   const info = (msg) =>
     toast.info(msg, {
@@ -113,7 +115,12 @@ export default function Reports() {
     if (eventData.point_id) {
       setData(
         data.map((item) => {
-          if (item.point_id === eventData.point_id) info('Một báo cáo vừa được gửi đến cho bạn');
+          if (item.point_id === eventData.point_id) {
+            info('Một báo cáo vừa được gửi đến cho bạn');
+            setToastId(eventData.point_id);
+            setToastIndex(data.find((item) => item.point_id === eventData.point_id).numberOfReports);
+          }
+
           return { ...item, numberOfReports: item.numberOfReports + +(item.point_id === eventData.point_id) };
         })
       );
@@ -128,7 +135,11 @@ export default function Reports() {
         .then(async (res) => {
           setData(
             data.map((item) => {
-              if (item.point_id === res.data.data.point_id) info('Một báo cáo vừa được gửi đến cho bạn');
+              if (item.point_id === res.data.data.point_id) {
+                info('Một báo cáo vừa được gửi đến cho bạn');
+                setToastId(res.data.data.point_id);
+                setToastIndex(data.find((item) => item.point_id === res.data.data.point_id).numberOfReports);
+              }
               return { ...item, numberOfReports: item.numberOfReports + +(item.point_id === res.data.data.point_id) };
             })
           );
@@ -169,13 +180,16 @@ export default function Reports() {
           };
         })
       );
+
+      setToastId(`${eventData.lat},${eventData.lng}`);
+      setToastIndex(data.find((item) => item.lat === eventData.lat && item.lng === eventData.lng).numberOfReports);
     } else {
       const response = await fetch(
         `https://rsapi.goong.io/Geocode?latlng=${eventData.lat},${eventData.lng}&api_key=${process.env.REACT_APP_GOONG_APIKEY}`
       );
       const _data = await response.json();
       const reportAddress =
-        !_data?.error && _data?.status === 'OK' ? _data.results[0]?.formatted_address.replace('Phường', '') : null;
+        !_data?.error && _data?.status === 'OK' ? _data.results[0]?.formatted_address?.replace('Phường', '') : null;
 
       setData([
         ...data,
@@ -198,6 +212,9 @@ export default function Reports() {
           latestReport: new Date(),
         },
       ]);
+
+      setToastId(`${eventData.lat},${eventData.lng}`);
+      setToastIndex(0);
     }
   });
 
@@ -325,7 +342,14 @@ export default function Reports() {
         />
       </div>
 
-      <ToastContainer />
+      <div
+        onClick={() => {
+          dispatch(setReportIndex(toastIndex));
+          navigate(`/reports/detail/${toastId}`);
+        }}
+      >
+        <ToastContainer />
+      </div>
     </div>
   );
 }
