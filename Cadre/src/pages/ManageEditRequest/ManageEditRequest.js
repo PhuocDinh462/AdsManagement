@@ -143,7 +143,7 @@ const ManageForm = () => {
   return (
     <div className={classes.container_wrap}>
       <div className={classes.header}>
-        <p className={classes.header__title}>Danh sách loại hình quảng cáo và hình thức báo cáo</p>
+        <p className={classes.header__title}>Danh sách các yêu cầu chỉnh sửa</p>
       </div>
       <div className={classes.container}>
         {/* Tab Filter */}

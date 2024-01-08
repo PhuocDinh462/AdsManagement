@@ -147,7 +147,7 @@ const ManageForm = () => {
   return (
     <div className={classes.container_wrap}>
       <div className={classes.header}>
-        <p className={classes.header__title}>Danh sách loại hình quảng cáo và hình thức báo cáo</p>
+        <p className={classes.header__title}>Danh sách loại hình quảng cáo, hình thức báo cáo và các loại bảng</p>
         <div className={classes.header__buttonAdd} onClick={handleAddClick}>
           <FontAwesomeIcon icon={faPlus} />
           <p className={classes.add}>Thêm</p>

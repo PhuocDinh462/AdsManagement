@@ -142,7 +142,7 @@ const ManageAdLocation = () => {
             <input
               type="text"
               id="inputSearch"
-              placeholder="Tìm kiếm tên phường..."
+              placeholder="Tìm kiếm địa chỉ..."
               className={classes.text_input}
               onChange={handleSearchChange}
             />
