@@ -136,6 +136,9 @@ export default function Reports() {
               return { ...item, numberOfReports: item.numberOfReports + +(item.point_id === res.data.data.point_id) };
             })
           );
+        })
+        .catch((error) => {
+          console.log('Get AdBoard error: ', error);
         });
     } else {
       setData(
@@ -285,18 +288,7 @@ export default function Reports() {
         />
       </div>
 
-      <ToastContainer
-        position="top-left"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={true}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
+      <ToastContainer />
     </div>
   );
 }

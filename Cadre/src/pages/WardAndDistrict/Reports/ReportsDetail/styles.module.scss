@@ -2,6 +2,7 @@
 
 .main_container {
   display: flex;
+  overflow-y: hidden;
 }
 
 .bg_img {
@@ -39,7 +40,7 @@
   }
 
   .reports_container {
-    max-height: calc(100vh - 15rem);
+    max-height: calc(100vh - 18rem);
     overflow-y: auto;
     -ms-overflow-style: none;
     scrollbar-width: none;

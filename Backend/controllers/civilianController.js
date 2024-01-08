@@ -126,8 +126,12 @@ const createReport = catchAsync(async (req, res, next) => {
                 console.error('Error executing query: ' + err.stack);
                 return res.status(500).json({ error: 'Database error' });
               }
+              const { image_url_1, image_url_2, ...restReport } = results[0];
 
-              socket?.socketIo?.emit('createReport', results[0]);
+              socket?.socketIo?.emit('createReport', {
+                ...restReport,
+                image_urls: [results[0].image_url_1, results[0].image_url_2],
+              });
 
               // Use when user reports a spot that isn't adSpot
               if (!results[0].point_id && !results[0].board_id)
@@ -154,7 +158,11 @@ const createReport = catchAsync(async (req, res, next) => {
                         reportAddress.toLowerCase().includes(ward.district_name.toLowerCase())
                     )[0]?.ward_id;
 
-                    if (ward_id) socket?.socketIo?.emit(`createReport_wardId=${ward_id}`, results[0]);
+                    if (ward_id)
+                      socket?.socketIo?.emit(`createReport_wardId=${ward_id}`, {
+                        ...restReport,
+                        image_urls: [results[0].image_url_1, results[0].image_url_2],
+                      });
                   }
                 );
 

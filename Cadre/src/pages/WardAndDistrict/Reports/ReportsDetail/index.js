@@ -32,6 +32,9 @@ import { setReportIndex, selectReportIndex, setReportCoord, selectUser, setBoard
 import { useNavigate } from 'react-router';
 import { text } from '~styles/colors';
 import { sidebarBg } from '~assets/imgs/Imgs';
+import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function ReportsDetail() {
   const { id } = useParams();
@@ -57,9 +60,20 @@ export default function ReportsDetail() {
 
   const [loading, setLoading] = useState(false);
 
+  const info = (msg) =>
+    toast.info(msg, {
+      position: 'top-right',
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'light',
+    });
+
   useEffect(() => {
     setLoading(true);
-
     if (lat && lng)
       (async () => {
         await axiosRequest
@@ -104,12 +118,12 @@ export default function ReportsDetail() {
           const keywordLc = keyword.toLowerCase();
 
           return (
-            item.fullname_rp.toLowerCase().includes(keywordLc) ||
-            item.phone_rp.toLowerCase().includes(keywordLc) ||
-            item.email_rp.toLowerCase().includes(keywordLc) ||
-            item.report_type_name.toLowerCase().includes(keywordLc) ||
-            item.reportedObject.toLowerCase().includes(keywordLc) ||
-            item.status.toLowerCase().includes(keywordLc)
+            item.fullname_rp?.toLowerCase().includes(keywordLc) ||
+            item.phone_rp?.toLowerCase().includes(keywordLc) ||
+            item.email_rp?.toLowerCase().includes(keywordLc) ||
+            item.report_type_name?.toLowerCase().includes(keywordLc) ||
+            item.reportedObject?.toLowerCase().includes(keywordLc) ||
+            item.status?.toLowerCase().includes(keywordLc)
           );
         })
       );
@@ -122,6 +136,60 @@ export default function ReportsDetail() {
       reports: data.reports.map((item) => (item.report_id === id ? { ...item, status: newStatus } : { ...item })),
     });
     setFilteredData(filteredData.map((item) => (item.report_id === id ? { ...item, status: newStatus } : { ...item })));
+  };
+
+  const addReport = (report) => {
+    if (data.reports.length === filteredData.length) setFilteredData([...filteredData, report]);
+    setData({ ...data, reports: [...data.reports, report] });
+  };
+
+  const handleSocketEvent = async (eventData) => {
+    if (lat && lng) {
+      if (+lat === eventData.lat && +lng === eventData.lng) {
+        info('Một báo cáo vừa được gửi đến cho bạn');
+        addReport(eventData);
+      }
+    } else {
+      if (eventData.point_id) {
+        if (+id === eventData.point_id) {
+          info('Một báo cáo vừa được gửi đến cho bạn');
+          addReport(eventData);
+        }
+      } else if (eventData.board_id) {
+        await axiosRequest
+          .get(`ward/getAdBoardByBoardId/${eventData.board_id}`, { headers: headers })
+          .then(async (res) => {
+            if (+id === res.data.data.point_id) {
+              info('Một báo cáo vừa được gửi đến cho bạn');
+              addReport(eventData);
+            }
+          })
+          .catch((error) => {
+            console.log('Get AdBoard error: ', error);
+          });
+      }
+    }
+  };
+
+  // Subscribe to the socket events when the component mounts
+  useSocketSubscribe('createReport', handleSocketEvent);
+
+  const chooseStatusColor = (status) => {
+    if (status === 'Đã xử lý' || status === 'processed') return '#00AE46';
+    else if (status === 'Đang xử lý' || status === 'processing') return '#0095d5';
+    else return '#ff3a3a';
+  };
+
+  const chooseStatusText = (status) => {
+    if (status === 'Đã xử lý' || status === 'processed') return 'Đã xử lý';
+    else if (status === 'Đang xử lý' || status === 'processing') return 'Đang xử lý';
+    else return 'Chờ xử lý';
+  };
+
+  const chooseStatusIc = (status) => {
+    if (status === 'Đã xử lý' || status === 'processed') return faXmark;
+    else if (status === 'Đang xử lý' || status === 'processing') return faClockRotateLeft;
+    else return faCheck;
   };
 
   return (
@@ -269,25 +337,12 @@ export default function ReportsDetail() {
                               <div
                                 className={classes.reportStatus}
                                 style={{
-                                  backgroundColor:
-                                    filteredData[currentReportIndex]?.status === 'Chờ xử lý'
-                                      ? '#ff3a3a'
-                                      : filteredData[currentReportIndex]?.status === 'Đang xử lý'
-                                      ? '#0095d5'
-                                      : '#00AE46',
+                                  backgroundColor: chooseStatusColor(filteredData[currentReportIndex]?.status),
                                 }}
                               >
-                                {filteredData[currentReportIndex]?.status}
+                                {chooseStatusText(filteredData[currentReportIndex]?.status)}
                                 <div className={classes.reportStatus__ic}>
-                                  <FontAwesomeIcon
-                                    icon={
-                                      filteredData[currentReportIndex]?.status === 'Chờ xử lý'
-                                        ? faXmark
-                                        : filteredData[currentReportIndex]?.status === 'Đang xử lý'
-                                        ? faClockRotateLeft
-                                        : faCheck
-                                    }
-                                  />
+                                  <FontAwesomeIcon icon={chooseStatusIc(filteredData[currentReportIndex]?.status)} />
                                 </div>
                               </div>
                             </div>
@@ -379,6 +434,8 @@ export default function ReportsDetail() {
           />
         </Backdrop>
       )}
+
+      <ToastContainer />
     </div>
   );
 }
