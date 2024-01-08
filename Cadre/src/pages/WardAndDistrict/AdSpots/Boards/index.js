@@ -13,7 +13,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { faImage } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, createRef } from 'react';
 import { IconTextBtn } from '~components/button';
 import { useNavigate, useParams } from 'react-router';
 import { axiosRequest } from '~/src/api/axios';
@@ -78,6 +78,29 @@ export default function Boards() {
     })();
   }, []);
 
+  const [itemRefs, setItemRefs] = useState([]);
+  useEffect(() => {
+    // add or remove refs
+    setItemRefs((itemRefs) =>
+      Array(filteredData.length)
+        .fill()
+        .map((_, i) => itemRefs[i] || createRef())
+    );
+  }, [filteredData.length]);
+
+  const scrollToIndex = (index) => {
+    if (itemRefs[index]?.current) {
+      itemRefs[index]?.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      });
+    }
+  };
+
+  useEffect(() => {
+    scrollToIndex(currentBoardIndex);
+  }, [itemRefs]);
+
   return (
     <div className={classes.main_container}>
       <img className={classes.bg_img} src={sidebarBg} />
@@ -108,8 +131,9 @@ export default function Boards() {
           <div
             className={[classes.nav_btn, classes.btn, currentBoardIndex <= 0 && classes['btn--disabled']].join(' ')}
             onClick={() => {
-              setCurrentBoardIndex(currentBoardIndex - 1);
+              scrollToIndex(currentBoardIndex - 1);
               dispatch(setBoardIndex(currentBoardIndex - 1));
+              setCurrentBoardIndex(currentBoardIndex - 1);
             }}
           >
             <FontAwesomeIcon icon={faAngleUp} />
@@ -121,8 +145,9 @@ export default function Boards() {
               currentBoardIndex >= filteredData?.length - 1 && classes['btn--disabled'],
             ].join(' ')}
             onClick={() => {
-              setCurrentBoardIndex(currentBoardIndex + 1);
+              scrollToIndex(currentBoardIndex + 1);
               dispatch(setBoardIndex(currentBoardIndex + 1));
+              setCurrentBoardIndex(currentBoardIndex + 1);
             }}
           >
             <FontAwesomeIcon icon={faAngleDown} />
@@ -136,6 +161,7 @@ export default function Boards() {
             <div
               className={[classes.report_item, currentBoardIndex === index && classes['report_item--active']].join(' ')}
               key={index}
+              ref={itemRefs[index]}
               onClick={() => {
                 setCurrentBoardIndex(index);
                 dispatch(setBoardIndex(index));

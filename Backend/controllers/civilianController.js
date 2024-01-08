@@ -154,8 +154,8 @@ const createReport = catchAsync(async (req, res, next) => {
 
                     const ward_id = wardList.filter(
                       (ward) =>
-                        reportAddress.toLowerCase().includes(ward.ward_name.replace('Phường', '').toLowerCase()) &&
-                        reportAddress.toLowerCase().includes(ward.district_name.toLowerCase())
+                        reportAddress?.toLowerCase()?.includes(ward.ward_name.replace('Phường', '').toLowerCase()) &&
+                        reportAddress?.toLowerCase()?.includes(ward.district_name.toLowerCase())
                     )[0]?.ward_id;
 
                     if (ward_id)

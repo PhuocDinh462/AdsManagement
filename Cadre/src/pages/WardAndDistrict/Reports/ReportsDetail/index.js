@@ -20,7 +20,7 @@ import {
   faClockRotateLeft,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, createRef } from 'react';
 import { IconTextBtn } from '~components/button';
 import { Backdrop } from '@mui/material';
 import ProcessModal from './Modals/ProcessModal';
@@ -100,7 +100,9 @@ export default function ReportsDetail() {
             const data = res.data.data;
             setData(data);
             setFilteredData(data.reports);
-            if (reportIndexStorage < data.reports?.length) setCurrentReportIndex(reportIndexStorage);
+            if (reportIndexStorage < data.reports?.length) {
+              setCurrentReportIndex(reportIndexStorage);
+            }
           })
           .catch((error) => {
             console.log('Get spots error: ', error);
@@ -193,18 +195,28 @@ export default function ReportsDetail() {
     else return faCheck;
   };
 
-  const scrollOffset = 3;
-  const [scrollMode, setScrollMode] = useState(0);
-  const selectedRef = useRef(null);
+  const [itemRefs, setItemRefs] = useState([]);
+  useEffect(() => {
+    // add or remove refs
+    setItemRefs((itemRefs) =>
+      Array(filteredData.length)
+        .fill()
+        .map((_, i) => itemRefs[i] || createRef())
+    );
+  }, [filteredData.length]);
 
-  const scrollToSelected = () => {
-    if (selectedRef.current && scrollMode !== 0) {
-      selectedRef.current.scrollIntoView({
+  const scrollToIndex = (index) => {
+    if (itemRefs[index]?.current) {
+      itemRefs[index]?.current.scrollIntoView({
         behavior: 'smooth',
         block: 'nearest',
       });
     }
   };
+
+  useEffect(() => {
+    scrollToIndex(currentReportIndex);
+  }, [itemRefs]);
 
   return (
     <div className={classes.main_container}>
@@ -237,10 +249,9 @@ export default function ReportsDetail() {
           <div
             className={[classes.nav_btn, classes.btn, currentReportIndex <= 0 && classes['btn--disabled']].join(' ')}
             onClick={() => {
-              setCurrentReportIndex(currentReportIndex - 1);
-              setScrollMode(scrollMode === -scrollOffset ? 0 : -scrollOffset);
-              scrollToSelected();
+              scrollToIndex(currentReportIndex - 1);
               dispatch(setReportIndex(currentReportIndex - 1));
+              setCurrentReportIndex(currentReportIndex - 1);
             }}
           >
             <FontAwesomeIcon icon={faAngleUp} />
@@ -252,10 +263,9 @@ export default function ReportsDetail() {
               currentReportIndex >= filteredData?.length - 1 && classes['btn--disabled'],
             ].join(' ')}
             onClick={() => {
-              setCurrentReportIndex(currentReportIndex + 1);
-              setScrollMode(scrollMode === scrollOffset ? 0 : scrollOffset);
-              scrollToSelected();
+              scrollToIndex(currentReportIndex + 1);
               dispatch(setReportIndex(currentReportIndex + 1));
+              setCurrentReportIndex(currentReportIndex + 1);
             }}
           >
             <FontAwesomeIcon icon={faAngleDown} />
@@ -271,7 +281,7 @@ export default function ReportsDetail() {
                 ' '
               )}
               key={item.report_id}
-              ref={index === currentReportIndex + scrollMode ? selectedRef : null}
+              ref={itemRefs[index]}
               onClick={() => {
                 setCurrentReportIndex(index);
                 dispatch(setReportIndex(index));
@@ -454,7 +464,13 @@ export default function ReportsDetail() {
         </Backdrop>
       )}
 
-      <div onClick={() => setCurrentReportIndex(filteredData.length - 1)}>
+      <div
+        onClick={() => {
+          setFilteredData(data.reports);
+          setCurrentReportIndex(data.reports.length - 1);
+          scrollToIndex(data.reports.length - 1);
+        }}
+      >
         <ToastContainer />
       </div>
     </div>
