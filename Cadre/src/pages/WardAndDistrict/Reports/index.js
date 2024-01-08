@@ -17,7 +17,7 @@ import 'react-toastify/dist/ReactToastify.css';
 export default function Reports() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
-  const [filteredData, setFilterData] = useState(data);
+  const [filteredData, setFilteredData] = useState(data);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const selectedWards = useSelector(selectSelectedWards);
@@ -58,7 +58,7 @@ export default function Reports() {
         });
     }
     setData(reports);
-    setFilterData(reports);
+    setFilteredData(reports);
     setLoading(false);
   };
   const fetchSingleWardReports = async () => {
@@ -67,7 +67,7 @@ export default function Reports() {
       .then((res) => {
         const data = res.data.data;
         setData(data);
-        setFilterData(data);
+        setFilteredData(data);
       })
       .catch((error) => {
         console.log('Get report lists error: ', error);
@@ -117,7 +117,7 @@ export default function Reports() {
           return { ...item, numberOfReports: item.numberOfReports + +(item.point_id === eventData.point_id) };
         })
       );
-      setFilterData(
+      setFilteredData(
         filteredData.map((item) => {
           return { ...item, numberOfReports: item.numberOfReports + +(item.point_id === eventData.point_id) };
         })
@@ -132,7 +132,7 @@ export default function Reports() {
               return { ...item, numberOfReports: item.numberOfReports + +(item.point_id === res.data.data.point_id) };
             })
           );
-          setFilterData(
+          setFilteredData(
             filteredData.map((item) => {
               return { ...item, numberOfReports: item.numberOfReports + +(item.point_id === res.data.data.point_id) };
             })
@@ -141,17 +141,27 @@ export default function Reports() {
         .catch((error) => {
           console.log('Get AdBoard error: ', error);
         });
-    } else {
+    }
+  };
+
+  // Subscribe to the socket events when the component mounts
+  useSocketSubscribe('createReport', handleSocketEvent);
+
+  // Use when user reports a spot that isn't adSpot
+  useSocketSubscribe(`createReport_wardId=${user.ward_id}`, async (eventData) => {
+    info('Một báo cáo vừa được gửi đến cho bạn');
+
+    // If current data already had the point
+    if (data.some((item) => item.lat === eventData.lat && item.lng === eventData.lng)) {
       setData(
         data.map((item) => {
-          if (item.lat === eventData.lat && item.lng === eventData.lng) info('Một báo cáo vừa được gửi đến cho bạn');
           return {
             ...item,
             numberOfReports: item.numberOfReports + +(item.lat === eventData.lat && item.lng === eventData.lng),
           };
         })
       );
-      setFilterData(
+      setFilteredData(
         filteredData.map((item) => {
           return {
             ...item,
@@ -159,11 +169,37 @@ export default function Reports() {
           };
         })
       );
-    }
-  };
+    } else {
+      const response = await fetch(
+        `https://rsapi.goong.io/Geocode?latlng=${eventData.lat},${eventData.lng}&api_key=${process.env.REACT_APP_GOONG_APIKEY}`
+      );
+      const _data = await response.json();
+      const reportAddress =
+        !_data?.error && _data?.status === 'OK' ? _data.results[0]?.formatted_address.replace('Phường', '') : null;
 
-  // Subscribe to the socket events when the component mounts
-  useSocketSubscribe('createReport', handleSocketEvent);
+      setData([
+        ...data,
+        {
+          address: reportAddress,
+          numberOfReports: 1,
+          lat: eventData.lat,
+          lng: eventData.lng,
+          latestReport: new Date(),
+        },
+      ]);
+
+      setFilteredData([
+        ...filteredData,
+        {
+          address: reportAddress,
+          numberOfReports: 1,
+          lat: eventData.lat,
+          lng: eventData.lng,
+          latestReport: new Date(),
+        },
+      ]);
+    }
+  });
 
   useEffect(() => {
     if (user.user_type === 'ward') {
@@ -173,7 +209,7 @@ export default function Reports() {
           .then((res) => {
             const data = res.data.data;
             setData(data);
-            setFilterData(data);
+            setFilteredData(data);
           })
           .catch((error) => {
             console.log('Get report lists error: ', error);
@@ -199,11 +235,11 @@ export default function Reports() {
 
   useEffect(() => {
     if (!filterKeyword) {
-      setFilterData(data);
+      setFilteredData(data);
       return;
     }
 
-    setFilterData(
+    setFilteredData(
       data.filter((item) =>
         item.address
           .toLowerCase()
