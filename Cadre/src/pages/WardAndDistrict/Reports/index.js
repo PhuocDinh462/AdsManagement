@@ -37,6 +37,7 @@ export default function Reports() {
       draggable: true,
       progress: undefined,
       theme: 'light',
+      draggable: false,
     });
 
   const fetchWardsReports = async () => {

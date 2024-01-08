@@ -20,7 +20,7 @@ import {
   faClockRotateLeft,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { IconTextBtn } from '~components/button';
 import { Backdrop } from '@mui/material';
 import ProcessModal from './Modals/ProcessModal';
@@ -70,6 +70,7 @@ export default function ReportsDetail() {
       draggable: true,
       progress: undefined,
       theme: 'light',
+      draggable: false,
     });
 
   useEffect(() => {
@@ -192,6 +193,19 @@ export default function ReportsDetail() {
     else return faCheck;
   };
 
+  const scrollOffset = 3;
+  const [scrollMode, setScrollMode] = useState(0);
+  const selectedRef = useRef(null);
+
+  const scrollToSelected = () => {
+    if (selectedRef.current && scrollMode !== 0) {
+      selectedRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      });
+    }
+  };
+
   return (
     <div className={classes.main_container}>
       <img className={classes.bg_img} src={sidebarBg} />
@@ -224,6 +238,8 @@ export default function ReportsDetail() {
             className={[classes.nav_btn, classes.btn, currentReportIndex <= 0 && classes['btn--disabled']].join(' ')}
             onClick={() => {
               setCurrentReportIndex(currentReportIndex - 1);
+              setScrollMode(scrollMode === -scrollOffset ? 0 : -scrollOffset);
+              scrollToSelected();
               dispatch(setReportIndex(currentReportIndex - 1));
             }}
           >
@@ -237,6 +253,8 @@ export default function ReportsDetail() {
             ].join(' ')}
             onClick={() => {
               setCurrentReportIndex(currentReportIndex + 1);
+              setScrollMode(scrollMode === scrollOffset ? 0 : scrollOffset);
+              scrollToSelected();
               dispatch(setReportIndex(currentReportIndex + 1));
             }}
           >
@@ -253,6 +271,7 @@ export default function ReportsDetail() {
                 ' '
               )}
               key={item.report_id}
+              ref={index === currentReportIndex + scrollMode ? selectedRef : null}
               onClick={() => {
                 setCurrentReportIndex(index);
                 dispatch(setReportIndex(index));
@@ -435,7 +454,9 @@ export default function ReportsDetail() {
         </Backdrop>
       )}
 
-      <ToastContainer />
+      <div onClick={() => setCurrentReportIndex(filteredData.length - 1)}>
+        <ToastContainer />
+      </div>
     </div>
   );
 }
