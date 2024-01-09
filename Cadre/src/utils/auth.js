@@ -2,25 +2,64 @@ const { localStorage } = global.window;
 
 const auth = {
   login(data) {
-    const { user, isSuccess } = data;
-    const { userName, _id } = user;
+    const { status, user_id, user_type, ward_id, district_id, token, refresh_token } = data;
 
-    localStorage.userName = userName;
-    localStorage.userId = _id;
-    localStorage.isSuccess = isSuccess;
-    localStorage.role = user.role;
+    if (status === 'success') {
+      localStorage.setItem('user_id', user_id);
+      localStorage.setItem('user_type', user_type);
+      localStorage.setItem('ward_id', ward_id);
+      localStorage.setItem('district_id', district_id);
+      localStorage.setItem('token', token);
+      localStorage.setItem('refresh_token', refresh_token);
+    }
   },
 
-  userId() {
-    return localStorage.userId;
+  setUserId(user_id) {
+    localStorage.user_id = user_id;
   },
 
-  username() {
-    return localStorage.userName;
+  getUserId() {
+    return localStorage.user_id;
   },
 
-  role() {
-    return localStorage.role;
+  setUserType(user_type) {
+    localStorage.user_type = user_type;
+  },
+
+  getUserType() {
+    return localStorage.user_type;
+  },
+
+  setWardId(ward_id) {
+    localStorage.ward_id = ward_id;
+  },
+
+  getWardId() {
+    return localStorage.ward_id;
+  },
+
+  setDistrictId(district_id) {
+    localStorage.district_id = district_id;
+  },
+
+  getDistrictId() {
+    return localStorage.district_id;
+  },
+
+  setAccessToken(token) {
+    localStorage.token = token;
+  },
+
+  getAccessToken() {
+    return localStorage.token;
+  },
+
+  setRefreshToken(refresh_token) {
+    localStorage.refresh_token = refresh_token;
+  },
+
+  getRefreshToken() {
+    return localStorage.refresh_token;
   },
 
   logout() {
@@ -29,3 +68,4 @@ const auth = {
 };
 
 export default auth;
+

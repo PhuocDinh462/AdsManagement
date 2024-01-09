@@ -11,7 +11,7 @@ import getGoogleOAuthURL from '~/src/utils/getGoogleUrl';
 
 import { useDispatch } from 'react-redux';
 import { setUser } from '~/src/store/reducers';
-import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
+import auth from '../../utils/auth';
 
 const LoginPage = () => {
   const loginNavigate = useNavigate();
@@ -40,11 +40,8 @@ const LoginPage = () => {
     onSubmit: async (values, { setSubmitting }) => {
       try {
         const response = await request.post('auth/login', values);
+        auth.login(response.data);
         const user_type = response.data.user_type;
-        localStorage.setItem('user-state', true);
-        localStorage.setItem('user_id', response.data.user_id);
-        localStorage.setItem('user_type', user_type);
-        localStorage.setItem('token', response.data.token);
 
         dispatch(
           setUser({

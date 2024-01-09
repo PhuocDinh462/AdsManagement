@@ -65,16 +65,21 @@ const login = catchAsync(async (req, res, next) => {
           msg: 'Invalid Credential!',
         });
 
-      const accessToken = generateToken.accessToken(results[0]);
-      const refreshToken = generateToken.refreshToken(results[0]);
+      // Tạo mới Access Token và Refresh Token
+      const accessToken = generateToken.accessToken(results[0].email, results[0].password, results[0].user_id);
+      const refreshToken = generateToken.refreshToken(results[0].email, results[0].password, results[0].user_id);
+
+      // Cập nhật Refresh Token vào cơ sở dữ liệu
       connection.query(
         `UPDATE user SET refresh_token = ? WHERE user_id = ?`,
         [refreshToken, results[0].user_id],
         (err, resultsUpdated) => {
           if (err) {
-            console.error("Error executing query: " + err.stack);
-            return res.status(500).json({ error: "Database error" });
+            console.error('Error executing query: ' + err.stack);
+            return res.status(500).json({ error: 'Database error' });
           }
+
+          // Gửi Access Token và Refresh Token về client
           res.status(200).json({
             status: 'success',
             user_id: results[0].user_id,
@@ -82,11 +87,10 @@ const login = catchAsync(async (req, res, next) => {
             ward_id: results[0].ward_id,
             district_id: results[0].district_id,
             token: accessToken,
-            refresh_token: refreshToken
+            refresh_token: refreshToken,
           });
         }
       );
-
     }
   );
 });
@@ -178,31 +182,29 @@ const register = catchAsync(async (req, res, next) => {
   });
 });
 
-
 const logout = catchAsync(async (req, res, next) => {
-  connection.query(
-    `UPDATE user SET refresh_token = NULL WHERE user_id = ?`,
-    [req.user.user_id],
-    (err, results) => {
-      if (err) {
-        console.error("Error executing query: " + err.stack);
-        return res.status(500).json({ error: "Database error" });
-      }
-
-      res.status(200).json({
-        status: "success",
-        msg: "Logout successful",
-      });
+  const refresh_token = req.body.refresh_token;
+  connection.query(`UPDATE user SET refresh_token = NULL WHERE refresh_token = ?`, [refresh_token], (err, results) => {
+    if (err) {
+      console.error('Error executing query: ' + err.stack);
+      return res.status(500).json({ error: 'Database error' });
     }
-  );
+
+    res.status(200).json({
+      status: 'success',
+      msg: 'Logout successful',
+    });
+  });
 });
 
 const refreshToken = catchAsync(async (req, res, next) => {
-  const newAccessToken = generateToken.accessToken(req.user);
+  const newAccessToken = generateToken.accessToken(req.user.email, req.user.password, req.user.user_id);
+  // console.log(newAccessToken);
+
   res.status(200).json({
-    user: req.user,
     access_token: newAccessToken,
   });
 });
 
 module.exports = { register, createAccount, login, forgotPassword, refreshToken, logout };
+
