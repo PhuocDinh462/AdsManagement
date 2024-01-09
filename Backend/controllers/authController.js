@@ -166,3 +166,4 @@ const register = catchAsync(async (req, res, next) => {
 });
 
 module.exports = { register, createAccount, login, forgotPassword };
+

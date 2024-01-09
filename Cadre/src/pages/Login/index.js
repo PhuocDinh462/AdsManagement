@@ -26,6 +26,7 @@ const LoginPage = () => {
       loginNavigate('/home');
     }
   }, []);
+
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -140,3 +141,4 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+

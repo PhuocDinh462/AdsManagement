@@ -28,7 +28,7 @@ const ReportStats = () => {
   const [numberOf, setNumberOf] = useState({ all: 0, pending: 0, processing: 0, processed: 0 });
 
   const user = useSelector(selectUser);
-  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
+  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
   const headers = {
     Authorization: tokenAuth,
   };
@@ -187,3 +187,4 @@ const ReportStats = () => {
 };
 
 export default ReportStats;
+

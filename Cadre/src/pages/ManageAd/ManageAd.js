@@ -54,7 +54,7 @@ const ManageAd = () => {
   const [selected, setSelected] = useState(null);
 
   const user = useSelector(selectUser);
-  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
+  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
   const headers = {
     Authorization: tokenAuth,
   };
@@ -205,3 +205,4 @@ const ManageAd = () => {
 };
 
 export default ManageAd;
+
