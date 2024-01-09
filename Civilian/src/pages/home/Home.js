@@ -318,7 +318,6 @@ const Home = () => {
                                         animation={showMarkerIcon && window.google.maps.Animation.BOUNCE}
                                     ></Marker>
                                 )}
-                                {/* <Marker position={newGeocode} icon={customMarkerIcon} /> */}
 
                                 <MarkerClusterer
                                     options={{
@@ -384,7 +383,7 @@ const Home = () => {
                                                             origin: new google.maps.Point(0, 0),
                                                         }}
                                                         zIndex={0}
-                                                        // clusterer={clusterer}
+                                                        clusterer={clusterer}
                                                     >
                                                         {selectedMarker === item && (
                                                             <InfoWindow onCloseClick={closeInfoWindow}>
@@ -447,7 +446,7 @@ const Home = () => {
                                                             origin: new google.maps.Point(0, 0),
                                                         }}
                                                         zIndex={0}
-                                                        // clusterer={clusterer}
+                                                        clusterer={clusterer}
                                                     >
                                                         {selectedMarker === item && (
                                                             <InfoWindow onCloseClick={closeInfoWindow}>
