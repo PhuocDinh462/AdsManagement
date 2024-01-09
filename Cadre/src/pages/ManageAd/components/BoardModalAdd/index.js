@@ -44,7 +44,7 @@ const schema = yup.object().shape({
   advertisement_content: yup.string().required('Thông tin bảng quảng cáo chưa đầy đủ!'),
 });
 
-const LicenseModalAdd = (props) => {
+const BoardModalAdd = (props) => {
   const { handleCloseModal, handleReLoadData } = props;
 
   const user = useSelector(selectUser);
@@ -156,18 +156,19 @@ const LicenseModalAdd = (props) => {
         start_date: convertISOString(selectForm.start_date),
         end_date: convertISOString(selectForm.end_date),
       };
-      const res1 = await axiosClient.post('/contract/create', dataContract, { headers });
 
-      const dataLicense = {
-        ...dataInput,
-        status: 'pending',
-        board_type_id: selectForm?.board_type_id.value,
-        point_id: selectForm?.point.point_id,
-        contract_id: res1.data.contract_id,
+      const res = await axiosClient.post('/contract/create', dataContract, { headers });
+
+      const dataBoard = {
+        board_type_id: selectForm.board_type_id.value,
         advertisement_image_url: imageUploadUrl,
+        point_id: selectForm?.point.point_id,
+        contract_id: res.data.contract_id,
+        ...dataInput,
       };
 
-      await axiosClient.post('/ward/license/create-license', dataLicense, { headers });
+      await axiosClient.post('/board/create', dataBoard, { headers });
+
       handleCloseModal(true);
       handleReLoadData();
       reset();
@@ -184,7 +185,7 @@ const LicenseModalAdd = (props) => {
       <div className={classes.adding__modal}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className={classes.adding__modal__heading}>
-            TẠO YÊU CẦU CẤP PHÉP
+            TẠO BẢNG QUẢNG CÁO
             <FontAwesomeIcon icon={faClose} className={classes['adding__modal-ic']} onClick={handleCloseModal} />
           </div>
           <div className={classes.adding__modal__body}>
@@ -307,7 +308,6 @@ const LicenseModalAdd = (props) => {
               ))}
             </div>
             <div className={classes.adding__modal__buttons}>
-              {indexCur === 1 && <button onClick={handleCloseModal}>Hủy</button>}
               {indexCur > 1 && (
                 <button
                   type="button"
@@ -331,7 +331,7 @@ const LicenseModalAdd = (props) => {
 
               {indexCur === 3 && (
                 <button type="submit" onClick={handleShowError}>
-                  Tạo Yêu Cầu
+                  Tạo Bảng
                 </button>
               )}
             </div>
@@ -345,4 +345,4 @@ const LicenseModalAdd = (props) => {
   );
 };
 
-export default LicenseModalAdd;
+export default BoardModalAdd;

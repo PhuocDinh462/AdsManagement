@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import classes from './style.module.scss';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
-import ButtonCT from '~/src/components/button/ButtonCT';
-import { axiosClient } from '~/src/api/axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
+import { axiosClient } from '~/src/api/axios';
+import ButtonCT from '~/src/components/button/ButtonCT';
+import classes from './style.module.scss';
 
 const LicenseDetails = ({ data, handleCloseModal }) => {
   const [adsType, setAdsType] = useState();
@@ -61,6 +61,7 @@ const LicenseDetails = ({ data, handleCloseModal }) => {
             width: data.width,
             height: data.height,
             point_id: data.point_id,
+            contract_id: data.contract_id,
           };
           console.log(dataBoard);
 
@@ -238,4 +239,3 @@ const LicenseDetails = ({ data, handleCloseModal }) => {
 };
 
 export default LicenseDetails;
-

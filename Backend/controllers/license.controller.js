@@ -3,15 +3,25 @@ const connection = require('../server');
 const socket = require('../app');
 
 const createLicensingRequest = catchAsync(async (req, res, next) => {
-  const { advertisement_content, advertisement_image_url, point_id, width, height, contract_id } = req.body;
+  const { advertisement_content, advertisement_image_url, point_id, width, height, contract_id, board_type_id } =
+    req.body;
 
   const queryInsert = `INSERT INTO licensing_request 
-    (advertisement_content, advertisement_image_url,status,point_id,user_id,width,height,contract_id) 
-    VALUES (?,?,"Pending",?,?,?,?,?)`;
+    (advertisement_content, advertisement_image_url,status,point_id,user_id,width,height,contract_id,board_type_id) 
+    VALUES (?,?,"Pending",?,?,?,?,?,?)`;
 
   connection.query(
     queryInsert,
-    [advertisement_content, advertisement_image_url, point_id, req.user.user_id, width, height, contract_id],
+    [
+      advertisement_content,
+      advertisement_image_url,
+      point_id,
+      req.user.user_id,
+      width,
+      height,
+      contract_id,
+      board_type_id,
+    ],
     (error, result) => {
       if (error) {
         console.error('Error executing query: ' + error.stack);
