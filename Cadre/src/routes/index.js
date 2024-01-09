@@ -31,19 +31,19 @@ import { useEffect } from 'react';
 const Navigation = () => {
   const location = useLocation();
 
-  useEffect(() => {
-    setStore();
-  }, []);
+  // useEffect(() => {
+  //   setStore();
+  // }, []);
   const authenticated = localStorage.getItem('user_type');
   const isWardOrDistrict = ['ward', 'district'].includes(authenticated?.toLowerCase());
   const isDepartment = authenticated?.toLowerCase() === 'department';
 
-  const setStore = () => {
-    setLocalStorageFromCookie('user-state');
-    setLocalStorageFromCookie('user_type');
-    setLocalStorageFromCookie('user_id');
-    setLocalStorageFromCookie('token');
-  };
+  // const setStore = () => {
+  //   setLocalStorageFromCookie('user-state');
+  //   setLocalStorageFromCookie('user_type');
+  //   setLocalStorageFromCookie('user_id');
+  //   setLocalStorageFromCookie('token');
+  // };
 
   return (
     <main>

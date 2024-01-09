@@ -64,8 +64,8 @@ const getAdSpotsByWardId = catchAsync(async (req, res, next) => {
                 res.status(500).send('Internal Server Error');
                 return;
               }
-              const wardName = results[0].ward_name.replace('Phường', '');
-              const districtName = results[0].district_name;
+              const wardName = results[0]?.ward_name?.replace('Phường', '');
+              const districtName = results[0]?.district_name;
 
               // Find spots have report but isn't adSpot
               const reportSpots = await Promise.all(
@@ -676,3 +676,4 @@ module.exports = {
   getAdSpotsListByWardId,
   getAllWardsByDistrictManager,
 };
+
