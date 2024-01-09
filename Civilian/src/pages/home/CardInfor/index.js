@@ -4,6 +4,7 @@ import classes from './styles.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 import { ic_warning, ic_infor } from '~/src/assets';
+import ic_info from '../../../assets/imgs/ic_info.png';
 import ButtonCT from '~/src/components/button/ButtonCT';
 
 const CardInfor = (props) => {
@@ -39,7 +40,7 @@ const CardInfor = (props) => {
             </div>
             <div className={classes['container__infor-action']}>
                 <div onClick={() => props.onClickShowDetail()}>
-                    <ButtonCT iconLeft={ic_infor} />
+                    <ButtonCT iconLeft={ic_info} />
                 </div>
                 <ButtonCT
                     content="Báo cáo vi phạm"

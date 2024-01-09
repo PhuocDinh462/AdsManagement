@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { GoogleMap, Marker, useJsApiLoader, InfoWindow, MarkerClusterer } from '@react-google-maps/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClose, faFilter, faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
+import { faCaretLeft, faFilter, faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import classes from './Home.module.scss';
 import CardInfor from './CardInfor';
@@ -54,6 +54,7 @@ const Home = () => {
     });
     const [showMarkerIcon, setShowMarkerIcon] = useState(false);
     const [geocode, setGeocode] = useState({ lat: 10.7764, lng: 106.699 });
+    const [center, setCenter] = useState({ lat: 10.7764, lng: 106.699 });
     const [showInforPointAny, setShowInforPointAny] = useState({ show: false, type: '', data: {} });
     const [listAdReportAny, setListAdReportAny] = useState([]);
     const [listAdReportAnyRender, setListAdReportAnyRender] = useState([]);
@@ -291,6 +292,7 @@ const Home = () => {
                 const coord = res.data.results[0].geometry.location;
                 setShowMarkerIcon(true);
                 setGeocode(coord);
+                setCenter(coord);
                 fetchInfoLocation(coord.lat, coord.lng);
             })
             .catch((error) => {
@@ -307,7 +309,7 @@ const Home = () => {
                             <GoogleMap
                                 style={{ cursor: 'default !important' }}
                                 mapContainerStyle={containerStyle}
-                                center={geocode}
+                                center={center}
                                 zoom={15}
                                 onClick={handleMapClickPosition}
                                 options={mapOptions}
@@ -524,54 +526,55 @@ const Home = () => {
                 {isShowNote && <AnnotationDropdown onCheckboxChange={handleCheckboxChange} />}
             </div>
 
-            {showInfo.show && (
-                <>
-                    <div className={classes['container__home-inf']}>
-                        {/* Xem chi tiết của một trụ, cột*/}
-                        <FontAwesomeIcon
-                            icon={faClose}
-                            className={classes.icon}
-                            style={{ color: showInfo.info === infoAds.TABLE ? '#fff' : '#000' }}
-                            onClick={() => {
-                                setShowInfo({ show: false, infoAds: '', data: {} });
-                                setSelectedMarker(null);
-                            }}
-                        />
+            <div className={classes['container__home-inf']} style={{ width: showInfo.show ? '40rem' : 0 }}>
+                <FontAwesomeIcon
+                    icon={faCaretLeft}
+                    className={classes.icon}
+                    style={{
+                        color: showInfo.info === infoAds.TABLE ? '#fff' : '#000',
+                        display: showInfo.show ? 'block' : 'none',
+                    }}
+                    onClick={() => {
+                        setShowInfo({ show: false, infoAds: '', data: {} });
+                        setSelectedMarker(null);
+                    }}
+                />
 
-                        <div className={classes['container__home-inf-content']}>
-                            {showInfo.info === infoAds.PANEL && (
-                                <div className={classes['container__home-inf-content-items']}>
-                                    {showInfo.data &&
-                                        showInfo.data.list_board_ads.map((item, index) => (
-                                            <CardInfor
-                                                key={+index}
-                                                info={{ infoBoard: item, infoPoint: showInfo.data }}
-                                                onClickShowDetail={() => {
-                                                    setShowAdDetail({ id: index, show: true, data: item });
-                                                }}
-                                                onClickShowReport={() => {
-                                                    setIsShowReport({ id: index + '', show: true, type: 'Board' });
-                                                    setShowAdDetail({ id: -1, show: false, data: item });
-                                                }}
-                                            />
-                                        ))}
-                                    {showInfo.data && showInfo.data.list_board_ads.length === 0 && (
-                                        <p style={{ textAlign: 'center' }}>Chưa có bảng quảng cáo</p>
-                                    )}
-                                </div>
+                <div
+                    className={classes['container__home-inf-content']}
+                    style={{ padding: showInfo.show ? '0 3rem' : 0 }}
+                >
+                    {showInfo.info === infoAds.PANEL && (
+                        <div className={classes['container__home-inf-content-items']}>
+                            {showInfo.data &&
+                                showInfo.data.list_board_ads.map((item, index) => (
+                                    <CardInfor
+                                        key={+index}
+                                        info={{ infoBoard: item, infoPoint: showInfo.data }}
+                                        onClickShowDetail={() => {
+                                            setShowAdDetail({ id: index, show: true, data: item });
+                                        }}
+                                        onClickShowReport={() => {
+                                            setIsShowReport({ id: index + '', show: true, type: 'Board' });
+                                            setShowAdDetail({ id: -1, show: false, data: item });
+                                        }}
+                                    />
+                                ))}
+                            {showInfo.data && showInfo.data.list_board_ads.length === 0 && (
+                                <p style={{ textAlign: 'center' }}>Chưa có bảng quảng cáo</p>
                             )}
                         </div>
-                    </div>
-                </>
-            )}
+                    )}
+                </div>
+            </div>
 
             {showAdDetail.show && (
-                <div className={classes['container__home-inf']}>
+                <div className={classes['container__home-inf']} style={{ width: showAdDetail.show ? '40rem' : 0 }}>
                     {/* Xem chi tiết của một trụ, cột*/}
                     <FontAwesomeIcon
-                        icon={faClose}
+                        icon={faCaretLeft}
                         className={classes.icon}
-                        style={{ color: '#fff' }}
+                        style={{ color: '#000', display: showAdDetail.show ? 'block' : 'none' }}
                         onClick={() => {
                             setShowAdDetail({ id: -1, show: false, data: {} });
                         }}
@@ -580,7 +583,10 @@ const Home = () => {
                     <div className={classes['container__home-inf-imgAds']}>
                         <img src={showAdDetail.data.advertisement_image_url} alt="none" />
                     </div>
-                    <div className={classes['container__home-inf-content']}>
+                    <div
+                        className={classes['container__home-inf-content']}
+                        style={{ padding: showAdDetail.show ? '0 3rem' : 0 }}
+                    >
                         <div className={classes[`container__home-inf-content-table-show-img`]}>
                             <InforTable
                                 info={{ infoBoard: showAdDetail.data, infoPoint: showInfo.data }}
@@ -596,20 +602,23 @@ const Home = () => {
                 </div>
             )}
 
-            {showDetailReport.show && (
-                <div className={classes['container__home-inf']}>
-                    {/* Xem chi tiết của một trụ, cột*/}
-                    <FontAwesomeIcon
-                        icon={faClose}
-                        className={classes.icon}
-                        style={{ color: '#000' }}
-                        onClick={() => {
-                            setShowDetailReport({ show: false, type: '', data: {} });
-                            setSelectedMarker(null);
-                        }}
-                    />
+            <div className={classes['container__home-inf']} style={{ width: showDetailReport.show ? '40rem' : 0 }}>
+                {/* Xem chi tiết của một trụ, cột*/}
+                <FontAwesomeIcon
+                    icon={faCaretLeft}
+                    className={classes.icon}
+                    style={{ color: '#000', display: showDetailReport.show ? 'block' : 'none' }}
+                    onClick={() => {
+                        setShowDetailReport({ show: false, type: '', data: {} });
+                        setSelectedMarker(null);
+                    }}
+                />
 
-                    <div className={classes['container__home-inf-content']}>
+                {showDetailReport.show && (
+                    <div
+                        className={classes['container__home-inf-content']}
+                        style={{ padding: showDetailReport.show ? '0 3rem' : 0 }}
+                    >
                         <div
                             className={classes[`container__home-inf-content-table-show-img`]}
                             style={{ marginTop: '8rem' }}
@@ -629,47 +638,48 @@ const Home = () => {
                             />
                         </div>
                     </div>
+                )}
+            </div>
+
+            <div className={classes['container__home-inf']} style={{ width: showInforPointAny.show ? '40rem' : 0 }}>
+                {/* Xem chi tiết của một trụ, cột*/}
+                <FontAwesomeIcon
+                    icon={faCaretLeft}
+                    className={classes.icon}
+                    style={{ color: '#000', display: showInforPointAny.show ? 'block' : 'none' }}
+                    onClick={() => {
+                        setShowInforPointAny({ show: false, type: '', data: {} });
+                        setShowMarkerIcon(false);
+                    }}
+                />
+
+                <div
+                    className={classes['container__home-inf-content']}
+                    style={{ padding: showInforPointAny.show ? '0 3rem' : 0 }}
+                >
+                    <ul style={{ marginTop: '8rem' }} className={classes.list}>
+                        <li>
+                            <label>Địa điểm:</label>
+                            <p>{showInforPointAny.data.formatted_address}</p>
+                        </li>
+                        <li>
+                            <label>Địa chỉ:</label>
+                            <p>{showInforPointAny.data.address}</p>
+                        </li>
+
+                        <ButtonCT
+                            style={{ marginTop: '3rem' }}
+                            content="Báo cáo vi phạm"
+                            className={'borderRadius7 uppercase'}
+                            iconLeft={ic_warning}
+                            outlineBtn={true}
+                            borderRadius={true}
+                            redWarning={true}
+                            onClick={() => setIsShowReport({ show: true, type: 'Any' })}
+                        />
+                    </ul>
                 </div>
-            )}
-
-            {showInforPointAny.show && (
-                <div className={classes['container__home-inf']}>
-                    {/* Xem chi tiết của một trụ, cột*/}
-                    <FontAwesomeIcon
-                        icon={faClose}
-                        className={classes.icon}
-                        style={{ color: '#000' }}
-                        onClick={() => {
-                            setShowInforPointAny({ show: false, type: '', data: {} });
-                            setShowMarkerIcon(false);
-                        }}
-                    />
-
-                    <div className={classes['container__home-inf-content']}>
-                        <ul style={{ marginTop: '8rem' }} className={classes.list}>
-                            <li>
-                                <label>Địa điểm:</label>
-                                <p>{showInforPointAny.data.formatted_address}</p>
-                            </li>
-                            <li>
-                                <label>Địa chỉ:</label>
-                                <p>{showInforPointAny.data.address}</p>
-                            </li>
-
-                            <ButtonCT
-                                style={{ marginTop: '3rem' }}
-                                content="Báo cáo vi phạm"
-                                className={'borderRadius7 uppercase'}
-                                iconLeft={ic_warning}
-                                outlineBtn={true}
-                                borderRadius={true}
-                                redWarning={true}
-                                onClick={() => setIsShowReport({ show: true, type: 'Any' })}
-                            />
-                        </ul>
-                    </div>
-                </div>
-            )}
+            </div>
 
             {isShowReport.show && (
                 <ModalReport
