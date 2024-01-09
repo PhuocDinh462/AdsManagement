@@ -181,18 +181,19 @@ const getBoardsByPoint = catchAsync(async (req, res, next) => {
 });
 
 const createBoard = catchAsync(async (req, res, next) => {
-  const { board_type_id, advertisement_content, advertisement_image_url, width, height, point_id } = req.body;
+  const { board_type_id, advertisement_content, advertisement_image_url, width, height, point_id, contract_id } =
+    req.body;
 
   const queryInsert = `
   INSERT INTO advertising_board 
   (board_type_id, advertisement_content, 
-  advertisement_image_url, width, height, point_id)
-  VALUES (?, ?, ?, ?, ?, ?)
+  advertisement_image_url, width, height, point_id, contract_id)
+  VALUES (?, ?, ?, ?, ?, ?, ?)
 `;
 
   connection.query(
     queryInsert,
-    [board_type_id, advertisement_content, advertisement_image_url, width, height, point_id],
+    [board_type_id, advertisement_content, advertisement_image_url, width, height, point_id, contract_id],
     (error, result) => {
       if (error) {
         console.error('Error executing query: ' + error.stack);
@@ -209,6 +210,7 @@ const createBoard = catchAsync(async (req, res, next) => {
         width,
         height,
         point_id,
+        contract_id,
       };
 
       return res.status(200).json({
