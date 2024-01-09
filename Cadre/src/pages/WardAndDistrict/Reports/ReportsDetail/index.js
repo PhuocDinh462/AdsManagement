@@ -20,7 +20,7 @@ import {
   faClockRotateLeft,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, createRef } from 'react';
 import { IconTextBtn } from '~components/button';
 import { Backdrop } from '@mui/material';
 import ProcessModal from './Modals/ProcessModal';
@@ -30,6 +30,11 @@ import { axiosRequest } from '~/src/api/axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { setReportIndex, selectReportIndex, setReportCoord, selectUser, setBoardId } from '~/src/store/reducers';
 import { useNavigate } from 'react-router';
+import { text } from '~styles/colors';
+import { sidebarBg } from '~assets/imgs/Imgs';
+import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function ReportsDetail() {
   const { id } = useParams();
@@ -55,9 +60,21 @@ export default function ReportsDetail() {
 
   const [loading, setLoading] = useState(false);
 
+  const info = (msg) =>
+    toast.info(msg, {
+      position: 'top-right',
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'light',
+      draggable: false,
+    });
+
   useEffect(() => {
     setLoading(true);
-
     if (lat && lng)
       (async () => {
         await axiosRequest
@@ -83,7 +100,9 @@ export default function ReportsDetail() {
             const data = res.data.data;
             setData(data);
             setFilteredData(data.reports);
-            if (reportIndexStorage < data.reports?.length) setCurrentReportIndex(reportIndexStorage);
+            if (reportIndexStorage < data.reports?.length) {
+              setCurrentReportIndex(reportIndexStorage);
+            }
           })
           .catch((error) => {
             console.log('Get spots error: ', error);
@@ -102,12 +121,12 @@ export default function ReportsDetail() {
           const keywordLc = keyword.toLowerCase();
 
           return (
-            item.fullname_rp.toLowerCase().includes(keywordLc) ||
-            item.phone_rp.toLowerCase().includes(keywordLc) ||
-            item.email_rp.toLowerCase().includes(keywordLc) ||
-            item.report_type_name.toLowerCase().includes(keywordLc) ||
-            item.reportedObject.toLowerCase().includes(keywordLc) ||
-            item.status.toLowerCase().includes(keywordLc)
+            item.fullname_rp?.toLowerCase().includes(keywordLc) ||
+            item.phone_rp?.toLowerCase().includes(keywordLc) ||
+            item.email_rp?.toLowerCase().includes(keywordLc) ||
+            item.report_type_name?.toLowerCase().includes(keywordLc) ||
+            item.reportedObject?.toLowerCase().includes(keywordLc) ||
+            item.status?.toLowerCase().includes(keywordLc)
           );
         })
       );
@@ -122,14 +141,97 @@ export default function ReportsDetail() {
     setFilteredData(filteredData.map((item) => (item.report_id === id ? { ...item, status: newStatus } : { ...item })));
   };
 
+  const addReport = (report) => {
+    if (data.reports.length === filteredData.length) setFilteredData([...filteredData, report]);
+    setData({ ...data, reports: [...data.reports, report] });
+  };
+
+  const handleSocketEvent = async (eventData) => {
+    if (lat && lng) {
+      if (+lat === eventData.lat && +lng === eventData.lng) {
+        info('Một báo cáo vừa được gửi đến cho bạn');
+        addReport(eventData);
+      }
+    } else {
+      if (eventData.point_id) {
+        if (+id === eventData.point_id) {
+          info('Một báo cáo vừa được gửi đến cho bạn');
+          addReport(eventData);
+        }
+      } else if (eventData.board_id) {
+        await axiosRequest
+          .get(`ward/getAdBoardByBoardId/${eventData.board_id}`, { headers: headers })
+          .then(async (res) => {
+            if (+id === res.data.data.point_id) {
+              info('Một báo cáo vừa được gửi đến cho bạn');
+              addReport(eventData);
+            }
+          })
+          .catch((error) => {
+            console.log('Get AdBoard error: ', error);
+          });
+      }
+    }
+  };
+
+  // Subscribe to the socket events when the component mounts
+  useSocketSubscribe('createReport', handleSocketEvent);
+
+  const chooseStatusColor = (status) => {
+    if (status === 'Đã xử lý' || status === 'processed') return '#00AE46';
+    else if (status === 'Đang xử lý' || status === 'processing') return '#0095d5';
+    else return '#ff3a3a';
+  };
+
+  const chooseStatusText = (status) => {
+    if (status === 'Đã xử lý' || status === 'processed') return 'Đã xử lý';
+    else if (status === 'Đang xử lý' || status === 'processing') return 'Đang xử lý';
+    else return 'Chờ xử lý';
+  };
+
+  const chooseStatusIc = (status) => {
+    if (status === 'Đã xử lý' || status === 'processed') return faXmark;
+    else if (status === 'Đang xử lý' || status === 'processing') return faClockRotateLeft;
+    else return faCheck;
+  };
+
+  const [itemRefs, setItemRefs] = useState([]);
+  useEffect(() => {
+    // add or remove refs
+    setItemRefs((itemRefs) =>
+      Array(filteredData.length)
+        .fill()
+        .map((_, i) => itemRefs[i] || createRef())
+    );
+  }, [filteredData.length]);
+
+  const scrollToIndex = (index) => {
+    if (itemRefs[index]?.current) {
+      itemRefs[index]?.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      });
+    }
+  };
+
+  useEffect(() => {
+    scrollToIndex(currentReportIndex);
+  }, [itemRefs]);
+
   return (
     <div className={classes.main_container}>
+      <img className={classes.bg_img} src={sidebarBg} />
       <div className={classes.sideBar_container}>
         <div className={classes.searchBar_container}>
           <div className={[classes.back_btn, classes.btn].join(' ')} onClick={() => navigate(-1)}>
             <FontAwesomeIcon icon={faArrowLeft} />
           </div>
-          <SearchBar placeholder="Tìm kiếm..." width="20rem" onChange={(keyword) => handleFilter(keyword)} />
+          <SearchBar
+            placeholder="Tìm kiếm..."
+            width="20rem"
+            bgColor={text.color_50}
+            onChange={(keyword) => handleFilter(keyword)}
+          />
         </div>
 
         <div className={classes.nav_btn_container}>
@@ -147,8 +249,9 @@ export default function ReportsDetail() {
           <div
             className={[classes.nav_btn, classes.btn, currentReportIndex <= 0 && classes['btn--disabled']].join(' ')}
             onClick={() => {
-              setCurrentReportIndex(currentReportIndex - 1);
+              scrollToIndex(currentReportIndex - 1);
               dispatch(setReportIndex(currentReportIndex - 1));
+              setCurrentReportIndex(currentReportIndex - 1);
             }}
           >
             <FontAwesomeIcon icon={faAngleUp} />
@@ -160,34 +263,32 @@ export default function ReportsDetail() {
               currentReportIndex >= filteredData?.length - 1 && classes['btn--disabled'],
             ].join(' ')}
             onClick={() => {
-              setCurrentReportIndex(currentReportIndex + 1);
+              scrollToIndex(currentReportIndex + 1);
               dispatch(setReportIndex(currentReportIndex + 1));
+              setCurrentReportIndex(currentReportIndex + 1);
             }}
           >
             <FontAwesomeIcon icon={faAngleDown} />
           </div>
         </div>
 
-        <dir className={classes.reports_container}>
+        <div className={classes.divider} />
+
+        <div className={classes.reports_container}>
           {filteredData?.map((item, index) => (
             <div
-              className={classes.report_item}
+              className={[classes.report_item, currentReportIndex === index && classes['report_item--active']].join(
+                ' '
+              )}
               key={item.report_id}
+              ref={itemRefs[index]}
               onClick={() => {
                 setCurrentReportIndex(index);
                 dispatch(setReportIndex(index));
               }}
             >
-              <dir className={classes.divider} />
               <div className={classes.username}>
-                <div
-                  className={[
-                    classes.username__text,
-                    currentReportIndex === index && classes['username__text--active'],
-                  ].join(' ')}
-                >
-                  {index + 1 + '. ' + item.fullname_rp}
-                </div>
+                <div className={classes.username__text}>{index + 1 + '. ' + item.fullname_rp}</div>
                 <div
                   className={[
                     classes.username__ic,
@@ -199,12 +300,12 @@ export default function ReportsDetail() {
               </div>
             </div>
           ))}
-        </dir>
+        </div>
       </div>
 
       {!loading && (
         <div className={classes.content_container}>
-          <div className={classes.title}>Chi tiết báo cáo tại {data.address}</div>
+          {data.address && <div className={classes.title}>Chi tiết báo cáo tại {data.address}</div>}
 
           {filteredData?.length > 0 ? (
             <>
@@ -215,17 +316,17 @@ export default function ReportsDetail() {
                       <td className={classes.userInfo_col}>
                         <div className={classes.itemInfo}>
                           <FontAwesomeIcon icon={faUser} />
-                          <dir className={classes.itemInfo__text}>
+                          <div className={classes.itemInfo__text}>
                             {'Người báo cáo: ' + filteredData[currentReportIndex]?.fullname_rp}
-                          </dir>
+                          </div>
                         </div>
                       </td>
                       <td className={classes.userInfo_col}>
                         <div className={classes.itemInfo}>
                           <FontAwesomeIcon icon={faFlag} />
-                          <dir className={classes.itemInfo__text}>
+                          <div className={classes.itemInfo__text}>
                             {'Đối tượng bị báo cáo: ' + filteredData[currentReportIndex]?.reportedObject}
-                          </dir>
+                          </div>
                         </div>
                       </td>
                     </tr>
@@ -233,17 +334,17 @@ export default function ReportsDetail() {
                       <td className={classes.userInfo_col}>
                         <div className={classes.itemInfo}>
                           <FontAwesomeIcon icon={faPhone} />
-                          <dir className={classes.itemInfo__text}>
+                          <div className={classes.itemInfo__text}>
                             {'Số điện thoại: ' + filteredData[currentReportIndex]?.phone_rp}
-                          </dir>
+                          </div>
                         </div>
                       </td>
                       <td className={classes.userInfo_col}>
                         <div className={classes.itemInfo}>
                           <FontAwesomeIcon icon={faFile} />
-                          <dir className={classes.itemInfo__text}>
+                          <div className={classes.itemInfo__text}>
                             {'Hình thức báo cáo: ' + filteredData[currentReportIndex]?.report_type_name}
-                          </dir>
+                          </div>
                         </div>
                       </td>
                     </tr>
@@ -251,9 +352,9 @@ export default function ReportsDetail() {
                       <td className={classes.userInfo_col}>
                         <div className={classes.itemInfo}>
                           <FontAwesomeIcon icon={faEnvelope} />
-                          <dir className={classes.itemInfo__text}>
+                          <div className={classes.itemInfo__text}>
                             {'Email: ' + filteredData[currentReportIndex]?.email_rp}
-                          </dir>
+                          </div>
                         </div>
                       </td>
                       <td className={classes.userInfo_col}>
@@ -265,25 +366,12 @@ export default function ReportsDetail() {
                               <div
                                 className={classes.reportStatus}
                                 style={{
-                                  backgroundColor:
-                                    filteredData[currentReportIndex]?.status === 'Chờ xử lý'
-                                      ? '#ff3a3a'
-                                      : filteredData[currentReportIndex]?.status === 'Đang xử lý'
-                                      ? '#0095d5'
-                                      : '#00AE46',
+                                  backgroundColor: chooseStatusColor(filteredData[currentReportIndex]?.status),
                                 }}
                               >
-                                {filteredData[currentReportIndex]?.status}
+                                {chooseStatusText(filteredData[currentReportIndex]?.status)}
                                 <div className={classes.reportStatus__ic}>
-                                  <FontAwesomeIcon
-                                    icon={
-                                      filteredData[currentReportIndex]?.status === 'Chờ xử lý'
-                                        ? faXmark
-                                        : filteredData[currentReportIndex]?.status === 'Đang xử lý'
-                                        ? faClockRotateLeft
-                                        : faCheck
-                                    }
-                                  />
+                                  <FontAwesomeIcon icon={chooseStatusIc(filteredData[currentReportIndex]?.status)} />
                                 </div>
                               </div>
                             </div>
@@ -375,6 +463,16 @@ export default function ReportsDetail() {
           />
         </Backdrop>
       )}
+
+      <div
+        onClick={() => {
+          setFilteredData(data.reports);
+          setCurrentReportIndex(data.reports.length - 1);
+          scrollToIndex(data.reports.length - 1);
+        }}
+      >
+        <ToastContainer />
+      </div>
     </div>
   );
 }

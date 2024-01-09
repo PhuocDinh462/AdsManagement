@@ -13,8 +13,9 @@ const ActionLicense = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isOpenDetails, setIsOpenDetails] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState(0);
+  const [selectedFilter, setSelectedFilter] = useState('all');
   const [selectedRowData, setSelectedRowData] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
   const headers = {
@@ -24,8 +25,8 @@ const ActionLicense = () => {
   const fetchData = async () => {
     try {
       const response = await axiosClient.get('/ward/license', { headers });
-      setData(response.points);
-      setOriginalData(response.points);
+      setData(response.data);
+      setOriginalData(response.data);
     } catch (error) {
       setError(error);
     } finally {
@@ -36,6 +37,12 @@ const ActionLicense = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const filteredData = data.filter((row) => row.company_name.toLowerCase().includes(searchTerm.toLowerCase()));
 
   const handleSocketEvent = (eventData) => {
     fetchData();
@@ -104,7 +111,14 @@ const ActionLicense = () => {
           {/* Tab Search */}
           <div className={classes.container__header_search}>
             <FontAwesomeIcon icon={faMagnifyingGlass} className={classes.ic} />
-            <input status="text" id="inputSearch" placeholder="Tìm kiếm..." className={classes.text_input} />
+            <input
+              type="text"
+              id="inputSearch"
+              placeholder="Tìm kiếm theo công ty..."
+              className={classes.text_input}
+              value={searchTerm}
+              onChange={handleSearchChange}
+            />
           </div>
         </div>
 
@@ -129,7 +143,7 @@ const ActionLicense = () => {
           <table className={classes.table__body_wrap}>
             <tbody>
               {data &&
-                data.map((row, rowIndex) => (
+                filteredData.map((row, rowIndex) => (
                   <tr
                     className={classes.table__body_wrap_row}
                     key={rowIndex}
@@ -142,7 +156,7 @@ const ActionLicense = () => {
                     <td style={{ width: '5%' }}>{rowIndex + 1}</td>
                     <td style={{ width: '15%' }}>{row.company_name}</td>
                     <td style={{ width: '10%' }}>
-                      <img src={row.image_url} alt="none" />
+                      <img src={row.advertisement_image_url} alt="none" />
                     </td>
                     <td style={{ width: '35%' }}>
                       <span style={{ padding: '0 5px' }}> {row.address} </span>

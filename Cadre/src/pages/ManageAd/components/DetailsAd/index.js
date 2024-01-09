@@ -1,68 +1,17 @@
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Backdrop, CircularProgress } from '@mui/material';
-import { useState } from 'react';
-import ButtonCT from '~/src/components/button/ButtonCT';
-import { calculateDaysBetweenDates, formatDate, notiError, notiSuccess } from '~/src/utils/support';
 import classes from './style.module.scss';
 
-const statusLicense = {
-  pending: { label: 'Chờ xử lý', value: 1 },
-  approved: {
-    label: 'Đã cấp phép',
-    value: 2,
-  },
-  canceled: {
-    label: 'Đã hủy',
-  },
-};
-
-const adsType = ['', 'Cổ động chính trị', 'Quảng cáo thương mại', 'Xã hội hoá'];
-
-const LicenseDetails = ({ handleCloseModal, data, fetchData }) => {
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleCancelLicense = async () => {
-    setIsLoading(true);
-    try {
-      const response = await axiosClient.patch(
-        `/ward/license/${data.licensing_id}`,
-        { status: 'canceled' },
-        { headers }
-      );
-      notiSuccess('Yêu cầu cấp phép đã được hủy');
-      fetchData();
-    } catch (error) {
-      console.log(error);
-      notiError('Lỗi!', 'Trạng thái chưa được cập nhật');
-    } finally {
-      setIsLoading(true);
-      handleCloseModal();
-    }
-  };
+const BoardDetails = ({ onClose, data }) => {
   return (
     <>
       <div className={classes.container}>
         <div className={classes.container__header}>
           <div></div>
-          <h3>Chi tiết cấp phép</h3>
-          <FontAwesomeIcon icon={faXmark} className={classes.ic_cancel} onClick={handleCloseModal} />
+          <h3>Chi tiết bảng quảng cáo</h3>
+          <FontAwesomeIcon icon={faXmark} className={classes.ic_cancel} onClick={onClose} />
         </div>
         <div className={classes.container__content}>
-          <p className={classes.container__content_title}>
-            Trạng thái:
-            <span
-              className={` ${classes.status} ${
-                statusLicense[data.status].value === 1
-                  ? classes.status_accept
-                  : statusLicense[data.status].value === 2
-                  ? classes.status_pending
-                  : classes.status_cancel
-              }`}
-            >
-              {statusLicense[data.status].label}
-            </span>
-          </p>
           <div className={classes.content_block}>
             <div className={classes.content}>
               <div className={classes.content_element}>
@@ -82,8 +31,8 @@ const LicenseDetails = ({ handleCloseModal, data, fetchData }) => {
                   </li>
 
                   <li>
-                    <strong>Hình thức</strong>
-                    <p>: {adsType[data.advertisement_type_id]}</p>
+                    <strong>Loại bảng quảng cáo</strong>
+                    <p>: {data.type_name}</p>
                   </li>
                 </ul>
               </div>
@@ -102,7 +51,7 @@ const LicenseDetails = ({ handleCloseModal, data, fetchData }) => {
                   </div>
                 </div>
               </div>
-              <div className={classes.content_element}>
+              {/* <div className={classes.content_element}>
                 <h3>Thông tin công ty đặt quảng cáo</h3>
                 <ul className={classes.m_left_10}>
                   <li>
@@ -130,8 +79,8 @@ const LicenseDetails = ({ handleCloseModal, data, fetchData }) => {
                     <p>: {data.company_address}</p>
                   </li>
                 </ul>
-              </div>
-              <div className={classes.content_element}>
+              </div> */}
+              {/* <div className={classes.content_element}>
                 <h3>Thời gian hợp đồng ({calculateDaysBetweenDates(data.start_date, data.end_date)} ngày)</h3>
                 <ul className={classes.m_left_10}>
                   <li>
@@ -143,27 +92,16 @@ const LicenseDetails = ({ handleCloseModal, data, fetchData }) => {
                     <p>: {formatDate(data.end_date)}</p>
                   </li>
                 </ul>
-              </div>
+              </div> */}
             </div>
           </div>
-          <div className={`${classes.d_flex_end} ${classes.container__action}`}>
-            <ButtonCT
-              disabled={data.status !== 'pending'}
-              borderRadius5
-              primary
-              medium
-              content={data.status !== 'pending' ? statusLicense[data.status].label : 'Hủy cấp phép'}
-              onClick={data.status !== 'pending' ? () => {} : handleCancelLicense}
-            />
-          </div>
+          {/* <div className={`${classes.d_flex_end} ${classes.container__action}`}>
+          </div> */}
         </div>
       </div>
       <div className={classes.bg}></div>
-      <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
     </>
   );
 };
 
-export default LicenseDetails;
+export default BoardDetails;

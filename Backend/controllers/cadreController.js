@@ -326,6 +326,40 @@ const getDistrictsWithWardEmpty = catchAsync(async (req, res, next) => {
   });
 });
 
+const checkUserWard = catchAsync(async (req, res, next) => {
+  const { point_id } = req.params;
+  connection.query(
+    'SELECT user.* FROM advertising_point JOIN ward ON advertising_point.ward_id = ward.ward_id JOIN user ON ward.manager_id = user.user_id WHERE advertising_point.point_id = ?',
+    [point_id],
+    (err, detailResult) => {
+      if (err) {
+        console.error('Error executing query: ' + err.stack);
+        return res.status(500).json({ error: 'Database error' });
+      }
+      res.status(200).json({
+        checked: detailResult[0]?.user_id === req?.user?.user_id,
+      });
+    }
+  );
+});
+
+const checkUserDistrict = catchAsync(async (req, res, next) => {
+  const { point_id } = req.params;
+  connection.query(
+    'SELECT user.* FROM advertising_point JOIN ward ON advertising_point.ward_id = ward.ward_id JOIN district ON district.district_id = ward.district_id JOIN user ON district.manager_id = user.user_id WHERE advertising_point.point_id = ?',
+    [point_id],
+    (err, detailResult) => {
+      if (err) {
+        console.error('Error executing query: ' + err.stack);
+        return res.status(500).json({ error: 'Database error' });
+      }
+      res.status(200).json({
+        checked: detailResult[0].user_id === req.user.user_id,
+      });
+    }
+  );
+});
+
 module.exports = {
   getDistrictsWithWardEmpty,
   getDistrictsEmpty,
@@ -337,5 +371,6 @@ module.exports = {
   updateAddress,
   deleteAddress,
   getUserWithoutMgmt,
+  checkUserWard,
+  checkUserDistrict,
 };
-

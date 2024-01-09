@@ -42,7 +42,6 @@ export default function DropdownWard(props) {
     return checked;
 
   }
-
   return (
     <div className={classes.main_container}>
       <div className={classes.title}>Chọn phường</div>

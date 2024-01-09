@@ -10,7 +10,7 @@ import { v4 } from 'uuid';
 import Coordination from '~/src/components/Coordination/Coordination';
 import Modal from '~/src/components/Modal/Modal';
 
-const UpdateAdLocation = ({ data, onClose }) => {
+const UpdateAdLocation = ({ data, onClose, cancel }) => {
   const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
   const headers = {
     Authorization: tokenAuth,
@@ -258,7 +258,7 @@ const UpdateAdLocation = ({ data, onClose }) => {
             ))}
           </div>
           <div className={classes.adding__modal__buttons}>
-            {indexCur === 1 && <button onClick={onClose}>Hủy</button>}
+            {indexCur === 1 && <button onClick={() => cancel()}>Hủy</button>}
             {indexCur === 2 && (
               <button
                 onClick={() => {
@@ -288,6 +288,7 @@ const UpdateAdLocation = ({ data, onClose }) => {
             <Coordination
               setLatitude={setLatitude}
               setLongitude={setLongitude}
+              setAddress={setAddress}
               setModalMap={setModalMap}
               onClose={handleCloseModalMap}
             />

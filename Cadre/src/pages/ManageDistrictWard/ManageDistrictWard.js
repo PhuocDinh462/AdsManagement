@@ -21,6 +21,7 @@ const ManageDistrictWard = () => {
   const [isModalDetail, setIsModalDetail] = useState(false);
   const [modalType, setModalType] = useState(null);
   const [selectedRowData, setSelectedRowData] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     setLocalStorageFromCookie('user-state');
@@ -72,8 +73,10 @@ const ManageDistrictWard = () => {
     let filteredData;
     if (type === 'Quận') {
       filteredData = originalData.districts;
+      setSearchTerm('');
     } else if (type === 'Phường') {
       filteredData = originalData.wards;
+      setSearchTerm('');
     }
 
     setData({
@@ -160,6 +163,14 @@ const ManageDistrictWard = () => {
     }
   };
 
+  const filterData = (data) => {
+    if (selectedFilter === 'Quận') {
+      return data.filter((row) => row.district_name.toLowerCase().includes(searchTerm.toLowerCase()));
+    } else {
+      return data.filter((row) => row.ward_name.toLowerCase().includes(searchTerm.toLowerCase()));
+    }
+  };
+
   return (
     <div className={classes.container_wrap}>
       <div className={classes.header}>
@@ -180,16 +191,18 @@ const ManageDistrictWard = () => {
               Phường
             </div>
           </div>
-          {/* <div className={classes.container__header_search}>
+          <div className={classes.container__header_search}>
             <FontAwesomeIcon icon={faMagnifyingGlass} className={classes.ic} />
             <input
               type="text"
               id="inputSearch"
-              placeholder="Tìm kiếm..."
+              placeholder={selectedFilter === 'Quận' ? 'Tìm kiếm tên quận' : 'Tìm kiếm tên phường'}
+              // placeholder="Tìm kiếm..."
               className={classes.text_input}
-              onChange={handleSearchChange}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
-          </div> */}
+          </div>
         </div>
 
         {/* Table Header */}
@@ -213,7 +226,7 @@ const ManageDistrictWard = () => {
           <table className={classes.table__body_wrap}>
             <tbody>
               {selectedFilter === 'Quận' &&
-                data.districts.map((row, rowIndex) => (
+                filterData(data.districts).map((row, rowIndex) => (
                   <tr
                     className={classes.table__body_wrap_row}
                     key={rowIndex}
@@ -251,7 +264,7 @@ const ManageDistrictWard = () => {
                 ))}
 
               {selectedFilter === 'Phường' &&
-                data.wards.map((row, rowIndex) => (
+                filterData(data.wards).map((row, rowIndex) => (
                   <tr
                     className={classes.table__body_wrap_row}
                     key={rowIndex}

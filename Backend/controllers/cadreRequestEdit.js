@@ -1,5 +1,6 @@
 const catchAsync = require('../utils/catchAsync');
 const connection = require('../server');
+const socket = require('../app');
 
 const getRequestEditBoards = catchAsync(async (req, res, next) => {
   const query = `
@@ -37,6 +38,7 @@ const getRequestEditPoints = catchAsync(async (req, res, next) => {
       erp.*,
       at.type_name AS advertisement_type_name,
       ap.ward_id,
+      ap.address,
       w.ward_name,
       ap.lat,
       ap.lng,

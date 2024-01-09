@@ -9,11 +9,15 @@ import { format } from 'date-fns';
 import { useDispatch, useSelector } from 'react-redux';
 import { setReportIndex, setReportCoord, selectUser, selectSelectedWards } from '~/src/store/reducers';
 import { useNavigate } from 'react-router';
+import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
+import request from '~/src/utils/request';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Reports() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
-  const [filteredData, setFilterData] = useState(data);
+  const [filteredData, setFilteredData] = useState(data);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const selectedWards = useSelector(selectSelectedWards);
@@ -22,6 +26,21 @@ export default function Reports() {
   const headers = {
     Authorization: tokenAuth,
   };
+  const [toastId, setToastId] = useState();
+  const [toastIndex, setToastIndex] = useState();
+
+  const info = (msg) =>
+    toast.info(msg, {
+      position: 'top-left',
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'light',
+      draggable: false,
+    });
 
   const fetchWardsReports = async () => {
     let reports = [];
@@ -32,7 +51,7 @@ export default function Reports() {
         .then((res) => {
           if (res.data.data.length > 0) {
             for (let j = 0; j < res.data.data.length; j++) {
-              reports.push(res.data.data[j])
+              reports.push(res.data.data[j]);
             }
           }
         })
@@ -41,19 +60,173 @@ export default function Reports() {
         });
     }
     setData(reports);
-    setFilterData(reports);
+    setFilteredData(reports);
     setLoading(false);
-  }
+  };
+  const fetchSingleWardReports = async () => {
+    await axiosRequest
+      .get(`ward/getReportListsByWardId/${user.ward_id}`, { headers: headers })
+      .then((res) => {
+        const data = res.data.data;
+        setData(data);
+        setFilteredData(data);
+      })
+      .catch((error) => {
+        console.log('Get report lists error: ', error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+  const checkUserWard = async (point_id) => {
+    try {
+      const res = await request.get(`/cadre/checkUserWard/${point_id}`, { headers: headers });
+      return res.data.checked;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const checkUserDistrict = async (point_id) => {
+    try {
+      const res = await request.get(`/cadre/checkUserDistrict/${point_id}`, { headers: headers });
+      return res.data.checked;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleSocketEvent = async (eventData) => {
+    // if (user.user_type === 'ward') {
+    //   const checked = await checkUserWard(eventData.point_id);
+    //   if (checked) {
+    //     fetchSingleWardReports();
+    //     alert('New Report Sent to Ward');
+    //   }
+    // } else if (user.user_type === 'district') {
+    //   const checked = await checkUserDistrict(eventData.point_id);
+    //   if (checked) {
+    //     fetchWardsReports();
+    //     alert('New Report Sent to District');
+    //   }
+    // }
+
+    // Add report to data and filteredData
+    if (eventData.point_id) {
+      setData(
+        data.map((item) => {
+          if (item.point_id === eventData.point_id) {
+            info('Một báo cáo vừa được gửi đến cho bạn');
+            setToastId(eventData.point_id);
+            setToastIndex(data.find((item) => item.point_id === eventData.point_id).numberOfReports);
+          }
+
+          return { ...item, numberOfReports: item.numberOfReports + +(item.point_id === eventData.point_id) };
+        })
+      );
+      setFilteredData(
+        filteredData.map((item) => {
+          return { ...item, numberOfReports: item.numberOfReports + +(item.point_id === eventData.point_id) };
+        })
+      );
+    } else if (eventData.board_id) {
+      await axiosRequest
+        .get(`ward/getAdBoardByBoardId/${eventData.board_id}`, { headers: headers })
+        .then(async (res) => {
+          setData(
+            data.map((item) => {
+              if (item.point_id === res.data.data.point_id) {
+                info('Một báo cáo vừa được gửi đến cho bạn');
+                setToastId(res.data.data.point_id);
+                setToastIndex(data.find((item) => item.point_id === res.data.data.point_id).numberOfReports);
+              }
+              return { ...item, numberOfReports: item.numberOfReports + +(item.point_id === res.data.data.point_id) };
+            })
+          );
+          setFilteredData(
+            filteredData.map((item) => {
+              return { ...item, numberOfReports: item.numberOfReports + +(item.point_id === res.data.data.point_id) };
+            })
+          );
+        })
+        .catch((error) => {
+          console.log('Get AdBoard error: ', error);
+        });
+    }
+  };
+
+  // Subscribe to the socket events when the component mounts
+  useSocketSubscribe('createReport', handleSocketEvent);
+
+  // Use when user reports a spot that isn't adSpot
+  useSocketSubscribe(`createReport_wardId=${user.ward_id}`, async (eventData) => {
+    info('Một báo cáo vừa được gửi đến cho bạn');
+
+    // If current data already had the point
+    if (data.some((item) => item.lat === eventData.lat && item.lng === eventData.lng)) {
+      setData(
+        data.map((item) => {
+          return {
+            ...item,
+            numberOfReports: item.numberOfReports + +(item.lat === eventData.lat && item.lng === eventData.lng),
+          };
+        })
+      );
+      setFilteredData(
+        filteredData.map((item) => {
+          return {
+            ...item,
+            numberOfReports: item.numberOfReports + +(item.lat === eventData.lat && item.lng === eventData.lng),
+          };
+        })
+      );
+
+      setToastId(`${eventData.lat},${eventData.lng}`);
+      setToastIndex(data.find((item) => item.lat === eventData.lat && item.lng === eventData.lng).numberOfReports);
+    } else {
+      const response = await fetch(
+        `https://rsapi.goong.io/Geocode?latlng=${eventData.lat},${eventData.lng}&api_key=${process.env.REACT_APP_GOONG_APIKEY}`
+      );
+      const _data = await response.json();
+      const reportAddress =
+        !_data?.error && _data?.status === 'OK' ? _data.results[0]?.formatted_address?.replace('Phường', '') : null;
+
+      setData([
+        ...data,
+        {
+          address: reportAddress,
+          numberOfReports: 1,
+          lat: eventData.lat,
+          lng: eventData.lng,
+          latestReport: new Date(),
+        },
+      ]);
+
+      setFilteredData([
+        ...filteredData,
+        {
+          address: reportAddress,
+          numberOfReports: 1,
+          lat: eventData.lat,
+          lng: eventData.lng,
+          latestReport: new Date(),
+        },
+      ]);
+
+      setToastId(`${eventData.lat},${eventData.lng}`);
+      setToastIndex(0);
+    }
+  });
+
   useEffect(() => {
     if (user.user_type === 'ward') {
       (async () => {
-
         await axiosRequest
           .get(`ward/getReportListsByWardId/${user.ward_id}`, { headers: headers })
           .then((res) => {
             const data = res.data.data;
             setData(data);
-            setFilterData(data);
+            setFilteredData(data);
           })
           .catch((error) => {
             console.log('Get report lists error: ', error);
@@ -63,7 +236,7 @@ export default function Reports() {
           });
       })();
     } else if (user.user_type === 'district') {
-      fetchWardsReports()
+      fetchWardsReports();
     }
   }, [selectedWards]);
 
@@ -79,11 +252,11 @@ export default function Reports() {
 
   useEffect(() => {
     if (!filterKeyword) {
-      setFilterData(data);
+      setFilteredData(data);
       return;
     }
 
-    setFilterData(
+    setFilteredData(
       data.filter((item) =>
         item.address
           .toLowerCase()
@@ -167,6 +340,15 @@ export default function Reports() {
           pageSize={pageSize}
           onPageChange={(page) => setCurrentPage(page)}
         />
+      </div>
+
+      <div
+        onClick={() => {
+          dispatch(setReportIndex(toastIndex));
+          navigate(`/reports/detail/${toastId}`);
+        }}
+      >
+        <ToastContainer />
       </div>
     </div>
   );

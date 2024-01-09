@@ -12,7 +12,7 @@ const getAdSpotsByWardId = catchAsync(async (req, res, next) => {
     }
     const spots = results;
 
-    connection.query('SELECT * FROM advertising_board', [req.params.id], (err, results) => {
+    connection.query('SELECT * FROM advertising_board', (err, results) => {
       if (err) {
         console.error('Error executing query: ', err);
         res.status(500).send('Internal Server Error');
@@ -22,7 +22,6 @@ const getAdSpotsByWardId = catchAsync(async (req, res, next) => {
 
       connection.query(
         'SELECT * FROM report rp JOIN detail dt ON rp.detail_id = dt.detail_id',
-        [req.params.id],
         async (err, results) => {
           if (err) {
             console.error('Error executing query: ', err);
@@ -57,7 +56,7 @@ const getAdSpotsByWardId = catchAsync(async (req, res, next) => {
           });
 
           connection.query(
-            'SELECT * FROM ward JOIN district ON ward.district_id = district.district_id',
+            'SELECT * FROM ward w JOIN district d ON w.district_id = d.district_id where w.ward_id = ?',
             [req.params.id],
             async (err, results) => {
               if (err) {
@@ -65,7 +64,7 @@ const getAdSpotsByWardId = catchAsync(async (req, res, next) => {
                 res.status(500).send('Internal Server Error');
                 return;
               }
-              const wardName = results[0].ward_name;
+              const wardName = results[0].ward_name.replace('Phường', '');
               const districtName = results[0].district_name;
 
               // Find spots have report but isn't adSpot
@@ -344,7 +343,7 @@ const getReportListsByWardId = catchAsync(async (req, res, next) => {
           });
 
           connection.query(
-            'SELECT * FROM ward JOIN district ON ward.district_id = district.district_id',
+            'SELECT * FROM ward w JOIN district d ON w.district_id = d.district_id where w.ward_id = ?',
             [req.params.id],
             async (err, results) => {
               if (err) {
@@ -352,7 +351,7 @@ const getReportListsByWardId = catchAsync(async (req, res, next) => {
                 res.status(500).send('Internal Server Error');
                 return;
               }
-              const wardName = results[0].ward_name;
+              const wardName = results[0].ward_name.replace('Phường', '');
               const districtName = results[0].district_name;
 
               res.status(200).json({
@@ -392,7 +391,7 @@ const getReportDetailsByPointId = catchAsync(async (req, res, next) => {
       const boards = results;
 
       connection.query(
-        'SELECT * FROM report rp JOIN detail dt ON rp.detail_id = dt.detail_id JOIN report_type rt ON rp.report_type_id = rt.report_type_id',
+        'SELECT * FROM report rp JOIN detail dt ON rp.detail_id = dt.detail_id left join report_type rt ON rp.report_type_id = rt.report_type_id',
         async (err, results) => {
           if (err) {
             console.error('Error executing query: ', err);
@@ -453,7 +452,7 @@ const getReportDetailsByPointId = catchAsync(async (req, res, next) => {
                 lat: spot.lat,
                 lng: spot.lng,
                 address: data?.error ? null : data.results[0].formatted_address,
-                reports: spot.reports,
+                reports: spot.reports.sort((a, b) => a.report_id - b.report_id),
               };
             })
           );
@@ -478,7 +477,7 @@ const getReportDetailsByLatLng = catchAsync(async (req, res, next) => {
     });
 
   connection.query(
-    'SELECT * FROM report rp JOIN detail dt ON rp.detail_id = dt.detail_id JOIN report_type rt ON rp.report_type_id = rt.report_type_id where lat = ? and lng = ? and rp.point_id is NULL and rp.board_id is NULL',
+    'SELECT * FROM report rp JOIN detail dt ON rp.detail_id = dt.detail_id left join report_type rt ON rp.report_type_id = rt.report_type_id where lat = ? and lng = ? and rp.point_id is NULL and rp.board_id is NULL',
     [lat, lng],
     async (err, results) => {
       if (err) {
@@ -498,20 +497,22 @@ const getReportDetailsByLatLng = catchAsync(async (req, res, next) => {
           address: address,
           lat: lat,
           lng: lng,
-          reports: reports.map((report) => {
-            const { image_url_1, image_url_2, ...restReport } = report;
-            return {
-              ...restReport,
-              reportedObject: 'Địa điểm',
-              image_urls: [report.image_url_1, report.image_url_2],
-              status:
-                report.status === 'processed'
-                  ? 'Đã xử lý'
-                  : report.status === 'processing'
-                  ? 'Đang xử lý'
-                  : 'Chờ xử lý',
-            };
-          }),
+          reports: reports
+            .map((report) => {
+              const { image_url_1, image_url_2, ...restReport } = report;
+              return {
+                ...restReport,
+                reportedObject: 'Địa điểm',
+                image_urls: [report.image_url_1, report.image_url_2],
+                status:
+                  report.status === 'processed'
+                    ? 'Đã xử lý'
+                    : report.status === 'processing'
+                    ? 'Đang xử lý'
+                    : 'Chờ xử lý',
+              };
+            })
+            .sort((a, b) => a.report_id - b.report_id),
         },
       });
     }

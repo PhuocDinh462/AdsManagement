@@ -13,13 +13,15 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { faImage } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, createRef } from 'react';
 import { IconTextBtn } from '~components/button';
 import { useNavigate, useParams } from 'react-router';
 import { axiosRequest } from '~/src/api/axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { setBoardIndex, selectBoardIndex, setReportCoord, selectUser, setBoardId } from '~/src/store/reducers';
 import { Backdrop } from '@mui/material';
+import { text } from '~styles/colors';
+import { sidebarBg } from '~assets/imgs/Imgs';
 
 export default function Boards() {
   const { id } = useParams();
@@ -76,14 +78,43 @@ export default function Boards() {
     })();
   }, []);
 
+  const [itemRefs, setItemRefs] = useState([]);
+  useEffect(() => {
+    // add or remove refs
+    setItemRefs((itemRefs) =>
+      Array(filteredData.length)
+        .fill()
+        .map((_, i) => itemRefs[i] || createRef())
+    );
+  }, [filteredData.length]);
+
+  const scrollToIndex = (index) => {
+    if (itemRefs[index]?.current) {
+      itemRefs[index]?.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      });
+    }
+  };
+
+  useEffect(() => {
+    scrollToIndex(currentBoardIndex);
+  }, [itemRefs]);
+
   return (
     <div className={classes.main_container}>
+      <img className={classes.bg_img} src={sidebarBg} />
       <div className={classes.sideBar_container}>
         <div className={classes.searchBar_container}>
           <div className={[classes.back_btn, classes.btn].join(' ')} onClick={() => navigate(-1)}>
             <FontAwesomeIcon icon={faArrowLeft} />
           </div>
-          <SearchBar placeholder="Tìm kiếm..." width="20rem" onChange={(keyword) => handleFilter(keyword)} />
+          <SearchBar
+            placeholder="Tìm kiếm..."
+            width="20rem"
+            bgColor={text.color_50}
+            onChange={(keyword) => handleFilter(keyword)}
+          />
         </div>
 
         <div className={classes.nav_btn_container}>
@@ -100,8 +131,9 @@ export default function Boards() {
           <div
             className={[classes.nav_btn, classes.btn, currentBoardIndex <= 0 && classes['btn--disabled']].join(' ')}
             onClick={() => {
-              setCurrentBoardIndex(currentBoardIndex - 1);
+              scrollToIndex(currentBoardIndex - 1);
               dispatch(setBoardIndex(currentBoardIndex - 1));
+              setCurrentBoardIndex(currentBoardIndex - 1);
             }}
           >
             <FontAwesomeIcon icon={faAngleUp} />
@@ -113,34 +145,30 @@ export default function Boards() {
               currentBoardIndex >= filteredData?.length - 1 && classes['btn--disabled'],
             ].join(' ')}
             onClick={() => {
-              setCurrentBoardIndex(currentBoardIndex + 1);
+              scrollToIndex(currentBoardIndex + 1);
               dispatch(setBoardIndex(currentBoardIndex + 1));
+              setCurrentBoardIndex(currentBoardIndex + 1);
             }}
           >
             <FontAwesomeIcon icon={faAngleDown} />
           </div>
         </div>
 
-        <dir className={classes.reports_container}>
+        <div className={classes.divider} />
+
+        <div className={classes.reports_container}>
           {filteredData?.map((item, index) => (
             <div
-              className={classes.report_item}
+              className={[classes.report_item, currentBoardIndex === index && classes['report_item--active']].join(' ')}
               key={index}
+              ref={itemRefs[index]}
               onClick={() => {
                 setCurrentBoardIndex(index);
                 dispatch(setBoardIndex(index));
               }}
             >
-              <dir className={classes.divider} />
               <div className={classes.username}>
-                <div
-                  className={[
-                    classes.username__text,
-                    currentBoardIndex === index && classes['username__text--active'],
-                  ].join(' ')}
-                >
-                  {index + 1 + '. Bảng ' + item.board_id}
-                </div>
+                <div className={classes.username__text}>{index + 1 + '. Bảng ' + item.board_id}</div>
                 <div
                   className={[
                     classes.username__ic,
@@ -152,7 +180,7 @@ export default function Boards() {
               </div>
             </div>
           ))}
-        </dir>
+        </div>
       </div>
 
       <div className={classes.content_container}>
@@ -167,20 +195,20 @@ export default function Boards() {
                     <td className={classes.userInfo_col}>
                       <div className={classes.itemInfo}>
                         <FontAwesomeIcon icon={faBlackboard} />
-                        <dir className={classes.itemInfo__text}>
+                        <div className={classes.itemInfo__text}>
                           {'Kích thước: ' +
                             filteredData[currentBoardIndex]?.width +
                             'm x ' +
                             filteredData[currentBoardIndex]?.height +
                             'm'}
-                        </dir>
+                        </div>
                       </div>
                     </td>
                     <td className={classes.userInfo_col} rowspan="2">
-                      <div className={classes.itemInfo}>
+                      <div className={classes.itemInfo} style={{ marginLeft: '10rem' }}>
                         <FontAwesomeIcon icon={faImage} />
                         <span> Hình ảnh:</span>
-                        <dir className={classes.itemInfo__text}>
+                        <div className={classes.itemInfo__text}>
                           <img
                             src={filteredData[currentBoardIndex]?.advertisement_image_url}
                             alt="Image Board"
@@ -190,7 +218,7 @@ export default function Boards() {
                               setShowImageModal(true);
                             }}
                           />
-                        </dir>
+                        </div>
                       </div>
                     </td>
                   </tr>
@@ -198,9 +226,9 @@ export default function Boards() {
                     <td className={classes.userInfo_col}>
                       <div className={classes.itemInfo}>
                         <FontAwesomeIcon icon={faRectangleAd} />
-                        <dir className={classes.itemInfo__text}>
+                        <div className={classes.itemInfo__text}>
                           {'Loại quảng cáo: ' + filteredData[currentBoardIndex]?.type_name}
-                        </dir>
+                        </div>
                       </div>
                     </td>
                   </tr>
