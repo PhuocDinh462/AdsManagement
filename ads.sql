@@ -24,6 +24,7 @@ CREATE TABLE `user` (
   phone VARCHAR(255),
   dob DATETIME NOT NULL,
   user_type VARCHAR(255),
+  refresh_token TEXT,
   created_by INT default null,
   updated_by INT default null,
   created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,

@@ -6,6 +6,11 @@ function accessToken(user) {
     });
 }
 
+function refreshToken(user) {
+    return jwt.sign(user, process.env.REFRESH_SECRET_KEY, {
+        expiresIn: process.env.REFRESH_LIFETIME,
+    });
+}
 
 
-module.exports = { accessToken };
+module.exports = { accessToken, refreshToken };

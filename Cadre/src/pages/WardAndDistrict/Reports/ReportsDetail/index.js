@@ -46,7 +46,7 @@ export default function ReportsDetail() {
   const navigate = useNavigate();
 
   const user = useSelector(selectUser);
-  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
+  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
   const headers = {
     Authorization: tokenAuth,
   };
