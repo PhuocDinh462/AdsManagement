@@ -137,7 +137,6 @@ const googleOAuthHandler = catchAsync(async (req, res, next) => {
             res.cookie('user_type', user.user_type);
             res.cookie('token', accessToken);
             res.cookie('user-state', true)
-            'ward', 'district', 'department'
             if (user.user_type === 'department') {
                 res.redirect("http://localhost:3000/district-ward");
             } else if (user.user_type === 'ward') {
