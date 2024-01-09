@@ -1,6 +1,5 @@
 const catchAsync = require('../utils/catchAsync');
 const connection = require('../server');
-const socket = require('../app');
 
 const getRequestEditBoards = catchAsync(async (req, res, next) => {
   const query = `

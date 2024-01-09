@@ -66,14 +66,27 @@ const login = catchAsync(async (req, res, next) => {
         });
 
       const accessToken = generateToken.accessToken(results[0]);
-      res.status(200).json({
-        status: 'success',
-        user_id: results[0].user_id,
-        user_type: results[0].user_type,
-        ward_id: results[0].ward_id,
-        district_id: results[0].district_id,
-        token: accessToken,
-      });
+      const refreshToken = generateToken.refreshToken(results[0]);
+      connection.query(
+        `UPDATE user SET refresh_token = ? WHERE user_id = ?`,
+        [refreshToken, results[0].user_id],
+        (err, resultsUpdated) => {
+          if (err) {
+            console.error("Error executing query: " + err.stack);
+            return res.status(500).json({ error: "Database error" });
+          }
+          res.status(200).json({
+            status: 'success',
+            user_id: results[0].user_id,
+            user_type: results[0].user_type,
+            ward_id: results[0].ward_id,
+            district_id: results[0].district_id,
+            token: accessToken,
+            refresh_token: refreshToken
+          });
+        }
+      );
+
     }
   );
 });
@@ -165,4 +178,31 @@ const register = catchAsync(async (req, res, next) => {
   });
 });
 
-module.exports = { register, createAccount, login, forgotPassword };
+
+const logout = catchAsync(async (req, res, next) => {
+  connection.query(
+    `UPDATE user SET refresh_token = NULL WHERE user_id = ?`,
+    [req.user.user_id],
+    (err, results) => {
+      if (err) {
+        console.error("Error executing query: " + err.stack);
+        return res.status(500).json({ error: "Database error" });
+      }
+
+      res.status(200).json({
+        status: "success",
+        msg: "Logout successful",
+      });
+    }
+  );
+});
+
+const refreshToken = catchAsync(async (req, res, next) => {
+  const newAccessToken = generateToken.accessToken(req.user);
+  res.status(200).json({
+    user: req.user,
+    access_token: newAccessToken,
+  });
+});
+
+module.exports = { register, createAccount, login, forgotPassword, refreshToken, logout };

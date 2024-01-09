@@ -25,13 +25,25 @@ import Reports from '../pages/WardAndDistrict/Reports';
 import ReportsDetail from '../pages/WardAndDistrict/Reports/ReportsDetail';
 import CreateAccount from '../pages/createAccount/CreateAccount';
 import Layout from '../layouts/index';
-import { useEffect, useState } from 'react';
+import setLocalStorageFromCookie from '~/src/utils/setLocalStorageFromCookie';
+import { useEffect } from 'react';
 
 const Navigation = () => {
   const location = useLocation();
+
+  // useEffect(() => {
+  //   setStore();
+  // }, []);
   const authenticated = localStorage.getItem('user_type');
   const isWardOrDistrict = ['ward', 'district'].includes(authenticated?.toLowerCase());
   const isDepartment = authenticated?.toLowerCase() === 'department';
+
+  // const setStore = () => {
+  //   setLocalStorageFromCookie('user-state');
+  //   setLocalStorageFromCookie('user_type');
+  //   setLocalStorageFromCookie('user_id');
+  //   setLocalStorageFromCookie('token');
+  // };
 
   return (
     <main>

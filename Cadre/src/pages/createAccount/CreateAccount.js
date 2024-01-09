@@ -19,7 +19,7 @@ const CreateAcount = () => {
   const [listWard, setListWard] = useState([]);
 
   const user = useSelector(selectUser);
-  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
+  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
   const headers = {
     Authorization: tokenAuth,
   };
@@ -274,3 +274,4 @@ const CreateAcount = () => {
 };
 
 export default CreateAcount;
+

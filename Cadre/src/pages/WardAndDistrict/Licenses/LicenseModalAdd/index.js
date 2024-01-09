@@ -17,22 +17,16 @@ import DatePicker from './DatePicker';
 import InputText from './InputText';
 import classes from './style.module.scss';
 
-const formInput = {
-  page1: [{ label: 'Chọn Điểm Quảng Cáo' }, { label: 'Chọn Bảng Quảng Cáo' }],
-  page2: [
-    { label: 'Tên Công Ty' },
-    { label: 'Người Đại Diện' },
-    { label: 'Email' },
-    { label: 'Mã Số Thuế' },
-    { label: 'Số Điện Thoại' },
-    { label: 'Địa chỉ' },
-  ],
-};
-
 const listType = [
   { title: 'Cổ động chính trị', value: 1 },
   { title: 'Quảng cáo thương mại', value: 2 },
   { title: 'Xã hội hoá', value: 3 },
+];
+
+const listBoardType = [
+  { title: 'Bảng hiflex ốp tường', value: 1 },
+  { title: 'Màn hình điện tử ốp tường', value: 2 },
+  { title: 'Trung tâm thương mại', value: 3 },
 ];
 
 const schema = yup.object().shape({
@@ -48,7 +42,7 @@ const schema = yup.object().shape({
 });
 
 const LicenseModalAdd = (props) => {
-  const { handleCloseModal } = props;
+  const { handleCloseModal, handleReLoadData } = props;
 
   const user = useSelector(selectUser);
   const tokenAuth = 'Bearer ' + user.token.split('"').join('');
@@ -74,8 +68,13 @@ const LicenseModalAdd = (props) => {
 
   const handleOnChangeTypeAds = (e, value) => {
     if (value) {
-      console.log(value.value);
       dispatch(setFormLicenseReq({ type: value, point: null }));
+    }
+  };
+
+  const handleOnChangeTypeBoard = (e, value) => {
+    if (value) {
+      dispatch(setFormLicenseReq({ board_type_id: value }));
     }
   };
 
@@ -136,6 +135,11 @@ const LicenseModalAdd = (props) => {
       return;
     }
 
+    if (!selectForm?.board_type_id) {
+      notiError('Lỗi!', 'Chưa có thông của Loại Bảng Quảng Cáo.');
+      return;
+    }
+
     if (selectForm.start_date >= selectForm.end_date) {
       notiError('Lỗi!', 'Thời hạn hợp đồng không hợp lệ.');
       return;
@@ -154,18 +158,21 @@ const LicenseModalAdd = (props) => {
       const dataLicense = {
         ...dataInput,
         status: 'pending',
+        board_type_id: selectForm?.board_type_id.value,
         point_id: selectForm?.point.point_id,
         contract_id: res1.data.contract_id,
         advertisement_image_url: imageUploadUrl,
       };
-      const res2 = await axiosClient.post('/ward/license/create-license', dataLicense, { headers });
 
+      await axiosClient.post('/ward/license/create-license', dataLicense, { headers });
+      handleCloseModal(true);
+      handleReLoadData();
       reset();
     } catch (error) {
       console.log(error);
+      notiError('Lỗi!', 'Thông tin không hợp lệ.');
     } finally {
       setIsLoading(false);
-      handleCloseModal(true);
     }
   };
 
@@ -192,6 +199,13 @@ const LicenseModalAdd = (props) => {
                     name="point"
                     labelInput="Chọn Điểm Quảng Cáo"
                     handleOnChange={handleOnChangePointAds}
+                  />
+
+                  <AsynInputSeletion
+                    name="board_type_id"
+                    labelInput="Chọn Loại Bảng Quảng Cáo"
+                    listItem={listBoardType}
+                    handleOnChange={handleOnChangeTypeBoard}
                   />
                   <InputText
                     error={errors}

@@ -35,7 +35,7 @@ export default function Home() {
   const point_coord = useSelector(selectReportCoord);
   const selectedWards = useSelector(selectSelectedWards);
   const user = useSelector(selectUser);
-  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
+  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
   const headers = {
     Authorization: tokenAuth,
   };
@@ -173,7 +173,7 @@ export default function Home() {
       // Set center
       const avgLat = data.map((item) => item.lat).reduce((a, b) => a + b, 0) / data.length;
       const avgLng = data.map((item) => item.lng).reduce((a, b) => a + b, 0) / data.length;
-      setCenter({ lat: avgLat, lng: avgLng });
+      if (avgLat && avgLng) setCenter({ lat: avgLat, lng: avgLng });
     }
     setLoading(false);
   };

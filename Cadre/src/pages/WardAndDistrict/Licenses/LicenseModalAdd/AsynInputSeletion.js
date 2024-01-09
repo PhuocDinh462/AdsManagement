@@ -35,7 +35,7 @@ export default function AsynInputSeletion(props) {
       let list = listItem ? [...listItem] : [];
       if (!listItem) {
         try {
-          const response = await axiosClient.get(`/point/get_point_type/${selectForm?.type.value}`, { headers });
+          const response = await axiosClient.get(`/point/get_point_type/${selectForm?.type?.value}`, { headers });
           if (response.data.length === 0) list.push({ title: 'Trống' });
           else
             list = response.data.map((item) => {
@@ -45,6 +45,7 @@ export default function AsynInputSeletion(props) {
           console.log(list);
         } catch (error) {
           console.log(error);
+          list.push({ title: 'Trống' });
         }
       }
       if (active) {

@@ -11,6 +11,7 @@ import getGoogleOAuthURL from '~/src/utils/getGoogleUrl';
 
 import { useDispatch } from 'react-redux';
 import { setUser } from '~/src/store/reducers';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 
 const LoginPage = () => {
   const loginNavigate = useNavigate();
@@ -26,6 +27,7 @@ const LoginPage = () => {
       loginNavigate('/home');
     }
   }, []);
+
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -140,3 +142,4 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
