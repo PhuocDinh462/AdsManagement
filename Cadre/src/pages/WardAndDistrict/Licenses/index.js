@@ -97,6 +97,7 @@ const Licenses = () => {
       setIsLoading(false);
     }
   };
+
   const fetchDataLicenseReqByDistrict = async () => {
     setIsLoading(true);
     let licenses = [];
@@ -105,7 +106,7 @@ const Licenses = () => {
         const res = await axiosClient.get(`/ward/license-by-ward-id/${selectedWards[i].ward_id}`, { headers });
         if (res.data.length > 0) {
           for (let j = 0; j < res.data.length; j++) {
-            licenses.push(res.data[j])
+            licenses.push(res.data[j]);
           }
         }
       }
@@ -116,15 +117,20 @@ const Licenses = () => {
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
-  useEffect(() => {
+  const handleReLoadData = () => {
     if (user.user_type === 'ward') {
       fetchDataLicenseReq();
     } else if (user.user_type === 'district') {
-      fetchDataLicenseReqByDistrict()
+      fetchDataLicenseReqByDistrict();
     }
+  };
+
+  useEffect(() => {
+    handleReLoadData();
   }, [selectedWards]);
+
   return (
     <div className={classes.container__wrap}>
       <div className={classes.container}>
@@ -194,12 +200,13 @@ const Licenses = () => {
                   <td style={{ width: '15%' }}>{calculateDaysBetweenDates(row.start_date, row.end_date)}</td>
                   <td style={{ width: '15%' }}>
                     <div
-                      className={` ${classes.status} ${statusLicense[row.status].value === 1
-                        ? classes.status_accept
-                        : statusLicense[row.status].value === 2
+                      className={` ${classes.status} ${
+                        statusLicense[row.status].value === 1
                           ? classes.status_pending
+                          : statusLicense[row.status].value === 2
+                          ? classes.status_accept
                           : classes.status_cancel
-                        }`}
+                      }`}
                     >
                       {statusLicense[row.status].label}
                     </div>
@@ -218,9 +225,9 @@ const Licenses = () => {
           onPageChange={(page) => setCurrentPage(page)}
         />
       </div>
-      {isOpenAdd && <LicenseModalAdd handleCloseModal={handleCloseModalAdd} />}
+      {isOpenAdd && <LicenseModalAdd handleCloseModal={handleCloseModalAdd} handleReLoadData={handleReLoadData} />}
       {isOpenDetails && (
-        <LicenseDetails data={selected} handleCloseModal={handleCloseModalDetails} fetchData={fetchDataLicenseReq} />
+        <LicenseDetails data={selected} handleCloseModal={handleCloseModalDetails} fetchData={handleReLoadData} />
       )}
       <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
         <CircularProgress color="inherit" />
