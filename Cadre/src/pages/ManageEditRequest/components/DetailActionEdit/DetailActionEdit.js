@@ -137,7 +137,7 @@ const DetailActionEdit = ({ data, onClose }) => {
           };
 
           try {
-            const response = await axiosClient.put(`/board/update_board/${data.board_id}`, dataBoardToSend, {
+            const response = await axiosClient.patch(`/board/update_board/${data.board_id}`, dataBoardToSend, {
               headers,
             });
             console.log(response);
@@ -498,4 +498,3 @@ const DetailActionEdit = ({ data, onClose }) => {
 };
 
 export default DetailActionEdit;
-
