@@ -40,6 +40,7 @@ const ModalReport = (props) => {
             fullnameRp: '',
             emailRp: '',
             phoneRp: '',
+            status: 'pending',
             point_id: props.type === 'Point' ? props.info.point_id : null,
             board_id: props.type === 'Board' ? props.info.board_id : null,
         },
@@ -92,7 +93,6 @@ const ModalReport = (props) => {
                 await axios
                     .post(`${process.env.REACT_APP_API_ENDPOINT}/civilian/report`, values)
                     .then((res) => {
-                        console.log(res);
                         Swal.fire({
                             icon: 'success',
                             title: 'Thành công',
@@ -100,12 +100,18 @@ const ModalReport = (props) => {
                         });
                     })
                     .catch((error) => {
-                        console.log('Get tasks error: ', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Có lỗi xảy ra',
+                            text: 'Vui lòng gửi lại biểu mẫu',
+                        });
                     });
 
                 resetForm();
                 setIsUploaded(false);
                 setIndexCur(1);
+                props.onClose();
+                props.success(true);
             } catch (err) {
                 Swal.fire({
                     icon: 'error',
@@ -114,8 +120,6 @@ const ModalReport = (props) => {
                 });
                 console.error(err);
             }
-
-            // console.log('Form submitted with values:', values);
         },
     });
 
@@ -188,7 +192,11 @@ const ModalReport = (props) => {
         <div className={classes.adding__overlay}>
             <div className={classes.adding__modal}>
                 <div className={classes.adding__modal__heading}>
-                    {props.type === 'Board' ? 'BÁO CÁO BẢNG QUẢNG CÁO' : 'BÁO CÁO ĐIỂM QUẢNG CÁO'}
+                    {props.type === 'Board'
+                        ? 'BÁO CÁO BẢNG QUẢNG CÁO'
+                        : props.type === 'Point'
+                        ? 'BÁO CÁO ĐIỂM QUẢNG CÁO'
+                        : 'BÁO CÁO ĐIỂM BẤT KÌ'}
                     <FontAwesomeIcon icon={faClose} className={classes['adding__modal-ic']} onClick={props.onClose} />
                 </div>
 
@@ -294,7 +302,7 @@ const ModalReport = (props) => {
                                         <div>
                                             <img src={upload} />
                                         </div>
-                                        <p>Chọn file hoặc kéo vào đây</p>
+                                        <p>Chọn 2 tấm ảnh vào đây</p>
                                     </div>
                                 )}
                             </div>
@@ -326,7 +334,6 @@ const ModalReport = (props) => {
                             <button
                                 onClick={() => {
                                     setIndexCur(1);
-                                    console.log(isUploaded);
                                 }}
                             >
                                 Quay lại

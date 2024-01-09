@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { GoogleMap, Marker, useJsApiLoader, InfoWindow } from '@react-google-maps/api';
-import classes from './Home.module.scss';
+import { GoogleMap, Marker, useJsApiLoader, InfoWindow, MarkerClusterer } from '@react-google-maps/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClose, faFilter } from '@fortawesome/free-solid-svg-icons';
-import SearchBar from '~/src/components/SearchBar';
+import { faClose, faFilter, faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
+import classes from './Home.module.scss';
 import CardInfor from './CardInfor';
 import InforTable from './InforTable';
 import DetailReport from './DetailReport';
 import Checklist from '~/src/components/CheckList/CheckList';
 import ModalReport from '~/src/components/ModalReport/ModalReport';
-import axios from 'axios';
 import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
 import {
     AdSpotPlanned,
@@ -19,6 +18,10 @@ import {
     SpotBeReported,
     SpotSolvedReport,
 } from '~assets/markers/index';
+import ButtonCT from '~/src/components/button/ButtonCT';
+import { ic_warning } from '~/src/assets';
+import GoongAutoComplete from '~components/GoongAutoComplete/index';
+import AnnotationDropdown from './AnnotationDropdown/index';
 
 const infoAds = {
     PANEL: 'Panel',
@@ -32,24 +35,34 @@ const containerStyle = {
 
 const iconSize = 25;
 
-const coordinatesList = [
-    { id: 1, lat: 10.7769, lng: 106.7009, state: 0 },
-    { id: 2, lat: 10.7797, lng: 106.6994, state: 1 },
-    { id: 3, lat: 10.7764, lng: 106.699, state: 0 },
-    { id: 4, lat: 10.7766, lng: 106.7001, state: 1 },
-];
-
 const Home = () => {
     const [showInfo, setShowInfo] = useState({ id: -1, show: false, info: '', data: {} });
     const [showAdDetail, setShowAdDetail] = useState({ id: -1, show: false, data: {} });
     const [selectedMarker, setSelectedMarker] = useState(null);
     const [isShowFilter, setIsShowFilter] = useState(false);
+    const [isShowNote, setIsShowNote] = useState(false);
     const [isShowReport, setIsShowReport] = useState({ id: '', show: false, type: '' });
     const [AdRender, setAdRender] = useState([]);
     const [AdRenderSave, setAdRenderSave] = useState([]);
     const [adsBoard, setAdsBoard] = useState([]);
     const [listReport, setListReport] = useState([]);
-    const [showDetailReport, setShowDetailReport] = useState({ show: false, type: '' });
+    const [showDetailReport, setShowDetailReport] = useState({
+        location: { lat: 0, lng: 0 },
+        show: false,
+        type: '',
+        data: {},
+    });
+    const [showMarkerIcon, setShowMarkerIcon] = useState(false);
+    const [geocode, setGeocode] = useState({ lat: 10.7764, lng: 106.699 });
+    const [showInforPointAny, setShowInforPointAny] = useState({ show: false, type: '', data: {} });
+    const [listAdReportAny, setListAdReportAny] = useState([]);
+    const [listAdReportAnyRender, setListAdReportAnyRender] = useState([]);
+    const [autoCompleteValue, setAutoCompleteValue] = useState();
+
+    const [noReportStatus, setNoReportStatus] = useState(true);
+    const [beReportedStatus, setBeReportedStatus] = useState(true);
+    const [plannedStatus, setPlannedStatus] = useState(true);
+    const [notPlanStatus, setNotPlanStatus] = useState(true);
 
     const fetchData = () => {
         (async () => {
@@ -99,6 +112,24 @@ const Home = () => {
 
     // useSocketSubscribe('createReport', handleCreateReport);
 
+    // Hàm loại bỏ phần tử trùng lặp dựa trên lat và lng
+    const removeDuplicates = (array) => {
+        const uniqueArray = [];
+        const seenLocations = {};
+
+        array.forEach((item) => {
+            const key = `${item.lat}_${item.lng}`;
+
+            // Nếu chưa thấy phần tử có lat và lng tương ứng
+            if (!seenLocations[key]) {
+                seenLocations[key] = true;
+                uniqueArray.push(item);
+            }
+        });
+
+        return uniqueArray;
+    };
+
     useEffect(() => {
         if (adsBoard.length !== 0 && AdRender.length !== 0 && listReport.length !== 0) {
             AdRender.forEach((point) => {
@@ -114,16 +145,17 @@ const Home = () => {
                 point.list_board_ads = matchingBoards;
                 point.list_report = matchingPointReport;
             });
+
+            const matchingReportAny = listReport.filter(
+                (report) => report.board_id === null && report.point_id === null
+            );
+
+            setAdRender(AdRender);
+            setAdRenderSave(AdRender);
+            setListAdReportAny(matchingReportAny);
+            setListAdReportAnyRender([...removeDuplicates(matchingReportAny)]);
         }
-
-        console.log(AdRender);
-
-        setAdRender(AdRender);
-        setAdRenderSave(AdRender);
     }, [listReport]);
-
-    // When table have the infomation
-    const isHaveInfor = false;
 
     const { isLoaded } = useJsApiLoader({
         googleMapsApiKey: 'AIzaSyBxWEpG38Jm2lo2OEe3RDjjVBgGRxwF_ow',
@@ -132,27 +164,75 @@ const Home = () => {
         region: 'vn',
     });
 
-    const [geocode, setGeocode] = useState({ lat: 10.7764, lng: 106.699 });
+    const mapOptions = {
+        disableDefaultUI: true, // Tắt tất cả các công cụ mặc định của Google Maps
+        zoomControl: false, // Bật hoặc tắt nút zoom
+        mapTypeControl: false, // Tắt công cụ chọn kiểu bản đồ (địa hình, satellite, ...)
+        streetViewControl: false, // Tắt công cụ xem đường phố
+        fullscreenControl: false, // Tắt nút màn hình đầy đủ
+        // Thêm các tùy chọn khác nếu cần
+    };
+
+    const fetchInfoLocation = async (lat, lng) => {
+        try {
+            const url = `https://rsapi.goong.io/Geocode?latlng=${lat},%20${lng}&api_key=vPYt4GFCSFhetF2VAe6xIKKo0qmMaTrPqvPGzO7K`;
+
+            const response = await fetch(url);
+            const data = await response.json();
+
+            setShowInforPointAny({ show: true, type: 'Any', data: data.results[0] });
+        } catch (error) {
+            console.error('Goong auto complete error:', error);
+            throw error;
+        }
+    };
+
+    const fetchInfoReportAnyLocation = async (lat, lng) => {
+        try {
+            const url = `https://rsapi.goong.io/Geocode?latlng=${lat},%20${lng}&api_key=vPYt4GFCSFhetF2VAe6xIKKo0qmMaTrPqvPGzO7K`;
+
+            const response = await fetch(url);
+            const data = await response.json();
+
+            setShowDetailReport({ location: { lat, lng }, show: true, type: 'Any', data: data && data.results[0] });
+        } catch (error) {
+            console.error('Goong auto complete error:', error);
+            throw error;
+        }
+    };
 
     const handleMapClickPosition = (event) => {
+        setShowMarkerIcon(true);
+        fetchInfoLocation(event.latLng.lat(), event.latLng.lng());
         setGeocode({
             lat: event.latLng.lat(),
             lng: event.latLng.lng(),
         });
+        setSelectedMarker(null);
+        setShowInfo({ id: -1, show: false, infoAds: '', data: {} });
+        setShowAdDetail({ id: -1, show: false, infoAds: '', data: {} });
+        setShowDetailReport({ show: false, type: '', data: {} });
     };
 
     const selectIcon = (spot) => {
-        if (spot.point_id) {
-            if (spot.is_planning) return AdSpotPlanned;
+        if (spot.list_report) {
+            if (spot.list_report.length === 0) {
+                if (spot.is_planning) return AdSpotPlanned;
 
-            return AdSpotNotPlan;
-            // else if (spot.reportStatus === 'noProcess') return AdSpotBeReported;
-            // else if (spot.reportStatus === 'processed') return AdSpotSolvedReport;
+                return AdSpotNotPlan;
+            } else {
+                if (spot.list_report.some((item) => item.status === 'pending')) return AdSpotBeReported;
+
+                return AdSpotSolvedReport;
+            }
         }
-        //  else {
-        //     if (spot.reportStatus === 'noProcess') return SpotBeReported;
-        //     else return SpotSolvedReport;
-        // }
+    };
+
+    const selectIconAny = (spot) => {
+        if (spot.status === 'pending' || spot.status === 'processing') {
+            return SpotBeReported;
+        }
+        return SpotSolvedReport;
     };
 
     const showInfoAd = (marker) => {
@@ -163,7 +243,7 @@ const Home = () => {
         setSelectedMarker(null);
         setShowInfo({ id: -1, show: false, infoAds: '', data: {} });
         setShowAdDetail({ id: -1, show: false, infoAds: '', data: {} });
-        setShowDetailReport({ show: false, type: '' });
+        setShowDetailReport({ show: false, type: '', data: {} });
     };
 
     const handleCheckboxChange = (data) => {
@@ -188,6 +268,36 @@ const Home = () => {
         }
     };
 
+    const handleSendReportSuccess = (data) => {
+        if (data) {
+            fetchData();
+            setShowInfo({ id: -1, show: false, info: '', data: {} });
+            setShowAdDetail({
+                id: -1,
+                show: false,
+                info: '',
+                data: {},
+            });
+            setShowDetailReport({ show: false, type: '', data: {} });
+            setShowMarkerIcon(false);
+            setShowInforPointAny({ show: false, type: '', data: {} });
+        }
+    };
+
+    const handleSearch = async (place_id) => {
+        await axios
+            .get(`https://rsapi.goong.io/geocode?place_id=${place_id}&api_key=vPYt4GFCSFhetF2VAe6xIKKo0qmMaTrPqvPGzO7K`)
+            .then((res) => {
+                const coord = res.data.results[0].geometry.location;
+                setShowMarkerIcon(true);
+                setGeocode(coord);
+                fetchInfoLocation(coord.lat, coord.lng);
+            })
+            .catch((error) => {
+                console.log('Get place detail error: ', error);
+            });
+    };
+
     return (
         <div className={classes.container__home}>
             <div className={classes['container__home-map']}>
@@ -200,71 +310,178 @@ const Home = () => {
                                 center={geocode}
                                 zoom={15}
                                 onClick={handleMapClickPosition}
+                                options={mapOptions}
                             >
-                                {AdRender.map((item, index) => (
+                                {showMarkerIcon && (
                                     <Marker
-                                        key={+index}
-                                        position={{ lat: item.lat, lng: item.lng }}
-                                        onClick={() => {
-                                            showInfoAd(item);
-                                            item.is_planning === 1
-                                                ? setShowInfo({
-                                                      id: index,
-                                                      show: true,
-                                                      info: infoAds.PANEL,
-                                                      data: item,
-                                                  })
-                                                : setShowInfo({
-                                                      id: -1,
-                                                      show: false,
-                                                      info: infoAds.TABLE,
-                                                      data: item,
-                                                  });
-                                            setShowAdDetail({ id: -1, show: false, info: '', data: {} });
-                                            setShowDetailReport({ show: false, type: '' });
-                                        }}
-                                        icon={{
-                                            url: selectIcon(item),
-                                            scaledSize: isLoaded
-                                                ? new window.google.maps.Size(iconSize, iconSize)
-                                                : null,
-                                            anchor: new google.maps.Point(iconSize / 2, iconSize / 2),
-                                            origin: new google.maps.Point(0, 0),
-                                        }}
-                                        zIndex={0}
-                                    >
-                                        {selectedMarker === item && (
-                                            <InfoWindow onCloseClick={closeInfoWindow}>
-                                                <div className={classes.info}>
-                                                    <h2 className={classes.info__title}>
-                                                        {item.advertisement_type_name}
-                                                    </h2>
-                                                    <p className={classes.info__type}>{item.location_type}</p>
-                                                    <p className={classes.info__location}>
-                                                        {item.ward_name}, {item.district_name}
-                                                    </p>
-                                                    <div>
-                                                        <p className={classes.info__state}>
-                                                            {item.is_planning === 1 ? 'ĐÃ QUY HOẠCH' : 'CHƯA QUY HOẠCH'}
-                                                        </p>
-                                                        <p
-                                                            className={classes.info__report}
-                                                            onClick={() => {
-                                                                setIsShowReport({
-                                                                    id: index + '',
-                                                                    show: true,
-                                                                    type: 'Point',
-                                                                });
-                                                            }}
-                                                        >
-                                                            Báo cáo
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </InfoWindow>
-                                        )}
-                                    </Marker>
-                                ))}
+                                        position={geocode}
+                                        animation={showMarkerIcon && window.google.maps.Animation.BOUNCE}
+                                    ></Marker>
+                                )}
+                                {/* <Marker position={newGeocode} icon={customMarkerIcon} /> */}
+
+                                <MarkerClusterer
+                                    options={{
+                                        imagePath:
+                                            'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
+                                    }}
+                                >
+                                    {(clusterer) => {
+                                        return (
+                                            <>
+                                                {AdRender.filter(
+                                                    (spot) =>
+                                                        (!noReportStatus ? spot.reportStatus !== 'noReport' : true) &&
+                                                        (!beReportedStatus ? spot.reportStatus === 'noReport' : true) &&
+                                                        (!plannedStatus ? !spot.is_planning : true) &&
+                                                        (!notPlanStatus ? spot.is_planning : true)
+                                                ).map((item, index) => (
+                                                    <Marker
+                                                        key={+index}
+                                                        position={{ lat: item.lat, lng: item.lng }}
+                                                        onClick={() => {
+                                                            showInfoAd(item);
+                                                            item.is_planning === 1
+                                                                ? setShowInfo({
+                                                                      id: index,
+                                                                      show: true,
+                                                                      info: infoAds.PANEL,
+                                                                      data: item,
+                                                                  })
+                                                                : setShowInfo({
+                                                                      id: -1,
+                                                                      show: false,
+                                                                      info: infoAds.TABLE,
+                                                                      data: item,
+                                                                  });
+                                                            setShowAdDetail({
+                                                                id: -1,
+                                                                show: false,
+                                                                info: '',
+                                                                data: {},
+                                                            });
+
+                                                            item.is_planning === 1
+                                                                ? setShowDetailReport({
+                                                                      show: false,
+                                                                      type: '',
+                                                                      data: {},
+                                                                  })
+                                                                : setShowDetailReport({
+                                                                      show: true,
+                                                                      type: 'Point',
+                                                                      data: {},
+                                                                  });
+                                                            setShowMarkerIcon(false);
+                                                            setShowInforPointAny({ show: false, type: '', data: {} });
+                                                        }}
+                                                        icon={{
+                                                            url: selectIcon(item),
+                                                            scaledSize: isLoaded
+                                                                ? new window.google.maps.Size(iconSize, iconSize)
+                                                                : null,
+                                                            anchor: new google.maps.Point(iconSize / 2, iconSize / 2),
+                                                            origin: new google.maps.Point(0, 0),
+                                                        }}
+                                                        zIndex={0}
+                                                        // clusterer={clusterer}
+                                                    >
+                                                        {selectedMarker === item && (
+                                                            <InfoWindow onCloseClick={closeInfoWindow}>
+                                                                <div className={classes.info}>
+                                                                    <h2 className={classes.info__title}>
+                                                                        {item.advertisement_type_name}
+                                                                    </h2>
+                                                                    <p className={classes.info__type}>
+                                                                        {item.location_type}
+                                                                    </p>
+                                                                    <p className={classes.info__location}>
+                                                                        {item.ward_name}, {item.district_name}
+                                                                    </p>
+                                                                    <div>
+                                                                        <p className={classes.info__state}>
+                                                                            {item.is_planning === 1
+                                                                                ? 'ĐÃ QUY HOẠCH'
+                                                                                : 'CHƯA QUY HOẠCH'}
+                                                                        </p>
+                                                                        <p
+                                                                            className={classes.info__report}
+                                                                            onClick={() => {
+                                                                                setIsShowReport({
+                                                                                    id: index + '',
+                                                                                    show: true,
+                                                                                    type: 'Point',
+                                                                                });
+                                                                            }}
+                                                                        >
+                                                                            Báo cáo
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </InfoWindow>
+                                                        )}
+                                                    </Marker>
+                                                ))}
+                                                {listAdReportAnyRender.map((item, index) => (
+                                                    <Marker
+                                                        key={+index}
+                                                        position={{ lat: item.lat, lng: item.lng }}
+                                                        onClick={() => {
+                                                            showInfoAd(item);
+                                                            fetchInfoReportAnyLocation(item.lat, item.lng, index);
+                                                            setShowAdDetail({
+                                                                id: -1,
+                                                                show: false,
+                                                                info: '',
+                                                                data: {},
+                                                            });
+                                                            setShowMarkerIcon(false);
+                                                            setShowInforPointAny({ show: false, type: '', data: {} });
+                                                        }}
+                                                        icon={{
+                                                            url: selectIconAny(item),
+                                                            scaledSize: isLoaded
+                                                                ? new window.google.maps.Size(iconSize, iconSize)
+                                                                : null,
+                                                            anchor: new google.maps.Point(iconSize / 2, iconSize / 2),
+                                                            origin: new google.maps.Point(0, 0),
+                                                        }}
+                                                        zIndex={0}
+                                                        // clusterer={clusterer}
+                                                    >
+                                                        {selectedMarker === item && (
+                                                            <InfoWindow onCloseClick={closeInfoWindow}>
+                                                                <div className={classes.info}>
+                                                                    <p className={classes.info__type}>
+                                                                        {showDetailReport.data.address}
+                                                                    </p>
+                                                                    <p className={classes.info__location}>
+                                                                        {showDetailReport.data.formatted_address}
+                                                                    </p>
+                                                                    <div style={{ justifyContent: 'flex-end' }}>
+                                                                        <p
+                                                                            className={classes.info__report}
+                                                                            style={{ justifyContent: 'flex-end' }}
+                                                                            onClick={() => {
+                                                                                setIsShowReport({
+                                                                                    id: index + '',
+                                                                                    show: true,
+                                                                                    type: 'Any',
+                                                                                });
+                                                                            }}
+                                                                        >
+                                                                            Báo cáo
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </InfoWindow>
+                                                        )}
+                                                    </Marker>
+                                                ))}
+                                            </>
+                                        );
+                                    }}
+                                </MarkerClusterer>
                             </GoogleMap>
                         ) : (
                             <>Loading...</>
@@ -273,7 +490,14 @@ const Home = () => {
                 </div>
             </div>
             <div className={classes['container__home-head']}>
-                <SearchBar />
+                <GoongAutoComplete
+                    className={classes.search}
+                    apiKey="vPYt4GFCSFhetF2VAe6xIKKo0qmMaTrPqvPGzO7K"
+                    placeholder="Tìm kiếm theo địa chỉ"
+                    value={autoCompleteValue}
+                    setValue={setAutoCompleteValue}
+                    onChange={(place_id) => handleSearch(place_id)}
+                />
             </div>
 
             <div className={classes['container__home-filter']}>
@@ -282,7 +506,23 @@ const Home = () => {
                     className={classes.ic}
                     onClick={() => setIsShowFilter(!isShowFilter)}
                 />
-                {isShowFilter && <Checklist onCheckboxChange={handleCheckboxChange} />}
+                {isShowFilter && (
+                    <Checklist
+                        setNoReportStatus={setNoReportStatus}
+                        setBeReportedStatus={setBeReportedStatus}
+                        setPlannedStatus={setPlannedStatus}
+                        setNotPlanStatus={setNotPlanStatus}
+                    />
+                )}
+            </div>
+
+            <div className={classes['container__home-note']}>
+                <FontAwesomeIcon
+                    icon={faCircleQuestion}
+                    className={classes.ic}
+                    onClick={() => setIsShowNote(!isShowNote)}
+                />
+                {isShowNote && <AnnotationDropdown onCheckboxChange={handleCheckboxChange} />}
             </div>
 
             {showInfo.show && (
@@ -317,7 +557,7 @@ const Home = () => {
                                             />
                                         ))}
                                     {showInfo.data && showInfo.data.list_board_ads.length === 0 && (
-                                        <p style={{ textAlign: 'center' }}>Không có dữ liệu</p>
+                                        <p style={{ textAlign: 'center' }}>Chưa có bảng quảng cáo</p>
                                     )}
                                 </div>
                             )}
@@ -346,10 +586,10 @@ const Home = () => {
                             <InforTable
                                 info={{ infoBoard: showAdDetail.data, infoPoint: showInfo.data }}
                                 onClickShowDetailReportPoint={() => {
-                                    setShowDetailReport({ show: true, type: 'Point' });
+                                    setShowDetailReport({ show: true, type: 'Point', data: {} });
                                 }}
                                 onClickShowDetailReportBoard={() => {
-                                    setShowDetailReport({ show: true, type: 'Board' });
+                                    setShowDetailReport({ show: true, type: 'Board', data: {} });
                                 }}
                             />
                         </div>
@@ -365,7 +605,8 @@ const Home = () => {
                         className={classes.icon}
                         style={{ color: '#000' }}
                         onClick={() => {
-                            setShowDetailReport({ show: false, type: '' });
+                            setShowDetailReport({ show: false, type: '', data: {} });
+                            setSelectedMarker(null);
                         }}
                     />
 
@@ -378,7 +619,13 @@ const Home = () => {
                                 info={
                                     showDetailReport.type === 'Point'
                                         ? showInfo.data.list_report
-                                        : showAdDetail.data.list_report_board
+                                        : showDetailReport.type === 'Board'
+                                        ? showAdDetail.data.list_report_board
+                                        : listAdReportAny.filter(
+                                              (report) =>
+                                                  report.lat === showDetailReport.location.lat &&
+                                                  report.lng === showDetailReport.location.lng
+                                          )
                                 }
                             />
                         </div>
@@ -386,11 +633,61 @@ const Home = () => {
                 </div>
             )}
 
+            {showInforPointAny.show && (
+                <div className={classes['container__home-inf']}>
+                    {/* Xem chi tiết của một trụ, cột*/}
+                    <FontAwesomeIcon
+                        icon={faClose}
+                        className={classes.icon}
+                        style={{ color: '#000' }}
+                        onClick={() => {
+                            setShowInforPointAny({ show: false, type: '', data: {} });
+                            setShowMarkerIcon(false);
+                        }}
+                    />
+
+                    <div className={classes['container__home-inf-content']}>
+                        <ul style={{ marginTop: '8rem' }} className={classes.list}>
+                            <li>
+                                <label>Địa điểm:</label>
+                                <p>{showInforPointAny.data.formatted_address}</p>
+                            </li>
+                            <li>
+                                <label>Địa chỉ:</label>
+                                <p>{showInforPointAny.data.address}</p>
+                            </li>
+
+                            <ButtonCT
+                                style={{ marginTop: '3rem' }}
+                                content="Báo cáo vi phạm"
+                                className={'borderRadius7 uppercase'}
+                                iconLeft={ic_warning}
+                                outlineBtn={true}
+                                borderRadius={true}
+                                redWarning={true}
+                                onClick={() => setIsShowReport({ show: true, type: 'Any' })}
+                            />
+                        </ul>
+                    </div>
+                </div>
+            )}
+
             {isShowReport.show && (
                 <ModalReport
                     type={isShowReport.type}
-                    location={{ lat: showInfo.data.lat, lng: showInfo.data.lng }}
-                    info={isShowReport.type === 'Point' ? showInfo.data : showAdDetail.data}
+                    location={
+                        isShowReport.type !== 'Any'
+                            ? { lat: showInfo.data.lat, lng: showInfo.data.lng }
+                            : { lat: geocode.lat, lng: geocode.lng }
+                    }
+                    info={
+                        isShowReport.type === 'Point'
+                            ? showInfo.data
+                            : isShowReport.type === 'Board'
+                            ? showAdDetail.data
+                            : { lat: geocode.lat, lng: geocode.lng }
+                    }
+                    success={handleSendReportSuccess}
                     onClose={() => setIsShowReport({ id: '', show: false, type: '' })}
                 />
             )}
