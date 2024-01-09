@@ -161,6 +161,9 @@ $borderWidth: 1px;
       color: $text_700;
       margin-top: 2rem;
       user-select: none;
+      transition: all 0.2s;
+      width: fit-content;
+      pointer-events: none;
 
       &__ic {
         font-size: 2rem;
@@ -169,6 +172,12 @@ $borderWidth: 1px;
 
       &--haveReports {
         color: #fa3c3c;
+        pointer-events: all;
+
+        &:hover {
+          cursor: pointer;
+          opacity: 0.5;
+        }
       }
     }
 

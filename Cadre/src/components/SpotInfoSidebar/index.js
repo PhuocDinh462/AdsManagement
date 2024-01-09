@@ -9,6 +9,7 @@ import axios from 'axios';
 import { axiosRequest } from '~/src/api/axios';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectUser, selectBoardId, setBoardId } from '~/src/store/reducers';
+import { useNavigate } from 'react-router';
 
 export default function SpotInfoSidebar(props) {
   const {
@@ -22,6 +23,7 @@ export default function SpotInfoSidebar(props) {
     setImageModalUrl,
   } = props;
 
+  const navigate = useNavigate();
   const [status, setStatus] = useState(true);
   const [currentAdsIndex, setCurrentAdsIndex] = useState(0);
   const [spotName, setSpotName] = useState();
@@ -111,6 +113,11 @@ export default function SpotInfoSidebar(props) {
     })();
   }, [spotId, adSpots]);
 
+  const goToReportsDetail = () => {
+    if (spotId) navigate(`/reports/detail/${spotId}`);
+    else navigate(`/reports/detail/${spotCoord.lat},${spotCoord.lng}`);
+  };
+
   return (
     <div className={[classes.main_container, status ? classes.slideIn : classes.slideOut].join(' ')}>
       {!loading && (
@@ -158,6 +165,7 @@ export default function SpotInfoSidebar(props) {
                         classes.report,
                         currentInfo?.boardInfo[currentAdsIndex]?.reports > 0 && classes['report--haveReports'],
                       ].join(' ')}
+                      onClick={goToReportsDetail}
                     >
                       <div className={classes.report__ic}>
                         <FontAwesomeIcon icon={faFlag} />
@@ -226,6 +234,7 @@ export default function SpotInfoSidebar(props) {
                     classes.report,
                     currentInfo?.spotInfo?.reports > 0 && classes['report--haveReports'],
                   ].join(' ')}
+                  onClick={goToReportsDetail}
                 >
                   <div className={classes.report__ic}>
                     <FontAwesomeIcon icon={faFlag} />

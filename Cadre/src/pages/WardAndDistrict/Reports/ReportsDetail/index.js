@@ -305,7 +305,7 @@ export default function ReportsDetail() {
 
       {!loading && (
         <div className={classes.content_container}>
-          {data.address && <div className={classes.title}>Chi tiết báo cáo tại {data.address}</div>}
+          {data?.address && <div className={classes.title}>Chi tiết báo cáo tại {data.address}</div>}
 
           {filteredData?.length > 0 ? (
             <>
@@ -476,4 +476,3 @@ export default function ReportsDetail() {
     </div>
   );
 }
-
