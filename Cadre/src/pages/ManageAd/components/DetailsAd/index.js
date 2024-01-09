@@ -1,5 +1,6 @@
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { calculateDaysBetweenDates, formatDate } from '~/src/utils/support';
 import classes from './style.module.scss';
 
 const BoardDetails = ({ onClose, data }) => {
@@ -51,7 +52,7 @@ const BoardDetails = ({ onClose, data }) => {
                   </div>
                 </div>
               </div>
-              {/* <div className={classes.content_element}>
+              <div className={classes.content_element}>
                 <h3>Thông tin công ty đặt quảng cáo</h3>
                 <ul className={classes.m_left_10}>
                   <li>
@@ -79,8 +80,8 @@ const BoardDetails = ({ onClose, data }) => {
                     <p>: {data.company_address}</p>
                   </li>
                 </ul>
-              </div> */}
-              {/* <div className={classes.content_element}>
+              </div>
+              <div className={classes.content_element}>
                 <h3>Thời gian hợp đồng ({calculateDaysBetweenDates(data.start_date, data.end_date)} ngày)</h3>
                 <ul className={classes.m_left_10}>
                   <li>
@@ -92,11 +93,9 @@ const BoardDetails = ({ onClose, data }) => {
                     <p>: {formatDate(data.end_date)}</p>
                   </li>
                 </ul>
-              </div> */}
+              </div>
             </div>
           </div>
-          {/* <div className={`${classes.d_flex_end} ${classes.container__action}`}>
-          </div> */}
         </div>
       </div>
       <div className={classes.bg}></div>
