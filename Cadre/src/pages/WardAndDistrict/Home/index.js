@@ -173,7 +173,7 @@ export default function Home() {
       // Set center
       const avgLat = data.map((item) => item.lat).reduce((a, b) => a + b, 0) / data.length;
       const avgLng = data.map((item) => item.lng).reduce((a, b) => a + b, 0) / data.length;
-      setCenter({ lat: avgLat, lng: avgLng });
+      if (avgLat && avgLng) setCenter({ lat: avgLat, lng: avgLng });
     }
     setLoading(false);
   };
@@ -479,4 +479,3 @@ export default function Home() {
     </div>
   );
 }
-
