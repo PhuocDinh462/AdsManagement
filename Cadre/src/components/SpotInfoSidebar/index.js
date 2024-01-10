@@ -121,31 +121,50 @@ export default function SpotInfoSidebar(props) {
   };
 
   // Socket
-  if (spotId)
-    useSocketSubscribe(`updateAdsPoint_pointId=${spotId}`, async (res) => {
-      setCurrentInfo({
-        boardInfo: currentInfo.boardInfo,
-        spotInfo: {
-          ...currentInfo.spotInfo,
-          location_type: res.location_type ?? currentInfo.spotInfo.location_type,
-          image_url: res.image_url ?? currentInfo.spotInfo.image_url,
-          is_planning: res.is_planning ?? currentInfo.spotInfo.is_planning,
-          advertisement_type_id: res.advertisement_type_id ?? currentInfo.spotInfo.advertisement_type_id,
-        },
-      });
-
-      const adIndex = adSpots.findIndex((item) => item?.point_id === spotId);
-
-      if (adIndex !== -1 && res.is_planning !== adSpots[adIndex].is_planning)
-        setAdSpots(
-          adSpots.map((item, i) => {
-            return {
-              ...item,
-              is_planning: i === adIndex && res.is_planning,
-            };
-          })
-        );
+  useSocketSubscribe(`updateAdsPoint_pointId=${spotId}`, async (res) => {
+    setCurrentInfo({
+      boardInfo: currentInfo.boardInfo,
+      spotInfo: {
+        ...currentInfo.spotInfo,
+        location_type: res.location_type ?? currentInfo.spotInfo.location_type,
+        image_url: res.image_url ?? currentInfo.spotInfo.image_url,
+        is_planning: res.is_planning ?? currentInfo.spotInfo.is_planning,
+        advertisement_type_id: res.advertisement_type_id ?? currentInfo.spotInfo.advertisement_type_id,
+      },
     });
+    const adIndex = adSpots.findIndex((item) => item?.point_id === spotId);
+    if (adIndex !== -1 && res.is_planning !== adSpots[adIndex].is_planning)
+      setAdSpots(
+        adSpots.map((item, i) => {
+          return {
+            ...item,
+            is_planning: i === adIndex && res.is_planning,
+          };
+        })
+      );
+  });
+
+  useSocketSubscribe(`updateBoard_pointId=${spotId}`, async (res) => {
+    setCurrentInfo({
+      spotInfo: currentInfo.spotInfo,
+      boardInfo: {
+        ...currentInfo.boardInfo,
+        board_type_id: res.board_type_id ?? currentInfo.boardInfo.board_type_id,
+        width: res.width ?? currentInfo.boardInfo.width,
+        height: res.height ?? currentInfo.boardInfo.height,
+      },
+    });
+    const adIndex = adSpots.findIndex((item) => item?.point_id === spotId);
+    if (adIndex !== -1 && res.is_planning !== adSpots[adIndex].is_planning)
+      setAdSpots(
+        adSpots.map((item, i) => {
+          return {
+            ...item,
+            is_planning: i === adIndex && res.is_planning,
+          };
+        })
+      );
+  });
 
   return (
     <div className={[classes.main_container, status ? classes.slideIn : classes.slideOut].join(' ')}>
