@@ -333,7 +333,7 @@ const ModalReport = (props) => {
                                         <div>
                                             <img src={upload} />
                                         </div>
-                                        <p>Chọn 2 tấm ảnh vào đây</p>
+                                        <p>Chọn tối đa 2 tấm ảnh vào đây</p>
                                     </div>
                                 )}
                             </div>
