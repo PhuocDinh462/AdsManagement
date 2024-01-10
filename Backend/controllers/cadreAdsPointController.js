@@ -185,6 +185,17 @@ const updateAdsPoint = catchAsync(async (req, res, next) => {
           return;
         }
 
+        socket?.socketIo?.emit(`updateAdsPoint_pointId=${point_id}`, {
+          location_type: location_type,
+          image_url: image_url,
+          lat: lat,
+          lng: lng,
+          is_planning: is_planning,
+          ward_id: ward_id,
+          advertisement_type_id: advertisement_type_id,
+          address: address,
+        });
+
         res.status(200).json({ status: 'success', updatedId: point_id });
       }
     );
@@ -225,4 +236,3 @@ module.exports = {
   updateAdsPoint,
   deleteAdsPoint,
 };
-

@@ -8,6 +8,7 @@ import { axiosRequest } from '~/src/api/axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectSelectedWards, selectUser, setBoardIndex } from '~/src/store/reducers';
 import { useNavigate } from 'react-router';
+import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
 
 export default function AdSpots() {
   const [data, setData] = useState([]);
@@ -30,7 +31,7 @@ export default function AdSpots() {
         .then((res) => {
           if (res.data.data.length > 0) {
             for (let j = 0; j < res.data.data.length; j++) {
-              spots.push(res.data.data[j])
+              spots.push(res.data.data[j]);
             }
           }
         })
@@ -40,7 +41,7 @@ export default function AdSpots() {
     }
     setData(spots);
     setFilterData(spots);
-  }
+  };
 
   useEffect(() => {
     if (user.user_type === 'ward') {
@@ -56,8 +57,7 @@ export default function AdSpots() {
             console.log('Get report lists error: ', error);
           });
       })();
-    }
-    else if (user.user_type === 'district') {
+    } else if (user.user_type === 'district') {
       fetchWardsSpots();
     }
   }, [selectedWards]);
@@ -87,6 +87,21 @@ export default function AdSpots() {
     const lastPageIndex = firstPageIndex + pageSize;
     return filteredData.slice(firstPageIndex, lastPageIndex);
   }, [pageSize, currentPage, data, filteredData]);
+
+  // Socket
+  // useSocketSubscribe(`updateAdsPoint_pointId=${spotId}`, async (res) => {
+  //   const dataIndex = data.findIndex((item) => item.point_id === res.point_id);
+
+  //   if (dataIndex !== -1)
+  //     setData(
+  //       data.map((item, i) => {
+  //         return {
+  //           ...item,
+  //           is_planning: i === adIndex && res.is_planning,
+  //         };
+  //       })
+  //     );
+  // });
 
   return (
     <div className={classes.main_container}>

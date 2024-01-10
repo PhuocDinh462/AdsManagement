@@ -462,6 +462,7 @@ export default function Home() {
           spotCoord={marker}
           spotId={currentSpotId}
           adSpots={adSpots}
+          setAdSpots={setAdSpots}
           setCollapse={setCollapseSidebar}
           isClickMarker={isClickMarker}
           setAutoCompleteValue={setAutoCompleteValue}
@@ -480,4 +481,3 @@ export default function Home() {
     </div>
   );
 }
-
