@@ -111,9 +111,8 @@ const Home = () => {
         fetchData();
     };
 
-    // useSocketSubscribe('createReport', handleCreateReport);
+    useSocketSubscribe('createReport', handleCreateReport);
 
-    // Hàm loại bỏ phần tử trùng lặp dựa trên lat và lng
     const removeDuplicates = (array) => {
         const uniqueArray = [];
         const seenLocations = {};
@@ -121,7 +120,6 @@ const Home = () => {
         array.forEach((item) => {
             const key = `${item.lat}_${item.lng}`;
 
-            // Nếu chưa thấy phần tử có lat và lng tương ứng
             if (!seenLocations[key]) {
                 seenLocations[key] = true;
                 uniqueArray.push(item);

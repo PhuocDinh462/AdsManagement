@@ -41,12 +41,17 @@ const ModalReport = (props) => {
             emailRp: '',
             phoneRp: '',
             status: 'pending',
+            reportTypeId: null,
             point_id: props.type === 'Point' ? props.info.point_id : null,
             board_id: props.type === 'Board' ? props.info.board_id : null,
         },
         onSubmit: async (values, { resetForm }) => {
             // Kiểm tra xem có lỗi không
             const errors = {};
+
+            if (!values.reportTypeId) {
+                errors.reportTypeId = 'Hình thức không được bỏ trống';
+            }
 
             if (!values.fullnameRp) {
                 errors.fullnameRp = 'Họ và tên không được bỏ trống';
@@ -90,6 +95,7 @@ const ModalReport = (props) => {
             }
 
             try {
+                console.log(values);
                 await axios
                     .post(`${process.env.REACT_APP_API_ENDPOINT}/civilian/report`, values)
                     .then((res) => {
@@ -130,10 +136,10 @@ const ModalReport = (props) => {
     const handleFileChange = (event) => {
         const files = event.target.files;
 
-        if (files.length >= 2) {
+        if (files.length > 0) {
             // Lấy hai tấm ảnh đầu tiên từ files
             const image1 = files[0];
-            const image2 = files[1];
+            const image2 = files.length > 1 ? files[1] : null;
 
             // Hiển thị ảnh trên giao diện (tùy thuộc vào yêu cầu của bạn)
             if (image1) {
@@ -203,6 +209,19 @@ const ModalReport = (props) => {
                 <form onSubmit={formik.handleSubmit} className={classes.adding__modal__body}>
                     {indexCur === 1 && (
                         <>
+                            <h4>Hình thức báo cáo</h4>
+                            <select
+                                name="reportTypeId"
+                                onChange={formik.handleChange}
+                                value={formik.values.reportTypeId}
+                            >
+                                <option value="" disabled selected>
+                                    Chọn trạng thái
+                                </option>
+                                <option value={1}>Tố giác sai phạm</option>
+                                <option value={2}>Đăng ký nội dung</option>
+                                <option value={3}>Đóng góp ý kiến</option>
+                            </select>
                             <h4>Họ và tên</h4>
                             <input
                                 type="text"
@@ -261,40 +280,52 @@ const ModalReport = (props) => {
                                 {/* Add image upload logic here */}
                                 {isUploaded.show ? (
                                     <>
-                                        <div className={classes.uploaded}>
-                                            <div className={classes.uploaded__content}>
-                                                <div>
-                                                    <img
-                                                        src={
-                                                            isUploaded.image1
-                                                                ? URL.createObjectURL(isUploaded.image1)
-                                                                : ''
-                                                        }
-                                                        ref={image1Ref}
-                                                        alt="Image 1"
-                                                    />
+                                        {isUploaded.image1 && (
+                                            <div className={classes.uploaded}>
+                                                <div className={classes.uploaded__content}>
+                                                    <div>
+                                                        <img
+                                                            src={
+                                                                isUploaded.image1
+                                                                    ? URL.createObjectURL(isUploaded.image1)
+                                                                    : ''
+                                                            }
+                                                            ref={image1Ref}
+                                                            alt="Image 1"
+                                                        />
+                                                    </div>
+                                                    <p>{isUploaded.image1.name}</p>
                                                 </div>
-                                                <p>{isUploaded.image1.name}</p>
                                             </div>
-                                        </div>
-                                        <div className={classes.uploaded}>
-                                            <div className={classes.uploaded__content}>
-                                                <div>
-                                                    <img
-                                                        src={
-                                                            isUploaded.image2
-                                                                ? URL.createObjectURL(isUploaded.image2)
-                                                                : ''
-                                                        }
-                                                        ref={image2Ref}
-                                                        alt="Image 2"
-                                                    />
+                                        )}
+
+                                        {isUploaded.image2 && (
+                                            <div className={classes.uploaded}>
+                                                <div className={classes.uploaded__content}>
+                                                    <div>
+                                                        <img
+                                                            src={
+                                                                isUploaded.image2
+                                                                    ? URL.createObjectURL(isUploaded.image2)
+                                                                    : ''
+                                                            }
+                                                            ref={image2Ref}
+                                                            alt="Image 2"
+                                                        />
+                                                    </div>
+                                                    <p>{isUploaded.image2.name}</p>
                                                 </div>
-                                                <p>{isUploaded.image2.name}</p>
                                             </div>
-                                        </div>
+                                        )}
+
                                         <div className={classes.reselect} onClick={handleSelectImage}>
                                             Chọn lại
+                                        </div>
+                                        <div
+                                            className={classes.remove}
+                                            onClick={() => setIsUploaded({ show: false, image1: null, image2: null })}
+                                        >
+                                            Xóa ảnh
                                         </div>
                                     </>
                                 ) : (
