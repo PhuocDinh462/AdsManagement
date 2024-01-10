@@ -5,7 +5,8 @@ const cadreAdsPointController = require('../controllers/cadreAdsPointController'
 const requestEditController = require('../controllers/cadreRequestEdit');
 const cadreReportController = require('../controllers/cadreReportController');
 const authController = require('../controllers/authController');
-
+const validationAddPointReq = require('../middlewares/validation/points.middleware');
+const validateAddress = require('../middlewares/validation/address.middleware');
 const validationCreateAccount = require('../middlewares/validation/validationCreateAccount.middleware');
 
 const router = express.Router();
@@ -14,7 +15,7 @@ router.get('/', cadreController.getAllDistrictWard);
 router.get('/districts', cadreController.getDistricts);
 router.get('/wards', cadreController.getWards);
 router.get('/usersWithoutMgmt', cadreController.getUserWithoutMgmt);
-router.post('/createAddress', cadreController.createAddress);
+router.post('/createAddress', validateAddress.validateCreateAddressReq, cadreController.createAddress);
 router.patch('/updateAddress', cadreController.updateAddress);
 router.delete('/deleteAddress', cadreController.deleteAddress);
 
@@ -29,7 +30,7 @@ router.delete('/deleteForm', cadreFormController.deleteForm);
 router.get('/adsPoint', cadreAdsPointController.getAllAdsPoint);
 router.get('/adsType', cadreAdsPointController.getAdvertisementTypes);
 router.get('/adsType/:id', cadreAdsPointController.getDetailAdsType);
-router.post('/addAdsPoint', cadreAdsPointController.addAdsPoint);
+router.post('/addAdsPoint', validationAddPointReq.validationAddPointReq, cadreAdsPointController.addAdsPoint);
 router.patch('/updateAdsPoint', cadreAdsPointController.updateAdsPoint);
 router.delete('/deleteAdsPoint', cadreAdsPointController.deleteAdsPoint);
 

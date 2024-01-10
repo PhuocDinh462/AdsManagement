@@ -4,8 +4,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { faPen } from '@fortawesome/free-solid-svg-icons';
 import Modal from '~/src/components/Modal/Modal';
-import { axiosClient } from '../../api/axios';
-import Swal from 'sweetalert2';
 import DetailActionEdit from './components/DetailActionEdit/DetailActionEdit';
 import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
 import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
