@@ -14,7 +14,7 @@ const refresh = async (req, res, next) => {
         return res.status(500).json({ error: 'Database error' });
       }
 
-      const refreshTokenDB = results[0].refresh_token;
+      const refreshTokenDB = results[0]?.refresh_token;
       if (refreshTokenDB === refreshToken) {
         next();
       } else {

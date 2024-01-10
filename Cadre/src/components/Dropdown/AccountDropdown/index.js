@@ -6,20 +6,21 @@ import { useDispatch } from 'react-redux';
 import { setUser } from '~/src/store/reducers';
 import request from '~/src/utils/request';
 import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
+import { axiosPrivate } from '../../../api/axios';
 
 export default function AccountDropdown() {
-  const axiosPrivate = useAxiosPrivate()
-  const refresh_token = localStorage.getItem('refresh_token')
+  // const axiosPrivate = useAxiosPrivate();
+  const refresh_token = localStorage.getItem('refresh_token');
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleLogout = async () => {
     const params = {
-      refresh_token: refresh_token
-    }
+      refresh_token: refresh_token,
+    };
     try {
-      const res = await axiosPrivate.post('/auth/logout', params)
+      const res = await axiosPrivate.post('/auth/logout', params);
 
       navigate('/');
       await localStorage.clear();
@@ -47,3 +48,4 @@ export default function AccountDropdown() {
     </div>
   );
 }
+
