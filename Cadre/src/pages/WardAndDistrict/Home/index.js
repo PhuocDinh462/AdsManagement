@@ -224,6 +224,29 @@ export default function Home() {
   const [notPlanStatus, setNotPlanStatus] = useState(true);
 
   // Socket
+  useSocketSubscribe('deleteAdsPoint', async (res) => {
+    setAdSpots(adSpots.filter((item) => item.point_id !== res?.point_id));
+  });
+
+  useSocketSubscribe(`createdAdsPoint_wardId=${user?.ward_id}`, async (res) => {
+    setAdSpots([
+      ...adSpots,
+      {
+        point_id: res.point_id,
+        ward_id: res.ward_id,
+        location_type: res.location_type,
+        image_url: res.image_url,
+        address: res.address,
+        lat: +res.lat,
+        lng: +res.lng,
+        is_planning: res.is_planning,
+        advertisement_type_id: res.advertisement_type_id,
+        numberOfBoards: 0,
+        reportStatus: 'noReport',
+      },
+    ]);
+  });
+
   useSocketSubscribe('createReport', async (res) => {
     if (res.point_id)
       updateAdSpotsReportStatus(

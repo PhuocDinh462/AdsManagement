@@ -117,6 +117,19 @@ const addAdsPoint = catchAsync(async (req, res, next) => {
             address,
           },
         });
+
+        socket?.socketIo?.emit(`createdAdsPoint_wardId=${ward_id}`, {
+          point_id: result.insertId,
+          location_type,
+          image_url,
+          lat,
+          lng,
+          is_planning,
+          ward_id,
+          advertisement_type_id,
+          address,
+        });
+
         res.status(201).json({
           status: 'success',
           insertedData: {
@@ -223,6 +236,10 @@ const deleteAdsPoint = catchAsync(async (req, res, next) => {
       res.status(404).json({ error: 'Point not found' });
       return;
     }
+
+    socket?.socketIo?.emit('deleteAdsPoint', {
+      point_id: req.body.point_id,
+    });
 
     res.status(200).json({ status: 'success', deletedId: pointId });
   });
