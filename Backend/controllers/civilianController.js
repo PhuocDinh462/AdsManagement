@@ -1,6 +1,7 @@
 const connection = require('../server');
 const socket = require('../app');
 const catchAsync = require('../utils/catchAsync');
+const emaiReportServiece = require('../service/emailReportService');
 
 const getAllDistrictWard = catchAsync(async (req, res, next) => {
   const query = `
@@ -167,6 +168,15 @@ const createReport = catchAsync(async (req, res, next) => {
                 );
 
               res.status(200).json(results[0]);
+
+              const info = await emaiReportServiece.sendEmailService(
+                lat,
+                lng,
+                fullnameRp,
+                phoneRp,
+                emailRp,
+                reportContent
+              );
             }
           );
         }
