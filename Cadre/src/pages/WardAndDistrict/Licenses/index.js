@@ -44,7 +44,7 @@ const Licenses = () => {
   }, [pageSize, currentPage, data]);
 
   const user = useSelector(selectUser);
-  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
+  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
   const headers = {
     Authorization: tokenAuth,
   };
@@ -200,13 +200,12 @@ const Licenses = () => {
                   <td style={{ width: '15%' }}>{calculateDaysBetweenDates(row.start_date, row.end_date)}</td>
                   <td style={{ width: '15%' }}>
                     <div
-                      className={` ${classes.status} ${
-                        statusLicense[row.status].value === 1
+                      className={` ${classes.status} ${statusLicense[row.status].value === 1
                           ? classes.status_pending
                           : statusLicense[row.status].value === 2
-                          ? classes.status_accept
-                          : classes.status_cancel
-                      }`}
+                            ? classes.status_accept
+                            : classes.status_cancel
+                        }`}
                     >
                       {statusLicense[row.status].label}
                     </div>

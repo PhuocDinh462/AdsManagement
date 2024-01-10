@@ -11,6 +11,7 @@ import { setSelectedWards } from '~/src/store/reducers';
 import { useDispatch, useSelector } from 'react-redux';
 
 import DropdownWard from '../Dropdown/DropdownWard';
+import request from '~/src/utils/request';
 
 export default function NavBar(props) {
   const location = useLocation();
@@ -19,6 +20,10 @@ export default function NavBar(props) {
   const [activeAccountDropdown, setActiveAccountDropdown] = useState(false);
   const [filterWardActive, setFilterWardActive] = useState(false);
   const [checkUserDistrict, setCheckUserDistrict] = useState(false);
+  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
+  const headers = {
+    Authorization: tokenAuth,
+  };
   const { categories } = props;
   const navigate = useNavigate();
   const fetchWards = async () => {

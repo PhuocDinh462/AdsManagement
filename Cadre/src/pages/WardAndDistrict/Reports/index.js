@@ -22,7 +22,7 @@ export default function Reports() {
   const navigate = useNavigate();
   const selectedWards = useSelector(selectSelectedWards);
   const user = useSelector(selectUser);
-  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
+  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
   const headers = {
     Authorization: tokenAuth,
   };
@@ -159,7 +159,7 @@ export default function Reports() {
   useSocketSubscribe('createReport', handleSocketEvent);
 
   // Use when user reports a spot that isn't adSpot
-  useSocketSubscribe(`createReport_wardId=${user.ward_id}`, async (eventData) => {
+  useSocketSubscribe(`createReport_wardId=${user?.ward_id}`, async (eventData) => {
     info('Một báo cáo vừa được gửi đến cho bạn');
 
     // If current data already had the point
