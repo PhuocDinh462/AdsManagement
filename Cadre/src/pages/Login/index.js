@@ -28,7 +28,6 @@ const LoginPage = () => {
     setLocalStorageFromCookie('district_id');
   })();
   useEffect(() => {
-
     const userType = localStorage.getItem('user_type');
     if (userType) {
       dispatch(
@@ -53,7 +52,7 @@ const LoginPage = () => {
     } else if (user_type === 'district') {
       loginNavigate('/home');
     }
-  }, [user])
+  }, [user]);
 
   const formik = useFormik({
     initialValues: {

@@ -9,8 +9,11 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { v4 } from 'uuid';
 import Coordination from '~/src/components/Coordination/Coordination';
 import Modal from '~/src/components/Modal/Modal';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 
 const AddAdLocation = ({ onClose, cancel }) => {
+  const axiosPrivate = useAxiosPrivate();
+
   const [indexCur, setIndexCur] = useState(1);
   const [previewImage, setPreviewImage] = useState(null);
   const [wards, setWards] = useState([]);
@@ -26,16 +29,12 @@ const AddAdLocation = ({ onClose, cancel }) => {
   const [planning, setPlanning] = useState(null);
   const [selectedAdsType, setselectedAdsType] = useState(null);
   const [imageUploadUrl, setImageUploadUrl] = useState(null);
-  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
-  const headers = {
-    Authorization: tokenAuth,
-  };
 
   useEffect(() => {
-    axiosClient
-      .get('cadre/wards', { headers })
+    axiosPrivate
+      .get('cadre/wards')
       .then((response) => {
-        setWards(response);
+        setWards(response.data);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
@@ -43,11 +42,10 @@ const AddAdLocation = ({ onClose, cancel }) => {
   }, []);
 
   useEffect(() => {
-    axiosClient
-      .get('cadre/adsType', { headers })
+    axiosPrivate
+      .get('cadre/adsType')
       .then((response) => {
-        setAdsType(response);
-        console.log(response);
+        setAdsType(response.data);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
@@ -92,7 +90,7 @@ const AddAdLocation = ({ onClose, cancel }) => {
       lat: parseFloat(latitude),
       address,
       ward_id: selectedWard,
-      is_planning: !!planning,
+      is_planning: planning === 'true',
       image_url: imageUploadUrl,
       advertisement_type_id: selectedAdsType,
     };
@@ -104,7 +102,7 @@ const AddAdLocation = ({ onClose, cancel }) => {
       !dataToSend.ward_id ||
       !dataToSend.image_url ||
       !dataToSend.advertisement_type_id ||
-      !dataToSend.is_planning
+      dataToSend.is_planning === null
     ) {
       Swal.fire({
         icon: 'warning',
@@ -114,9 +112,9 @@ const AddAdLocation = ({ onClose, cancel }) => {
       return;
     }
     try {
-      const response = await axiosClient.post('/cadre/addAdsPoint', dataToSend, { headers });
+      const response = await axiosPrivate.post('/cadre/addAdsPoint', dataToSend);
 
-      if (response.status === 'success') {
+      if (response.data.status === 'success') {
         Swal.fire({
           icon: 'success',
           title: 'Thêm thành công!',

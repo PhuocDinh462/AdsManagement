@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
 import classes from './ModalAdd.module.scss';
 import Swal from 'sweetalert2';
-import { axiosClient } from '../../../api/axios';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 
 const ModalAdd = ({ onClose }) => {
+  const axiosPrivate = useAxiosPrivate();
+
   const [formType, setFormType] = useState('report');
   const [content, setContent] = useState('');
-
-  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
-  const headers = {
-    Authorization: tokenAuth,
-  };
 
   const handleTypeChange = (type) => {
     setFormType(type);
@@ -23,6 +20,7 @@ const ModalAdd = ({ onClose }) => {
       type: formType,
       typeName: content,
     };
+    console.log(data);
 
     if (!data.typeName) {
       Swal.fire({
@@ -34,10 +32,9 @@ const ModalAdd = ({ onClose }) => {
     }
 
     try {
-      const response = await axiosClient.post('/cadre/addForm', data, { headers });
-      console.log(data);
+      const response = await axiosPrivate.post('/cadre/addForm', data);
 
-      if (response.status === 'success') {
+      if (response.data.status === 'success') {
         Swal.fire({
           icon: 'success',
           title: 'Thêm thành công!',
@@ -76,7 +73,7 @@ const ModalAdd = ({ onClose }) => {
           <div className={classes.level_wrap_container}>
             <div>
               <label className={classes.label_add} htmlFor="report-level">
-                Thêm loại hình quảng cáo
+                Thêm hình thức báo cáo
               </label>
               <input
                 id="report-level"
@@ -88,7 +85,7 @@ const ModalAdd = ({ onClose }) => {
             </div>
             <div>
               <label className={classes.label_add} htmlFor="advertisement-level">
-                Thêm hình thức báo cáo
+                Thêm loại hình quảng cáo
               </label>
               <input
                 id="advertisement-level"
@@ -100,7 +97,7 @@ const ModalAdd = ({ onClose }) => {
             </div>
             <div>
               <label className={classes.label_add} htmlFor="board-level">
-                Thêm loại bảng quảng cáo
+                Thêm loại bảng báo cáo
               </label>
               <input
                 id="board-level"

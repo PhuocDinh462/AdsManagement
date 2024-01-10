@@ -11,6 +11,7 @@ import classes from './ManageAd.module.scss';
 import BoardModalAdd from './components/BoardModalAdd';
 import BoardModalUpdate from './components/BoardModalUpdate';
 import BoardDetails from './components/DetailsAd';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 
 const listType = [
   { title: 'Cổ động chính trị', value: 1 },
@@ -25,8 +26,8 @@ const listBoardType = [
 ];
 
 const ManageAd = () => {
+  const axiosPrivate = useAxiosPrivate();
   const dispatch = useDispatch();
-
   const [data, setData] = useState([]);
   const [isOpenAdd, setIsOpenAdd] = useState(false);
   const [isOpenUpdate, setIsOpenUpdate] = useState(false);
@@ -39,7 +40,6 @@ const ManageAd = () => {
   const headers = {
     Authorization: tokenAuth,
   };
-
   const pageSize = 10;
   const [currentPage, setCurrentPage] = useState(1);
   const currentTableData = useMemo(() => {
@@ -83,8 +83,8 @@ const ManageAd = () => {
 
   const fetchDataAdsBoard = async () => {
     try {
-      const res = await axiosClient.get('/board', { headers });
-      setData(res.boards);
+      const res = await axiosPrivate.get('/board');
+      setData(res.data.boards);
     } catch (error) {
       console.log(error);
     }
@@ -92,7 +92,7 @@ const ManageAd = () => {
 
   const fetchDataDeleteBoard = async (id) => {
     try {
-      await axiosClient.delete(`/board/${id}`, { headers });
+      await axiosPrivate.delete(`/board/${id}`);
       Swal.fire({
         icon: 'success',
         title: 'Xóa thành công!',
@@ -220,3 +220,4 @@ const ManageAd = () => {
 };
 
 export default ManageAd;
+

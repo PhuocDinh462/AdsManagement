@@ -17,12 +17,10 @@ import Swal from 'sweetalert2';
 import Image from '~/src/assets/images/pexels-david-geib-3220846.jpg';
 import Image1 from '~/src/assets/images/google_logo.png';
 import { red } from '@mui/material/colors';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 
 const DetailActionEdit = ({ data, onClose }) => {
-  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
-  const headers = {
-    Authorization: tokenAuth,
-  };
+  const axiosPrivate = useAxiosPrivate();
   const [dataPoint, setDataPoint] = useState();
   const [dataBoard, setDataBoard] = useState();
   const [loading, setLoading] = useState(true);
@@ -32,13 +30,15 @@ const DetailActionEdit = ({ data, onClose }) => {
     try {
       if (data.board_id) {
         // Nếu có board_id, gọi API cho board
-        const responseBoard = await axiosClient.get(`/cadre/detailAdsBoard/${data.board_id}`, { headers });
-        setDataBoard(responseBoard);
+        const responseBoard = await axiosPrivate.get(`/cadre/detailAdsBoard/${data.board_id}`);
+        setDataBoard(responseBoard.data);
+        console.log(responseBoard.data);
       } else if (data.point_id) {
         // Nếu có point_id, gọi API cho point
-        const responsePoint = await axiosClient.get(`/cadre/detailAdsPoint/${data.point_id}`, { headers });
-        setDataPoint(responsePoint.advertisingPoint);
-        // console.log(responsePoint.advertisingPoint);
+        const responsePoint = await axiosPrivate.get(`/cadre/detailAdsPoint/${data.point_id}`);
+        setDataPoint(responsePoint.data.advertisingPoint);
+        console.log(responsePoint.data.advertisingPoint);
+        console.log(data.point_id);
       } else {
         console.error('Không có board_id hoặc point_id để gọi API');
       }
@@ -62,18 +62,14 @@ const DetailActionEdit = ({ data, onClose }) => {
   const handleReject = async () => {
     try {
       if (data.board_id) {
-        const res = await axiosClient.patch(
-          `/cadre/updateStatusEditReq/${data.id}`,
-          {
-            type: 'board',
-            status: 'canceled',
-          },
-          { headers }
-        );
+        const res = await axiosPrivate.patch(`/cadre/updateStatusEditReq/${data.id}`, {
+          type: 'board',
+          status: 'canceled',
+        });
 
-        console.log(res);
+        console.log(res.data);
 
-        if (res.status === 'success') {
+        if (res.data.status === 'success') {
           Swal.fire({
             icon: 'success',
             title: 'Đã từ chối!',
@@ -83,16 +79,12 @@ const DetailActionEdit = ({ data, onClose }) => {
           onClose();
         }
       } else if (data.point_id) {
-        const res = await axiosClient.patch(
-          `/cadre/updateStatusEditReq/${data.id}`,
-          {
-            type: 'point',
-            status: 'canceled',
-          },
-          { headers }
-        );
+        const res = await axiosPrivate.patch(`/cadre/updateStatusEditReq/${data.id}`, {
+          type: 'point',
+          status: 'canceled',
+        });
 
-        if (res.status === 'success') {
+        if (res.data.status === 'success') {
           Swal.fire({
             icon: 'success',
             title: 'Đã từ chối!',
@@ -110,16 +102,12 @@ const DetailActionEdit = ({ data, onClose }) => {
   const handleApproved = async () => {
     try {
       if (data.board_id) {
-        const res = await axiosClient.patch(
-          `/cadre/updateStatusEditReq/${data.id}`,
-          {
-            type: 'board',
-            status: 'approved',
-          },
-          { headers }
-        );
+        const res = await axiosPrivate.patch(`/cadre/updateStatusEditReq/${data.id}`, {
+          type: 'board',
+          status: 'approved',
+        });
 
-        if (res.status === 'success') {
+        if (res.data.status === 'success') {
           Swal.fire({
             icon: 'success',
             title: 'Cập nhật trạng thái thành công!',
@@ -137,12 +125,10 @@ const DetailActionEdit = ({ data, onClose }) => {
           };
 
           try {
-            const response = await axiosClient.patch(`/board/update_board/${data.board_id}`, dataBoardToSend, {
-              headers,
-            });
-            console.log(response);
+            const response = await axiosPrivate.patch(`/board/update_board/${data.board_id}`, dataBoardToSend);
+            console.log(response.data);
 
-            if (response.status === 'success') {
+            if (response.data.status === 'success') {
               Swal.fire({
                 icon: 'success',
                 title: 'Chỉnh sửa bảng quảng cáo thành công!',
@@ -172,16 +158,12 @@ const DetailActionEdit = ({ data, onClose }) => {
           }
         }
       } else if (data.point_id) {
-        const res = await axiosClient.patch(
-          `/cadre/updateStatusEditReq/${data.id}`,
-          {
-            type: 'point',
-            status: 'approved',
-          },
-          { headers }
-        );
+        const res = await axiosPrivate.patch(`/cadre/updateStatusEditReq/${data.id}`, {
+          type: 'point',
+          status: 'approved',
+        });
 
-        if (res.status === 'success') {
+        if (res.data.status === 'success') {
           Swal.fire({
             icon: 'success',
             title: 'Cập nhật trạng thái thành công!',
@@ -204,10 +186,10 @@ const DetailActionEdit = ({ data, onClose }) => {
           console.log(dataPointToSend);
 
           try {
-            const response = await axiosClient.put('/cadre/updateAdsPoint', dataPointToSend, { headers });
+            const response = await axiosPrivate.patch('/cadre/updateAdsPoint', dataPointToSend);
             console.log(response);
 
-            if (response.status === 'success') {
+            if (response.data.status === 'success') {
               Swal.fire({
                 icon: 'success',
                 title: 'Cập nhật thành công!',
@@ -382,6 +364,9 @@ const DetailActionEdit = ({ data, onClose }) => {
                         <p className={classes.item_ads}>
                           <span style={{ fontWeight: '600' }}>Phường:</span> <span>{dataPoint.ward_name}</span>
                         </p>{' '}
+                        <p className={classes.item_ads}>
+                          <span style={{ fontWeight: '600' }}>Địa chỉ:</span> <span>{dataPoint.address}</span>
+                        </p>{' '}
                       </div>
                     )}
                   </div>
@@ -477,6 +462,9 @@ const DetailActionEdit = ({ data, onClose }) => {
                           {data.ward_name}
                         </span>
                       </p>
+                      <p className={classes.item_ads}>
+                        <span style={{ fontWeight: '600' }}>Địa chỉ:</span> <span>{dataPoint.address}</span>
+                      </p>{' '}
                     </div>
                   </div>
                 )}
@@ -498,3 +486,4 @@ const DetailActionEdit = ({ data, onClose }) => {
 };
 
 export default DetailActionEdit;
+

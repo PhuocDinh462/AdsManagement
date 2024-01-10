@@ -7,10 +7,12 @@ import { faPlus, faClose, faTrash, faPen } from '@fortawesome/free-solid-svg-ico
 import ModalAdd from './components/ModalAdd';
 import Modal from '~/src/components/Modal/Modal';
 import ModalUpdate from './components/ModalUpdate';
-import { axiosClient } from '../../api/axios';
 import Swal from 'sweetalert2';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 
 const ManageForm = () => {
+  const axiosPrivate = useAxiosPrivate();
+
   const [data, setData] = useState([]);
   const [originalData, setOriginalData] = useState();
   const [loading, setLoading] = useState(true);
@@ -20,16 +22,12 @@ const ManageForm = () => {
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [modalType, setModalType] = useState(null);
 
-  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
-  const headers = {
-    Authorization: tokenAuth,
-  };
-
   const fetchData = async () => {
     try {
-      const response = await axiosClient.get('/cadre/form', { headers });
-      setData(response);
-      setOriginalData(response);
+      const response = await axiosPrivate.get('/cadre/form');
+      setData(response.data);
+      console.log(response.data);
+      setOriginalData(response.data);
     } catch (error) {
       setError(error);
     } finally {
@@ -99,10 +97,7 @@ const ManageForm = () => {
     const data = { type: row.type, id: row.typeId };
     if (confirmResult.isConfirmed) {
       try {
-        const response = await axiosClient.delete('cadre/deleteForm', {
-          headers,
-          data,
-        });
+        const response = await axiosPrivate.delete('cadre/deleteForm', { data });
 
         if (response.status === 'success') {
           Swal.fire({

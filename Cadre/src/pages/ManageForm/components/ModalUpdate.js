@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
-import { axiosClient } from '../../../api/axios';
 import classes from './ModalAdd.module.scss';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 
 const ModalUpdate = ({ data, onClose }) => {
+  const axiosPrivate = useAxiosPrivate();
+
   const [content, setContent] = useState(data.typeName);
-  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
-  const headers = {
-    Authorization: tokenAuth,
-  };
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -20,9 +18,9 @@ const ModalUpdate = ({ data, onClose }) => {
     console.log(dataUpdate);
 
     try {
-      const response = await axiosClient.put('/cadre/updateForm', dataUpdate, { headers });
+      const response = await axiosPrivate.patch('/cadre/updateForm', dataUpdate);
 
-      if (response.status === 'success') {
+      if (response.data.status === 'success') {
         Swal.fire({
           icon: 'success',
           title: 'Cập nhật thành công!',

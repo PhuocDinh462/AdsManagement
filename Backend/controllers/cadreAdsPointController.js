@@ -1,5 +1,6 @@
 const catchAsync = require('../utils/catchAsync');
 const connection = require('../server');
+const socket = require('../app');
 
 const getAllAdsPoint = catchAsync(async (req, res, next) => {
   const query = `
@@ -103,6 +104,19 @@ const addAdsPoint = catchAsync(async (req, res, next) => {
           return;
         }
 
+        socket?.socketIo?.emit('createdAdsPoint', {
+          data: {
+            point_id: result.insertId,
+            location_type,
+            image_url,
+            lat,
+            lng,
+            is_planning,
+            ward_id,
+            advertisement_type_id,
+            address,
+          },
+        });
         res.status(201).json({
           status: 'success',
           insertedData: {

@@ -16,6 +16,7 @@ import AsynInputSeletion from './AsynInputSeletion';
 import DatePicker from './DatePicker';
 import InputText from './InputText';
 import classes from './style.module.scss';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 
 const listType = [
   { title: 'Cổ động chính trị', value: 1 },
@@ -45,8 +46,9 @@ const schema = yup.object().shape({
 });
 
 const BoardModalAdd = (props) => {
-  const { handleCloseModal, handleReLoadData } = props;
+  const axiosPrivate = useAxiosPrivate();
 
+  const { handleCloseModal, handleReLoadData } = props;
   const user = useSelector(selectUser);
   const tokenAuth = 'Bearer ' + user.token.split('"').join('');
   const headers = {
@@ -157,17 +159,17 @@ const BoardModalAdd = (props) => {
         end_date: convertISOString(selectForm.end_date),
       };
 
-      const res = await axiosClient.post('/contract/create', dataContract, { headers });
+      const res = await axiosPrivate.post('/contract/create', dataContract);
 
       const dataBoard = {
         board_type_id: selectForm.board_type_id.value,
         advertisement_image_url: imageUploadUrl,
         point_id: selectForm?.point.point_id,
-        contract_id: res.data.contract_id,
+        contract_id: res.data.data.contract_id,
         ...dataInput,
       };
 
-      await axiosClient.post('/board/create', dataBoard, { headers });
+      await axiosPrivate.post('/board/create', dataBoard);
 
       handleCloseModal(true);
       handleReLoadData();
@@ -346,3 +348,4 @@ const BoardModalAdd = (props) => {
 };
 
 export default BoardModalAdd;
+

@@ -9,12 +9,11 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { v4 } from 'uuid';
 import Coordination from '~/src/components/Coordination/Coordination';
 import Modal from '~/src/components/Modal/Modal';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 
 const UpdateAdLocation = ({ data, onClose, cancel }) => {
-  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
-  const headers = {
-    Authorization: tokenAuth,
-  };
+  const axiosPrivate = useAxiosPrivate();
+
   const [indexCur, setIndexCur] = useState(1);
   const [previewImage, setPreviewImage] = useState(data?.image_url || null);
   const [wards, setWards] = useState([]);
@@ -32,10 +31,10 @@ const UpdateAdLocation = ({ data, onClose, cancel }) => {
   const [imageUploadUrl, setImageUploadUrl] = useState(data?.image_url);
 
   useEffect(() => {
-    axiosClient
-      .get('cadre/wards', { headers })
+    axiosPrivate
+      .get('cadre/wards')
       .then((response) => {
-        setWards(response);
+        setWards(response.data);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
@@ -43,10 +42,10 @@ const UpdateAdLocation = ({ data, onClose, cancel }) => {
   }, []);
 
   useEffect(() => {
-    axiosClient
-      .get('cadre/adsType', { headers })
+    axiosPrivate
+      .get('cadre/adsType')
       .then((response) => {
-        setAdsType(response);
+        setAdsType(response.data);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
@@ -116,9 +115,9 @@ const UpdateAdLocation = ({ data, onClose, cancel }) => {
     }
     console.log(dataToSend);
     try {
-      const response = await axiosClient.put('/cadre/updateAdsPoint', dataToSend, { headers });
+      const response = await axiosPrivate.patch('/cadre/updateAdsPoint', dataToSend);
 
-      if (response.status === 'success') {
+      if (response.data.status === 'success') {
         Swal.fire({
           icon: 'success',
           title: 'Cập nhật thành công!',
