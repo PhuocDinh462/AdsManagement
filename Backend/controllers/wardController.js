@@ -116,8 +116,8 @@ const getAdSpotsByWardId = catchAsync(async (req, res, next) => {
                   ...adSpots,
                   ...reportSpotsFiltered.filter(
                     (spot) =>
-                      spot.address?.toLowerCase().includes(wardName.toLowerCase()) &&
-                      spot.address?.toLowerCase().includes(districtName.toLowerCase())
+                      spot.address?.toLowerCase()?.includes(wardName?.toLowerCase()) &&
+                      spot.address?.toLowerCase()?.includes(districtName?.toLowerCase())
                   ),
                 ],
               });
@@ -676,4 +676,3 @@ module.exports = {
   getAdSpotsListByWardId,
   getAllWardsByDistrictManager,
 };
-
