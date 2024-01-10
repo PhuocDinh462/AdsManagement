@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import classes from './ModalAdd.module.scss';
-import { axiosClient } from '../../../api/axios';
 import Swal from 'sweetalert2';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 
 const ModalUpdate = ({ onClose, data, filteredData }) => {
+  const axiosPrivate = useAxiosPrivate();
   const [addressType, setAddressType] = useState(filteredData === 'Quận' ? 'district' : 'ward');
 
   const [districtName, setDistrictName] = useState(data.district_name);
@@ -14,16 +15,11 @@ const ModalUpdate = ({ onClose, data, filteredData }) => {
   const [selectedManager, setSelectedManager] = useState(data.manager_id);
   const [users, setUsers] = useState([]);
 
-  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
-  const headers = {
-    Authorization: tokenAuth,
-  };
-
   useEffect(() => {
-    axiosClient
-      .get('cadre/districts', { headers })
+    axiosPrivate
+      .get('cadre/districts')
       .then((response) => {
-        setDistricts(response);
+        setDistricts(response.data);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
@@ -31,16 +27,15 @@ const ModalUpdate = ({ onClose, data, filteredData }) => {
   }, []);
 
   useEffect(() => {
-    axiosClient
-      .get('cadre/usersWithoutMgmt', { headers })
+    axiosPrivate
+      .get('cadre/usersWithoutMgmt')
       .then((response) => {
         const newData = {
           user_id: data.manager_id,
           username: filteredData === 'Quận' ? data.district_manager_username : data.ward_manager_username,
         };
 
-        setUsers([...response, newData]);
-        console.log(response);
+        setUsers([...response.data, newData]);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
@@ -99,9 +94,9 @@ const ModalUpdate = ({ onClose, data, filteredData }) => {
       return;
     }
     try {
-      const response = await axiosClient.put('/cadre/updateAddress', requestData, { headers });
+      const response = await axiosPrivate.patch('/cadre/updateAddress', requestData);
 
-      if (response.status === 'success') {
+      if (response.data.status === 'success') {
         Swal.fire({
           icon: 'success',
           title: 'Cập nhật thành công!',

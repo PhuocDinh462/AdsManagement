@@ -15,7 +15,7 @@ router.get('/districts', cadreController.getDistricts);
 router.get('/wards', cadreController.getWards);
 router.get('/usersWithoutMgmt', cadreController.getUserWithoutMgmt);
 router.post('/createAddress', cadreController.createAddress);
-router.put('/updateAddress', cadreController.updateAddress);
+router.patch('/updateAddress', cadreController.updateAddress);
 router.delete('/deleteAddress', cadreController.deleteAddress);
 
 router.get('/checkUserWard/:point_id', cadreController.checkUserWard);
@@ -23,14 +23,14 @@ router.get('/checkUserDistrict/:point_id', cadreController.checkUserDistrict);
 
 router.get('/form', cadreFormController.getType);
 router.post('/addForm', cadreFormController.addFormType);
-router.put('/updateForm', cadreFormController.updateForm);
+router.patch('/updateForm', cadreFormController.updateForm);
 router.delete('/deleteForm', cadreFormController.deleteForm);
 
 router.get('/adsPoint', cadreAdsPointController.getAllAdsPoint);
 router.get('/adsType', cadreAdsPointController.getAdvertisementTypes);
 router.get('/adsType/:id', cadreAdsPointController.getDetailAdsType);
 router.post('/addAdsPoint', cadreAdsPointController.addAdsPoint);
-router.put('/updateAdsPoint', cadreAdsPointController.updateAdsPoint);
+router.patch('/updateAdsPoint', cadreAdsPointController.updateAdsPoint);
 router.delete('/deleteAdsPoint', cadreAdsPointController.deleteAdsPoint);
 
 router.get('/getRequestEditBoard', requestEditController.getRequestEditBoards);
