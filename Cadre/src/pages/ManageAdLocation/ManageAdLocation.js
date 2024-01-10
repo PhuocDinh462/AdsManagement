@@ -10,8 +10,11 @@ import { axiosClient } from '../../api/axios';
 import Swal from 'sweetalert2';
 import Modal from '~/src/components/Modal/Modal';
 import AddAdLocation from './components/AddAdLocation/AddAdLocation';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 
 const ManageAdLocation = () => {
+  const axiosPrivate = useAxiosPrivate();
+
   const [data, setData] = useState([]);
   const [originalData, setOriginalData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,16 +25,11 @@ const ManageAdLocation = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
 
-  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
-  const headers = {
-    Authorization: tokenAuth,
-  };
-
   const fetchData = async () => {
     try {
-      const response = await axiosClient.get('/cadre/adsPoint', { headers });
-      setData(response);
-      setOriginalData(response);
+      const response = await axiosPrivate.get('/cadre/adsPoint');
+      setData(response.data);
+      setOriginalData(response.data);
     } catch (error) {
       setError(error);
     } finally {
@@ -94,12 +92,11 @@ const ManageAdLocation = () => {
     });
     if (confirmResult.isConfirmed) {
       try {
-        const response = await axiosClient.delete('cadre/deleteAdsPoint', {
-          headers,
+        const response = await axiosPrivate.delete('cadre/deleteAdsPoint', {
           data: { point_id: row.point_id },
         });
 
-        if (response.status === 'success') {
+        if (response.data.status === 'success') {
           Swal.fire({
             icon: 'success',
             title: 'Xóa thành công!',

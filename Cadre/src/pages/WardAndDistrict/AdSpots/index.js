@@ -18,7 +18,7 @@ export default function AdSpots() {
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
   const selectedWards = useSelector(selectSelectedWards);
-  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
+  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
   const headers = {
     Authorization: tokenAuth,
   };

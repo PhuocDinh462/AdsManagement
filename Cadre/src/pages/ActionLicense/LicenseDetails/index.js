@@ -2,7 +2,7 @@ import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
-import { axiosClient } from '~/src/api/axios';
+import { axiosClient, axiosPrivate } from '~/src/api/axios';
 import ButtonCT from '~/src/components/button/ButtonCT';
 import classes from './style.module.scss';
 
@@ -10,15 +10,10 @@ const LicenseDetails = ({ data, handleCloseModal }) => {
   const [adsType, setAdsType] = useState();
   console.log(data);
 
-  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
-  const headers = {
-    Authorization: tokenAuth,
-  };
-
   const fetchData = async () => {
     try {
-      const response = await axiosClient.get(`/cadre/adsType/${data.advertisement_type_id}`, { headers });
-      setAdsType(response.advertisementType);
+      const response = await axiosPrivate.get(`/cadre/adsType/${data.advertisement_type_id}`);
+      setAdsType(response.data.advertisementType);
     } catch (error) {
       console.log(error);
     } finally {
@@ -44,8 +39,8 @@ const LicenseDetails = ({ data, handleCloseModal }) => {
       status,
     };
     try {
-      const response = await axiosClient.patch(`/ward/license/${data.licensing_id}`, dataToSend, { headers });
-      if (response.status === 'success') {
+      const response = await axiosPrivate.patch(`/ward/license/${data.licensing_id}`, dataToSend);
+      if (response.data.status === 'success') {
         if (status === 'approved') {
           Swal.fire({
             icon: 'success',
@@ -65,9 +60,9 @@ const LicenseDetails = ({ data, handleCloseModal }) => {
           };
           console.log(dataBoard);
 
-          const res = await axiosClient.post('/board/create', dataBoard, { headers });
+          const res = await axiosPrivate.post('/board/create', dataBoard);
           console.log(res);
-          if (res.status === 'Create success') {
+          if (res.data.status === 'Create success') {
             Swal.fire({
               icon: 'success',
               title: 'Đã tạo bảng quảng cáo!',
@@ -228,8 +223,18 @@ const LicenseDetails = ({ data, handleCloseModal }) => {
             </div>
           </div>
           <div className={`${classes.d_flex_end} ${classes.container__action}`}>
-            <ButtonCT className={classes.btn_reject} content="Từ chối" onClick={() => handleAction('canceled')} />
-            <ButtonCT className={classes.btn_accept} content="Cấp phép" onClick={() => handleAction('approved')} />
+            <ButtonCT
+              className={classes.btn_reject}
+              content="Từ chối"
+              onClick={() => handleAction('canceled')}
+              disabled={data.status === 'canceled'}
+            />
+            <ButtonCT
+              className={classes.btn_accept}
+              content="Cấp phép"
+              onClick={() => handleAction('approved')}
+              disabled={data.status === 'approved'}
+            />
           </div>
         </div>
       </div>
@@ -239,3 +244,4 @@ const LicenseDetails = ({ data, handleCloseModal }) => {
 };
 
 export default LicenseDetails;
+

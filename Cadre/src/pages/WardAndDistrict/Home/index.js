@@ -74,12 +74,12 @@ export default function Home() {
 
   const [autoCompleteValue, setAutoCompleteValue] = useState();
 
-  useEffect(() => {
-    setLocalStorageFromCookie('user-state');
-    setLocalStorageFromCookie('user_type');
-    setLocalStorageFromCookie('user_id');
-    setLocalStorageFromCookie('token');
-  }, []);
+  // useEffect(() => {
+  //   setLocalStorageFromCookie('user-state');
+  //   setLocalStorageFromCookie('user_type');
+  //   setLocalStorageFromCookie('user_id');
+  //   setLocalStorageFromCookie('token');
+  // }, []);
 
   const handleMapClick = (event) => {
     setAutoCompleteValue();
@@ -178,7 +178,7 @@ export default function Home() {
     setLoading(false);
   };
   useEffect(() => {
-    if (user.user_type === 'ward') {
+    if (user?.user_type === 'ward') {
       (async () => {
         setLoading(true);
         await axiosRequest
@@ -210,7 +210,7 @@ export default function Home() {
             setLoading(false);
           });
       })();
-    } else if (user.user_type === 'district') {
+    } else if (user?.user_type === 'district') {
       fetchWardsSpots();
     }
   }, [selectedWards]);
@@ -237,7 +237,7 @@ export default function Home() {
       });
   });
 
-  useSocketSubscribe(`createReport_wardId=${user.ward_id}`, async (res) => {
+  useSocketSubscribe(`createReport_wardId=${user?.ward_id}`, async (res) => {
     // Create new spot
     if (adSpots.every((spot) => spot?.lat !== res.lat && spot?.lng !== res.lng))
       setAdSpots([...adSpots, { lat: res.lat, lng: res.lng, reportStatus: 'noProcess' }]);

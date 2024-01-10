@@ -6,8 +6,10 @@ import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import LicenseDetails from './LicenseDetails';
 import { axiosClient } from '../../api/axios';
 import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 
 const ActionLicense = () => {
+  const axiosPrivate = useAxiosPrivate();
   const [data, setData] = useState([]);
   const [originalData, setOriginalData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,15 +19,11 @@ const ActionLicense = () => {
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
-  const headers = {
-    Authorization: tokenAuth,
-  };
-
   const fetchData = async () => {
     try {
-      const response = await axiosClient.get('/ward/license', { headers });
-      setData(response.data);
+      const response = await axiosPrivate.get('/ward/license');
+      console.log(response.data.data);
+      setData(response.data.data);
       setOriginalData(response.data);
     } catch (error) {
       setError(error);

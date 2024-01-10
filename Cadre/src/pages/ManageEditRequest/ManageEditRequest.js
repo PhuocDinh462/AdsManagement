@@ -8,8 +8,10 @@ import { axiosClient } from '../../api/axios';
 import Swal from 'sweetalert2';
 import DetailActionEdit from './components/DetailActionEdit/DetailActionEdit';
 import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 
 const ManageForm = () => {
+  const axiosPrivate = useAxiosPrivate();
   const [data, setData] = useState({ boards: [], points: [] });
   const [originalData, setOriginalData] = useState({ boards: [], points: [] });
   const [loading, setLoading] = useState(true);
@@ -19,23 +21,18 @@ const ManageForm = () => {
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
-  const headers = {
-    Authorization: tokenAuth,
-  };
-
   const fetchData = async () => {
     try {
-      const responseBoards = await axiosClient.get('/cadre/getRequestEditBoard', { headers });
-      const responsePoints = await axiosClient.get('/cadre/getRequestEditPoint', { headers });
+      const responseBoards = await axiosPrivate.get('/cadre/getRequestEditBoard');
+      const responsePoints = await axiosPrivate.get('/cadre/getRequestEditPoint');
 
       setData({
-        boards: responseBoards,
-        points: responsePoints,
+        boards: responseBoards.data,
+        points: responsePoints.data,
       });
       setOriginalData({
-        boards: responseBoards,
-        points: responsePoints,
+        boards: responseBoards.data,
+        points: responsePoints.data,
       });
     } catch (error) {
       setError(error);
