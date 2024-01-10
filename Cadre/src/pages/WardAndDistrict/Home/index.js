@@ -148,7 +148,7 @@ export default function Home() {
     setLoading(true);
     for (let i = 0; i < selectedWards.length; i++) {
       await axiosRequest
-        .get(`ward/getReportListsByWardId/${selectedWards[i].ward_id}`, { headers: headers })
+        .get(`ward/getAdSpotsByWardId/${selectedWards[i].ward_id}`, { headers: headers })
         .then((res) => {
           if (res.data.data.length > 0) {
             for (let j = 0; j < res.data.data.length; j++) {
@@ -161,19 +161,20 @@ export default function Home() {
         });
     }
     setAdSpots(data);
+    // Use for locate button in Report page
     if (point_coord) {
       const index = data.findIndex((item) => item.lat === +point_coord.lat && item.lng === +point_coord.lng);
       if (index !== -1) {
         handleMarkerClick(data[index]);
         setCenter({ lat: data[index].lat, lng: data[index].lng });
-        // setZoom(16);
+        setZoom(18);
       }
       dispatch(setReportCoord(null));
     } else {
       // Set center
       const avgLat = data.map((item) => item.lat).reduce((a, b) => a + b, 0) / data.length;
       const avgLng = data.map((item) => item.lng).reduce((a, b) => a + b, 0) / data.length;
-      if (avgLat && avgLng) setCenter({ lat: avgLat, lng: avgLng });
+      setCenter({ lat: avgLat, lng: avgLng });
     }
     setLoading(false);
   };
