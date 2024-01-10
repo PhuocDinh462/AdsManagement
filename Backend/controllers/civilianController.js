@@ -112,7 +112,7 @@ const createReport = catchAsync(async (req, res, next) => {
       // Tiếp theo, thêm dữ liệu vào bảng Report, sử dụng LAST_INSERT_ID() để lấy id từ bảng Detail
       connection.query(
         'INSERT INTO report (report_time, processing_info, fullname_rp, email_rp, phone_rp, status, detail_id, report_type_id, point_id, board_id) VALUES (?, ?, ?, ?, ?, ?, LAST_INSERT_ID(), ?, ?, ?)',
-        [reportTime, processingInfo, fullnameRp, emailRp, phoneRp, status, reportTypeId, point_id, board_id],
+        [reportTime, processingInfo, fullnameRp, emailRp, phoneRp, status, parseInt(reportTypeId), point_id, board_id],
         (err, result) => {
           if (err) {
             console.error('Error executing query: ' + err.stack);

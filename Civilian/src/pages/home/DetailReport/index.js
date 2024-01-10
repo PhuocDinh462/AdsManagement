@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import classes from './styles.module.scss';
 import a from '~assets/imgs/tpb2_1.jpg';
 import b from '~assets/imgs/robinswan.jpg';
@@ -9,7 +9,10 @@ const DetailReport = (props) => {
     const [index, setIndex] = useState(0);
     const [infoDetailReport, setInfoDetailReport] = useState(props.info[index]);
 
-    console.log(index);
+    useEffect(() => {
+        setIndex(0);
+        setInfoDetailReport(props.info[index]);
+    }, [props.info]);
 
     return (
         <div className={classes.container__table}>
@@ -39,12 +42,20 @@ const DetailReport = (props) => {
                                         <p>{infoDetailReport.report_content}</p>
                                     </li>
                                     <li>
+                                        <label>Trạng thái:</label>
+                                        <p style={{ color: infoDetailReport.status === 'pending' ? 'red' : '#000' }}>
+                                            {infoDetailReport.status === 'pending' ? 'Chưa xử lí' : 'Đã xử lí'}
+                                        </p>
+                                    </li>
+                                    <li>
                                         <label>HÌnh ảnh:</label>
-                                        {/* infoDetailReport.image_url_1 */}
-                                        {/* infoDetailReport.image_url_2 */}
                                         <div>
-                                            <img src={infoDetailReport.image_url_1} />
-                                            <img src={infoDetailReport.image_url_2} />
+                                            {infoDetailReport.image_url_1 && <img src={infoDetailReport.image_url_1} />}
+                                            {infoDetailReport.image_url_2 && <img src={infoDetailReport.image_url_2} />}
+                                            {!infoDetailReport.image_url_1 ||
+                                                (!infoDetailReport.image_url_2 && (
+                                                    <div style={{ height: '200px', marginTop: 0 }}></div>
+                                                ))}
                                         </div>
                                     </li>
                                 </ul>

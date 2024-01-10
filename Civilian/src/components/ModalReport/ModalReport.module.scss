@@ -153,6 +153,7 @@
             }
 
             .reselect {
+                display: inline-block;
                 max-width: fit-content;
                 font-size: 12px;
                 padding: 0.8rem 2rem;
@@ -161,6 +162,19 @@
                 background-color: #0a6971;
                 color: #fff;
                 cursor: pointer;
+            }
+
+            .remove {
+                display: inline-block;
+                max-width: fit-content;
+                font-size: 12px;
+                padding: 0.8rem 2rem;
+                border: none;
+                border-radius: 2rem;
+                background-color: #d61515;
+                color: #fff;
+                cursor: pointer;
+                margin-left: 1rem;
             }
 
             .adding__modal-upload {

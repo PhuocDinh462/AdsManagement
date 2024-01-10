@@ -111,9 +111,8 @@ const Home = () => {
         fetchData();
     };
 
-    // useSocketSubscribe('createReport', handleCreateReport);
+    useSocketSubscribe('createReport', handleCreateReport);
 
-    // Hàm loại bỏ phần tử trùng lặp dựa trên lat và lng
     const removeDuplicates = (array) => {
         const uniqueArray = [];
         const seenLocations = {};
@@ -121,7 +120,6 @@ const Home = () => {
         array.forEach((item) => {
             const key = `${item.lat}_${item.lng}`;
 
-            // Nếu chưa thấy phần tử có lat và lng tương ứng
             if (!seenLocations[key]) {
                 seenLocations[key] = true;
                 uniqueArray.push(item);
@@ -332,8 +330,8 @@ const Home = () => {
                                             <>
                                                 {AdRender.filter(
                                                     (spot) =>
-                                                        (!noReportStatus ? spot.reportStatus !== 'noReport' : true) &&
-                                                        (!beReportedStatus ? spot.reportStatus === 'noReport' : true) &&
+                                                        (!noReportStatus ? spot.list_report.length !== 0 : true) &&
+                                                        (!beReportedStatus ? spot.list_report.length === 0 : true) &&
                                                         (!plannedStatus ? !spot.is_planning : true) &&
                                                         (!notPlanStatus ? spot.is_planning : true)
                                                 ).map((item, index) => (
@@ -423,62 +421,71 @@ const Home = () => {
                                                         )}
                                                     </Marker>
                                                 ))}
-                                                {listAdReportAnyRender.map((item, index) => (
-                                                    <Marker
-                                                        key={+index}
-                                                        position={{ lat: item.lat, lng: item.lng }}
-                                                        onClick={() => {
-                                                            showInfoAd(item);
-                                                            fetchInfoReportAnyLocation(item.lat, item.lng, index);
-                                                            setShowAdDetail({
-                                                                id: -1,
-                                                                show: false,
-                                                                info: '',
-                                                                data: {},
-                                                            });
-                                                            setShowMarkerIcon(false);
-                                                            setShowInforPointAny({ show: false, type: '', data: {} });
-                                                        }}
-                                                        icon={{
-                                                            url: selectIconAny(item),
-                                                            scaledSize: isLoaded
-                                                                ? new window.google.maps.Size(iconSize, iconSize)
-                                                                : null,
-                                                            anchor: new google.maps.Point(iconSize / 2, iconSize / 2),
-                                                            origin: new google.maps.Point(0, 0),
-                                                        }}
-                                                        zIndex={0}
-                                                        clusterer={clusterer}
-                                                    >
-                                                        {selectedMarker === item && (
-                                                            <InfoWindow onCloseClick={closeInfoWindow}>
-                                                                <div className={classes.info}>
-                                                                    <p className={classes.info__type}>
-                                                                        {showDetailReport.data.address}
-                                                                    </p>
-                                                                    <p className={classes.info__location}>
-                                                                        {showDetailReport.data.formatted_address}
-                                                                    </p>
-                                                                    <div style={{ justifyContent: 'flex-end' }}>
-                                                                        <p
-                                                                            className={classes.info__report}
-                                                                            style={{ justifyContent: 'flex-end' }}
-                                                                            onClick={() => {
-                                                                                setIsShowReport({
-                                                                                    id: index + '',
-                                                                                    show: true,
-                                                                                    type: 'Any',
-                                                                                });
-                                                                            }}
-                                                                        >
-                                                                            Báo cáo
+                                                {beReportedStatus &&
+                                                    (beReportedStatus || noReportStatus) &&
+                                                    listAdReportAnyRender.map((item, index) => (
+                                                        <Marker
+                                                            key={+index}
+                                                            position={{ lat: item.lat, lng: item.lng }}
+                                                            onClick={() => {
+                                                                showInfoAd(item);
+                                                                fetchInfoReportAnyLocation(item.lat, item.lng, index);
+                                                                setShowAdDetail({
+                                                                    id: -1,
+                                                                    show: false,
+                                                                    info: '',
+                                                                    data: {},
+                                                                });
+                                                                setShowMarkerIcon(false);
+                                                                setShowInforPointAny({
+                                                                    show: false,
+                                                                    type: '',
+                                                                    data: {},
+                                                                });
+                                                            }}
+                                                            icon={{
+                                                                url: selectIconAny(item),
+                                                                scaledSize: isLoaded
+                                                                    ? new window.google.maps.Size(iconSize, iconSize)
+                                                                    : null,
+                                                                anchor: new google.maps.Point(
+                                                                    iconSize / 2,
+                                                                    iconSize / 2
+                                                                ),
+                                                                origin: new google.maps.Point(0, 0),
+                                                            }}
+                                                            zIndex={0}
+                                                            clusterer={clusterer}
+                                                        >
+                                                            {selectedMarker === item && (
+                                                                <InfoWindow onCloseClick={closeInfoWindow}>
+                                                                    <div className={classes.info}>
+                                                                        <p className={classes.info__type}>
+                                                                            {showDetailReport.data.address}
                                                                         </p>
+                                                                        <p className={classes.info__location}>
+                                                                            {showDetailReport.data.formatted_address}
+                                                                        </p>
+                                                                        <div style={{ justifyContent: 'flex-end' }}>
+                                                                            <p
+                                                                                className={classes.info__report}
+                                                                                style={{ justifyContent: 'flex-end' }}
+                                                                                onClick={() => {
+                                                                                    setIsShowReport({
+                                                                                        id: index + '',
+                                                                                        show: true,
+                                                                                        type: 'Any',
+                                                                                    });
+                                                                                }}
+                                                                            >
+                                                                                Báo cáo
+                                                                            </p>
+                                                                        </div>
                                                                     </div>
-                                                                </div>
-                                                            </InfoWindow>
-                                                        )}
-                                                    </Marker>
-                                                ))}
+                                                                </InfoWindow>
+                                                            )}
+                                                        </Marker>
+                                                    ))}
                                             </>
                                         );
                                     }}
