@@ -18,12 +18,12 @@ import {
   SpotSolvedReport,
 } from '~assets/markers';
 import setLocalStorageFromCookie from '~/src/utils/setLocalStorageFromCookie';
-import { axiosRequest } from '~/src/api/axios';
 import AnnotationDropdown from '~components/Dropdown/AnnotationDropdown';
 import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
 import { useDispatch, useSelector } from 'react-redux';
 import { setReportCoord, selectReportCoord, selectUser, selectSelectedWards } from '~/src/store/reducers';
 import { Backdrop } from '@mui/material';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 
 const containerStyle = {
   width: '100%',
@@ -31,6 +31,7 @@ const containerStyle = {
 };
 
 export default function Home() {
+  const axiosPrivate = useAxiosPrivate();
   const dispatch = useDispatch();
   const point_coord = useSelector(selectReportCoord);
   const selectedWards = useSelector(selectSelectedWards);
@@ -147,8 +148,8 @@ export default function Home() {
     let data = [];
     setLoading(true);
     for (let i = 0; i < selectedWards.length; i++) {
-      await axiosRequest
-        .get(`ward/getAdSpotsByWardId/${selectedWards[i].ward_id}`, { headers: headers })
+      await axiosPrivate
+        .get(`ward/getAdSpotsByWardId/${selectedWards[i].ward_id}`)
         .then((res) => {
           if (res.data.data.length > 0) {
             for (let j = 0; j < res.data.data.length; j++) {
@@ -182,8 +183,8 @@ export default function Home() {
     if (user?.user_type === 'ward') {
       (async () => {
         setLoading(true);
-        await axiosRequest
-          .get(`ward/getAdSpotsByWardId/${user.ward_id}`, { headers: headers })
+        await axiosPrivate
+          .get(`ward/getAdSpotsByWardId/${user.ward_id}`)
           .then((res) => {
             const data = res.data.data;
             setAdSpots(data);
@@ -230,7 +231,7 @@ export default function Home() {
         'noProcess'
       );
     else if (res.board_id)
-      await axiosRequest.get(`ward/getAdBoardByBoardId/${res.board_id}`, { headers: headers }).then(async (res) => {
+      await axiosPrivate.get(`ward/getAdBoardByBoardId/${res.board_id}`).then(async (res) => {
         updateAdSpotsReportStatus(
           adSpots.findIndex((spot) => spot.point_id === res.data.data.point_id),
           'noProcess'
@@ -251,8 +252,8 @@ export default function Home() {
 
     if (data.point_id) {
       const adSpotsIndex = adSpots.findIndex((spot) => spot.point_id === data.point_id);
-      await axiosRequest
-        .get(`/ward/getInfoByPointId/${data.point_id}`, { headers: headers })
+      await axiosPrivate
+        .get(`/ward/getInfoByPointId/${data.point_id}`)
         .then((res) => {
           const _data = res.data.data;
           if (_data.spotInfo.reports === 0 && _data.boardInfo.every((board) => board.reports === 0))
@@ -263,14 +264,14 @@ export default function Home() {
           console.log('Get spot info error: ', error);
         });
     } else if (data.board_id) {
-      await axiosRequest
-        .get(`ward/getAdBoardByBoardId/${data.board_id}`, { headers: headers })
+      await axiosPrivate
+        .get(`ward/getAdBoardByBoardId/${data.board_id}`)
         .then(async (res) => {
           const point_id = res.data.data.point_id;
           const adSpotsIndex = adSpots.findIndex((spot) => spot.point_id === point_id);
 
-          await axiosRequest
-            .get(`/ward/getInfoByPointId/${point_id}`, { headers: headers })
+          await axiosPrivate
+            .get(`/ward/getInfoByPointId/${point_id}`)
             .then((res) => {
               const data = res.data.data;
               if (data.spotInfo.reports === 0 && data.boardInfo.every((board) => board.reports === 0))
@@ -288,8 +289,8 @@ export default function Home() {
       const lat = data.lat;
       const lng = data.lng;
 
-      await axiosRequest
-        .post(`ward/getReportDetailsByLatLng`, { lat: lat, lng: lng }, { headers: headers })
+      await axiosPrivate
+        .post(`ward/getReportDetailsByLatLng`, { lat: lat, lng: lng })
         .then(async (res) => {
           const reports = res.data.data.reports;
           const adSpotsIndex = adSpots.findIndex((spot) => spot.lat === lat && spot.lng === lng);
@@ -462,7 +463,6 @@ export default function Home() {
           spotCoord={marker}
           spotId={currentSpotId}
           adSpots={adSpots}
-          setAdSpots={setAdSpots}
           setCollapse={setCollapseSidebar}
           isClickMarker={isClickMarker}
           setAutoCompleteValue={setAutoCompleteValue}

@@ -6,7 +6,7 @@ import { faAngleLeft, faAngleRight, faLocationDot } from '@fortawesome/free-soli
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { noImage } from '~assets/imgs/Imgs';
 import axios from 'axios';
-import { axiosRequest } from '~/src/api/axios';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectUser, selectBoardId, setBoardId } from '~/src/store/reducers';
 import { useNavigate } from 'react-router';
@@ -25,6 +25,7 @@ export default function SpotInfoSidebar(props) {
     setImageModalUrl,
   } = props;
 
+  const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
   const [status, setStatus] = useState(true);
   const [currentAdsIndex, setCurrentAdsIndex] = useState(0);
@@ -76,8 +77,8 @@ export default function SpotInfoSidebar(props) {
       setLoading(true);
 
       if (spotId)
-        await axiosRequest
-          .get(`ward/getInfoByPointId/${spotId}`, { headers: headers })
+        await axiosPrivate
+          .get(`ward/getInfoByPointId/${spotId}`)
           .then((res) => {
             const data = res.data.data;
             setCurrentInfo(data);
@@ -99,8 +100,8 @@ export default function SpotInfoSidebar(props) {
           lat: spotCoord.lat,
           lng: spotCoord.lng,
         };
-        await axiosRequest
-          .post('ward/getNumberOfReportsByLatLng', body, { headers: headers })
+        await axiosPrivate
+          .post('ward/getNumberOfReportsByLatLng', body)
           .then((res) => {
             const data = res.data.data;
             setCurrentInfo({ spotInfo: { reports: data.numberOfReports } });

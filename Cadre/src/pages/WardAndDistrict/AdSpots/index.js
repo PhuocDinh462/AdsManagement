@@ -4,7 +4,7 @@ import { faPencil, faEye } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Pagination from '~components/Pagination';
 import SearchBar from '~components/SearchBar';
-import { axiosRequest } from '~/src/api/axios';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectSelectedWards, selectUser, setBoardIndex } from '~/src/store/reducers';
 import { useNavigate } from 'react-router';
@@ -15,6 +15,7 @@ export default function AdSpots() {
   const [filteredData, setFilterData] = useState(data);
   const [filterKeyword, setFilterKeyword] = useState('');
 
+  const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
@@ -26,8 +27,8 @@ export default function AdSpots() {
   const fetchWardsSpots = async () => {
     let spots = [];
     for (let i = 0; i < selectedWards.length; i++) {
-      await axiosRequest
-        .get(`ward/getAdSpotsListByWardId/${selectedWards[i].ward_id}`, { headers: headers })
+      await axiosPrivate
+        .get(`ward/getAdSpotsListByWardId/${selectedWards[i].ward_id}`)
         .then((res) => {
           if (res.data.data.length > 0) {
             for (let j = 0; j < res.data.data.length; j++) {
@@ -46,8 +47,8 @@ export default function AdSpots() {
   useEffect(() => {
     if (user.user_type === 'ward') {
       (async () => {
-        await axiosRequest
-          .get(`ward/getAdSpotsListByWardId/${user.ward_id}`, { headers: headers })
+        await axiosPrivate
+          .get(`ward/getAdSpotsListByWardId/${user.ward_id}`)
           .then((res) => {
             const data = res.data.data;
             setData(data);
