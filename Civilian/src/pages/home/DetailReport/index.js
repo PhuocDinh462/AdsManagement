@@ -43,7 +43,7 @@ const DetailReport = (props) => {
                                     </li>
                                     <li>
                                         <label>Trạng thái:</label>
-                                        <p style={{ color: infoDetailReport.status === 'pending' ? 'red' : '#000' }}>
+                                        <p style={{ color: infoDetailReport.status === 'pending' ? 'red' : 'green' }}>
                                             {infoDetailReport.status === 'pending' ? 'Chưa xử lí' : 'Đã xử lí'}
                                         </p>
                                     </li>

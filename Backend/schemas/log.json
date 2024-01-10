@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "properties": {
+    "time_start": {
+      "type": "string"
+    },
+    "time_end": {
+      "type": "string"
+    },
+    "method": {
+      "type": "string",
+      "enum": ["GET", "POST", "DELETE", "PATCH", "PUT", "HEAD"]
+    },
+    "path": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    }
+  },
+  "required": ["time_start", "time_end"],
+  "additionalProperties": false
+}
