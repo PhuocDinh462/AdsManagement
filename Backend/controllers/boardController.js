@@ -225,14 +225,26 @@ const getAllBoards = catchAsync(async (req, res, next) => {
   const query = `
   SELECT
   ab.board_id,
+  ab.contract_id,
   ap.address,
   ab.advertisement_image_url,
   ab.advertisement_content,
   ab.width,
   ab.height,
+  ab.board_type_id,
   bt.type_name,
-  ap.location_type
+  ap.location_type,
+  ap.advertisement_type_id,
+  c.company_name, 
+  c.company_email, 
+  c.company_phone, 
+  c.company_address, 
+  c.company_taxcode, 
+  c.start_date, 
+  c.end_date, 
+  c.representative 
     FROM advertising_board ab
+    JOIN contract c ON ab.contract_id = c.contract_id
     JOIN advertising_point ap ON ab.point_id = ap.point_id
     JOIN board_type bt ON ab.board_type_id = bt.board_type_id;
     `;
@@ -252,14 +264,13 @@ const getAllBoards = catchAsync(async (req, res, next) => {
 });
 
 const deleteBoardById = catchAsync(async (req, res, next) => {
-  const { board_id } = req.params.board_id;
+  const { board_id } = req.params;
 
   const query = `
   SELECT * FROM  advertising_board WHERE board_id = ${board_id}`;
 
   connection.query(query, (err, results) => {
     if (err) {
-      console.error('Error executing query:', err);
       res.status(404).json({ status: 'error', error: 'Board is not exist' });
       return;
     }
@@ -285,4 +296,3 @@ const deleteBoardById = catchAsync(async (req, res, next) => {
 });
 
 module.exports = { createBoard, getInforBoard, updateBoard, getBoardsByPoint, getAllBoards, deleteBoardById };
-

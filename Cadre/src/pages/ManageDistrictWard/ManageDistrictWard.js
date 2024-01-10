@@ -10,8 +10,10 @@ import ModalUpdate from './components/ModalUpdate';
 import Swal from 'sweetalert2';
 import setLocalStorageFromCookie from '~/src/utils/setLocalStorageFromCookie';
 import DetailAddress from './components/DetailModal/DetailAddress';
+import useAxiosPrivate from '../../hook/useAxiosPrivate';
 
 const ManageDistrictWard = () => {
+  const axiosPrivate = useAxiosPrivate();
   const [data, setData] = useState({ districts: [], wards: [] });
   const [originalData, setOriginalData] = useState({ districts: [], wards: [] });
   const [loading, setLoading] = useState(true);
@@ -30,23 +32,17 @@ const ManageDistrictWard = () => {
     setLocalStorageFromCookie('token');
   }, []);
 
-  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
-  const headers = {
-    Authorization: tokenAuth,
-  };
-
   const fetchData = async () => {
     try {
-      const responseDistrict = await axiosClient.get('/cadre/districts', { headers });
-      const responseWards = await axiosClient.get('/cadre/wards', { headers });
-
+      const responseDistrict = await axiosPrivate.get('/cadre/districts');
+      const responseWards = await axiosPrivate.get('/cadre/wards');
       setData({
-        districts: responseDistrict,
-        wards: responseWards,
+        districts: responseDistrict.data,
+        wards: responseWards.data,
       });
       setOriginalData({
-        districts: responseDistrict,
-        wards: responseWards,
+        districts: responseDistrict.data,
+        wards: responseWards.data,
       });
     } catch (error) {
       setError(error);
@@ -130,14 +126,11 @@ const ManageDistrictWard = () => {
         id,
         type,
       };
-      console.log(headers);
       try {
-        const response = await axiosClient.delete('/cadre/deleteAddress', {
-          headers,
-          data,
-        });
+        const response = await axiosPrivate.delete('/cadre/deleteAddress', { data });
+        console.log(response.data);
 
-        if (response.status === 'success') {
+        if (response.data.status === 'success') {
           // Update local state after successful delete
           Swal.fire({
             icon: 'success',

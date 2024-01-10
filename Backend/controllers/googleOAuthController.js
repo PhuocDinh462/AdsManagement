@@ -60,7 +60,7 @@ const findUser = async (googleUser) => {
 
     return new Promise((resolve, reject) => {
         connection.query(
-            `SELECT * FROM user WHERE email = ?`,
+            `select * from user u left join ward w on u.user_id = w.manager_id left join district d on u.user_id = d.manager_id where u.email = ?`,
             email,
             async (err, results) => {
                 if (err) {
@@ -130,21 +130,36 @@ const googleOAuthHandler = catchAsync(async (req, res, next) => {
         // // upsert the user
         const user = await findUser(googleUser);
         if (user !== null) {
-            const accessToken = generateToken.accessToken(user);
+            const accessToken = generateToken.accessToken(user.email, user.password, user.user_id);
+            const refreshToken = generateToken.refreshToken(user.email, user.password, user.user_id);
+            connection.query(
+                `UPDATE user SET refresh_token = ? WHERE user_id = ?`,
+                [refreshToken, user.user_id],
+                (err, resultsUpdated) => {
+                    if (err) {
+                        console.error('Error executing query: ' + err.stack);
+                        return res.status(500).json({ error: 'Database error' });
+                    }
 
-            // // redirect back to client
-            res.cookie('user_id', user.user_id);
-            res.cookie('user_type', user.user_type);
-            res.cookie('token', accessToken);
-            res.cookie('user-state', true)
-            if (user.user_type === 'department') {
-                res.redirect("http://localhost:3000/district-ward");
-            } else if (user.user_type === 'ward') {
-                res.redirect("http://localhost:3000/home");
-            } else if (user.user_type === 'district') {
-                res.redirect("http://localhost:3000/home");
+                    // // redirect back to client
+                    res.cookie('user_id', user.user_id);
+                    res.cookie('user_type', user.user_type);
+                    res.cookie('token', accessToken);
+                    res.cookie('refresh_token', refreshToken);
+                    res.cookie('ward_id', user.ward_id)
+                    res.cookie('district_id', user.district_id)
+                    res.cookie('user-state', true)
+                    if (user.user_type === 'department') {
+                        res.redirect("http://localhost:3000/district-ward");
+                    } else if (user.user_type === 'ward') {
+                        res.redirect("http://localhost:3000/home");
+                    } else if (user.user_type === 'district') {
+                        res.redirect("http://localhost:3000/home");
 
-            }
+                    }
+
+                }
+            );
         } else {
             res.redirect("http://localhost:3000/not_found");
         }

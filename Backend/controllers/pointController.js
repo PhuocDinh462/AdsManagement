@@ -54,6 +54,30 @@ const getPointByTypeAndManage = catchAsync(async (req, res, next) => {
   });
 });
 
+const getPointByCandre = catchAsync(async (req, res, next) => {
+  const { id } = req.params;
+
+  const queryString = `SELECT * 
+            FROM advertising_point 
+                WHERE advertisement_type_id = ${id}
+                AND is_planning = true;`;
+
+  connection.query(queryString, (err, results) => {
+    if (err) {
+      res.status(500).json({
+        status: 'error',
+        message: 'Internal Server Error',
+      });
+      return;
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: results,
+    });
+  });
+});
+
 const getInforPoint = catchAsync(async (req, res, next) => {
   const { id } = req.params;
   connection.query(`select * from advertising_point where point_id = ?`, [id], (err, results) => {
@@ -96,4 +120,4 @@ const getPointsByManager = catchAsync(async (req, res, next) => {
   );
 });
 
-module.exports = { getPointByTypeAndManage, getAllPoint, getInforPoint, getPointsByManager };
+module.exports = { getPointByTypeAndManage, getAllPoint, getInforPoint, getPointsByManager, getPointByCandre };

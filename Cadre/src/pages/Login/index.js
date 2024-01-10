@@ -9,14 +9,41 @@ import Images from '../../assets/images';
 import Swal from 'sweetalert2';
 import getGoogleOAuthURL from '~/src/utils/getGoogleUrl';
 
-import { useDispatch } from 'react-redux';
-import { setUser } from '~/src/store/reducers';
-import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectUser, setUser } from '~/src/store/reducers';
+import auth from '../../utils/auth';
+import setLocalStorageFromCookie from '~/src/utils/setLocalStorageFromCookie';
 
 const LoginPage = () => {
   const loginNavigate = useNavigate();
   const dispatch = useDispatch();
+  const user = useSelector(selectUser);
+  (async () => {
+    setLocalStorageFromCookie('user-state');
+    setLocalStorageFromCookie('user_type');
+    setLocalStorageFromCookie('user_id');
+    setLocalStorageFromCookie('token');
+    setLocalStorageFromCookie('refresh_token');
+    setLocalStorageFromCookie('ward_id');
+    setLocalStorageFromCookie('district_id');
+  })();
+  useEffect(() => {
 
+    const userType = localStorage.getItem('user_type');
+    if (userType) {
+      dispatch(
+        setUser({
+          'user-state': true,
+          user_id: localStorage.getItem('user_id'),
+          user_type: userType,
+          token: localStorage.getItem('token'),
+          refresh_token: localStorage.getItem('refresh_token'),
+          ward_id: localStorage.getItem('ward_id'),
+          district_id: localStorage.getItem('district_id'),
+        })
+      );
+    }
+  }, []);
   useEffect(() => {
     const user_type = localStorage.getItem('user_type');
     if (user_type === 'department') {
@@ -26,7 +53,7 @@ const LoginPage = () => {
     } else if (user_type === 'district') {
       loginNavigate('/home');
     }
-  }, []);
+  }, [user])
 
   const formik = useFormik({
     initialValues: {
@@ -40,11 +67,8 @@ const LoginPage = () => {
     onSubmit: async (values, { setSubmitting }) => {
       try {
         const response = await request.post('auth/login', values);
+        auth.login(response.data);
         const user_type = response.data.user_type;
-        localStorage.setItem('user-state', true);
-        localStorage.setItem('user_id', response.data.user_id);
-        localStorage.setItem('user_type', user_type);
-        localStorage.setItem('token', response.data.token);
 
         dispatch(
           setUser({
@@ -52,6 +76,7 @@ const LoginPage = () => {
             user_id: response.data.user_id,
             user_type: user_type,
             token: response.data.token,
+            refresh_token: response.data.refresh_token,
             ward_id: response.data.ward_id,
             district_id: response.data.district_id,
           })

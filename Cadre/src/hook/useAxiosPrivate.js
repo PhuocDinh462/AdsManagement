@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { axiosPrivate } from '../api/axios';
+import { axiosPrivate, axiosClient } from '../api/axios';
 import auth from '../utils/auth';
 import useRefreshToken from './useRefreshToken';
 import { useNavigate } from 'react-router';
@@ -31,11 +31,15 @@ const useAxiosPrivate = () => {
           return axiosPrivate(prevRequest);
         }
         if (error?.response?.status === 401) {
-          console.log('error?.response?.status');
+          const refresh_token = {
+            refresh_token: auth.getRefreshToken(),
+          };
+          auth.logout();
           // LOGOUT
-          axiosPrivate
-            .post('auth/logout', { refresh_token: auth.getRefreshToken() })
+          axiosClient
+            .post('auth/logout', refresh_token)
             .then((res) => {
+              console.log(res);
               navigate('/');
             })
             .catch((error) => {
@@ -50,7 +54,7 @@ const useAxiosPrivate = () => {
       axiosPrivate.interceptors.response.eject(requestIntercept);
       axiosPrivate.interceptors.response.eject(responseIntercept);
     };
-  }, [auth.getAccessToken(), refresh]);
+  }, [refresh]);
 
   return axiosPrivate;
 };

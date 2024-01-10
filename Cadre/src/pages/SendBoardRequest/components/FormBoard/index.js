@@ -9,8 +9,10 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '~/src/firebase';
 import { v4 } from 'uuid';
 import { Backdrop, CircularProgress } from '@mui/material';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 
 const FormBoard = () => {
+  const axiosPrivate = useAxiosPrivate();
   const apiKey = 'AIzaSyAQxG3Ubdo-Nhf6tjGYmXhYDe3yr4vGeDw';
   const boardNavigate = useNavigate();
   const user_type = localStorage.getItem('user_type');
@@ -28,7 +30,7 @@ const FormBoard = () => {
 
   const fetchBoardTypes = async () => {
     try {
-      const response = await request.get(`board_type`);
+      const response = await axiosPrivate.get(`board_type`);
       setBoardTypes(response.data.board_types);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -36,8 +38,8 @@ const FormBoard = () => {
   };
   const fetchInfor = async () => {
     try {
-      const responseBoard = await request.get(`board/get_board/${board_id}`, { headers: headers });
-      const responsePoint = await request.get(`point/get_point/${responseBoard.data.board.point_id}`, {
+      const responseBoard = await axiosPrivate.get(`board/get_board/${board_id}`);
+      const responsePoint = await axiosPrivate.get(`point/get_point/${responseBoard.data.board.point_id}`, {
         headers: headers,
       });
       setBoardInfor(responseBoard.data.board);
@@ -103,7 +105,7 @@ const FormBoard = () => {
           width: values.width,
           height: values.height,
         };
-        await request.post('edit_board/create', params, { headers: headers });
+        await axiosPrivate.post('edit_board/create', params);
 
         setSubmitting(false);
         Swal.fire({

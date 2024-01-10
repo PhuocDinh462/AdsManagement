@@ -1,60 +1,41 @@
 import { faMagnifyingGlass, faPenToSquare, faPlus, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useEffect, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import Swal from 'sweetalert2';
 import { axiosClient } from '~/src/api/axios';
 import Pagination from '~/src/components/Pagination';
-import { selectUser } from '~/src/store/reducers';
+import { removeFormLicenseReq, selectUser, setFormLicenseReq } from '~/src/store/reducers';
+import { calculateDaysBetweenDates, notiSuccess } from '~/src/utils/support';
 import classes from './ManageAd.module.scss';
+import BoardModalAdd from './components/BoardModalAdd';
+import BoardModalUpdate from './components/BoardModalUpdate';
 import BoardDetails from './components/DetailsAd';
-import UpdateAd from './components/UpdateAdLocation/UpdateAd';
+
+const listType = [
+  { title: 'Cổ động chính trị', value: 1 },
+  { title: 'Quảng cáo thương mại', value: 2 },
+  { title: 'Xã hội hoá', value: 3 },
+];
+
+const listBoardType = [
+  { title: 'Bảng hiflex ốp tường', value: 1 },
+  { title: 'Màn hình điện tử ốp tường', value: 2 },
+  { title: 'Trung tâm thương mại', value: 3 },
+];
 
 const ManageAd = () => {
-  const initialData = [
-    {
-      stt: 1,
-      content: 'Đồng Khởi - Nguyễn Du',
-      area: 'Phường Bến Nghé, Quận 1',
-      img: 'Jane Doe',
-      status: 'Đã quy hoạch',
-    },
-    {
-      stt: 1,
-      content: 'Đồng Khởi - Nguyễn Du',
-      area: 'Phường Bến Nghé, Quận 1',
-      img: 'Jane Doe',
-      status: 'Chưa quy hoạch',
-    },
-    {
-      stt: 1,
-      content: 'Đồng Khởi - Nguyễn Du',
-      area: 'Phường Bến Nghé, Quận 1',
-      img: 'Jane Doe',
-      status: 'Đã quy hoạch',
-    },
-    {
-      stt: 1,
-      content: 'Đồng Khởi - Nguyễn Du',
-      area: 'Phường Bến Nghé, Quận 1',
-      img: 'Jane Doe',
-      status: 'Chưa quy hoạch',
-    },
-    // Thêm dữ liệu khác
-  ];
+  const dispatch = useDispatch();
 
-  const [dataInit, setDataInit] = useState([]);
   const [data, setData] = useState([]);
-  const [selectedFilter, setSelectedFilter] = useState('Tất cả');
+  const [isOpenAdd, setIsOpenAdd] = useState(false);
   const [isOpenUpdate, setIsOpenUpdate] = useState(false);
   const [isOpenDetails, setIsOpenDetails] = useState(false);
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [selectedRowData, setSelectedRowData] = useState(null);
-  const [modalType, setModalType] = useState(null);
 
   const [selected, setSelected] = useState(null);
 
   const user = useSelector(selectUser);
-  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
+  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
   const headers = {
     Authorization: tokenAuth,
   };
@@ -68,33 +49,76 @@ const ManageAd = () => {
     return data.slice(firstPageIndex, lastPageIndex);
   }, [pageSize, currentPage, data]);
 
-  // const handleFilterChange = (status) => {
-  //   const filteredData = status === 'Tất cả' ? initialData : initialData.filter((item) => item.status === status);
-  //   setData(filteredData);
-  //   setSelectedFilter(status);
-  // };
+  const handleOpenModalAdd = () => {
+    setIsOpenAdd(true);
+  };
 
-  // const getFilterStyle = (filter) => ({
-  //   color: selectedFilter === filter ? '#0A6971' : '#2f2f2f',
-  //   borderBottom: selectedFilter === filter ? '2px solid #0A6971' : 'none',
-  //   cursor: 'pointer',
-  // });
+  const handleCloseModalAdd = (isSubmit = false) => {
+    setIsOpenAdd(false);
+    dispatch(removeFormLicenseReq());
 
-  const handleAddClick = () => {
-    setSelectedRowData(null);
-    setModalType('add');
-    setModalOpen(true);
+    if (isSubmit === true) notiSuccess('Tạo mới bảng quảng cáo thành công');
+  };
+
+  const handleOpenModalUpdate = (e, data) => {
+    e.stopPropagation();
+    console.log(data);
+    setIsOpenUpdate(true);
+    dispatch(
+      setFormLicenseReq({
+        ...data,
+        type: listType[data.advertisement_type_id - 1],
+        point: { title: data.address },
+        board_type_id: listBoardType[data.board_type_id - 1],
+      })
+    );
+  };
+
+  const handleCloseModalUpdate = (isSubmit = false) => {
+    setIsOpenUpdate(false);
+    dispatch(removeFormLicenseReq());
+
+    if (isSubmit === true) notiSuccess('Cập nhật bảng quảng cáo thành công');
   };
 
   const fetchDataAdsBoard = async () => {
     try {
       const res = await axiosClient.get('/board', { headers });
-      console.log(res);
-      setDataInit(res.boards);
       setData(res.boards);
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const fetchDataDeleteBoard = async (id) => {
+    try {
+      await axiosClient.delete(`/board/${id}`, { headers });
+      Swal.fire({
+        icon: 'success',
+        title: 'Xóa thành công!',
+        text: 'Đã xóa thành công.',
+      });
+      fetchDataAdsBoard();
+    } catch (error) {}
+  };
+
+  const handleDeleteBoard = (e, data) => {
+    e.stopPropagation();
+
+    Swal.fire({
+      title: 'Xác nhận xóa',
+      text: 'Bạn có chắc muốn xóa?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Xóa',
+      cancelButtonText: 'Hủy',
+    }).then((confirmResult) => {
+      if (confirmResult.isConfirmed) {
+        fetchDataDeleteBoard(data.board_id);
+      }
+    });
   };
 
   useEffect(() => {
@@ -105,10 +129,10 @@ const ManageAd = () => {
     <div className={classes.container__wrap}>
       <div className={classes.header}>
         <p className={classes.header__title}>Danh sách các quảng cáo</p>
-        <div className={classes.header__buttonAdd} onClick={handleAddClick}>
+        <button className={classes.header__buttonAdd} onClick={handleOpenModalAdd}>
           <FontAwesomeIcon icon={faPlus} />
           <p className={classes.add}>Thêm</p>
-        </div>
+        </button>
       </div>
 
       <div className={classes.container}>
@@ -129,7 +153,7 @@ const ManageAd = () => {
                 <th style={{ width: '22%' }}>Loại bảng</th>
                 <th style={{ width: '15%' }}>Hình ảnh minh họa</th>
                 <th style={{ width: '33%' }}>Địa chỉ</th>
-                <th style={{ width: '10%' }}>Kích thước</th>
+                <th style={{ width: '10%' }}>Thời hạn đăng ký (ngày) </th>
                 <th style={{ width: '15%' }}>Chỉnh sửa</th>
               </tr>
             </thead>
@@ -156,18 +180,12 @@ const ManageAd = () => {
                     <img src={row.advertisement_image_url} alt="none" />
                   </td>
                   <td style={{ width: '33%' }}>{row.address}</td>
-                  <td style={{ width: '10%' }}>{`${row.width}m x ${row.height}m`}</td>
+                  <td style={{ width: '10%' }}>{calculateDaysBetweenDates(row.start_date, row.end_date)}</td>
                   <td style={{ width: '15%' }}>
-                    <button className={classes.btn_trash}>
+                    <button className={classes.btn_trash} onClick={(e) => handleDeleteBoard(e, row)}>
                       <FontAwesomeIcon icon={faTrashCan} className={classes.icon} />
                     </button>
-                    <button
-                      className={classes.btn_pen}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setIsOpenUpdate(true);
-                      }}
-                    >
+                    <button className={classes.btn_pen} onClick={(e) => handleOpenModalUpdate(e, row)}>
                       <FontAwesomeIcon icon={faPenToSquare} className={classes.icon} />
                     </button>
                   </td>
@@ -185,12 +203,9 @@ const ManageAd = () => {
           onPageChange={(page) => setCurrentPage(page)}
         />
       </div>
+      {isOpenAdd && <BoardModalAdd handleCloseModal={handleCloseModalAdd} handleReLoadData={fetchDataAdsBoard} />}
       {isOpenUpdate && (
-        <UpdateAd
-          onClose={() => {
-            setIsOpenUpdate(false);
-          }}
-        />
+        <BoardModalUpdate handleCloseModal={handleCloseModalUpdate} handleReLoadData={fetchDataAdsBoard} />
       )}
       {isOpenDetails && (
         <BoardDetails
@@ -205,4 +220,3 @@ const ManageAd = () => {
 };
 
 export default ManageAd;
-

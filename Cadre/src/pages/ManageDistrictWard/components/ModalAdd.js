@@ -2,8 +2,11 @@ import React, { useEffect, useState } from 'react';
 import classes from './ModalAdd.module.scss';
 import { axiosClient } from '../../../api/axios';
 import Swal from 'sweetalert2';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 
 const ModalAdd = ({ onClose }) => {
+  const axiosPrivate = useAxiosPrivate();
+
   const [addressType, setAddressType] = useState('district');
   const [districtName, setDistrictName] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState();
@@ -12,16 +15,11 @@ const ModalAdd = ({ onClose }) => {
   const [districts, setDistricts] = useState([]);
   const [users, setUsers] = useState([]);
 
-  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
-  const headers = {
-    Authorization: tokenAuth,
-  };
-
   useEffect(() => {
-    axiosClient
-      .get('cadre/districts', { headers })
+    axiosPrivate
+      .get('cadre/districts')
       .then((response) => {
-        setDistricts(response);
+        setDistricts(response.data);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
@@ -29,10 +27,10 @@ const ModalAdd = ({ onClose }) => {
   }, []);
 
   useEffect(() => {
-    axiosClient
-      .get('cadre/usersWithoutMgmt', { headers })
+    axiosPrivate
+      .get('cadre/usersWithoutMgmt')
       .then((response) => {
-        setUsers(response);
+        setUsers(response.data);
         console.log(response);
       })
       .catch((error) => {
@@ -84,10 +82,10 @@ const ModalAdd = ({ onClose }) => {
       return;
     }
     try {
-      const response = await axiosClient.post('/cadre/createAddress', data, { headers });
+      const response = await axiosPrivate.post('/cadre/createAddress', data);
       // console.log(data);
 
-      if (response.status === 'success') {
+      if (response.data.status === 'success') {
         Swal.fire({
           icon: 'success',
           title: 'Thêm thành công!',

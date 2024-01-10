@@ -9,6 +9,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '~/src/firebase';
 import { v4 } from 'uuid';
 import { Backdrop, CircularProgress } from '@mui/material';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 
 const locationOptions = [
   'Đất công/Công viên/Hành lang an toàn giao thông',
@@ -20,6 +21,7 @@ const locationOptions = [
 ];
 
 const FormPoint = () => {
+  const axiosPrivate = useAxiosPrivate();
   const apiKey = 'AIzaSyAQxG3Ubdo-Nhf6tjGYmXhYDe3yr4vGeDw';
   const pointNavigate = useNavigate();
   const user_type = localStorage.getItem('user_type');
@@ -37,7 +39,7 @@ const FormPoint = () => {
 
   const fetchPointInfor = async () => {
     try {
-      const response = await request.get(`point/get_point/${point_id}`, { headers: headers });
+      const response = await axiosPrivate.get(`point/get_point/${point_id}`);
       setPointInfor(response.data.point);
       setImageUploadUrl(response.data.point.image_url);
       setAddress(response.data.point.address);
@@ -57,7 +59,7 @@ const FormPoint = () => {
 
   const fetchAdvertisementTypes = async () => {
     try {
-      const response = await request.get(`advertisement_type`);
+      const response = await axiosPrivate.get(`advertisement_type`);
       setAdvertisementTypes(response.data.advertisement_types);
     } catch (error) {
       console.error('Error fetching surfaces:', error);
@@ -96,7 +98,7 @@ const FormPoint = () => {
           request_time: values.requestTime,
           reason: values.reason,
         };
-        await request.post('edit_point/create', params, { headers: headers });
+        await axiosPrivate.post('edit_point/create', params);
 
         setSubmitting(false);
         Swal.fire({

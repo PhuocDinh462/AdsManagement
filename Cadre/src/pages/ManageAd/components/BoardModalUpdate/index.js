@@ -13,7 +13,6 @@ import { storage } from '~/src/firebase';
 import { selectFormLicenseReq, selectUser, setFormLicenseReq } from '~/src/store/reducers';
 import { convertISOString, notiError } from '~/src/utils/support';
 import AsynInputSeletion from './AsynInputSeletion';
-import DatePicker from './DatePicker';
 import InputText from './InputText';
 import classes from './style.module.scss';
 
@@ -30,23 +29,15 @@ const listBoardType = [
 ];
 
 const schema = yup.object().shape({
-  company_name: yup.string().required('Thông tin hợp đồng chưa đầy đủ!'),
-  company_email: yup.string().email('Email không hợp lệ!').required('Thông tin hợp đồng chưa đầy đủ!'),
-  company_phone: yup
-    .string()
-    .matches(/^(84|0[3|5|7|8|9])+([0-9]{8})\b$/, 'Số điện thoại chưa đúng!')
-    .required('Thông tin hợp đồng chưa đầy đủ!'),
-  representative: yup.string().required('Thông tin hợp đồng chưa đầy đủ!'),
-  company_taxcode: yup.number().typeError('Mã số thuể phải là số').required('Thông tin hợp đồng chưa đầy đủ!'),
-  company_address: yup.string().required('Thông tin hợp đồng chưa đầy đủ!'),
   width: yup.number().typeError('Độ dài bảng quảng cáo phải là số').required('Thông tin bảng quảng cáo chưa đầy đủ!'),
   height: yup.number().typeError('Độ cao quảng cáo phải là số').required('Thông tin bảng quảng cáo chưa đầy đủ!'),
   advertisement_content: yup.string().required('Thông tin bảng quảng cáo chưa đầy đủ!'),
 });
 
-const LicenseModalAdd = (props) => {
+const BoardModalUpdate = (props) => {
   const { handleCloseModal, handleReLoadData } = props;
 
+  const selectForm = useSelector(selectFormLicenseReq);
   const user = useSelector(selectUser);
   const tokenAuth = 'Bearer ' + user.token.split('"').join('');
   const headers = {
@@ -54,9 +45,8 @@ const LicenseModalAdd = (props) => {
   };
 
   const [indexCur, setIndexCur] = useState(1);
-  const [previewImage, setPreviewImage] = useState(null);
-  const [imageUploadUrl, setImageUploadUrl] = useState(null);
-  const selectForm = useSelector(selectFormLicenseReq);
+  const [previewImage, setPreviewImage] = useState(selectForm?.advertisement_image_url);
+  const [imageUploadUrl, setImageUploadUrl] = useState(selectForm?.advertisement_image_url);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -65,7 +55,6 @@ const LicenseModalAdd = (props) => {
     register,
     handleSubmit,
     reset,
-    setValue,
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
 
@@ -156,18 +145,16 @@ const LicenseModalAdd = (props) => {
         start_date: convertISOString(selectForm.start_date),
         end_date: convertISOString(selectForm.end_date),
       };
-      const res1 = await axiosClient.post('/contract/create', dataContract, { headers });
 
-      const dataLicense = {
-        ...dataInput,
-        status: 'pending',
-        board_type_id: selectForm?.board_type_id.value,
-        point_id: selectForm?.point.point_id,
-        contract_id: res1.data.contract_id,
+      const dataBoard = {
+        board_type_id: selectForm.board_type_id.value,
         advertisement_image_url: imageUploadUrl,
+        point_id: selectForm?.point.point_id,
+        ...dataInput,
       };
 
-      await axiosClient.post('/ward/license/create-license', dataLicense, { headers });
+      await axiosClient.patch(`board/update_board/${selectForm.board_id}`, dataBoard, { headers });
+
       handleCloseModal(true);
       handleReLoadData();
       reset();
@@ -184,7 +171,7 @@ const LicenseModalAdd = (props) => {
       <div className={classes.adding__modal}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className={classes.adding__modal__heading}>
-            TẠO YÊU CẦU CẤP PHÉP
+            TẠO BẢNG QUẢNG CÁO
             <FontAwesomeIcon icon={faClose} className={classes['adding__modal-ic']} onClick={handleCloseModal} />
           </div>
           <div className={classes.adding__modal__body}>
@@ -213,34 +200,17 @@ const LicenseModalAdd = (props) => {
                   <InputText
                     error={errors}
                     register={register}
+                    defaultValue={selectForm.width}
                     name="width"
                     labelInput="Độ Dài Của Bảng Quảng Cáo (đơn vị: m)"
                   />
                   <InputText
                     error={errors}
                     register={register}
+                    defaultValue={selectForm.height}
                     name="height"
                     labelInput="Độ Cao Của Bảng Quảng Cáo (đơn vị: m)"
                   />
-                </div>
-              </>
-            )}
-            {indexCur === 3 && (
-              <>
-                <h3>3. Thông Tin Hợp Đồng</h3>
-                <div className={`${classes['form-block']} ${classes['flex-center-block']}`}>
-                  <div style={{ width: '50%' }}>
-                    <InputText error={errors} register={register} name="company_name" labelInput="Tên Công Ty" />
-                    <InputText error={errors} register={register} name="company_email" labelInput="Email" />
-                    <InputText error={errors} register={register} name="company_phone" labelInput="Số Điện Thoại" />
-                    <DatePicker error={errors} setValue={setValue} name="start_date" labelInput="Ngày Bắt đầu" />
-                  </div>
-                  <div style={{ width: '50%' }}>
-                    <InputText error={errors} register={register} name="representative" labelInput="Người Đại Diện" />
-                    <InputText error={errors} register={register} name="company_taxcode" labelInput="Mã Số Thuế" />
-                    <InputText error={errors} register={register} name="company_address" labelInput="Địa chỉ" />
-                    <DatePicker error={errors} setValue={setValue} name="end_date" labelInput="Ngày Kết Thúc" />
-                  </div>
                 </div>
               </>
             )}
@@ -262,6 +232,7 @@ const LicenseModalAdd = (props) => {
                     </Typography>
                     <textarea
                       {...register('advertisement_content')}
+                      defaultValue={selectForm.advertisement_content}
                       placeholder="Nhập thông tin"
                       className={classes['textarea-custom']}
                     />
@@ -296,7 +267,7 @@ const LicenseModalAdd = (props) => {
           </div>
           <div className={classes.adding__modal__action}>
             <div className={classes.adding__modal__line}>
-              {[1, 2, 3].map((index) => (
+              {[1, 2].map((index) => (
                 <div
                   key={index}
                   className={classes['modal__line-item']}
@@ -307,7 +278,6 @@ const LicenseModalAdd = (props) => {
               ))}
             </div>
             <div className={classes.adding__modal__buttons}>
-              {indexCur === 1 && <button onClick={handleCloseModal}>Hủy</button>}
               {indexCur > 1 && (
                 <button
                   type="button"
@@ -318,7 +288,7 @@ const LicenseModalAdd = (props) => {
                   Quay lại
                 </button>
               )}
-              {indexCur < 3 && (
+              {indexCur < 2 && (
                 <button
                   type="button"
                   onClick={() => {
@@ -329,9 +299,9 @@ const LicenseModalAdd = (props) => {
                 </button>
               )}
 
-              {indexCur === 3 && (
+              {indexCur === 2 && (
                 <button type="submit" onClick={handleShowError}>
-                  Tạo Yêu Cầu
+                  Cập Nhật
                 </button>
               )}
             </div>
@@ -345,4 +315,4 @@ const LicenseModalAdd = (props) => {
   );
 };
 
-export default LicenseModalAdd;
+export default BoardModalUpdate;
