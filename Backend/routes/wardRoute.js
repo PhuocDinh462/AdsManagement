@@ -32,4 +32,3 @@ router.get('/getAdSpotsListByWardId/:id', wardController.getAdSpotsListByWardId)
 router.get('/get_wards_managing', wardController.getAllWardsByDistrictManager);
 
 module.exports = router;
-
