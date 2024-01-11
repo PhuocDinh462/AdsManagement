@@ -117,6 +117,19 @@ const addAdsPoint = catchAsync(async (req, res, next) => {
             address,
           },
         });
+
+        socket?.socketIo?.emit(`createdAdsPoint_wardId=${ward_id}`, {
+          point_id: result.insertId,
+          location_type,
+          image_url,
+          lat,
+          lng,
+          is_planning,
+          ward_id,
+          advertisement_type_id,
+          address,
+        });
+
         res.status(201).json({
           status: 'success',
           insertedData: {
@@ -185,6 +198,17 @@ const updateAdsPoint = catchAsync(async (req, res, next) => {
           return;
         }
 
+        socket?.socketIo?.emit(`updateAdsPoint_pointId=${point_id}`, {
+          location_type: location_type,
+          image_url: image_url,
+          lat: lat,
+          lng: lng,
+          is_planning: is_planning,
+          ward_id: ward_id,
+          advertisement_type_id: advertisement_type_id,
+          address: address,
+        });
+
         res.status(200).json({ status: 'success', updatedId: point_id });
       }
     );
@@ -213,6 +237,10 @@ const deleteAdsPoint = catchAsync(async (req, res, next) => {
       return;
     }
 
+    socket?.socketIo?.emit('deleteAdsPoint', {
+      point_id: req.body.point_id,
+    });
+
     res.status(200).json({ status: 'success', deletedId: pointId });
   });
 });
@@ -225,4 +253,3 @@ module.exports = {
   updateAdsPoint,
   deleteAdsPoint,
 };
-

@@ -6,7 +6,7 @@ import { IconTextBtn } from '~components/button';
 import { useState } from 'react';
 import { Backdrop, CircularProgress, styled, TextField } from '@mui/material';
 import Swal from 'sweetalert2';
-import { axiosRequest } from '~/src/api/axios';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 import { useSelector } from 'react-redux';
 import { selectUser } from '~/src/store/reducers';
 
@@ -40,6 +40,7 @@ const CssTextField = styled(TextField, {
 }));
 
 export default function ProcessModal(props) {
+  const axiosPrivate = useAxiosPrivate();
   const { setActive, email } = props;
   const [loading, setLoading] = useState(false);
   const [handlingMethod, setHandlingMethod] = useState('');
@@ -56,8 +57,8 @@ export default function ProcessModal(props) {
       email: email,
       content: handlingMethod,
     };
-    await axiosRequest
-      .post(`ward/replyReport`, body, { headers: headers })
+    await axiosPrivate
+      .post(`ward/replyReport`, body)
       .then((res) => {
         setActive(false);
         Swal.fire({

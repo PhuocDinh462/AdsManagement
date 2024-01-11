@@ -4,7 +4,7 @@ import { faLocationDot, faEye } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Pagination from '~components/Pagination';
 import SearchBar from '~components/SearchBar';
-import { axiosRequest } from '~/src/api/axios';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 import { format } from 'date-fns';
 import { useDispatch, useSelector } from 'react-redux';
 import { setReportIndex, setReportCoord, selectUser, selectSelectedWards } from '~/src/store/reducers';
@@ -15,6 +15,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function Reports() {
+  const axiosPrivate = useAxiosPrivate();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState(data);
@@ -46,8 +47,8 @@ export default function Reports() {
     let reports = [];
     setLoading(true);
     for (let i = 0; i < selectedWards.length; i++) {
-      await axiosRequest
-        .get(`ward/getReportListsByWardId/${selectedWards[i].ward_id}`, { headers: headers })
+      await axiosPrivate
+        .get(`ward/getReportListsByWardId/${selectedWards[i].ward_id}`)
         .then((res) => {
           if (res.data.data.length > 0) {
             for (let j = 0; j < res.data.data.length; j++) {
@@ -64,8 +65,8 @@ export default function Reports() {
     setLoading(false);
   };
   const fetchSingleWardReports = async () => {
-    await axiosRequest
-      .get(`ward/getReportListsByWardId/${user.ward_id}`, { headers: headers })
+    await axiosPrivate
+      .get(`ward/getReportListsByWardId/${user.ward_id}`)
       .then((res) => {
         const data = res.data.data;
         setData(data);
@@ -80,7 +81,7 @@ export default function Reports() {
   };
   const checkUserWard = async (point_id) => {
     try {
-      const res = await request.get(`/cadre/checkUserWard/${point_id}`, { headers: headers });
+      const res = await request.get(`/cadre/checkUserWard/${point_id}`);
       return res.data.checked;
     } catch (error) {
       console.error(error);
@@ -89,7 +90,7 @@ export default function Reports() {
 
   const checkUserDistrict = async (point_id) => {
     try {
-      const res = await request.get(`/cadre/checkUserDistrict/${point_id}`, { headers: headers });
+      const res = await request.get(`/cadre/checkUserDistrict/${point_id}`);
       return res.data.checked;
     } catch (error) {
       console.error(error);
@@ -130,8 +131,8 @@ export default function Reports() {
         })
       );
     } else if (eventData.board_id) {
-      await axiosRequest
-        .get(`ward/getAdBoardByBoardId/${eventData.board_id}`, { headers: headers })
+      await axiosPrivate
+        .get(`ward/getAdBoardByBoardId/${eventData.board_id}`)
         .then(async (res) => {
           setData(
             data.map((item) => {
@@ -221,8 +222,8 @@ export default function Reports() {
   useEffect(() => {
     if (user.user_type === 'ward') {
       (async () => {
-        await axiosRequest
-          .get(`ward/getReportListsByWardId/${user.ward_id}`, { headers: headers })
+        await axiosPrivate
+          .get(`ward/getReportListsByWardId/${user.ward_id}`)
           .then((res) => {
             const data = res.data.data;
             setData(data);
@@ -353,4 +354,3 @@ export default function Reports() {
     </div>
   );
 }
-

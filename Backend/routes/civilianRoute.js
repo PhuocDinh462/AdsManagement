@@ -9,6 +9,5 @@ router.get('/adsBoard', civilianController.getAllAdsBoard);
 router.get('/getReport', civilianController.getAllReport);
 router.get('/adsType', civilianController.getAdvertisementTypes);
 router.post('/report', recaptcha, civilianController.createReport);
-// router.post('/report', civilianController.createReport);
 
 module.exports = router;

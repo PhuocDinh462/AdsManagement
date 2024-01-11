@@ -1,5 +1,6 @@
 const catchAsync = require('../utils/catchAsync');
 const connection = require('../server'); // Sử dụng module quản lý kết nối cơ sở dữ liệu
+const socket = require('../app');
 
 const getInforBoard = catchAsync(async (req, res, next) => {
   const { id } = req.params;
@@ -164,6 +165,8 @@ const updateBoard = catchAsync(async (req, res, next) => {
         res.status(500).json({ status: 'error', error: 'Internal Server Error' });
         return;
       }
+
+      socket?.socketIo?.emit(`updateBoard_pointId=${point_id}`, updateValues);
 
       res.status(200).json({ status: 'success', message: 'Board updated successfully' });
     });

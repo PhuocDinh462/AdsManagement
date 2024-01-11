@@ -16,7 +16,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useEffect, useState, createRef } from 'react';
 import { IconTextBtn } from '~components/button';
 import { useNavigate, useParams } from 'react-router';
-import { axiosRequest } from '~/src/api/axios';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 import { useDispatch, useSelector } from 'react-redux';
 import { setBoardIndex, selectBoardIndex, setReportCoord, selectUser, setBoardId } from '~/src/store/reducers';
 import { Backdrop } from '@mui/material';
@@ -24,6 +24,7 @@ import { text } from '~styles/colors';
 import { sidebarBg } from '~assets/imgs/Imgs';
 
 export default function Boards() {
+  const axiosPrivate = useAxiosPrivate();
   const { id } = useParams();
   const [data, setData] = useState([]);
   const dispatch = useDispatch();
@@ -64,8 +65,8 @@ export default function Boards() {
 
   useEffect(() => {
     (async () => {
-      await axiosRequest
-        .get(`ward/getAdBoardsBySpotId/${id}`, { headers: headers })
+      await axiosPrivate
+        .get(`ward/getAdBoardsBySpotId/${id}`)
         .then((res) => {
           const _data = res.data.data;
           setData(_data);

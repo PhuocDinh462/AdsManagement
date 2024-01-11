@@ -55,7 +55,7 @@ const searchDetailLog = catchAsync(async (req, res, next) => {
     }
 
     res.status(200).json({
-      status: 'Search log successfully',
+      status: 'success',
       data: results,
     });
   });

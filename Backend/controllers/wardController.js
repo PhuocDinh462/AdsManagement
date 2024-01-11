@@ -351,8 +351,8 @@ const getReportListsByWardId = catchAsync(async (req, res, next) => {
                 res.status(500).send('Internal Server Error');
                 return;
               }
-              const wardName = results[0].ward_name.replace('Phường', '');
-              const districtName = results[0].district_name;
+              const wardName = results[0]?.ward_name?.replace('Phường', '');
+              const districtName = results[0]?.district_name;
 
               res.status(200).json({
                 status: 'success',
@@ -360,8 +360,8 @@ const getReportListsByWardId = catchAsync(async (req, res, next) => {
                   ...adSpots,
                   ...reportSpotsFiltered.filter(
                     (spot) =>
-                      spot.address?.toLowerCase().includes(wardName.toLowerCase()) &&
-                      spot.address?.toLowerCase().includes(districtName.toLowerCase())
+                      spot?.address?.toLowerCase()?.includes(wardName?.toLowerCase()) &&
+                      spot?.address?.toLowerCase()?.includes(districtName?.toLowerCase())
                   ),
                 ],
               });
@@ -623,22 +623,22 @@ const getAdSpotsListByWardId = catchAsync(async (req, res, next) => {
       return;
     }
 
-    const finalData = await Promise.all(
-      results.map(async (spot) => {
-        const url = `https://rsapi.goong.io/Geocode?latlng=${spot.lat},${spot.lng}&api_key=${process.env.GOONG_APIKEY}`;
-        const response = await fetch(url);
-        const data = await response.json();
+    // const finalData = await Promise.all(
+    //   results.map(async (spot) => {
+    //     const url = `https://rsapi.goong.io/Geocode?latlng=${spot.lat},${spot.lng}&api_key=${process.env.GOONG_APIKEY}`;
+    //     const response = await fetch(url);
+    //     const data = await response.json();
 
-        return {
-          ...spot,
-          address: data?.error ? null : data.results[0].formatted_address,
-        };
-      })
-    );
+    //     return {
+    //       ...spot,
+    //       address: data?.error ? null : data.results[0].formatted_address,
+    //     };
+    //   })
+    // );
 
     res.status(200).json({
       status: 'success',
-      data: finalData,
+      data: results,
     });
   });
 });

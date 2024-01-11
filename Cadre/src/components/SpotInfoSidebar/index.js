@@ -6,10 +6,11 @@ import { faAngleLeft, faAngleRight, faLocationDot } from '@fortawesome/free-soli
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { noImage } from '~assets/imgs/Imgs';
 import axios from 'axios';
-import { axiosRequest } from '~/src/api/axios';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectUser, selectBoardId, setBoardId } from '~/src/store/reducers';
 import { useNavigate } from 'react-router';
+import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
 
 export default function SpotInfoSidebar(props) {
   const {
@@ -17,12 +18,14 @@ export default function SpotInfoSidebar(props) {
     spotId,
     setCollapse,
     adSpots,
+    setAdSpots,
     isClickMarker,
     setAutoCompleteValue,
     setShowImageModal,
     setImageModalUrl,
   } = props;
 
+  const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
   const [status, setStatus] = useState(true);
   const [currentAdsIndex, setCurrentAdsIndex] = useState(0);
@@ -74,8 +77,8 @@ export default function SpotInfoSidebar(props) {
       setLoading(true);
 
       if (spotId)
-        await axiosRequest
-          .get(`ward/getInfoByPointId/${spotId}`, { headers: headers })
+        await axiosPrivate
+          .get(`ward/getInfoByPointId/${spotId}`)
           .then((res) => {
             const data = res.data.data;
             setCurrentInfo(data);
@@ -97,8 +100,8 @@ export default function SpotInfoSidebar(props) {
           lat: spotCoord.lat,
           lng: spotCoord.lng,
         };
-        await axiosRequest
-          .post('ward/getNumberOfReportsByLatLng', body, { headers: headers })
+        await axiosPrivate
+          .post('ward/getNumberOfReportsByLatLng', body)
           .then((res) => {
             const data = res.data.data;
             setCurrentInfo({ spotInfo: { reports: data.numberOfReports } });
@@ -117,6 +120,52 @@ export default function SpotInfoSidebar(props) {
     if (spotId) navigate(`/reports/detail/${spotId}`);
     else navigate(`/reports/detail/${spotCoord.lat},${spotCoord.lng}`);
   };
+
+  // Socket
+  useSocketSubscribe(`updateAdsPoint_pointId=${spotId}`, async (res) => {
+    setCurrentInfo({
+      boardInfo: currentInfo.boardInfo,
+      spotInfo: {
+        ...currentInfo.spotInfo,
+        location_type: res.location_type ?? currentInfo.spotInfo.location_type,
+        image_url: res.image_url ?? currentInfo.spotInfo.image_url,
+        is_planning: res.is_planning ?? currentInfo.spotInfo.is_planning,
+        advertisement_type_id: res.advertisement_type_id ?? currentInfo.spotInfo.advertisement_type_id,
+      },
+    });
+    const adIndex = adSpots.findIndex((item) => item?.point_id === spotId);
+    if (adIndex !== -1 && res.is_planning !== adSpots[adIndex].is_planning)
+      setAdSpots(
+        adSpots.map((item, i) => {
+          return {
+            ...item,
+            is_planning: i === adIndex && res.is_planning,
+          };
+        })
+      );
+  });
+
+  useSocketSubscribe(`updateBoard_pointId=${spotId}`, async (res) => {
+    setCurrentInfo({
+      spotInfo: currentInfo.spotInfo,
+      boardInfo: {
+        ...currentInfo.boardInfo,
+        board_type_id: res.board_type_id ?? currentInfo.boardInfo.board_type_id,
+        width: res.width ?? currentInfo.boardInfo.width,
+        height: res.height ?? currentInfo.boardInfo.height,
+      },
+    });
+    const adIndex = adSpots.findIndex((item) => item?.point_id === spotId);
+    if (adIndex !== -1 && res.is_planning !== adSpots[adIndex].is_planning)
+      setAdSpots(
+        adSpots.map((item, i) => {
+          return {
+            ...item,
+            is_planning: i === adIndex && res.is_planning,
+          };
+        })
+      );
+  });
 
   return (
     <div className={[classes.main_container, status ? classes.slideIn : classes.slideOut].join(' ')}>
