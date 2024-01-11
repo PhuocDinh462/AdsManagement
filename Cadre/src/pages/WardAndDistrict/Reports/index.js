@@ -117,7 +117,7 @@ export default function Reports() {
       setData(
         data.map((item) => {
           if (item.point_id === eventData.point_id) {
-            info('Một báo cáo vừa được gửi đến cho bạn');
+            // info('Một báo cáo vừa được gửi đến cho bạn');
             setToastId(eventData.point_id);
             setToastIndex(data.find((item) => item.point_id === eventData.point_id).numberOfReports);
           }
@@ -137,7 +137,7 @@ export default function Reports() {
           setData(
             data.map((item) => {
               if (item.point_id === res.data.data.point_id) {
-                info('Một báo cáo vừa được gửi đến cho bạn');
+                // info('Một báo cáo vừa được gửi đến cho bạn');
                 setToastId(res.data.data.point_id);
                 setToastIndex(data.find((item) => item.point_id === res.data.data.point_id).numberOfReports);
               }
@@ -161,7 +161,7 @@ export default function Reports() {
 
   // Use when user reports a spot that isn't adSpot
   useSocketSubscribe(`createReport_wardId=${user?.ward_id}`, async (eventData) => {
-    info('Một báo cáo vừa được gửi đến cho bạn');
+    // info('Một báo cáo vừa được gửi đến cho bạn');
 
     // If current data already had the point
     if (data.some((item) => item.lat === eventData.lat && item.lng === eventData.lng)) {
@@ -343,14 +343,14 @@ export default function Reports() {
         />
       </div>
 
-      <div
+      {/* <div
         onClick={() => {
           dispatch(setReportIndex(toastIndex));
           navigate(`/reports/detail/${toastId}`);
         }}
-      >
-        <ToastContainer />
-      </div>
+      > */}
+      <ToastContainer />
+      {/* </div> */}
     </div>
   );
 }
