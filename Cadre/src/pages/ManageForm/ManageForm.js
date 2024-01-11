@@ -99,7 +99,7 @@ const ManageForm = () => {
       try {
         const response = await axiosPrivate.delete('cadre/deleteForm', { data });
 
-        if (response.status === 'success') {
+        if (response.data.status === 'success') {
           Swal.fire({
             icon: 'success',
             title: 'Xóa thành công!',

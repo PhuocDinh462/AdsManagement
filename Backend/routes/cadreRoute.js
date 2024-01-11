@@ -7,6 +7,7 @@ const cadreReportController = require('../controllers/cadreReportController');
 const authController = require('../controllers/authController');
 const validationAddPointReq = require('../middlewares/validation/points.middleware');
 const validateAddress = require('../middlewares/validation/address.middleware');
+const validateFormType = require('../middlewares/validation/form.middleware');
 const validationCreateAccount = require('../middlewares/validation/validationCreateAccount.middleware');
 
 const router = express.Router();
@@ -23,7 +24,7 @@ router.get('/checkUserWard/:point_id', cadreController.checkUserWard);
 router.get('/checkUserDistrict/:point_id', cadreController.checkUserDistrict);
 
 router.get('/form', cadreFormController.getType);
-router.post('/addForm', cadreFormController.addFormType);
+router.post('/addForm', validateFormType.validateFormType, cadreFormController.addFormType);
 router.patch('/updateForm', cadreFormController.updateForm);
 router.delete('/deleteForm', cadreFormController.deleteForm);
 
