@@ -2,26 +2,26 @@ import React, { useContext, useEffect, useState } from 'react';
 import { SocketContext } from '../components/Provider/SocketProvider';
 
 export const useSocketSubscribe = (eventName, eventHandler) => {
-  // Get the socket instance
-  const { socket } = useContext(SocketContext);
+    // Get the socket instance
+    const { socket } = useContext(SocketContext);
 
-  // when the component, *which uses this hook* mounts,
-  // add a listener.
-  useEffect(() => {
-    console.log('SocketIO: adding listener', eventName);
-    socket.on(eventName, eventHandler);
+    // when the component, *which uses this hook* mounts,
+    // add a listener.
+    useEffect(() => {
+        // console.log('SocketIO: adding listener', eventName);
+        socket.on(eventName, eventHandler);
 
-    // Remove when it unmounts
-    return () => {
-      console.log('SocketIO: removing listener', eventName);
-      socket?.off(eventName, eventHandler);
-    };
+        // Remove when it unmounts
+        return () => {
+            // console.log('SocketIO: removing listener', eventName);
+            socket?.off(eventName, eventHandler);
+        };
 
-    // Sometimes the handler function gets redefined
-    // when the component using this hook updates (or rerenders)
-    // So adding a dependency makes sure the handler is
-    // up to date!
-  }, [eventHandler]);
+        // Sometimes the handler function gets redefined
+        // when the component using this hook updates (or rerenders)
+        // So adding a dependency makes sure the handler is
+        // up to date!
+    }, [eventHandler]);
 };
 
 //Example use sokcet
@@ -29,27 +29,25 @@ export const useSocketSubscribe = (eventName, eventHandler) => {
 // import { useSocketSubscribe } from './SocketProvder';
 
 export function ExampleComponentUseSocket() {
-  const [someState, setSomeState] = useState('');
+    const [someState, setSomeState] = useState('');
 
-  const handleSocketUpdate = (message) => {
-    setSomeState(message);
-  };
+    const handleSocketUpdate = (message) => {
+        setSomeState(message);
+    };
 
-  useSocketSubscribe('update', handleSocketUpdate);
+    useSocketSubscribe('update', handleSocketUpdate);
 
-  return <div>{someState}</div>;
+    return <div>{someState}</div>;
 }
 
-
-
 export function AlertNotification() {
-  const [someState, setSomeState] = useState('');
+    const [someState, setSomeState] = useState('');
 
-  const handleSocketUpdate = (message) => {
-    alert(message);
-  };
+    const handleSocketUpdate = (message) => {
+        alert(message);
+    };
 
-  useSocketSubscribe('update', handleSocketUpdate);
+    useSocketSubscribe('update', handleSocketUpdate);
 
-  return <div>{someState}</div>;
+    return <div>{someState}</div>;
 }

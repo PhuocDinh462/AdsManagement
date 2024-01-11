@@ -105,17 +105,7 @@ const addAdsPoint = catchAsync(async (req, res, next) => {
         }
 
         socket?.socketIo?.emit('createdAdsPoint', {
-          data: {
-            point_id: result.insertId,
-            location_type,
-            image_url,
-            lat,
-            lng,
-            is_planning,
-            ward_id,
-            advertisement_type_id,
-            address,
-          },
+          success: 'ok',
         });
 
         socket?.socketIo?.emit(`createdAdsPoint_wardId=${ward_id}`, {

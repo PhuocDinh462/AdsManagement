@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import classes from './styles.module.scss';
-import a from '~assets/imgs/tpb2_1.jpg';
-import b from '~assets/imgs/robinswan.jpg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
@@ -24,41 +22,51 @@ const DetailReport = (props) => {
                         </div>
                         <div className={classes['container__table-info-content']}>
                             <div className={classes['container__table-info-content-detail']}>
-                                <ul>
-                                    <li>
-                                        <label>Họ và tên:</label>
-                                        <p>{infoDetailReport.fullname_rp}</p>
-                                    </li>
-                                    <li>
-                                        <label>Email:</label>
-                                        <p>{infoDetailReport.email_rp}</p>
-                                    </li>
-                                    <li>
-                                        <label>Phone:</label>
-                                        <p>{infoDetailReport.phone_rp}</p>
-                                    </li>
-                                    <li>
-                                        <label>Lý do:</label>
-                                        <p>{infoDetailReport.report_content}</p>
-                                    </li>
-                                    <li>
-                                        <label>Trạng thái:</label>
-                                        <p style={{ color: infoDetailReport.status === 'pending' ? 'red' : 'green' }}>
-                                            {infoDetailReport.status === 'pending' ? 'Chưa xử lí' : 'Đã xử lí'}
-                                        </p>
-                                    </li>
-                                    <li>
-                                        <label>HÌnh ảnh:</label>
-                                        <div>
-                                            {infoDetailReport.image_url_1 && <img src={infoDetailReport.image_url_1} />}
-                                            {infoDetailReport.image_url_2 && <img src={infoDetailReport.image_url_2} />}
-                                            {!infoDetailReport.image_url_1 ||
-                                                (!infoDetailReport.image_url_2 && (
-                                                    <div style={{ height: '200px', marginTop: 0 }}></div>
-                                                ))}
-                                        </div>
-                                    </li>
-                                </ul>
+                                {infoDetailReport && (
+                                    <ul>
+                                        <li>
+                                            <label>Họ và tên:</label>
+                                            <p>{infoDetailReport.fullname_rp}</p>
+                                        </li>
+                                        <li>
+                                            <label>Email:</label>
+                                            <p>{infoDetailReport.email_rp}</p>
+                                        </li>
+                                        <li>
+                                            <label>Phone:</label>
+                                            <p>{infoDetailReport.phone_rp}</p>
+                                        </li>
+                                        <li>
+                                            <label>Lý do:</label>
+                                            <p>{infoDetailReport.report_content}</p>
+                                        </li>
+                                        <li>
+                                            <label>Trạng thái:</label>
+                                            <p
+                                                style={{
+                                                    color: infoDetailReport.status === 'pending' ? 'red' : 'green',
+                                                }}
+                                            >
+                                                {infoDetailReport.status === 'pending' ? 'Chưa xử lí' : 'Đã xử lí'}
+                                            </p>
+                                        </li>
+                                        <li>
+                                            <label>HÌnh ảnh:</label>
+                                            <div>
+                                                {infoDetailReport.image_url_1 && (
+                                                    <img src={infoDetailReport.image_url_1} />
+                                                )}
+                                                {infoDetailReport.image_url_2 && (
+                                                    <img src={infoDetailReport.image_url_2} />
+                                                )}
+                                                {!infoDetailReport.image_url_1 ||
+                                                    (!infoDetailReport.image_url_2 && (
+                                                        <div style={{ height: '200px', marginTop: 0 }}></div>
+                                                    ))}
+                                            </div>
+                                        </li>
+                                    </ul>
+                                )}
                             </div>
                         </div>
 

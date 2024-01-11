@@ -7,7 +7,7 @@ import { ic_warning } from '~/src/assets';
 import Checklist from '~/src/components/CheckList/CheckList';
 import ModalReport from '~/src/components/ModalReport/ModalReport';
 import ButtonCT from '~/src/components/button/ButtonCT';
-// import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
+import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
 import {
     AdSpotBeReported,
     AdSpotNotPlan,
@@ -108,19 +108,9 @@ const Home = () => {
         fetchData();
     }, []);
 
-    const handlefetchData = () => {
-        fetchData();
-    };
+    // useSocketSubscribe('createReport', fetchData);
+    useSocketSubscribe('createdAdsPoint', fetchData);
 
-<<<<<<< HEAD
-    useSocketSubscribe('createReport', handlefetchData);
-    useSocketSubscribe('createdAdsPoint', handlefetchData);
-
-=======
-    // useSocketSubscribe('createReport', handlefetchData);
-    // useSocketSubscribe('createAdsPoint', handlefetchData);
-    console.log('aaa');
->>>>>>> 7aa03148732e339a01c2078a3fd313e54f623397
     const removeDuplicates = (array) => {
         const uniqueArray = [];
         const seenLocations = {};
@@ -236,10 +226,10 @@ const Home = () => {
     };
 
     const selectIconAny = (spot) => {
-        if (spot.status === 'pending' || spot.status === 'processing') {
-            return SpotBeReported;
+        if (spot.status === 'processed') {
+            return SpotSolvedReport;
         }
-        return SpotSolvedReport;
+        return SpotBeReported;
     };
 
     const showInfoAd = (marker) => {
@@ -720,4 +710,3 @@ const Home = () => {
 };
 
 export default Home;
-
