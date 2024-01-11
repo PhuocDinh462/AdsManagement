@@ -18,7 +18,6 @@ export default function SpotInfoSidebar(props) {
     spotId,
     setCollapse,
     adSpots,
-    setAdSpots,
     isClickMarker,
     setAutoCompleteValue,
     setShowImageModal,
@@ -145,16 +144,6 @@ export default function SpotInfoSidebar(props) {
         height: res.height ?? currentInfo.boardInfo.height,
       },
     });
-    const adIndex = adSpots.findIndex((item) => item?.point_id === spotId);
-    if (adIndex !== -1 && res.is_planning !== adSpots[adIndex].is_planning)
-      setAdSpots(
-        adSpots.map((item, i) => {
-          return {
-            ...item,
-            is_planning: i === adIndex && res.is_planning,
-          };
-        })
-      );
   });
 
   return (
