@@ -11,7 +11,7 @@ import * as yup from 'yup';
 import { storage } from '~/src/firebase';
 import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 import { selectFormLicenseReq, selectUser, setFormLicenseReq } from '~/src/store/reducers';
-import { convertISOString, notiError } from '~/src/utils/support';
+import { notiError } from '~/src/utils/support';
 import AsynInputSeletion from './AsynInputSeletion';
 import InputText from './InputText';
 import classes from './style.module.scss';
@@ -40,10 +40,6 @@ const BoardModalUpdate = (props) => {
 
   const selectForm = useSelector(selectFormLicenseReq);
   const user = useSelector(selectUser);
-  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
-  const headers = {
-    Authorization: tokenAuth,
-  };
 
   const [indexCur, setIndexCur] = useState(1);
   const [previewImage, setPreviewImage] = useState(selectForm?.advertisement_image_url);
@@ -72,13 +68,11 @@ const BoardModalUpdate = (props) => {
   };
 
   const handleOnChangePointAds = (e, value) => {
-    console.log(value);
     dispatch(setFormLicenseReq({ point: value }));
   };
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
-    console.log(file);
 
     if (file) {
       const reader = new FileReader();
@@ -104,15 +98,13 @@ const BoardModalUpdate = (props) => {
 
   const handleShowError = () => {
     const keys = Object.keys(errors);
-    console.log(errors);
+
     if (keys.length > 0) {
       notiError('Thông tin không hợp lệ!', errors[keys[0]].message);
     }
   };
 
   const onSubmit = async (dataInput) => {
-    // console.log(dataInput, selectForm);
-
     if (!imageUploadUrl) {
       notiError('Lỗi!', 'Ảnh đang được tải lên, vui lòng chờ trong giây lát...');
       return;
@@ -141,12 +133,6 @@ const BoardModalUpdate = (props) => {
     setIsLoading(true);
 
     try {
-      const dataContract = {
-        ...dataInput,
-        start_date: convertISOString(selectForm.start_date),
-        end_date: convertISOString(selectForm.end_date),
-      };
-
       const dataBoard = {
         board_type_id: selectForm.board_type_id.value,
         advertisement_image_url: imageUploadUrl,
@@ -154,7 +140,7 @@ const BoardModalUpdate = (props) => {
         ...dataInput,
       };
 
-      await axiosPrivate.patch(`board/update_board/${selectForm.board_id}`, dataBoard, { headers });
+      await axiosPrivate.patch(`board/update_board/${selectForm.board_id}`, dataBoard);
 
       handleCloseModal(true);
       handleReLoadData();

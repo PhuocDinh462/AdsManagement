@@ -31,12 +31,12 @@ export default function AsynInputSeletion(props) {
       if (!listItem) {
         try {
           const response = await axiosPrivate.get(`/point/get_point_type/${selectForm?.type?.value}`);
-          if ((response.data.data, data.length === 0)) list.push({ title: 'Trống' });
+          console.log(response.data);
+          if (response.data.data.length === 0) list.push({ title: 'Trống' });
           else
-            (list = response.data.data),
-              data.map((item) => {
-                return { ...item, title: item.address };
-              });
+            list = response.data.data.map((item) => {
+              return { ...item, title: item.address };
+            });
 
           console.log(list);
         } catch (error) {

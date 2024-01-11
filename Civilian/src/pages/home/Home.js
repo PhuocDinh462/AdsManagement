@@ -1,27 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { GoogleMap, Marker, useJsApiLoader, InfoWindow, MarkerClusterer } from '@react-google-maps/api';
+import { faCaretLeft, faCircleQuestion, faFilter } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCaretLeft, faFilter, faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
+import { GoogleMap, InfoWindow, Marker, MarkerClusterer, useJsApiLoader } from '@react-google-maps/api';
 import axios from 'axios';
-import classes from './Home.module.scss';
-import CardInfor from './CardInfor';
-import InforTable from './InforTable';
-import DetailReport from './DetailReport';
+import { useEffect, useState } from 'react';
+import { ic_warning } from '~/src/assets';
 import Checklist from '~/src/components/CheckList/CheckList';
 import ModalReport from '~/src/components/ModalReport/ModalReport';
-import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
+import ButtonCT from '~/src/components/button/ButtonCT';
+// import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
 import {
-    AdSpotPlanned,
-    AdSpotNotPlan,
     AdSpotBeReported,
+    AdSpotNotPlan,
+    AdSpotPlanned,
     AdSpotSolvedReport,
     SpotBeReported,
     SpotSolvedReport,
 } from '~assets/markers/index';
-import ButtonCT from '~/src/components/button/ButtonCT';
-import { ic_warning } from '~/src/assets';
 import GoongAutoComplete from '~components/GoongAutoComplete/index';
 import AnnotationDropdown from './AnnotationDropdown/index';
+import CardInfor from './CardInfor';
+import DetailReport from './DetailReport';
+import classes from './Home.module.scss';
+import InforTable from './InforTable';
 
 const infoAds = {
     PANEL: 'Panel',
@@ -96,6 +96,7 @@ const Home = () => {
                 .then((res) => {
                     const data = res.data;
                     setListReport(data);
+                    console.log(data);
                 })
                 .catch((error) => {
                     console.log('Get tasks error: ', error);
@@ -111,9 +112,9 @@ const Home = () => {
         fetchData();
     };
 
-    useSocketSubscribe('createReport', handlefetchData);
-    useSocketSubscribe('createAdsPoint', handlefetchData);
-
+    // useSocketSubscribe('createReport', handlefetchData);
+    // useSocketSubscribe('createAdsPoint', handlefetchData);
+    console.log('aaa');
     const removeDuplicates = (array) => {
         const uniqueArray = [];
         const seenLocations = {};
