@@ -133,16 +133,6 @@ export default function SpotInfoSidebar(props) {
         advertisement_type_id: res.advertisement_type_id ?? currentInfo.spotInfo.advertisement_type_id,
       },
     });
-    const adIndex = adSpots.findIndex((item) => item?.point_id === spotId);
-    if (adIndex !== -1 && res.is_planning !== adSpots[adIndex].is_planning)
-      setAdSpots(
-        adSpots.map((item, i) => {
-          return {
-            ...item,
-            is_planning: i === adIndex && res.is_planning,
-          };
-        })
-      );
   });
 
   useSocketSubscribe(`updateBoard_pointId=${spotId}`, async (res) => {

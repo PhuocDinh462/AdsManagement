@@ -51,6 +51,10 @@ const LayoutNavBar = () => {
     info('Một báo cáo vừa được gửi đến cho bạn');
   });
 
+  useSocketSubscribe(`updateAdsPoint_wardId=${user?.ward_id}`, async (res) => {
+    info('Yêu cầu chỉnh sửa của bạn đã được phê duyệt');
+  });
+
   useSocketSubscribe(`updateBoard_wardId=${user?.ward_id}`, async (res) => {
     info('Yêu cầu chỉnh sửa của bạn đã được phê duyệt');
   });

@@ -224,6 +224,19 @@ export default function Home() {
   const [notPlanStatus, setNotPlanStatus] = useState(true);
 
   // Socket
+  useSocketSubscribe(`updateAdsPoint_pointId=${currentSpotId}`, async (res) => {
+    const adIndex = adSpots.findIndex((item) => item?.point_id === currentSpotId);
+    if (adIndex !== -1)
+      setAdSpots(
+        adSpots.map((item, i) => {
+          return {
+            ...item,
+            is_planning: i === adIndex ? res.is_planning : item.is_planning,
+          };
+        })
+      );
+  });
+
   useSocketSubscribe('deleteAdsPoint', async (res) => {
     setAdSpots(adSpots.filter((item) => item.point_id !== res?.point_id));
   });
