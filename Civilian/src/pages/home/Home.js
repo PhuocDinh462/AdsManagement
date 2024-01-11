@@ -112,7 +112,7 @@ const Home = () => {
     };
 
     useSocketSubscribe('createReport', handlefetchData);
-    useSocketSubscribe('createAdsPoint', handlefetchData);
+    useSocketSubscribe('createdAdsPoint', handlefetchData);
 
     const removeDuplicates = (array) => {
         const uniqueArray = [];
@@ -713,3 +713,4 @@ const Home = () => {
 };
 
 export default Home;
+

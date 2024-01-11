@@ -45,6 +45,7 @@ const Coordination = ({ setLatitude, setLongitude, setAddress, setModalMap, onCl
       (position) => {
         const { latitude, longitude } = position.coords;
         setInitialPosition({ lat: latitude, lng: longitude });
+        setCenterMap({ lat: latitude, lng: longitude });
       },
       (error) => {
         console.error('Error getting geolocation:', error);
@@ -83,7 +84,6 @@ const Coordination = ({ setLatitude, setLongitude, setAddress, setModalMap, onCl
           apiKey={process.env.REACT_APP_GOONG_APIKEY}
           placeholder="Tìm kiếm theo địa chỉ"
           value={autoCompleteValue}
-          center={centerMap}
           setValue={setAutoCompleteValue}
           onChange={(place_id) => handleSearch(place_id)}
         />
@@ -93,7 +93,7 @@ const Coordination = ({ setLatitude, setLongitude, setAddress, setModalMap, onCl
           <GoogleMap
             mapContainerStyle={{ height: '500px', width: '100%' }}
             zoom={13}
-            center={initialPosition || { lat: 0, lng: 0 }}
+            center={centerMap}
             onClick={handleMapClick}
           >
             {selectedPosition && <Marker position={selectedPosition} />}
