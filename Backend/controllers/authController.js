@@ -208,4 +208,3 @@ const refreshToken = catchAsync(async (req, res, next) => {
 });
 
 module.exports = { register, createAccount, login, forgotPassword, refreshToken, logout };
-
