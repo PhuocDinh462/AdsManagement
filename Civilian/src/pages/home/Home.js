@@ -107,11 +107,12 @@ const Home = () => {
         fetchData();
     }, []);
 
-    const handleCreateReport = (eventData) => {
+    const handlefetchData = () => {
         fetchData();
     };
 
-    useSocketSubscribe('createReport', handleCreateReport);
+    useSocketSubscribe('createReport', handlefetchData);
+    useSocketSubscribe('createAdsPoint', handlefetchData);
 
     const removeDuplicates = (array) => {
         const uniqueArray = [];
