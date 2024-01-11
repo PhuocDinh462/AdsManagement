@@ -150,13 +150,13 @@ export default function ReportsDetail() {
   const handleSocketEvent = async (eventData) => {
     if (lat && lng) {
       if (+lat === eventData.lat && +lng === eventData.lng) {
-        info('Một báo cáo vừa được gửi đến cho bạn');
+        // info('Một báo cáo vừa được gửi đến cho bạn');
         addReport(eventData);
       }
     } else {
       if (eventData.point_id) {
         if (+id === eventData.point_id) {
-          info('Một báo cáo vừa được gửi đến cho bạn');
+          // info('Một báo cáo vừa được gửi đến cho bạn');
           addReport(eventData);
         }
       } else if (eventData.board_id) {
@@ -164,7 +164,7 @@ export default function ReportsDetail() {
           .get(`ward/getAdBoardByBoardId/${eventData.board_id}`)
           .then(async (res) => {
             if (+id === res.data.data.point_id) {
-              info('Một báo cáo vừa được gửi đến cho bạn');
+              // info('Một báo cáo vừa được gửi đến cho bạn');
               addReport(eventData);
             }
           })
@@ -465,15 +465,15 @@ export default function ReportsDetail() {
         </Backdrop>
       )}
 
-      <div
+      {/* <div
         onClick={() => {
           setFilteredData(data.reports);
           setCurrentReportIndex(data.reports.length - 1);
           scrollToIndex(data.reports.length - 1);
         }}
-      >
-        <ToastContainer />
-      </div>
+      > */}
+      <ToastContainer />
+      {/* </div> */}
     </div>
   );
 }

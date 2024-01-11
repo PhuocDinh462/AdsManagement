@@ -209,6 +209,9 @@ const updateAdsPoint = catchAsync(async (req, res, next) => {
           address: address,
         });
 
+        // Use to notify
+        socket?.socketIo?.emit(`updateAdsPoint_wardId=${ward_id}`);
+
         res.status(200).json({ status: 'success', updatedId: point_id });
       }
     );

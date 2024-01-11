@@ -168,6 +168,16 @@ const updateBoard = catchAsync(async (req, res, next) => {
 
       socket?.socketIo?.emit(`updateBoard_pointId=${point_id}`, updateValues);
 
+      // Use to notify
+      connection.query('select * from advertising_point where point_id = ?', [point_id], (err, results) => {
+        if (err) {
+          console.error('Error executing query: ', err);
+          res.status(500).send('Internal Server Error');
+          return;
+        }
+        socket?.socketIo?.emit(`updateBoard_wardId=${results[0]?.ward_id}`);
+      });
+
       res.status(200).json({ status: 'success', message: 'Board updated successfully' });
     });
   });

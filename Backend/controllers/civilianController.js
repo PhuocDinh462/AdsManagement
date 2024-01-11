@@ -135,7 +135,7 @@ const createReport = catchAsync(async (req, res, next) => {
               });
 
               // Use when user reports a spot that isn't adSpot
-              if (!results[0].point_id && !results[0].board_id)
+              if ((!results[0].point_id && !results[0].board_id) || true)
                 connection.query(
                   'select * from ward w join district d on w.district_id = d.district_id',
                   async (err, wardList) => {
@@ -192,4 +192,3 @@ module.exports = {
   getAdvertisementTypes,
   createReport,
 };
-
