@@ -29,6 +29,7 @@ const createLicensingRequest = catchAsync(async (req, res, next) => {
           error: 'Invalid Information.',
         });
       }
+      socket?.socketIo?.emit('createLicenseRequest', { status: 'create license success' });
 
       res.status(200).json({
         status: 'success',

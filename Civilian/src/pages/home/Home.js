@@ -112,8 +112,8 @@ const Home = () => {
         fetchData();
     };
 
-    // useSocketSubscribe('createReport', handlefetchData);
-    // useSocketSubscribe('createAdsPoint', handlefetchData);
+    useSocketSubscribe('createReport', handlefetchData);
+    useSocketSubscribe('createAdsPoint', handlefetchData);
     console.log('aaa');
     const removeDuplicates = (array) => {
         const uniqueArray = [];

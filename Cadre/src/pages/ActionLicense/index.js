@@ -47,6 +47,7 @@ const ActionLicense = () => {
 
   // Subscribe to the socket events when the component mounts
   useSocketSubscribe('licensingAds', handleSocketEvent);
+  useSocketSubscribe('createLicenseRequest', handleSocketEvent);
 
   const handleOpenModalDetails = (data) => {
     setIsOpenDetails(true);
