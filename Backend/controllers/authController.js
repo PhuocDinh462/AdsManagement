@@ -65,9 +65,11 @@ const login = catchAsync(async (req, res, next) => {
           msg: 'Invalid Credential!',
         });
 
+      const { refresh_token, ...user } = results[0];
+
       // Tạo mới Access Token và Refresh Token
-      const accessToken = generateToken.accessToken(results[0].email, results[0].password, results[0].user_id);
-      const refreshToken = generateToken.refreshToken(results[0].email, results[0].password, results[0].user_id);
+      const accessToken = generateToken.accessToken(user);
+      const refreshToken = generateToken.refreshToken(user);
 
       // Cập nhật Refresh Token vào cơ sở dữ liệu
       connection.query(
