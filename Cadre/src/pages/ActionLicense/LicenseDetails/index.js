@@ -2,7 +2,7 @@ import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
-import { axiosClient, axiosPrivate } from '~/src/api/axios';
+import { axiosPrivate } from '~/src/api/axios';
 import ButtonCT from '~/src/components/button/ButtonCT';
 import classes from './style.module.scss';
 
@@ -244,4 +244,3 @@ const LicenseDetails = ({ data, handleCloseModal }) => {
 };
 
 export default LicenseDetails;
-

@@ -1,23 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { format } from 'date-fns';
-import classes from './DetailActionEdit.module.scss';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleQuestion } from '@fortawesome/free-regular-svg-icons';
 import {
-  faUser,
-  faPhone,
-  faEnvelope,
   faCalendarDays,
   faCircleInfo,
   faClipboard,
+  faEnvelope,
   faLocationDot,
+  faPhone,
+  faUser,
 } from '@fortawesome/free-solid-svg-icons';
-import { faCircleQuestion } from '@fortawesome/free-regular-svg-icons';
-import { axiosClient } from '~/src/api/axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { format } from 'date-fns';
+import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
-import Image from '~/src/assets/images/pexels-david-geib-3220846.jpg';
-import Image1 from '~/src/assets/images/google_logo.png';
-import { red } from '@mui/material/colors';
 import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
+import classes from './DetailActionEdit.module.scss';
 
 const DetailActionEdit = ({ data, onClose }) => {
   const axiosPrivate = useAxiosPrivate();
@@ -486,4 +482,3 @@ const DetailActionEdit = ({ data, onClose }) => {
 };
 
 export default DetailActionEdit;
-

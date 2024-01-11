@@ -36,6 +36,7 @@ const schema = yup.object().shape({
 
 const BoardModalUpdate = (props) => {
   const { handleCloseModal, handleReLoadData } = props;
+  const axiosPrivate = useAxiosPrivate();
 
   const selectForm = useSelector(selectFormLicenseReq);
   const user = useSelector(selectUser);
@@ -153,7 +154,7 @@ const BoardModalUpdate = (props) => {
         ...dataInput,
       };
 
-      await useAxiosPrivate.patch(`board/update_board/${selectForm.board_id}`, dataBoard, { headers });
+      await axiosPrivate.patch(`board/update_board/${selectForm.board_id}`, dataBoard, { headers });
 
       handleCloseModal(true);
       handleReLoadData();

@@ -3,8 +3,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Backdrop, CircularProgress } from '@mui/material';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { axiosClient } from '~/src/api/axios';
 import ButtonCT from '~/src/components/button/ButtonCT';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 import { selectUser } from '~/src/store/reducers';
 import { calculateDaysBetweenDates, formatDate, notiError, notiSuccess } from '~/src/utils/support';
 import classes from './style.module.scss';
@@ -26,6 +26,8 @@ const statusLicense = {
 const adsType = ['', 'Cổ động chính trị', 'Quảng cáo thương mại', 'Xã hội hoá'];
 
 const LicenseDetails = ({ handleCloseModal, data, fetchData }) => {
+  const axiosPrivate = useAxiosPrivate();
+
   const [isLoading, setIsLoading] = useState(false);
 
   const user = useSelector(selectUser);
@@ -38,16 +40,10 @@ const LicenseDetails = ({ handleCloseModal, data, fetchData }) => {
     setIsLoading(true);
     console.log(data);
     try {
-      const response = await axiosClient.patch(
-        `/ward/license/${data.licensing_id}`,
-        { status: 'canceled' },
-        { headers }
-      );
-      console.log(response);
+      await axiosPrivate.patch(`/ward/license/${data.licensing_id}`, { status: 'canceled' });
       notiSuccess('Yêu cầu cấp phép đã được hủy');
       fetchData();
     } catch (error) {
-      console.log(error);
       notiError('Lỗi!', 'Trạng thái chưa được cập nhật');
     } finally {
       setIsLoading(true);

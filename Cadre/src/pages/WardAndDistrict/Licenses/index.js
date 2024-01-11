@@ -2,11 +2,11 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { Backdrop, CircularProgress } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { axiosClient } from '~/src/api/axios';
 import { ic_add } from '~/src/assets';
 import Pagination from '~/src/components/Pagination';
 import SearchBar from '~/src/components/SearchBar';
 import ButtonCT from '~/src/components/button/ButtonCT';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 import { removeFormLicenseReq, selectSelectedWards, selectUser } from '~/src/store/reducers';
 import { calculateDaysBetweenDates, notiSuccess } from '~/src/utils/support';
 import LicenseDetails from './LicenseDetails';
@@ -26,6 +26,9 @@ const statusLicense = {
 };
 
 const Licenses = () => {
+  const axiosPrivate = useAxiosPrivate();
+  const user = useSelector(selectUser);
+
   const [initData, setInitData] = useState([]);
   const [data, setData] = useState(initData);
   const [isOpenDetails, setIsOpenDetails] = useState(false);
@@ -42,12 +45,6 @@ const Licenses = () => {
 
     return data.slice(firstPageIndex, lastPageIndex);
   }, [pageSize, currentPage, data]);
-
-  const user = useSelector(selectUser);
-  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
-  const headers = {
-    Authorization: tokenAuth,
-  };
 
   const dispatch = useDispatch();
   const handleOpenModalDetails = (data) => {
@@ -86,11 +83,10 @@ const Licenses = () => {
   const fetchDataLicenseReq = async () => {
     setIsLoading(true);
     try {
-      const res = await axiosClient.get('/ward/license-by-ward', { headers });
-      console.log(res);
+      const res = await axiosPrivate.get('/ward/license-by-ward');
 
-      setData(res.data);
-      setInitData(res.data);
+      setData(res.data.data);
+      setInitData(res.data.data);
     } catch (error) {
       console.log(error);
     } finally {
@@ -103,10 +99,10 @@ const Licenses = () => {
     let licenses = [];
     try {
       for (let i = 0; i < selectedWards.length; i++) {
-        const res = await axiosClient.get(`/ward/license-by-ward-id/${selectedWards[i].ward_id}`, { headers });
-        if (res.data.length > 0) {
-          for (let j = 0; j < res.data.length; j++) {
-            licenses.push(res.data[j]);
+        const res = await axiosPrivate.get(`/ward/license-by-ward-id/${selectedWards[i].ward_id}`);
+        if (res.data.data.length > 0) {
+          for (let j = 0; j < res.data.data.length; j++) {
+            licenses.push(res.data.data[j]);
           }
         }
       }
@@ -200,12 +196,13 @@ const Licenses = () => {
                   <td style={{ width: '15%' }}>{calculateDaysBetweenDates(row.start_date, row.end_date)}</td>
                   <td style={{ width: '15%' }}>
                     <div
-                      className={` ${classes.status} ${statusLicense[row.status].value === 1
+                      className={` ${classes.status} ${
+                        statusLicense[row.status].value === 1
                           ? classes.status_pending
                           : statusLicense[row.status].value === 2
-                            ? classes.status_accept
-                            : classes.status_cancel
-                        }`}
+                          ? classes.status_accept
+                          : classes.status_cancel
+                      }`}
                     >
                       {statusLicense[row.status].label}
                     </div>

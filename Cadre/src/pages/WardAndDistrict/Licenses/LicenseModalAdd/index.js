@@ -8,8 +8,8 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { v4 } from 'uuid';
 import * as yup from 'yup';
-import { axiosClient } from '~/src/api/axios';
 import { storage } from '~/src/firebase';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 import { selectFormLicenseReq, selectUser, setFormLicenseReq } from '~/src/store/reducers';
 import { convertISOString, notiError } from '~/src/utils/support';
 import AsynInputSeletion from './AsynInputSeletion';
@@ -45,6 +45,8 @@ const schema = yup.object().shape({
 });
 
 const LicenseModalAdd = (props) => {
+  const axiosPrivate = useAxiosPrivate();
+
   const { handleCloseModal, handleReLoadData } = props;
 
   const user = useSelector(selectUser);
@@ -156,18 +158,18 @@ const LicenseModalAdd = (props) => {
         start_date: convertISOString(selectForm.start_date),
         end_date: convertISOString(selectForm.end_date),
       };
-      const res1 = await axiosClient.post('/contract/create', dataContract, { headers });
+      const res1 = await axiosPrivate.post('/contract/create', dataContract);
 
       const dataLicense = {
         ...dataInput,
         status: 'pending',
         board_type_id: selectForm?.board_type_id.value,
         point_id: selectForm?.point.point_id,
-        contract_id: res1.data.contract_id,
+        contract_id: res1.data.data.contract_id,
         advertisement_image_url: imageUploadUrl,
       };
 
-      await axiosClient.post('/ward/license/create-license', dataLicense, { headers });
+      await axiosPrivate.post('/ward/license/create-license', dataLicense);
       handleCloseModal(true);
       handleReLoadData();
       reset();

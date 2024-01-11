@@ -3,15 +3,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
-import { axiosClient } from '~/src/api/axios';
 import Pagination from '~/src/components/Pagination';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 import { removeFormLicenseReq, selectUser, setFormLicenseReq } from '~/src/store/reducers';
 import { calculateDaysBetweenDates, notiSuccess } from '~/src/utils/support';
 import classes from './ManageAd.module.scss';
 import BoardModalAdd from './components/BoardModalAdd';
 import BoardModalUpdate from './components/BoardModalUpdate';
 import BoardDetails from './components/DetailsAd';
-import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 
 const listType = [
   { title: 'Cổ động chính trị', value: 1 },
@@ -220,4 +219,3 @@ const ManageAd = () => {
 };
 
 export default ManageAd;
-

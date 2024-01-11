@@ -8,15 +8,14 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { v4 } from 'uuid';
 import * as yup from 'yup';
-import { axiosClient } from '~/src/api/axios';
 import { storage } from '~/src/firebase';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 import { selectFormLicenseReq, selectUser, setFormLicenseReq } from '~/src/store/reducers';
 import { convertISOString, notiError } from '~/src/utils/support';
 import AsynInputSeletion from './AsynInputSeletion';
 import DatePicker from './DatePicker';
 import InputText from './InputText';
 import classes from './style.module.scss';
-import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 
 const listType = [
   { title: 'Cổ động chính trị', value: 1 },
@@ -348,4 +347,3 @@ const BoardModalAdd = (props) => {
 };
 
 export default BoardModalAdd;
-

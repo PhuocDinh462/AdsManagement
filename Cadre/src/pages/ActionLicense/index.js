@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import classes from './style.module.scss';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
-import LicenseDetails from './LicenseDetails';
-import { axiosClient } from '../../api/axios';
-import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
+import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
+import LicenseDetails from './LicenseDetails';
+import classes from './style.module.scss';
 
 const ActionLicense = () => {
   const axiosPrivate = useAxiosPrivate();
@@ -191,4 +190,3 @@ const ActionLicense = () => {
 };
 
 export default ActionLicense;
-

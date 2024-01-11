@@ -4,10 +4,10 @@ import CircularProgress from '@mui/material/CircularProgress';
 import TextField from '@mui/material/TextField';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { axiosClient } from '~/src/api/axios';
 import { selectFormLicenseReq, selectUser } from '~/src/store/reducers';
 
 export default function AsynInputSeletion(props) {
+  const axiosPrivate = useAxiosPrivate();
   const { labelInput, handleOnChange, listItem, name } = props;
 
   const user = useSelector(selectUser);
@@ -35,7 +35,7 @@ export default function AsynInputSeletion(props) {
       let list = listItem ? [...listItem] : [];
       if (!listItem) {
         try {
-          const response = await axiosClient.get(`/point/get_point_type/candre/${selectForm?.type?.value}`, {
+          const response = await axiosPrivate.get(`/point/get_point_type/candre/${selectForm?.type?.value}`, {
             headers,
           });
           if (response.data.length === 0) list.push({ title: 'Trống' });

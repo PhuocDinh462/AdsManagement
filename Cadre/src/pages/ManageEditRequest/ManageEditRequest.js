@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import classes from './ManageEditRequest.module.scss';
+import { faMagnifyingGlass, faPen } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
-import { faPen } from '@fortawesome/free-solid-svg-icons';
+import { useEffect, useState } from 'react';
 import Modal from '~/src/components/Modal/Modal';
-import DetailActionEdit from './components/DetailActionEdit/DetailActionEdit';
-import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
 import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
+import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
+import classes from './ManageEditRequest.module.scss';
+import DetailActionEdit from './components/DetailActionEdit/DetailActionEdit';
 
 const ManageForm = () => {
   const axiosPrivate = useAxiosPrivate();
@@ -276,4 +275,3 @@ const ManageForm = () => {
 };
 
 export default ManageForm;
-
