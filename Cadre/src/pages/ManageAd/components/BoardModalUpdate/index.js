@@ -8,8 +8,8 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { v4 } from 'uuid';
 import * as yup from 'yup';
-import { axiosClient } from '~/src/api/axios';
 import { storage } from '~/src/firebase';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 import { selectFormLicenseReq, selectUser, setFormLicenseReq } from '~/src/store/reducers';
 import { convertISOString, notiError } from '~/src/utils/support';
 import AsynInputSeletion from './AsynInputSeletion';
@@ -36,6 +36,7 @@ const schema = yup.object().shape({
 
 const BoardModalUpdate = (props) => {
   const { handleCloseModal, handleReLoadData } = props;
+  const axiosPrivate = useAxiosPrivate();
 
   const selectForm = useSelector(selectFormLicenseReq);
   const user = useSelector(selectUser);
@@ -153,7 +154,7 @@ const BoardModalUpdate = (props) => {
         ...dataInput,
       };
 
-      await axiosClient.patch(`board/update_board/${selectForm.board_id}`, dataBoard, { headers });
+      await axiosPrivate.patch(`board/update_board/${selectForm.board_id}`, dataBoard, { headers });
 
       handleCloseModal(true);
       handleReLoadData();

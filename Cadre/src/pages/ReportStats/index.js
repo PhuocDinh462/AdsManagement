@@ -2,10 +2,8 @@ import { useEffect, useState } from 'react';
 
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useSelector } from 'react-redux';
-import { axiosClient } from '~/src/api/axios';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
-import { selectUser } from '~/src/store/reducers';
 import ReportDetails from './ReportDetails';
 import classes from './style.module.scss';
 
@@ -18,6 +16,8 @@ const status = {
 const reportType = ['Tố giác sai phạm', 'Đăng ký nội dung', 'Đóng góp ý kiến'];
 
 const ReportStats = () => {
+  const axiosPrivate = useAxiosPrivate();
+
   const [data, setData] = useState([]);
   const [dataFilter, setDataFilter] = useState([]);
   const [isOpenDetails, setIsOpenDetails] = useState(false);
@@ -26,12 +26,6 @@ const ReportStats = () => {
   const [reportSelected, setReportSelected] = useState();
 
   const [numberOf, setNumberOf] = useState({ all: 0, pending: 0, processing: 0, processed: 0 });
-
-  const user = useSelector(selectUser);
-  const tokenAuth = 'Bearer ' + JSON.stringify(localStorage.getItem('token')).split('"').join('');
-  const headers = {
-    Authorization: tokenAuth,
-  };
 
   const handleUpdateStatus = (message) => {
     if (message.method === 'update') {
@@ -65,25 +59,25 @@ const ReportStats = () => {
   });
 
   const fetchDataGetReports = async () => {
-    const res = await axiosClient.get('/cadre/getAllReport', { headers });
-    setData(res);
-    setDataFilter(res);
+    const res = await axiosPrivate.get('/cadre/getAllReport');
+    setData(res.data);
+    setDataFilter(res.data);
 
-    const pendingNum = res.reduce((accumulator, currentValue) => {
+    const pendingNum = res.data.reduce((accumulator, currentValue) => {
       if (currentValue.status === 'pending') {
         return accumulator + 1;
       }
       return accumulator;
     }, 0);
 
-    const processingNum = res.reduce((accumulator, currentValue) => {
+    const processingNum = res.data.reduce((accumulator, currentValue) => {
       if (currentValue.status === 'processing') {
         return accumulator + 1;
       }
       return accumulator;
     }, 0);
 
-    const processedNum = res.reduce((accumulator, currentValue) => {
+    const processedNum = res.data.reduce((accumulator, currentValue) => {
       if (currentValue.status === 'processed') {
         return accumulator + 1;
       }
@@ -92,7 +86,7 @@ const ReportStats = () => {
 
     setNumberOf({
       ...numberOf,
-      all: res.length,
+      all: res.data.length,
       pending: pendingNum,
       processing: processingNum,
       processed: processedNum,
@@ -187,4 +181,3 @@ const ReportStats = () => {
 };
 
 export default ReportStats;
-

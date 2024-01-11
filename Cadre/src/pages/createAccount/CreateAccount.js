@@ -4,12 +4,14 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
-import { axiosClient } from '~/src/api/axios';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 import { selectUser } from '~/src/store/reducers';
 import setLocalStorageFromCookie from '~/src/utils/setLocalStorageFromCookie';
 import classes from './CreateAcount.module.scss';
 
 const CreateAcount = () => {
+  const axiosPrivate = useAxiosPrivate();
+
   const [showPassword, setShowPassword] = useState(false);
   const [district, setDistrict] = useState('');
   const [ward, setWard] = useState('');
@@ -24,12 +26,7 @@ const CreateAcount = () => {
     Authorization: tokenAuth,
   };
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm();
+  const { register, handleSubmit, reset } = useForm();
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
@@ -108,7 +105,7 @@ const CreateAcount = () => {
 
   const fecthDataCreateAccount = async (data) => {
     try {
-      await axiosClient.post('/cadre/auth/create', data, { headers });
+      await axiosPrivate.post('/cadre/auth/create', data);
       reset();
       notiSuccess('Đăng ký tài khoản thành công!');
       setListWard([]);
@@ -120,18 +117,18 @@ const CreateAcount = () => {
   };
 
   const fetchDataWard = async (ward_id) => {
-    const response = await axiosClient.get(`/cadre/wards/district/${ward_id}`, { headers });
-    setListWard(response.data);
+    const response = await axiosPrivate.get(`/cadre/wards/district/${ward_id}`);
+    setListWard(response.data.data);
   };
 
   const fetchDataDistrict = async () => {
-    const response = await axiosClient.get('/cadre/districts/empty', { headers });
-    setListDictrict(response.data);
+    const response = await axiosPrivate.get('/cadre/districts/empty');
+    setListDictrict(response.data.data);
   };
 
   const fetchDataDistrictWithWardEmpty = async () => {
-    const response = await axiosClient.get('/cadre/districts/ward-empty', { headers });
-    setListDictrict(response.data);
+    const response = await axiosPrivate.get('/cadre/districts/ward-empty');
+    setListDictrict(response.data.data);
   };
 
   useEffect(() => {
@@ -274,4 +271,3 @@ const CreateAcount = () => {
 };
 
 export default CreateAcount;
-

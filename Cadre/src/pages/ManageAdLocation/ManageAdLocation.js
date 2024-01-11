@@ -1,16 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import HeaderTable from '../../components/headerTable/HeaderTable';
-import classes from './ManageAdLocation.module.scss';
+import { faMagnifyingGlass, faPenToSquare, faPlus, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
-import { faPlus, faClose, faTrashCan, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
-import DetailsAdLocation from './components/DetailsAdLocation/DetailsAdLocation';
-import UpdateAdLocation from './components/UpdateAdLocation/UpdateAdLocation';
-import { axiosClient } from '../../api/axios';
+import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import Modal from '~/src/components/Modal/Modal';
-import AddAdLocation from './components/AddAdLocation/AddAdLocation';
 import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
+import classes from './ManageAdLocation.module.scss';
+import AddAdLocation from './components/AddAdLocation/AddAdLocation';
+import DetailsAdLocation from './components/DetailsAdLocation/DetailsAdLocation';
+import UpdateAdLocation from './components/UpdateAdLocation/UpdateAdLocation';
 
 const ManageAdLocation = () => {
   const axiosPrivate = useAxiosPrivate();
@@ -251,4 +248,3 @@ const ManageAdLocation = () => {
 };
 
 export default ManageAdLocation;
-

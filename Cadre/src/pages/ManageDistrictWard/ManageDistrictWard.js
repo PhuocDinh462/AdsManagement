@@ -1,16 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import classes from './ManageDistrictWard.module.scss';
+import { faMagnifyingGlass, faPen, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
-import { faPlus, faClose, faTrash, faPen } from '@fortawesome/free-solid-svg-icons';
-import ModalAdd from './components/ModalAdd';
-import Modal from '../../components/Modal/Modal';
-import { axiosClient } from '../../api/axios';
-import ModalUpdate from './components/ModalUpdate';
+import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import setLocalStorageFromCookie from '~/src/utils/setLocalStorageFromCookie';
-import DetailAddress from './components/DetailModal/DetailAddress';
+import Modal from '../../components/Modal/Modal';
 import useAxiosPrivate from '../../hook/useAxiosPrivate';
+import classes from './ManageDistrictWard.module.scss';
+import DetailAddress from './components/DetailModal/DetailAddress';
+import ModalAdd from './components/ModalAdd';
+import ModalUpdate from './components/ModalUpdate';
 
 const ManageDistrictWard = () => {
   const axiosPrivate = useAxiosPrivate();
@@ -320,4 +318,3 @@ const ManageDistrictWard = () => {
 };
 
 export default ManageDistrictWard;
-

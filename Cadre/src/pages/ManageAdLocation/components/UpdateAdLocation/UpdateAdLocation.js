@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
-import classes from './UpdateAdLocation.module.scss';
-import { axiosClient } from '../../../../api/axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
-import { storage } from '~/src/firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { v4 } from 'uuid';
 import Coordination from '~/src/components/Coordination/Coordination';
 import Modal from '~/src/components/Modal/Modal';
+import { storage } from '~/src/firebase';
 import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
+import classes from './UpdateAdLocation.module.scss';
 
 const UpdateAdLocation = ({ data, onClose, cancel }) => {
   const axiosPrivate = useAxiosPrivate();
@@ -299,4 +298,3 @@ const UpdateAdLocation = ({ data, onClose, cancel }) => {
 };
 
 export default UpdateAdLocation;
-

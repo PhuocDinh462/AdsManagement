@@ -4,17 +4,12 @@ import CircularProgress from '@mui/material/CircularProgress';
 import TextField from '@mui/material/TextField';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { axiosClient } from '~/src/api/axios';
-import { selectFormLicenseReq, selectUser } from '~/src/store/reducers';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
+import { selectFormLicenseReq } from '~/src/store/reducers';
 
 export default function AsynInputSeletion(props) {
+  const axiosPrivate = useAxiosPrivate();
   const { labelInput, handleOnChange, listItem, name } = props;
-
-  const user = useSelector(selectUser);
-  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
-  const headers = {
-    Authorization: tokenAuth,
-  };
 
   const [defaultCompleted, setDefaultCompleted] = useState(false);
   const [open, setOpen] = useState(false);
@@ -35,12 +30,13 @@ export default function AsynInputSeletion(props) {
       let list = listItem ? [...listItem] : [];
       if (!listItem) {
         try {
-          const response = await axiosClient.get(`/point/get_point_type/${selectForm?.type?.value}`, { headers });
-          if (response.data.length === 0) list.push({ title: 'Trống' });
+          const response = await axiosPrivate.get(`/point/get_point_type/${selectForm?.type?.value}`);
+          if ((response.data.data, data.length === 0)) list.push({ title: 'Trống' });
           else
-            list = response.data.map((item) => {
-              return { ...item, title: item.address };
-            });
+            (list = response.data.data),
+              data.map((item) => {
+                return { ...item, title: item.address };
+              });
 
           console.log(list);
         } catch (error) {

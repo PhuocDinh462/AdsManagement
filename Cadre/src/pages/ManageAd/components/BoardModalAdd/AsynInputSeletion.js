@@ -4,7 +4,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import TextField from '@mui/material/TextField';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { axiosClient } from '~/src/api/axios';
 import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 import { selectFormLicenseReq, selectUser } from '~/src/store/reducers';
 
@@ -122,4 +121,3 @@ export default function AsynInputSeletion(props) {
     )
   );
 }
-

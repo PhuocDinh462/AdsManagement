@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
-import { axiosPrivate, axiosClient } from '../api/axios';
+import { useNavigate } from 'react-router';
+import { axiosClient, axiosPrivate } from '../api/axios';
 import auth from '../utils/auth';
 import useRefreshToken from './useRefreshToken';
-import { useNavigate } from 'react-router';
 
 const useAxiosPrivate = () => {
   const refresh = useRefreshToken();
@@ -60,4 +60,3 @@ const useAxiosPrivate = () => {
 };
 
 export default useAxiosPrivate;
-

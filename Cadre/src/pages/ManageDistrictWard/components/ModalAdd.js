@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import classes from './ModalAdd.module.scss';
-import { axiosClient } from '../../../api/axios';
+import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
+import classes from './ModalAdd.module.scss';
 
 const ModalAdd = ({ onClose }) => {
   const axiosPrivate = useAxiosPrivate();
@@ -250,4 +249,3 @@ const ModalAdd = ({ onClose }) => {
 };
 
 export default ModalAdd;
-
