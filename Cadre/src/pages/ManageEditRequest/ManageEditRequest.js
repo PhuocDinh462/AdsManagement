@@ -53,6 +53,9 @@ const ManageForm = () => {
   // Subscribe to the socket events when the component mounts
   useSocketSubscribe('createEditPointRequest', handlePointSocketEvent);
   useSocketSubscribe('createEditBoardRequest', handleBoardSocketEvent);
+  useSocketSubscribe('createdAdsPoint', () => {
+    console.log('vinh test socket');
+  });
 
   const handleFilterChange = (type) => {
     let filteredData;

@@ -6,7 +6,7 @@ import { IconTextBtn } from '~components/button';
 import { useState } from 'react';
 import { Backdrop, CircularProgress, styled, TextField, Checkbox } from '@mui/material';
 import Swal from 'sweetalert2';
-import { axiosRequest } from '~/src/api/axios';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 import Select from 'react-select';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectUser, selectSendMailStatus, setSendMailStatus } from '~/src/store/reducers';
@@ -42,6 +42,7 @@ const CssTextField = styled(TextField, {
 }));
 
 export default function StatusModal(props) {
+  const axiosPrivate = useAxiosPrivate();
   const { setActive, report_id, changeStatusByReportId, currentReport } = props;
   const [loading, setLoading] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState('pending');
@@ -64,8 +65,8 @@ export default function StatusModal(props) {
       handlingMethod: handlingMethod,
       sendMail: sendMailStatus,
     };
-    await axiosRequest
-      .patch(`ward/updateReportStatus`, body, { headers: headers })
+    await axiosPrivate
+      .patch(`ward/updateReportStatus`, body)
       .then((res) => {
         setActive(false);
         changeStatusByReportId(report_id, options.find((item) => item.value === selectedStatus).label);

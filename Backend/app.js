@@ -15,6 +15,10 @@ const advertisementTypeRoute = require('./routes/advertisementTypeRoute.js');
 const boardRoute = require('./routes/boardRoute.js');
 const pointRoute = require('./routes/pointRoute.js');
 const civilianRoute = require('./routes/civilianRoute.js');
+const logRoute = require('./routes/logRoute.js');
+const logConstants = require('./constants/logConstant.js');
+const logController = require('./controllers/logController');
+const morgan = require('morgan');
 
 const connection = require('./server'); // Sử dụng module quản lý kết nối cơ sở dữ liệu
 const contractRoute = require('./routes/contract.route.js');
@@ -29,6 +33,20 @@ app.use(cors(corsOptions));
 
 app.use(express.json());
 
+const originalSend = app.response.send;
+app.response.send = function sendOverWrite(body) {
+  originalSend.call(this, body);
+  this.res_body = body;
+};
+
+morgan.token('res_body', (_req, res) => res.res_body?.substring(0, logConstants.resSize));
+
+morgan.token('req_body', (req) => {
+  return JSON.stringify(req.body)?.substring(0, logConstants.resSize);
+});
+
+app.use(morgan((tokens, req, res) => logController.addLog(tokens, req, res)));
+
 app.use('/', googleRoute);
 app.use('/board', authenticateUser, boardRoute);
 app.use('/point', authenticateUser, pointRoute);
@@ -42,6 +60,7 @@ app.use('/cadre', authenticateUser, cadreRoute);
 app.use('/ward', authenticateUser, wardRoute);
 app.use('/contract', contractRoute);
 app.use('/civilian', civilianRoute);
+app.use('/log', logRoute);
 
 const server = app.listen(port, () => {
   console.log(`Server app listening on port ${port}`);
@@ -67,4 +86,3 @@ socketIo.on('connection', (socket) => {
 // socket?.socketIo?.emit('update', 'aaaaa');
 
 module.exports.socketIo = socketIo;
-

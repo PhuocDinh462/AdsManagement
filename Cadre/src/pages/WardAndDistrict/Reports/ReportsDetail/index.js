@@ -26,7 +26,7 @@ import { Backdrop } from '@mui/material';
 import ProcessModal from './Modals/ProcessModal';
 import StatusModal from './Modals/StatusModal';
 import { useParams } from 'react-router-dom';
-import { axiosRequest } from '~/src/api/axios';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
 import { useDispatch, useSelector } from 'react-redux';
 import { setReportIndex, selectReportIndex, setReportCoord, selectUser, setBoardId } from '~/src/store/reducers';
 import { useNavigate } from 'react-router';
@@ -37,6 +37,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function ReportsDetail() {
+  const axiosPrivate = useAxiosPrivate();
   const { id } = useParams();
   const lat = id.split(',')[0];
   const lng = id.split(',')[1];
@@ -77,8 +78,8 @@ export default function ReportsDetail() {
     setLoading(true);
     if (lat && lng)
       (async () => {
-        await axiosRequest
-          .post(`ward/getReportDetailsByLatLng`, { lat: lat, lng: lng }, { headers: headers })
+        await axiosPrivate
+          .post(`ward/getReportDetailsByLatLng`, { lat: lat, lng: lng })
           .then((res) => {
             const data = res.data.data;
             setData(data);
@@ -94,8 +95,8 @@ export default function ReportsDetail() {
       })();
     else
       (async () => {
-        await axiosRequest
-          .get(`ward/getReportDetailsByPointId/${id}`, { headers: headers })
+        await axiosPrivate
+          .get(`ward/getReportDetailsByPointId/${id}`)
           .then((res) => {
             const data = res.data.data;
             setData(data);
@@ -159,8 +160,8 @@ export default function ReportsDetail() {
           addReport(eventData);
         }
       } else if (eventData.board_id) {
-        await axiosRequest
-          .get(`ward/getAdBoardByBoardId/${eventData.board_id}`, { headers: headers })
+        await axiosPrivate
+          .get(`ward/getAdBoardByBoardId/${eventData.board_id}`)
           .then(async (res) => {
             if (+id === res.data.data.point_id) {
               info('Một báo cáo vừa được gửi đến cho bạn');
