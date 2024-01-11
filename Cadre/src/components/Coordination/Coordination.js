@@ -9,6 +9,7 @@ const Coordination = ({ setLatitude, setLongitude, setAddress, setModalMap, onCl
   const [initialPosition, setInitialPosition] = useState(null);
   const [autoCompleteValue, setAutoCompleteValue] = useState();
   const [displayInitialPosition, setDisplayInitialPosition] = useState(true);
+  const [centerMap, setCenterMap] = useState();
 
   const handleMapClick = (e) => {
     const { latLng } = e;
@@ -44,6 +45,7 @@ const Coordination = ({ setLatitude, setLongitude, setAddress, setModalMap, onCl
       (position) => {
         const { latitude, longitude } = position.coords;
         setInitialPosition({ lat: latitude, lng: longitude });
+        setCenterMap({ lat: latitude, lng: longitude });
       },
       (error) => {
         console.error('Error getting geolocation:', error);
@@ -68,6 +70,7 @@ const Coordination = ({ setLatitude, setLongitude, setAddress, setModalMap, onCl
         setDisplayInitialPosition(false);
         setLatitude(coord.lat);
         setLongitude(coord.lng);
+        setCenterMap({ lat: coord.lat, lng: coord.lng });
       })
       .catch((error) => {
         console.log('Get place detail error: ', error);
@@ -90,7 +93,7 @@ const Coordination = ({ setLatitude, setLongitude, setAddress, setModalMap, onCl
           <GoogleMap
             mapContainerStyle={{ height: '500px', width: '100%' }}
             zoom={13}
-            center={initialPosition || { lat: 0, lng: 0 }}
+            center={centerMap}
             onClick={handleMapClick}
           >
             {selectedPosition && <Marker position={selectedPosition} />}

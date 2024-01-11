@@ -5,8 +5,9 @@ export const SocketContext = React.createContext({ socket: null });
 
 export function SocketProvider({ children }) {
     // we use a ref to store the socket as it won't be updated frequently
-    const URL = process.env.PORT_SOCKET ? `http://localhost:${process.env.PORT_SOCKET}` : 'http://localhost:5001';
-    console.log(URL);
+    const URL = process.env.REACT_APP_API_ENDPOINT
+        ? `http://localhost:${process.env.REACT_APP_API_ENDPOINT}`
+        : 'http://localhost:5001';
 
     const socket = useRef(socketIOClient(URL));
 

@@ -21,7 +21,7 @@ const getAllPoint = catchAsync(async (req, res) => {
 const getPointByTypeAndManage = catchAsync(async (req, res, next) => {
   const { id } = req.params;
   const { user_type, ward_id, district_id } = req.user;
-
+  console.log(req.user);
   const queryString =
     user_type === 'district'
       ? `SELECT ap.*

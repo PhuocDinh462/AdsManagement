@@ -7,6 +7,7 @@ import Pagination from '~/src/components/Pagination';
 import SearchBar from '~/src/components/SearchBar';
 import ButtonCT from '~/src/components/button/ButtonCT';
 import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
+import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
 import { removeFormLicenseReq, selectSelectedWards, selectUser } from '~/src/store/reducers';
 import { calculateDaysBetweenDates, notiSuccess } from '~/src/utils/support';
 import LicenseDetails from './LicenseDetails';
@@ -127,6 +128,7 @@ const Licenses = () => {
     handleReLoadData();
   }, [selectedWards]);
 
+  useSocketSubscribe('updateStatusLicenseRequest', handleReLoadData);
   return (
     <div className={classes.container__wrap}>
       <div className={classes.container}>

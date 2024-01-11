@@ -65,9 +65,11 @@ const login = catchAsync(async (req, res, next) => {
           msg: 'Invalid Credential!',
         });
 
+      const { refresh_token, ...user } = results[0];
+
       // Tạo mới Access Token và Refresh Token
-      const accessToken = generateToken.accessToken(results[0].email, results[0].password, results[0].user_id);
-      const refreshToken = generateToken.refreshToken(results[0].email, results[0].password, results[0].user_id);
+      const accessToken = generateToken.accessToken(user);
+      const refreshToken = generateToken.refreshToken(user);
 
       // Cập nhật Refresh Token vào cơ sở dữ liệu
       connection.query(
@@ -197,7 +199,7 @@ const logout = catchAsync(async (req, res, next) => {
 });
 
 const refreshToken = catchAsync(async (req, res, next) => {
-  const newAccessToken = generateToken.accessToken(req.user.email, req.user.password, req.user.user_id);
+  const newAccessToken = generateToken.accessToken(req.user);
   // console.log(newAccessToken);
 
   res.status(200).json({
@@ -206,4 +208,3 @@ const refreshToken = catchAsync(async (req, res, next) => {
 });
 
 module.exports = { register, createAccount, login, forgotPassword, refreshToken, logout };
-
