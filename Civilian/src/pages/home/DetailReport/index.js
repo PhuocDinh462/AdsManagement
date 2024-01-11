@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import classes from './styles.module.scss';
-import a from '~assets/imgs/tpb2_1.jpg';
-import b from '~assets/imgs/robinswan.jpg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 

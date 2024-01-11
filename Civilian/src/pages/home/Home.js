@@ -7,7 +7,7 @@ import { ic_warning } from '~/src/assets';
 import Checklist from '~/src/components/CheckList/CheckList';
 import ModalReport from '~/src/components/ModalReport/ModalReport';
 import ButtonCT from '~/src/components/button/ButtonCT';
-// import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
+import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
 import {
     AdSpotBeReported,
     AdSpotNotPlan,

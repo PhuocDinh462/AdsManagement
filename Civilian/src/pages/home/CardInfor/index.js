@@ -1,9 +1,6 @@
 import React from 'react';
-
 import classes from './styles.module.scss';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
-import { ic_warning, ic_infor } from '~/src/assets';
+import { ic_warning } from '~/src/assets';
 import ic_info from '../../../assets/imgs/ic_info.png';
 import ButtonCT from '~/src/components/button/ButtonCT';
 
@@ -24,10 +21,6 @@ const CardInfor = (props) => {
                             {props.info.infoBoard.width}m x {props.info.infoBoard.height}m
                         </p>
                     </li>
-                    {/* <li>
-                        <label>Số lượng:</label>
-                        <p>2.5m x 1.2m</p>
-                    </li> */}
                     <li>
                         <label>Hình thức:</label>
                         <p>{props.info.infoPoint.advertisement_type_name}</p>
