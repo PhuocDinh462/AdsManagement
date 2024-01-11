@@ -107,12 +107,8 @@ const Home = () => {
         fetchData();
     }, []);
 
-    const handlefetchData = () => {
-        fetchData();
-    };
-
-    useSocketSubscribe('createReport', handlefetchData);
-    useSocketSubscribe('createAdsPoint', handlefetchData);
+    // useSocketSubscribe('createReport', fetchData);
+    useSocketSubscribe('createdAdsPoint', fetchData);
 
     const removeDuplicates = (array) => {
         const uniqueArray = [];
@@ -229,10 +225,10 @@ const Home = () => {
     };
 
     const selectIconAny = (spot) => {
-        if (spot.status === 'pending' || spot.status === 'processing') {
-            return SpotBeReported;
+        if (spot.status === 'processed') {
+            return SpotSolvedReport;
         }
-        return SpotSolvedReport;
+        return SpotBeReported;
     };
 
     const showInfoAd = (marker) => {
