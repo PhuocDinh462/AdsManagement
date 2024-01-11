@@ -199,7 +199,7 @@ const logout = catchAsync(async (req, res, next) => {
 });
 
 const refreshToken = catchAsync(async (req, res, next) => {
-  const newAccessToken = generateToken.accessToken(req.user.email, req.user.password, req.user.user_id);
+  const newAccessToken = generateToken.accessToken(req.user);
   // console.log(newAccessToken);
 
   res.status(200).json({

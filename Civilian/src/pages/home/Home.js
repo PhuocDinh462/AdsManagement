@@ -113,8 +113,8 @@ const Home = () => {
     };
 
     useSocketSubscribe('createReport', handlefetchData);
-    useSocketSubscribe('createAdsPoint', handlefetchData);
-    console.log('aaa');
+    useSocketSubscribe('createdAdsPoint', handlefetchData);
+
     const removeDuplicates = (array) => {
         const uniqueArray = [];
         const seenLocations = {};
