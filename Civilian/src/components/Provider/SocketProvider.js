@@ -5,9 +5,7 @@ export const SocketContext = React.createContext({ socket: null });
 
 export function SocketProvider({ children }) {
     // we use a ref to store the socket as it won't be updated frequently
-    const URL = process.env.REACT_APP_API_ENDPOINT
-        ? `http://localhost:${process.env.REACT_APP_API_ENDPOINT}`
-        : 'http://localhost:5001';
+    const URL = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:5001';
 
     const socket = useRef(socketIOClient(URL));
 
@@ -35,4 +33,3 @@ export function SocketProvider({ children }) {
 
     return <SocketContext.Provider value={{ socket: socket.current }}>{children}</SocketContext.Provider>;
 }
-

@@ -52,7 +52,7 @@ export default function StatusModal(props) {
   const dispatch = useDispatch();
 
   const user = useSelector(selectUser);
-  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
+  const tokenAuth = 'Bearer ' + user?.token.split('"').join('');
   const headers = {
     Authorization: tokenAuth,
   };

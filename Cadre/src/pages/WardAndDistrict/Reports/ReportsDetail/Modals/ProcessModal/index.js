@@ -46,7 +46,7 @@ export default function ProcessModal(props) {
   const [handlingMethod, setHandlingMethod] = useState('');
 
   const user = useSelector(selectUser);
-  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
+  const tokenAuth = 'Bearer ' + user?.token.split('"').join('');
   const headers = {
     Authorization: tokenAuth,
   };

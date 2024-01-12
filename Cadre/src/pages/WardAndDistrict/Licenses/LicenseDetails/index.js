@@ -31,7 +31,7 @@ const LicenseDetails = ({ handleCloseModal, data, fetchData }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const user = useSelector(selectUser);
-  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
+  const tokenAuth = 'Bearer ' + user?.token.split('"').join('');
   const headers = {
     Authorization: tokenAuth,
   };

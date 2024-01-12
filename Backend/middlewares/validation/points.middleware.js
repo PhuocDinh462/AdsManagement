@@ -14,7 +14,6 @@ const validationAddPointReq = async (req, res, next) => {
       ward_id: Yup.number().required('Ward ID is required'),
       advertisement_type_id: Yup.number().required('Advertisement type ID is required'),
     });
-    console.log('sdfjsd');
 
     // Thực hiện validation cho thêm điểm
     await addPointSchema.validate({
@@ -37,4 +36,3 @@ const validationAddPointReq = async (req, res, next) => {
 };
 
 module.exports = { validationAddPointReq };
-

@@ -12,7 +12,7 @@ export default function AsynInputSeletion(props) {
   const { labelInput, handleOnChange, listItem, name } = props;
 
   const user = useSelector(selectUser);
-  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
+  const tokenAuth = 'Bearer ' + user?.token.split('"').join('');
   const headers = {
     Authorization: tokenAuth,
   };

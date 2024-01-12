@@ -49,7 +49,7 @@ const BoardModalAdd = (props) => {
 
   const { handleCloseModal, handleReLoadData } = props;
   const user = useSelector(selectUser);
-  const tokenAuth = 'Bearer ' + user.token.split('"').join('');
+  const tokenAuth = 'Bearer ' + user?.token.split('"').join('');
   const headers = {
     Authorization: tokenAuth,
   };
