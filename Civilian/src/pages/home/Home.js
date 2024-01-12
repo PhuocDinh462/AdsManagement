@@ -158,7 +158,7 @@ const Home = () => {
     }, [listReport]);
 
     const { isLoaded } = useJsApiLoader({
-        googleMapsApiKey: 'AIzaSyBxWEpG38Jm2lo2OEe3RDjjVBgGRxwF_ow',
+        googleMapsApiKey: process.env.REACT_APP_API_GG_MAP,
         id: 'google-map-script',
         language: 'vi',
         region: 'vn',
