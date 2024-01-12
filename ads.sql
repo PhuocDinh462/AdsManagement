@@ -353,7 +353,7 @@ INSERT INTO
     )
 VALUES (
         'admin',
-        'admin123',
+        '$10$6gQX1CjmY3kGVeufM9Vc3OZ/71tDgMlyf3PeaEuXBQqj7P1XezOO6',
         'admin@example.com',
         '123456789',
         '1990-01-01',
@@ -362,7 +362,7 @@ VALUES (
         NULL
     ), (
         'Nguyen Van A',
-        'manager123',
+        '$10$6gQX1CjmY3kGVeufM9Vc3OZ/71tDgMlyf3PeaEuXBQqj7P1XezOO6',
         'manager1@example.com',
         '987654321',
         '1995-05-15',
@@ -371,7 +371,7 @@ VALUES (
         1
     ), (
         'Tran Anh B',
-        'manager456',
+        '$10$6gQX1CjmY3kGVeufM9Vc3OZ/71tDgMlyf3PeaEuXBQqj7P1XezOO6',
         'manager2@example.com',
         '987123456',
         '1998-10-20',
@@ -380,7 +380,7 @@ VALUES (
         1
     ), (
         'Tran Anh Phuong',
-        'manager456',
+        '$10$6gQX1CjmY3kGVeufM9Vc3OZ/71tDgMlyf3PeaEuXBQqj7P1XezOO6',
         'anhphuong@example.com',
         '987123456',
         '1991-10-20',
@@ -389,7 +389,7 @@ VALUES (
         1
     ), (
         'Tran Thi Hong',
-        'manager456',
+        '$10$6gQX1CjmY3kGVeufM9Vc3OZ/71tDgMlyf3PeaEuXBQqj7P1XezOO6',
         'thihong@example.com',
         '987123456',
         '1998-10-20',

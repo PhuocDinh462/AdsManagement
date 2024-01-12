@@ -8,7 +8,7 @@ const validationAddDistrictReq = async (req, res, next) => {
     // Định nghĩa schema validation cho thêm quận
     const addDistrictSchema = Yup.object({
       districtName: Yup.string().required('District name is required'),
-      user_id: Yup.number().integer('Manager ID must be an integer').required('Manager ID is required'),
+      user_id: Yup.number().integer('Manager ID must be an integer'),
     });
 
     // Thực hiện validation cho thêm quận
@@ -30,7 +30,7 @@ const validationAddWardReq = async (req, res, next) => {
     const addWardSchema = Yup.object({
       wardName: Yup.string().required('Ward name is required'),
       selectedDistrict: Yup.number().integer('District ID must be an integer').required('District ID is required'),
-      user_id: Yup.number().integer('Manager ID must be an integer').required('Manager ID is required'),
+      user_id: Yup.number().integer('Manager ID must be an integer'),
     });
 
     // Thực hiện validation cho thêm phường
@@ -64,4 +64,3 @@ const validateCreateAddressReq = async (req, res, next) => {
 };
 
 module.exports = { validateCreateAddressReq, validationAddDistrictReq, validationAddWardReq };
-
