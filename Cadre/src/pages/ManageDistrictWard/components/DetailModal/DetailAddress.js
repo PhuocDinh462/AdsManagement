@@ -32,7 +32,7 @@ const DetailAddress = ({ data, onClose, filteredData }) => {
             <p className={classes.item_info}>
               Ngày
               sinh&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:{' '}
-              <span>{formatDateTime(data.district_manager_dob)}</span>
+              <span>{data.district_manager_dob && formatDateTime(data.district_manager_dob)}</span>
             </p>
             <p className={classes.item_info}>
               Email người quản lý&nbsp;&nbsp;&nbsp;&nbsp;: <span>{data.district_manager_email}</span>
@@ -63,7 +63,7 @@ const DetailAddress = ({ data, onClose, filteredData }) => {
             <p className={classes.item_info}>
               Ngày
               sinh&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:{' '}
-              <span>{formatDateTime(data.ward_manager_dob)}</span>
+              <span>{data.ward_manager_dob && formatDateTime(data.ward_manager_dob)}</span>
             </p>
             <p className={classes.item_info}>
               Email người quản lý&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:{' '}

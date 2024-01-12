@@ -66,14 +66,14 @@
 
   .edit_left {
     flex: 1;
-    padding: 10px 20px;
+    padding: 10px 0px;
     border-right: #0a6971 1px dotted;
     height: 100%;
   }
 
   .edit_right {
     flex: 1;
-    padding: 10px 20px;
+    padding: 10px 0px;
     height: 100%;
     margin-bottom: 20px;
   }
@@ -113,21 +113,29 @@
   // height: 100%;
   max-height: 95%;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .wrap_content {
-  padding: 10px 20px;
+  padding: 10px 0px;
   height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
   .ads_infor,
   .point_infor {
     display: flex;
-    width: 100%;
-    gap: 5px;
+    width: 80%;
+    gap: 10px;
     margin-top: 10px;
     align-items: flex-start;
     background-color: #e5f4ff;
-    padding: 10px 20px;
+    padding: 10px 0px;
+    padding-left: 10px;
     border-radius: 10px;
 
     .title_ads_infor,

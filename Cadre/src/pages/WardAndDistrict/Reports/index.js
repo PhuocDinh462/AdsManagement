@@ -11,8 +11,6 @@ import { setReportIndex, setReportCoord, selectUser, selectSelectedWards } from 
 import { useNavigate } from 'react-router';
 import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
 import request from '~/src/utils/request';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 export default function Reports() {
   const axiosPrivate = useAxiosPrivate();
@@ -27,21 +25,6 @@ export default function Reports() {
   const headers = {
     Authorization: tokenAuth,
   };
-  const [toastId, setToastId] = useState();
-  const [toastIndex, setToastIndex] = useState();
-
-  const info = (msg) =>
-    toast.info(msg, {
-      position: 'top-left',
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: 'light',
-      draggable: false,
-    });
 
   const fetchWardsReports = async () => {
     let reports = [];
@@ -52,7 +35,7 @@ export default function Reports() {
         .then((res) => {
           if (res.data.data.length > 0) {
             for (let j = 0; j < res.data.data.length; j++) {
-              reports.push(res.data.data[j]);
+              reports.push(res.data.data[j].sort((a, b) => new Date(b.latestReport) - new Date(a.latestReport)));
             }
           }
         })
@@ -115,39 +98,52 @@ export default function Reports() {
     // Add report to data and filteredData
     if (eventData.point_id) {
       setData(
-        data.map((item) => {
-          if (item.point_id === eventData.point_id) {
-            // info('Một báo cáo vừa được gửi đến cho bạn');
-            setToastId(eventData.point_id);
-            setToastIndex(data.find((item) => item.point_id === eventData.point_id).numberOfReports);
-          }
-
-          return { ...item, numberOfReports: item.numberOfReports + +(item.point_id === eventData.point_id) };
-        })
+        data
+          .map((item) => {
+            return {
+              ...item,
+              numberOfReports: item.numberOfReports + +(item.point_id === eventData.point_id),
+              latestReport: item.point_id === eventData.point_id ? eventData.created_at : item.latestReport,
+            };
+          })
+          .sort((a, b) => new Date(b.latestReport) - new Date(a.latestReport))
       );
       setFilteredData(
-        filteredData.map((item) => {
-          return { ...item, numberOfReports: item.numberOfReports + +(item.point_id === eventData.point_id) };
-        })
+        filteredData
+          .map((item) => {
+            return {
+              ...item,
+              numberOfReports: item.numberOfReports + +(item.point_id === eventData.point_id),
+              latestReport: item.point_id === eventData.point_id ? eventData.created_at : item.latestReport,
+            };
+          })
+          .sort((a, b) => new Date(b.latestReport) - new Date(a.latestReport))
       );
     } else if (eventData.board_id) {
       await axiosPrivate
         .get(`ward/getAdBoardByBoardId/${eventData.board_id}`)
         .then(async (res) => {
           setData(
-            data.map((item) => {
-              if (item.point_id === res.data.data.point_id) {
-                // info('Một báo cáo vừa được gửi đến cho bạn');
-                setToastId(res.data.data.point_id);
-                setToastIndex(data.find((item) => item.point_id === res.data.data.point_id).numberOfReports);
-              }
-              return { ...item, numberOfReports: item.numberOfReports + +(item.point_id === res.data.data.point_id) };
-            })
+            data
+              .map((item) => {
+                return {
+                  ...item,
+                  numberOfReports: item.numberOfReports + +(item.point_id === res.data.data.point_id),
+                  latestReport: item.point_id === res.data.data.point_id ? eventData.created_at : item.latestReport,
+                };
+              })
+              .sort((a, b) => new Date(b.latestReport) - new Date(a.latestReport))
           );
           setFilteredData(
-            filteredData.map((item) => {
-              return { ...item, numberOfReports: item.numberOfReports + +(item.point_id === res.data.data.point_id) };
-            })
+            filteredData
+              .map((item) => {
+                return {
+                  ...item,
+                  numberOfReports: item.numberOfReports + +(item.point_id === res.data.data.point_id),
+                  latestReport: item.point_id === res.data.data.point_id ? eventData.created_at : item.latestReport,
+                };
+              })
+              .sort((a, b) => new Date(b.latestReport) - new Date(a.latestReport))
           );
         })
         .catch((error) => {
@@ -161,29 +157,30 @@ export default function Reports() {
 
   // Use when user reports a spot that isn't adSpot
   useSocketSubscribe(`createReport_wardId=${user?.ward_id}`, async (eventData) => {
-    // info('Một báo cáo vừa được gửi đến cho bạn');
-
     // If current data already had the point
     if (data.some((item) => item.lat === eventData.lat && item.lng === eventData.lng)) {
       setData(
-        data.map((item) => {
-          return {
-            ...item,
-            numberOfReports: item.numberOfReports + +(item.lat === eventData.lat && item.lng === eventData.lng),
-          };
-        })
+        data
+          .map((item) => {
+            return {
+              ...item,
+              numberOfReports: item.numberOfReports + +(item.lat === eventData.lat && item.lng === eventData.lng),
+              latestReport: item.point_id === eventData.point_id ? eventData.created_at : item.latestReport,
+            };
+          })
+          .sort((a, b) => new Date(b.latestReport) - new Date(a.latestReport))
       );
       setFilteredData(
-        filteredData.map((item) => {
-          return {
-            ...item,
-            numberOfReports: item.numberOfReports + +(item.lat === eventData.lat && item.lng === eventData.lng),
-          };
-        })
+        filteredData
+          .map((item) => {
+            return {
+              ...item,
+              numberOfReports: item.numberOfReports + +(item.lat === eventData.lat && item.lng === eventData.lng),
+              latestReport: item.point_id === eventData.point_id ? eventData.created_at : item.latestReport,
+            };
+          })
+          .sort((a, b) => new Date(b.latestReport) - new Date(a.latestReport))
       );
-
-      setToastId(`${eventData.lat},${eventData.lng}`);
-      setToastIndex(data.find((item) => item.lat === eventData.lat && item.lng === eventData.lng).numberOfReports);
     } else {
       const response = await fetch(
         `https://rsapi.goong.io/Geocode?latlng=${eventData.lat},${eventData.lng}&api_key=${process.env.REACT_APP_GOONG_APIKEY}`
@@ -213,9 +210,6 @@ export default function Reports() {
           latestReport: new Date(),
         },
       ]);
-
-      setToastId(`${eventData.lat},${eventData.lng}`);
-      setToastIndex(0);
     }
   });
 
@@ -225,7 +219,7 @@ export default function Reports() {
         await axiosPrivate
           .get(`ward/getReportListsByWardId/${user.ward_id}`)
           .then((res) => {
-            const data = res.data.data;
+            const data = res.data.data.sort((a, b) => new Date(b.latestReport) - new Date(a.latestReport));
             setData(data);
             setFilteredData(data);
           })
@@ -301,7 +295,7 @@ export default function Reports() {
                     <td style={{ width: '50%' }}>{row.address}</td>
                     <td style={{ width: '15%' }}>{row.numberOfReports}</td>
                     <td style={{ width: '20%' }}>
-                      {row.latestReport && format(new Date(row.latestReport), 'dd/MM/yyyy')}
+                      {row.latestReport && format(new Date(row.latestReport), 'dd/MM/yyyy HH:mm:ss')}
                     </td>
                     <td style={{ width: '10%' }}>
                       <button
@@ -342,15 +336,6 @@ export default function Reports() {
           onPageChange={(page) => setCurrentPage(page)}
         />
       </div>
-
-      {/* <div
-        onClick={() => {
-          dispatch(setReportIndex(toastIndex));
-          navigate(`/reports/detail/${toastId}`);
-        }}
-      > */}
-      <ToastContainer />
-      {/* </div> */}
     </div>
   );
 }
