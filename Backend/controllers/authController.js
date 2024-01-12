@@ -100,8 +100,8 @@ const login = catchAsync(async (req, res, next) => {
 const forgotPassword = async (req, res) => {
   const { email, new_password, otp, otp_verify } = req.body;
   if (otp_verify) {
-    if (!email || !new_password || !otp) {
-      return res.status(200).json({ message: 'Please provide name,email, new_password and otp' });
+    if (!email || !new_password || !otp || !otp_verify) {
+      return res.status(200).json({ message: 'Please provide information needed' });
     } else {
       //Hashing password
       const salt = await bcrypt.genSalt(10);
@@ -184,18 +184,28 @@ const register = catchAsync(async (req, res, next) => {
 });
 
 const logout = catchAsync(async (req, res, next) => {
-  const refresh_token = req.body.refresh_token;
-  connection.query(`UPDATE user SET refresh_token = NULL WHERE refresh_token = ?`, [refresh_token], (err, results) => {
-    if (err) {
-      console.error('Error executing query: ' + err.stack);
-      return res.status(500).json({ error: 'Database error' });
-    }
-
-    res.status(200).json({
-      status: 'success',
-      msg: 'Logout successful',
+  if (req.body.refresh_token) {
+    const refresh_token = req.body.refresh_token;
+    connection.query(`UPDATE user SET refresh_token = NULL WHERE refresh_token = ?`, [refresh_token], (err, results) => {
+      if (err) {
+        console.error('Error executing query: ' + err.stack);
+        return res.status(500).json({ error: 'Database error' });
+      }
+      if (results.affectedRows > 0) {
+        res.status(200).json({
+          status: 'success',
+          msg: 'Logout successful',
+        });
+      } else {
+        res.status(404).json({
+          status: 'not found',
+          msg: 'Not Found User To Logout',
+        });
+      }
     });
-  });
+  } else {
+    return res.status(400).json({ message: 'Please provide token needed' });
+  }
 });
 
 const refreshToken = catchAsync(async (req, res, next) => {

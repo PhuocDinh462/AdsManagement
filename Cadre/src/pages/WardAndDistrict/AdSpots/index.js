@@ -24,6 +24,7 @@ export default function AdSpots() {
   const headers = {
     Authorization: tokenAuth,
   };
+
   const fetchWardsSpots = async () => {
     let spots = [];
     for (let i = 0; i < selectedWards.length; i++) {
@@ -44,20 +45,22 @@ export default function AdSpots() {
     setFilterData(spots);
   };
 
+  const fetchSpotsInWard = async () => {
+    await axiosPrivate
+      .get(`ward/getAdSpotsListByWardId/${user.ward_id}`)
+      .then((res) => {
+        const data = res.data.data;
+        setData(data);
+        setFilterData(data);
+      })
+      .catch((error) => {
+        console.log('Get spot lists error: ', error);
+      });
+  };
+
   useEffect(() => {
     if (user.user_type === 'ward') {
-      (async () => {
-        await axiosPrivate
-          .get(`ward/getAdSpotsListByWardId/${user.ward_id}`)
-          .then((res) => {
-            const data = res.data.data;
-            setData(data);
-            setFilterData(data);
-          })
-          .catch((error) => {
-            console.log('Get report lists error: ', error);
-          });
-      })();
+      fetchSpotsInWard();
     } else if (user.user_type === 'district') {
       fetchWardsSpots();
     }
@@ -90,19 +93,7 @@ export default function AdSpots() {
   }, [pageSize, currentPage, data, filteredData]);
 
   // Socket
-  // useSocketSubscribe(`updateAdsPoint_pointId=${spotId}`, async (res) => {
-  //   const dataIndex = data.findIndex((item) => item.point_id === res.point_id);
-
-  //   if (dataIndex !== -1)
-  //     setData(
-  //       data.map((item, i) => {
-  //         return {
-  //           ...item,
-  //           is_planning: i === adIndex && res.is_planning,
-  //         };
-  //       })
-  //     );
-  // });
+  useSocketSubscribe(`updateAdsPoint_wardId=${user?.ward_id}`, async (res) => fetchSpotsInWard());
 
   return (
     <div className={classes.main_container}>
