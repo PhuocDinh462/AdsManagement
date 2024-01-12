@@ -10,6 +10,7 @@ const Coordination = ({ setLatitude, setLongitude, setAddress, setModalMap, onCl
   const [autoCompleteValue, setAutoCompleteValue] = useState();
   const [displayInitialPosition, setDisplayInitialPosition] = useState(true);
   const [centerMap, setCenterMap] = useState();
+  const api_key_map_add = process.env.REACT_APP_GOOGLE_MAP_APIKEY_ADD;
 
   const handleMapClick = (e) => {
     const { latLng } = e;
@@ -89,7 +90,7 @@ const Coordination = ({ setLatitude, setLongitude, setAddress, setModalMap, onCl
         />
       </div>
       <div>
-        <LoadScript googleMapsApiKey="AIzaSyCaizca2oRuJ43J6xCTcafhZm6BCSYUAM0" libraries={['places']}>
+        <LoadScript googleMapsApiKey={api_key_map_add} libraries={['places']}>
           <GoogleMap
             mapContainerStyle={{ height: '500px', width: '100%' }}
             zoom={13}
