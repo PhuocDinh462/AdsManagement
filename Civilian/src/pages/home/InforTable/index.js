@@ -63,6 +63,7 @@ const InforTable = (props) => {
                     redWarning={true}
                     primary={true}
                     onClick={() => props.onClickShowDetailReportPoint()}
+                    disabled={props.info.infoPoint.list_report.length === 0 ? true : false}
                 />
 
                 {props.info.infoPoint.is_planning === 1 ? (
