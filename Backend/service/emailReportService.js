@@ -22,23 +22,13 @@ const sendEmailService = async (lat, lng, name, phone, email, reason) => {
       pass: process.env.PASSWORD_ACCOUNT,
     },
   });
-  const htmlFile = `
-    <p>
-      Họ và tên: ${name}
-    </p>
-    <p>
-      Số điện thoại: ${phone}
-    </p>
-    <p>
-      Email: ${email}
-    </p>
-    <p>
-      Lý do: ${reason}
-    </p>
-    <p>
-      Tôi muốn báo cáo địa điểm có lat=${lat}, lng=${lng}
-    </p>
-    `;
+  const htmlFile = `<p>Chào bạn,</p>
+  <p>
+    Chúng tôi đã nhận được báo cáo của bạn. Chúng tôi đang xem xét và sẽ sớm phản hồi cho bạn trong thời gian sớm nhất.
+  </p>
+  <br/>
+  <br/>
+  <p>Trân trọng!</p>`;
   const info = await transporter.sendMail({
     from: `"City Ads" ${process.env.ACCOUNT}`, // sender address
     to: 'tranhuuchinh500@gmail.com', // list of receivers

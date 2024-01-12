@@ -1,12 +1,9 @@
 {
   "type": "object",
   "properties": {
-    "report_id": {
-      "type": "number"
-    },
     "email": { "type": "string", "format": "email" },
     "content": {}
   },
-  "required": ["report_id", "email", "content"],
+  "required": ["email", "content"],
   "additionalProperties": false
 }
