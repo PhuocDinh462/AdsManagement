@@ -126,7 +126,6 @@ const ManageDistrictWard = () => {
       };
       try {
         const response = await axiosPrivate.delete('/cadre/deleteAddress', { data });
-        console.log(response.data);
 
         if (response.data.status === 'success') {
           // Update local state after successful delete
@@ -318,3 +317,4 @@ const ManageDistrictWard = () => {
 };
 
 export default ManageDistrictWard;
+

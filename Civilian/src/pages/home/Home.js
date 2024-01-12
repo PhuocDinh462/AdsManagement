@@ -7,7 +7,7 @@ import { ic_warning } from '~/src/assets';
 import Checklist from '~/src/components/CheckList/CheckList';
 import ModalReport from '~/src/components/ModalReport/ModalReport';
 import ButtonCT from '~/src/components/button/ButtonCT';
-// import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
+import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
 import {
     AdSpotBeReported,
     AdSpotNotPlan,
@@ -22,6 +22,7 @@ import CardInfor from './CardInfor';
 import DetailReport from './DetailReport';
 import classes from './Home.module.scss';
 import InforTable from './InforTable';
+import InfoCardNotPlanning from './InfoCardNotPlanning';
 
 const infoAds = {
     PANEL: 'Panel',
@@ -36,7 +37,8 @@ const containerStyle = {
 const iconSize = 25;
 
 const Home = () => {
-    const [showInfo, setShowInfo] = useState({ id: -1, show: false, info: '', data: {} });
+    const [showInfo, setShowInfo] = useState({ id: -1, show: false, info: '', data: {}, planning: true });
+    const [showInfoNotPlanning, setShowInfoNotPlanning] = useState({ id: -1, show: false, data: {} });
     const [showAdDetail, setShowAdDetail] = useState({ id: -1, show: false, data: {} });
     const [selectedMarker, setSelectedMarker] = useState(null);
     const [isShowFilter, setIsShowFilter] = useState(false);
@@ -108,12 +110,9 @@ const Home = () => {
         fetchData();
     }, []);
 
-    const handlefetchData = () => {
-        fetchData();
-    };
-
-    useSocketSubscribe('createReport', handlefetchData);
-    useSocketSubscribe('createdAdsPoint', handlefetchData);
+    useSocketSubscribe('createEditBoardRequest', fetchData);
+    useSocketSubscribe('createEditPointRequest', fetchData);
+    useSocketSubscribe('createdAdsPoint', fetchData);
 
     const removeDuplicates = (array) => {
         const uniqueArray = [];
@@ -230,10 +229,10 @@ const Home = () => {
     };
 
     const selectIconAny = (spot) => {
-        if (spot.status === 'pending' || spot.status === 'processing') {
-            return SpotBeReported;
+        if (spot.status === 'processed') {
+            return SpotSolvedReport;
         }
-        return SpotSolvedReport;
+        return SpotBeReported;
     };
 
     const showInfoAd = (marker) => {
@@ -348,12 +347,14 @@ const Home = () => {
                                                                       show: true,
                                                                       info: infoAds.PANEL,
                                                                       data: item,
+                                                                      planning: true,
                                                                   })
                                                                 : setShowInfo({
-                                                                      id: -1,
-                                                                      show: false,
-                                                                      info: infoAds.TABLE,
+                                                                      id: index,
+                                                                      show: true,
+                                                                      info: infoAds.PANEL,
                                                                       data: item,
+                                                                      planning: false,
                                                                   });
                                                             setShowAdDetail({
                                                                 id: -1,
@@ -369,8 +370,8 @@ const Home = () => {
                                                                       data: {},
                                                                   })
                                                                 : setShowDetailReport({
-                                                                      show: true,
-                                                                      type: 'Point',
+                                                                      show: false,
+                                                                      type: '',
                                                                       data: {},
                                                                   });
                                                             setShowMarkerIcon(false);
@@ -438,6 +439,7 @@ const Home = () => {
                                                                     info: '',
                                                                     data: {},
                                                                 });
+
                                                                 setShowMarkerIcon(false);
                                                                 setShowInforPointAny({
                                                                     show: false,
@@ -535,13 +537,16 @@ const Home = () => {
                 {isShowNote && <AnnotationDropdown onCheckboxChange={handleCheckboxChange} />}
             </div>
 
-            <div className={classes['container__home-inf']} style={{ width: showInfo.show ? '40rem' : 0 }}>
+            <div
+                className={classes['container__home-inf']}
+                style={{ width: showInfo.show && showInfo.planning ? '40rem' : 0 }}
+            >
                 <FontAwesomeIcon
                     icon={faCaretLeft}
                     className={classes.icon}
                     style={{
                         color: showInfo.info === infoAds.TABLE ? '#fff' : '#000',
-                        display: showInfo.show ? 'block' : 'none',
+                        display: showInfo.show && showInfo.planning ? 'block' : 'none',
                     }}
                     onClick={() => {
                         setShowInfo({ show: false, infoAds: '', data: {} });
@@ -551,7 +556,7 @@ const Home = () => {
 
                 <div
                     className={classes['container__home-inf-content']}
-                    style={{ padding: showInfo.show ? '0 3rem' : 0 }}
+                    style={{ padding: showInfo.show && showInfo.planning ? '0 3rem' : 0 }}
                 >
                     {showInfo.info === infoAds.PANEL && (
                         <div className={classes['container__home-inf-content-items']}>
@@ -574,6 +579,45 @@ const Home = () => {
                             )}
                         </div>
                     )}
+                </div>
+            </div>
+
+            <div
+                className={classes['container__home-inf']}
+                style={{ width: showInfo.show && !showInfo.planning ? '40rem' : 0 }}
+            >
+                {/* Xem chi tiết của một trụ, cột*/}
+                <FontAwesomeIcon
+                    icon={faCaretLeft}
+                    className={classes.icon}
+                    style={{ color: '#000', display: showInfo.show && !showInfo.planning ? 'block' : 'none' }}
+                    onClick={() => {
+                        setShowInfo({ show: false, infoAds: '', data: {} });
+                        setSelectedMarker(null);
+                    }}
+                />
+
+                <div className={classes['container__home-inf-imgAds']}>
+                    <img src={showInfo.data.image_url} alt="none" />
+                </div>
+                <div
+                    className={classes['container__home-inf-content']}
+                    style={{ padding: showInfo.show && !showInfo.planning ? '0 3rem' : 0 }}
+                >
+                    <div
+                        className={classes[`container__home-inf-content-table-show-img`]}
+                        style={{ marginTop: '30rem' }}
+                    >
+                        <InfoCardNotPlanning
+                            info={showInfo.data}
+                            onClickShowDetailReportPoint={() => {
+                                setShowDetailReport({ show: true, type: 'Point', data: {} });
+                            }}
+                            onClickShowReport={() => {
+                                setIsShowReport({ show: true, type: 'Point' });
+                            }}
+                        />
+                    </div>
                 </div>
             </div>
 

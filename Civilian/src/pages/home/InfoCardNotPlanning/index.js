@@ -1,40 +1,44 @@
 import React from 'react';
 import classes from './styles.module.scss';
-import { ic_warning } from '~/src/assets';
+import { ic_warning, ic_report } from '~/src/assets';
 import ic_info from '../../../assets/imgs/ic_info.png';
 import ButtonCT from '~/src/components/button/ButtonCT';
 
-const CardInfor = (props) => {
+const InfoCardNotPlanning = (props) => {
     return (
         <div className={classes.container__infor}>
             <div className={classes['container__infor-heading']}>
-                <h3>{props.info.infoBoard.advertisement_content}</h3>
-                <p>
-                    {props.info.infoPoint.ward_name} - {props.info.infoPoint.district_name}
-                </p>
+                <h3>Thông tin điểm quảng cáo</h3>
             </div>
             <div className={classes['container__infor-content']}>
                 <ul>
                     <li>
-                        <label>Kích thước:</label>
-                        <p>
-                            {props.info.infoBoard.width}m x {props.info.infoBoard.height}m
-                        </p>
+                        <label>Địa điểm:</label>
+                        <p>{props.info.address}</p>
                     </li>
                     <li>
                         <label>Hình thức:</label>
-                        <p>{props.info.infoPoint.advertisement_type_name}</p>
+                        <p>{props.info.advertisement_type_name}</p>
                     </li>
                     <li>
                         <label>Phân loại:</label>
-                        <p>{props.info.infoPoint.location_type}</p>
+                        <p>{props.info.location_type}</p>
+                    </li>
+                    <li>
+                        <label>Trạng thái:</label>
+                        <p style={{ fontWeight: 500, color: '#0a6971' }}>CHƯA QUY HOẠCH</p>
                     </li>
                 </ul>
             </div>
             <div className={classes['container__infor-action']}>
-                <div onClick={() => props.onClickShowDetail()}>
-                    <ButtonCT iconLeft={ic_info} />
-                </div>
+                <ButtonCT
+                    content={`${props.info.list_report && props.info.list_report.length} báo cáo`}
+                    iconLeft={ic_report}
+                    redWarning={true}
+                    primary={true}
+                    onClick={() => props.onClickShowDetailReportPoint()}
+                    disabled={props.info.list_report && props.info.list_report.length === 0 ? true : false}
+                />
                 <ButtonCT
                     content="Báo cáo vi phạm"
                     className={'borderRadius7 uppercase'}
@@ -49,4 +53,4 @@ const CardInfor = (props) => {
     );
 };
 
-export default CardInfor;
+export default InfoCardNotPlanning;

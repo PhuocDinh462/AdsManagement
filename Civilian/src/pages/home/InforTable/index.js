@@ -23,10 +23,6 @@ const InforTable = (props) => {
                                     {props.info.infoBoard.width}m x {props.info.infoBoard.height}m
                                 </p>
                             </li>
-                            {/* <li>
-                                    <label>Số lượng:</label>
-                                    <p>2.5m x 1.2m</p>
-                                </li> */}
                             <li>
                                 <label>Hình thức:</label>
                                 <p>{props.info.infoPoint.advertisement_type_name}</p>
@@ -67,6 +63,7 @@ const InforTable = (props) => {
                     redWarning={true}
                     primary={true}
                     onClick={() => props.onClickShowDetailReportPoint()}
+                    disabled={props.info.infoPoint.list_report.length === 0 ? true : false}
                 />
 
                 {props.info.infoPoint.is_planning === 1 ? (

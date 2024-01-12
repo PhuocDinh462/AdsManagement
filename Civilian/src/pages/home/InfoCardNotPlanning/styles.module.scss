@@ -1,0 +1,51 @@
+@import './../../../styles/colors.scss';
+
+.container__infor {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+
+    &-heading {
+        h3 {
+            font-size: medium;
+            font-weight: 500;
+        }
+
+        p {
+            font-size: smaller;
+            color: #888888;
+            font-weight: 300;
+        }
+    }
+
+    &-content {
+        margin: 2rem 0;
+        ul {
+            list-style-type: none;
+
+            li {
+                display: flex;
+                padding: 1rem 0;
+                font-size: small;
+
+                label {
+                    min-width: 7rem;
+                    align-self: center;
+                    color: #383838;
+                    font-weight: 500;
+                }
+
+                p {
+                    margin-left: 0.3rem;
+                    color: #202020;
+                }
+            }
+        }
+    }
+
+    &-action {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
