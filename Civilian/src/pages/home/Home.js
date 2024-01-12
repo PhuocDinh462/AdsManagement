@@ -38,7 +38,6 @@ const iconSize = 25;
 
 const Home = () => {
     const [showInfo, setShowInfo] = useState({ id: -1, show: false, info: '', data: {}, planning: true });
-    const [showInfoNotPlanning, setShowInfoNotPlanning] = useState({ id: -1, show: false, data: {} });
     const [showAdDetail, setShowAdDetail] = useState({ id: -1, show: false, data: {} });
     const [selectedMarker, setSelectedMarker] = useState(null);
     const [isShowFilter, setIsShowFilter] = useState(false);
@@ -110,8 +109,25 @@ const Home = () => {
         fetchData();
     }, []);
 
-    useSocketSubscribe('createEditBoardRequest', fetchData);
-    useSocketSubscribe('createEditPointRequest', fetchData);
+    useEffect(() => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    setShowMarkerIcon(true);
+                    setGeocode({ lat: latitude, lng: longitude });
+                    setCenter({ lat: latitude, lng: longitude });
+                },
+                (error) => {
+                    console.error('Error getting geolocation:', error);
+                }
+            );
+        } else {
+            console.error('Geolocation is not supported by your browser');
+        }
+    }, []);
+
+    useSocketSubscribe('changeReport', fetchData);
     useSocketSubscribe('createdAdsPoint', fetchData);
 
     const removeDuplicates = (array) => {
@@ -596,10 +612,11 @@ const Home = () => {
                         setSelectedMarker(null);
                     }}
                 />
-
-                <div className={classes['container__home-inf-imgAds']}>
-                    <img src={showInfo.data.image_url} alt="none" />
-                </div>
+                {showInfo.show && !showInfo.planning && (
+                    <div className={classes['container__home-inf-imgAds']}>
+                        <img src={showInfo.data.image_url} alt="none" />
+                    </div>
+                )}
                 <div
                     className={classes['container__home-inf-content']}
                     style={{ padding: showInfo.show && !showInfo.planning ? '0 3rem' : 0 }}
