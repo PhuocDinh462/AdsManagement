@@ -340,292 +340,58 @@ CREATE TABLE
     );
 
 -- Dữ liệu mẫu cho bảng User
-INSERT INTO
-    `user` (
-        username,
-        `password`,
-        email,
-        phone,
-        dob,
-        user_type,
-        created_by,
-        updated_by
-    )
-VALUES (
-        'admin',
-        '$10$6gQX1CjmY3kGVeufM9Vc3OZ/71tDgMlyf3PeaEuXBQqj7P1XezOO6',
-        'admin@example.com',
-        '123456789',
-        '1990-01-01',
-        'admin',
-        NULL,
-        NULL
-    ), (
-        'Nguyen Van A',
-        '$10$6gQX1CjmY3kGVeufM9Vc3OZ/71tDgMlyf3PeaEuXBQqj7P1XezOO6',
-        'manager1@example.com',
-        '987654321',
-        '1995-05-15',
-        'district',
-        1,
-        1
-    ), (
-        'Tran Anh B',
-        '$10$6gQX1CjmY3kGVeufM9Vc3OZ/71tDgMlyf3PeaEuXBQqj7P1XezOO6',
-        'manager2@example.com',
-        '987123456',
-        '1998-10-20',
-        'district',
-        1,
-        1
-    ), (
-        'Tran Anh Phuong',
-        '$10$6gQX1CjmY3kGVeufM9Vc3OZ/71tDgMlyf3PeaEuXBQqj7P1XezOO6',
-        'anhphuong@example.com',
-        '987123456',
-        '1991-10-20',
-        'district',
-        1,
-        1
-    ), (
-        'Tran Thi Hong',
-        '$10$6gQX1CjmY3kGVeufM9Vc3OZ/71tDgMlyf3PeaEuXBQqj7P1XezOO6',
-        'thihong@example.com',
-        '987123456',
-        '1998-10-20',
-        'ward',
-        1,
-        1
-    ), (
-        'Tran Hong',
-        'manager456',
-        'tranhong@example.com',
-        '987123456',
-        '1990-10-20',
-        'ward',
-        1,
-        1
-    ), (
-        'Tran Anh Hoang',
-        'manager456',
-        'anhhoang@example.com',
-        '987123456',
-        '1992-10-20',
-        'ward',
-        1,
-        1
-    ), (
-        'Tran Kim Hong',
-        'manager456',
-        'kimhong@example.com',
-        '987123456',
-        '1999-10-20',
-        'ward',
-        1,
-        1
-    ), (
-        'Tran Kim Phuong',
-        'manager456',
-        'kimphuong@example.com',
-        '987123456',
-        '1998-10-20',
-        'ward',
-        1,
-        1
-    ), (
-        'Tran Anh Thanh',
-        'manager456',
-        'anhthanh@example.com',
-        '987123456',
-        '1995-10-20',
-        'ward',
-        1,
-        1
-    ), (
-        'Tran Phi Long',
-        'manager456',
-        'philong@example.com',
-        '987123456',
-        '1998-10-20',
-        'ward',
-        1,
-        1
-    ), (
-        'Tran Anh Tuan',
-        'manager456',
-        'anhtuan@example.com',
-        '987123456',
-        '1998-11-20',
-        'ward',
-        1,
-        1
-    ), (
-        'Tran Y Nhu',
-        'manager456',
-        'ynhu@example.com',
-        '987123456',
-        '1992-10-21',
-        'ward',
-        1,
-        1
-    ), (
-        'Tran Tuan Anh',
-        'manager456',
-        'tuananh@example.com',
-        '987123456',
-        '1998-01-20',
-        'ward',
-        1,
-        1
-    ), (
-        'Ha Anh Tuan',
-        'manager456',
-        'haanhtuan@example.com',
-        '987123456',
-        '1998-01-20',
-        'ward',
-        1,
-        1
-    ), (
-        'Tanq Ngoc Chau Nhi',
-        'manager456',
-        'chaunhi@example.com',
-        '987123456',
-        '1998-01-20',
-        'ward',
-        1,
-        1
-    ), (
-        'Tran Sy Hung',
-        'manager456',
-        'syhung@example.com',
-        '987123456',
-        '1998-01-20',
-        'ward',
-        1,
-        1
-    ), (
-        'Pham Bang Bang',
-        'manager456',
-        'bangbang@example.com',
-        '987123456',
-        '1998-01-20',
-        'ward',
-        1,
-        1
-    ), (
-        'Nguyen Thanh Tung',
-        'manager456',
-        'thanhtung@example.com',
-        '987123456',
-        '1998-01-20',
-        'ward',
-        1,
-        1
-    ), (
-        'Dam Vinh Hung',
-        'manager456',
-        'damvinhhung@example.com',
-        '987123456',
-        '1998-01-20',
-        'ward',
-        1,
-        1
-    ), (
-        'Vo Vu Truong Giang',
-        'manager456',
-        'truonggiang@example.com',
-        '987123456',
-        '1998-01-20',
-        'ward',
-        1,
-        1
-    ), (
-        'Le Hong Ngoc',
-        'manager456',
-        'lehongngoc@example.com',
-        '987123456',
-        '1998-01-20',
-        'ward',
-        1,
-        1
-    ), (
-        'Lam Vy Da',
-        'manager456',
-        'vyda@example.com',
-        '987123456',
-        '1998-01-20',
-        'ward',
-        1,
-        1
-    ), (
-        'Phan Le Vi Thanh',
-        'manager456',
-        'cris7@example.com',
-        '987123456',
-        '1998-01-20',
-        'ward',
-        1,
-        1
-    ), (
-        'Nguyen Thien Toan',
-        'manager456',
-        'thientoan@example.com',
-        '987123456',
-        '1996-05-20',
-        'ward',
-        1,
-        1
-    );
+INSERT INTO `user` (`user_id`,`username`,`password`,`email`,`phone`,`dob`,`user_type`,`refresh_token`,`created_by`,`updated_by`,`created_at`,`updated_at`) VALUES (1,'nguyenvanabc','$2b$10$oAVguOLrPlcGhuc5mC4ndu3bLQ9z1kBebExh1ezQ2bDQpxSWkBK8e','longdz@gmail.com','0814455456','1990-01-01 00:00:00','department',NULL,NULL,NULL,'2024-01-12 09:53:52','2024-01-12 09:55:45');
+INSERT INTO `user` (`user_id`,`username`,`password`,`email`,`phone`,`dob`,`user_type`,`refresh_token`,`created_by`,`updated_by`,`created_at`,`updated_at`) VALUES (2,'Nguyen Van A','$2b$10$tXx1Gbyk6PkaCzKn5sX8AeiFP.4/UKXnJf.8gH/b05y34RPKMdMoq','nguyenvana@gmail.com','0862573811','2002-10-02 00:00:00','district',NULL,NULL,NULL,'2024-01-12 12:42:39',NULL);
+INSERT INTO `user` (`user_id`,`username`,`password`,`email`,`phone`,`dob`,`user_type`,`refresh_token`,`created_by`,`updated_by`,`created_at`,`updated_at`) VALUES (3,'Nguyen Van B','$2b$10$PQU.ORU/WDGz5n9Lfb5HwO0eab5OIwFfhLbJA0Nemei8LET1devVy','nguyenvanb@gmail.com','0862573711','2002-10-03 00:00:00','district',NULL,NULL,NULL,'2024-01-12 12:43:33',NULL);
+INSERT INTO `user` (`user_id`,`username`,`password`,`email`,`phone`,`dob`,`user_type`,`refresh_token`,`created_by`,`updated_by`,`created_at`,`updated_at`) VALUES (4,'Nguyen Van C','$2b$10$/5ODtX90yyJsNnuMOZNICeW2xm9Enqui7pcEa9pBdpM8431CCmb5C','nguyenvanc@gmail.com','0862553811','2002-10-20 00:00:00','district',NULL,NULL,NULL,'2024-01-12 12:44:13',NULL);
+INSERT INTO `user` (`user_id`,`username`,`password`,`email`,`phone`,`dob`,`user_type`,`refresh_token`,`created_by`,`updated_by`,`created_at`,`updated_at`) VALUES (5,'Nguyen Van D','$2b$10$y4fweLlWuyT.Ms2kXhjxPeuXpHhSTcNr4sx9rl6SxJX/l9qh9sAQy','nguyenvand@gmail.com','0862573811','2002-10-28 00:00:00','district',NULL,NULL,NULL,'2024-01-12 12:44:45',NULL);
+INSERT INTO `user` (`user_id`,`username`,`password`,`email`,`phone`,`dob`,`user_type`,`refresh_token`,`created_by`,`updated_by`,`created_at`,`updated_at`) VALUES (6,'Nguyen Van E','$2b$10$eZusO204S1owvIarCcw4hOLBVlpa3Aj1ZP60L9/Av/EFD8jmcvP32','nguyenvane@gmail.com','0862500811','2002-10-22 00:00:00','district',NULL,NULL,NULL,'2024-01-12 12:45:35',NULL);
+INSERT INTO `user` (`user_id`,`username`,`password`,`email`,`phone`,`dob`,`user_type`,`refresh_token`,`created_by`,`updated_by`,`created_at`,`updated_at`) VALUES (7,'Tran Bao Long','$2b$10$EBQo.zwhu8nTxecr2w0ZaujhGop651.wRjKI5jtuh/TOH6zbjfR.O','tranbaolong@gmail.com','0862993811','2002-10-13 00:00:00','ward',NULL,NULL,NULL,'2024-01-12 12:46:19',NULL);
+INSERT INTO `user` (`user_id`,`username`,`password`,`email`,`phone`,`dob`,`user_type`,`refresh_token`,`created_by`,`updated_by`,`created_at`,`updated_at`) VALUES (8,'Tran Huu Chinh','$2b$10$Z8/86N19grM3.ER7SQLW9OjaYaIaNjSfnnS4tYRY99vPmWEUlmoW6','tranhuuchinh@gmail.com','0862555811','2002-10-17 00:00:00','ward',NULL,NULL,NULL,'2024-01-12 12:47:21',NULL);
+INSERT INTO `user` (`user_id`,`username`,`password`,`email`,`phone`,`dob`,`user_type`,`refresh_token`,`created_by`,`updated_by`,`created_at`,`updated_at`) VALUES (9,'Tran Dung Tien','$2b$10$W4BPX8n12yPZjjWDOjqHFuizVzbo7aMFsSrMUIQlxa1oYnOC6sbH2','trandungtien@gmail.com','0862588811','2002-07-02 00:00:00','ward',NULL,NULL,NULL,'2024-01-12 12:48:03',NULL);
+INSERT INTO `user` (`user_id`,`username`,`password`,`email`,`phone`,`dob`,`user_type`,`refresh_token`,`created_by`,`updated_by`,`created_at`,`updated_at`) VALUES (10,'Dinh Cao Hong Phuoc','$2b$10$KskqzzRJYHHUmb2QG4bdlO1DyQo4XPJ6KytOlv3aRfvO16RLdKqXi','dinhcaohongphuoc@gmail.com','0862577711','2002-07-02 00:00:00','ward',NULL,NULL,NULL,'2024-01-12 12:48:48',NULL);
+INSERT INTO `user` (`user_id`,`username`,`password`,`email`,`phone`,`dob`,`user_type`,`refresh_token`,`created_by`,`updated_by`,`created_at`,`updated_at`) VALUES (11,'Huynh Tan Vinh','$2b$10$ugOpyJz/UbkwdvKN3xCi5.aAPriN0pYAliaDPz/C6c/JriZY2LYMi','huynhtanvinh@gmail.com','0862223811','2002-02-02 00:00:00','ward',NULL,NULL,NULL,'2024-01-12 12:49:42',NULL);
 
 -- Dữ liệu mẫu cho bảng District
-INSERT INTO
-    `district` (district_name, manager_id)
-VALUES ('Quận 5', 2), ('Quận 8', 4), ('Quận 1', 3);
+INSERT INTO `district` (`district_id`,`district_name`,`manager_id`,`created_at`,`updated_at`) VALUES (4,'Quận 1',2,'2024-01-12 10:03:25','2024-01-12 12:42:39');
+INSERT INTO `district` (`district_id`,`district_name`,`manager_id`,`created_at`,`updated_at`) VALUES (6,'Quận 3',3,'2024-01-12 10:04:31','2024-01-12 12:43:33');
+INSERT INTO `district` (`district_id`,`district_name`,`manager_id`,`created_at`,`updated_at`) VALUES (7,'Quận 4',5,'2024-01-12 10:04:38','2024-01-12 12:44:45');
+INSERT INTO `district` (`district_id`,`district_name`,`manager_id`,`created_at`,`updated_at`) VALUES (8,'Quận 5',6,'2024-01-12 10:04:51','2024-01-12 12:45:35');
+
 
 -- Dữ liệu mẫu cho bảng Ward
-INSERT INTO
-    `ward` (
-        ward_name,
-        district_id,
-        manager_id
-    )
-VALUES ('Phường Bến Thành', 3, 1), ('Phường Cô Giang', 3, 10), ('Phường Cầu Kho', 3, 8), ('Phường Bến Nghé', 3, 9), ('Phường 1', 1, 5), ('Phường 2', 1, 6), ('Phường 3', 1, 7), ('Phường 4', 1, 15), ('Phường 1', 2, 11), ('Phường 2', 2, 12), ('Phường 3', 2, 13), ('Phường 4', 2, 14);
-
+INSERT INTO `ward` (`ward_id`,`ward_name`,`district_id`,`manager_id`,`created_at`,`updated_at`) VALUES (1,'Bến Thành',4,7,'2024-01-12 10:05:38','2024-01-12 12:46:19');
+INSERT INTO `ward` (`ward_id`,`ward_name`,`district_id`,`manager_id`,`created_at`,`updated_at`) VALUES (2,'Bến Nghé',4,NULL,'2024-01-12 10:09:21',NULL);
+INSERT INTO `ward` (`ward_id`,`ward_name`,`district_id`,`manager_id`,`created_at`,`updated_at`) VALUES (3,'Đa Kao',4,NULL,'2024-01-12 10:09:45',NULL);
+INSERT INTO `ward` (`ward_id`,`ward_name`,`district_id`,`manager_id`,`created_at`,`updated_at`) VALUES (4,'Nguyễn Cư Trinh',4,NULL,'2024-01-12 10:10:37',NULL);
+INSERT INTO `ward` (`ward_id`,`ward_name`,`district_id`,`manager_id`,`created_at`,`updated_at`) VALUES (5,'Nguyễn Thái Bình',4,NULL,'2024-01-12 10:11:08',NULL);
+INSERT INTO `ward` (`ward_id`,`ward_name`,`district_id`,`manager_id`,`created_at`,`updated_at`) VALUES (6,'Tân Định',4,NULL,'2024-01-12 10:11:26',NULL);
+INSERT INTO `ward` (`ward_id`,`ward_name`,`district_id`,`manager_id`,`created_at`,`updated_at`) VALUES (7,'Cô Giang',4,NULL,'2024-01-12 10:11:46',NULL);
+INSERT INTO `ward` (`ward_id`,`ward_name`,`district_id`,`manager_id`,`created_at`,`updated_at`) VALUES (8,'Cầu Ông Lãnh',4,NULL,'2024-01-12 10:17:18',NULL);
+INSERT INTO `ward` (`ward_id`,`ward_name`,`district_id`,`manager_id`,`created_at`,`updated_at`) VALUES (9,'Phạm Ngũ Lão',4,11,'2024-01-12 10:17:41','2024-01-12 12:49:42');
+INSERT INTO `ward` (`ward_id`,`ward_name`,`district_id`,`manager_id`,`created_at`,`updated_at`) VALUES (10,'Cầu Kho',4,NULL,'2024-01-12 10:18:00',NULL);
+INSERT INTO `ward` (`ward_id`,`ward_name`,`district_id`,`manager_id`,`created_at`,`updated_at`) VALUES (11,'Phường 1',6,NULL,'2024-01-12 10:18:26','2024-01-12 10:26:27');
+INSERT INTO `ward` (`ward_id`,`ward_name`,`district_id`,`manager_id`,`created_at`,`updated_at`) VALUES (12,'Phường 2',6,NULL,'2024-01-12 10:18:38','2024-01-12 10:26:35');
+INSERT INTO `ward` (`ward_id`,`ward_name`,`district_id`,`manager_id`,`created_at`,`updated_at`) VALUES (13,'Phường 3',6,8,'2024-01-12 10:18:47','2024-01-12 12:47:21');
+INSERT INTO `ward` (`ward_id`,`ward_name`,`district_id`,`manager_id`,`created_at`,`updated_at`) VALUES (14,'Phường 4',6,NULL,'2024-01-12 10:18:59','2024-01-12 10:26:50');
+INSERT INTO `ward` (`ward_id`,`ward_name`,`district_id`,`manager_id`,`created_at`,`updated_at`) VALUES (15,'Phường 5',6,NULL,'2024-01-12 10:19:14','2024-01-12 10:26:58');
+INSERT INTO `ward` (`ward_id`,`ward_name`,`district_id`,`manager_id`,`created_at`,`updated_at`) VALUES (16,'Phường 9',6,NULL,'2024-01-12 10:19:34','2024-01-12 10:27:06');
+INSERT INTO `ward` (`ward_id`,`ward_name`,`district_id`,`manager_id`,`created_at`,`updated_at`) VALUES (17,'Phường 10',6,10,'2024-01-12 10:19:53','2024-01-12 12:48:48');
+INSERT INTO `ward` (`ward_id`,`ward_name`,`district_id`,`manager_id`,`created_at`,`updated_at`) VALUES (18,'Phường 11',6,NULL,'2024-01-12 10:23:11','2024-01-12 10:29:35');
+INSERT INTO `ward` (`ward_id`,`ward_name`,`district_id`,`manager_id`,`created_at`,`updated_at`) VALUES (19,'Phường 12',6,NULL,'2024-01-12 10:23:20','2024-01-12 10:29:43');
+INSERT INTO `ward` (`ward_id`,`ward_name`,`district_id`,`manager_id`,`created_at`,`updated_at`) VALUES (20,'Phường 13',6,NULL,'2024-01-12 10:23:45','2024-01-12 10:29:51');
+INSERT INTO `ward` (`ward_id`,`ward_name`,`district_id`,`manager_id`,`created_at`,`updated_at`) VALUES (21,'Phường 14',6,NULL,'2024-01-12 10:23:57','2024-01-12 10:29:58');
+INSERT INTO `ward` (`ward_id`,`ward_name`,`district_id`,`manager_id`,`created_at`,`updated_at`) VALUES (22,'Võ Thị Sáu',6,NULL,'2024-01-12 10:24:54','2024-01-12 10:30:10');
+INSERT INTO `ward` (`ward_id`,`ward_name`,`district_id`,`manager_id`,`created_at`,`updated_at`) VALUES (23,'Phường 1',8,9,'2024-01-12 10:32:58','2024-01-12 12:48:03');
+INSERT INTO `ward` (`ward_id`,`ward_name`,`district_id`,`manager_id`,`created_at`,`updated_at`) VALUES (24,'Phường 2',7,NULL,'2024-01-12 10:33:13',NULL);
+INSERT INTO `ward` (`ward_id`,`ward_name`,`district_id`,`manager_id`,`created_at`,`updated_at`) VALUES (25,'Phường 3',7,NULL,'2024-01-12 10:33:46',NULL);
+INSERT INTO `ward` (`ward_id`,`ward_name`,`district_id`,`manager_id`,`created_at`,`updated_at`) VALUES (26,'Phường 4',7,NULL,'2024-01-12 10:36:41',NULL);
 -- Dữ liệu mẫu cho bảng BoardType và AdvertisementType
 -- (Đã có dữ liệu mẫu trong đoạn tạo bảng)
 
 -- Dữ liệu mẫu cho bảng Contract
-INSERT INTO
-    `contract` (
-        company_name,
-        company_email,
-        company_phone,
-        company_address,
-        company_taxcode,
-        start_date,
-        end_date,
-        representative
-    )
-VALUES (
-        'Company A',
-        'companyA@example.com',
-        '123456789',
-        'Address A',
-        '123456',
-        '2023-01-01',
-        '2023-12-31',
-        'Rep A'
-    ), (
-        'Company B',
-        'companyB@example.com',
-        '987654321',
-        'Address B',
-        '122333',
-        '2023-03-01',
-        '2023-12-31',
-        'Rep B'
-    );
+INSERT INTO `contract` (`contract_id`,`company_name`,`company_email`,`company_phone`,`company_address`,`company_taxcode`,`start_date`,`end_date`,`representative`,`created_at`,`updated_at`) VALUES (1,'Company A','companyA@example.com','123456789','Address A','123456','2023-01-01','2023-12-31','Rep A','2024-01-12 13:00:47',NULL);
+INSERT INTO `contract` (`contract_id`,`company_name`,`company_email`,`company_phone`,`company_address`,`company_taxcode`,`start_date`,`end_date`,`representative`,`created_at`,`updated_at`) VALUES (2,'Company B','companyB@example.com','987654321','Address B','122333','2023-03-01','2023-12-31','Rep B','2024-01-12 13:00:47',NULL);
 
 -- Dữ liệu mẫu cho bảng AdvertisingPoint
 INSERT INTO `advertising_point` (ward_id, advertisement_type_id, address, location_type, image_url, `lat`, `lng`, is_planning)
@@ -636,26 +402,26 @@ VALUES
   (1, 2, '6 Huyền Trân Công Chúa, Phường Bến Thành, Quận 1, Thành phố Hồ Chí Minh, Việt Nam, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2Fin-bat-kho-lon-1-16354708968042037408651.jpeg?alt=media&token=7666fc98-d782-4434-87c0-642872cb5e08', 10.775018678900556, 106.69583583527508, true),
   (1, 2, '139 Đ. Nguyễn Du, Phường Bến Thành, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.772763316554093, 106.69374979259123, true),
   
-  (2, 2, 'Cô Giang, Phường Cô Giang, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Chợ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.764089825704806, 106.69382697031256, true),
-  (2, 3, '185-171 Đ. Cô Bắc, Phường Cô Giang, Quận 1, Thành phố Hồ Chí Minh, Việt Nam', 'Cây xăng', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2Fposter-ngoa%CC%80i-tro%CC%9B%CC%80i-ta%CC%A3i-be%CC%82%CC%81n-xe-bus.jpeg?alt=media&token=68a94673-1703-4978-8edc-46d26951e92a', 10.76260180395761, 106.69202970553981, false),
-  (2, 3, '121-81 Cô Giang, Phường Cô Giang, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.763295833627492, 106.69508166353674, false),
-  (2, 2, '100/0 Cô Giang, Phường Cô Giang, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Trung tâm thương mại', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2Fin-bat-kho-lon-1-16354708968042037408651.jpeg?alt=media&token=7666fc98-d782-4434-87c0-642872cb5e08', 10.763202030203516, 106.694321522979, true),
+  (7, 2, 'Cô Giang, Phường Cô Giang, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Chợ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.764089825704806, 106.69382697031256, true),
+  (7, 3, '185-171 Đ. Cô Bắc, Phường Cô Giang, Quận 1, Thành phố Hồ Chí Minh, Việt Nam', 'Cây xăng', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2Fposter-ngoa%CC%80i-tro%CC%9B%CC%80i-ta%CC%A3i-be%CC%82%CC%81n-xe-bus.jpeg?alt=media&token=68a94673-1703-4978-8edc-46d26951e92a', 10.76260180395761, 106.69202970553981, false),
+  (7, 3, '121-81 Cô Giang, Phường Cô Giang, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.763295833627492, 106.69508166353674, false),
+  (7, 2, '100/0 Cô Giang, Phường Cô Giang, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Trung tâm thương mại', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2Fin-bat-kho-lon-1-16354708968042037408651.jpeg?alt=media&token=7666fc98-d782-4434-87c0-642872cb5e08', 10.763202030203516, 106.694321522979, true),
   
-  (3, 2, 'Hẻm 391 Trần Hưng Đạo, Cầu Kho, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2Fimg4547-1668727584476274584923.webp?alt=media&token=71057a20-17b4-4166-a357-d40198a66db2', 10.759551792108674, 106.68895113745646, true),
-  (3, 3, 'Hẻm 393, Cầu Kho, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.759527954863646, 106.68819286225688, false),
-  (3, 2, '32 Đ. Trần Hưng Đạo, Cầu Kho, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2Fin-bat-kho-lon-1-16354708968042037408651.jpeg?alt=media&token=7666fc98-d782-4434-87c0-642872cb5e08', 10.759182300974503, 106.68782889076304, true),
+  (10, 2, 'Hẻm 391 Trần Hưng Đạo, Cầu Kho, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2Fimg4547-1668727584476274584923.webp?alt=media&token=71057a20-17b4-4166-a357-d40198a66db2', 10.759551792108674, 106.68895113745646, true),
+  (10, 3, 'Hẻm 393, Cầu Kho, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.759527954863646, 106.68819286225688, false),
+  (10, 2, '32 Đ. Trần Hưng Đạo, Cầu Kho, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2Fin-bat-kho-lon-1-16354708968042037408651.jpeg?alt=media&token=7666fc98-d782-4434-87c0-642872cb5e08', 10.759182300974503, 106.68782889076304, true),
   
-  (4, 2, '33 Đ. Nguyễn Du, Bến Nghé, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Cây xăng', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.78263195002901, 106.70178179891825, true),
-  (4, 3, 'Đ. Nguyễn Du, Bến Nghé, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.784403770238747, 106.70343169421437, false),
-  (4, 2, 'Đ. Tôn Đức Thắng, Bến Nghé, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2Fimg4547-1668727584476274584923.webp?alt=media&token=71057a20-17b4-4166-a357-d40198a66db2', 10.782604442626198, 106.70557093039417, true),  
-  (4, 1, '18 Đ. Nguyễn Siêu, Bến Nghé, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Street-Column-Advertising-Mockup-PSD.jpeg33aad715-4c38-4800-8dd7-5c358f223fab?alt=media&token=e550d4db-5f1a-484d-844c-53152cb2e4a3', 10.780887508168815, 106.70743052678033, true),
-  (4, 1, '28-32 Lê Văn Hưu, Bến Nghé, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.782232969987437, 106.70040196122936, true),
+  (2, 2, '33 Đ. Nguyễn Du, Bến Nghé, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Cây xăng', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.78263195002901, 106.70178179891825, true),
+  (2, 3, 'Đ. Nguyễn Du, Bến Nghé, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.784403770238747, 106.70343169421437, false),
+  (2, 2, 'Đ. Tôn Đức Thắng, Bến Nghé, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2Fimg4547-1668727584476274584923.webp?alt=media&token=71057a20-17b4-4166-a357-d40198a66db2', 10.782604442626198, 106.70557093039417, true),  
+  (2, 1, '18 Đ. Nguyễn Siêu, Bến Nghé, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Street-Column-Advertising-Mockup-PSD.jpeg33aad715-4c38-4800-8dd7-5c358f223fab?alt=media&token=e550d4db-5f1a-484d-844c-53152cb2e4a3', 10.780887508168815, 106.70743052678033, true),
+  (2, 1, '28-32 Lê Văn Hưu, Bến Nghé, Quận 1, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.782232969987437, 106.70040196122936, true),
   
-  (5, 2, 'Đ. Nguyễn Biểu, Phường 1, Quận 5, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.754528849095365, 106.68411604272457, true),  
-  (5, 1, '907-903 Đ. Trần Hưng Đạo, Phường 1, Quận 5, Thành phố Hồ Chí Minh, Việt Nam','Cây xăng', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.754717666981415, 106.67913706759444, true),
-  (5, 2, 'Chung cư Phúc Thịnh, 341 Đ. Cao Đạt, Phường 1, Quận 5, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.75323625849358, 106.6800757170383, false),
-  (5, 3, '317 Đ. Cao Đạt, Phường 1, Quận 5, Thành phố Hồ Chí Minh, Việt Nam','Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.75381890951151, 106.68073192761604, false),  
-  (5, 2, '86-114 Đ. Trần Bình Trọng, Phường 1, Quận 5, Thành phố Hồ Chí Minh, Việt Nam','Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2Fin-bat-kho-lon-1-16354708968042037408651.jpeg?alt=media&token=7666fc98-d782-4434-87c0-642872cb5e08', 10.755261819648139, 106.68150443949514, true),
+  (23, 2, 'Đ. Nguyễn Biểu, Phường 1, Quận 5, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.754528849095365, 106.68411604272457, true),  
+  (23, 1, '907-903 Đ. Trần Hưng Đạo, Phường 1, Quận 5, Thành phố Hồ Chí Minh, Việt Nam','Cây xăng', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.754717666981415, 106.67913706759444, true),
+  (23, 2, 'Chung cư Phúc Thịnh, 341 Đ. Cao Đạt, Phường 1, Quận 5, Thành phố Hồ Chí Minh, Việt Nam','Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.75323625849358, 106.6800757170383, false),
+  (23, 3, '317 Đ. Cao Đạt, Phường 1, Quận 5, Thành phố Hồ Chí Minh, Việt Nam','Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.75381890951151, 106.68073192761604, false),  
+  (23, 2, '86-114 Đ. Trần Bình Trọng, Phường 1, Quận 5, Thành phố Hồ Chí Minh, Việt Nam','Đất công/Công viên/Hành lang an toàn giao thông', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2Fin-bat-kho-lon-1-16354708968042037408651.jpeg?alt=media&token=7666fc98-d782-4434-87c0-642872cb5e08', 10.755261819648139, 106.68150443949514, true),
   
   (6, 1, 'Hẻm 233 Nguyễn Trãi, Phường 2, Quận 5, Thành phố Hồ Chí Minh, Việt Nam','Nhà chờ xe buýt', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2Fposter-ngoa%CC%80i-tro%CC%9B%CC%80i-ta%CC%A3i-be%CC%82%CC%81n-xe-bus.jpeg?alt=media&token=68a94673-1703-4978-8edc-46d26951e92a', 10.75663031647467, 106.67706286932429, false),  
   (6, 2, 'Huỳnh Mẫn Đạt/34 Hẻm 92, Khu phố 6, Quận 5, Thành phố Hồ Chí Minh, Việt Nam', 'Đất tư nhân/Nhà ở riêng lẻ', 'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd', 10.75608110554023, 106.67715193917813, true),

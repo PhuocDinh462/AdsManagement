@@ -186,23 +186,27 @@ const register = catchAsync(async (req, res, next) => {
 const logout = catchAsync(async (req, res, next) => {
   if (req.body.refresh_token) {
     const refresh_token = req.body.refresh_token;
-    connection.query(`UPDATE user SET refresh_token = NULL WHERE refresh_token = ?`, [refresh_token], (err, results) => {
-      if (err) {
-        console.error('Error executing query: ' + err.stack);
-        return res.status(500).json({ error: 'Database error' });
+    connection.query(
+      `UPDATE user SET refresh_token = NULL WHERE refresh_token = ?`,
+      [refresh_token],
+      (err, results) => {
+        if (err) {
+          console.error('Error executing query: ' + err.stack);
+          return res.status(500).json({ error: 'Database error' });
+        }
+        if (results.affectedRows > 0) {
+          res.status(200).json({
+            status: 'success',
+            msg: 'Logout successful',
+          });
+        } else {
+          res.status(404).json({
+            status: 'not found',
+            msg: 'Not Found User To Logout',
+          });
+        }
       }
-      if (results.affectedRows > 0) {
-        res.status(200).json({
-          status: 'success',
-          msg: 'Logout successful',
-        });
-      } else {
-        res.status(404).json({
-          status: 'not found',
-          msg: 'Not Found User To Logout',
-        });
-      }
-    });
+    );
   } else {
     return res.status(400).json({ message: 'Please provide token needed' });
   }
