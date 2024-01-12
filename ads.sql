@@ -510,21 +510,31 @@ INSERT INTO
     )
 VALUES (
         1,
-        'Ad Content A',
-        'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2F3CD5A2AF-685B-4291-8EDF-FE84B7C397E5.JPGbab08c1e-c9a6-4c22-a95e-e4e45f3f9f3b?alt=media&token=8bd87c2b-20c1-43a8-8bec-a83e1fc56ee1',
+        'The text in this cute Facebook ad design is brilliantly positioned. The funny part (secret SaaS) speaks loudest with the big font, but the pain point grabs your attention first with the contrasting yellow highlighting.',
+        'https://www.wordstream.com/wp-content/uploads/2022/02/facebook-ad-examples-grin-480x660.png',
         50.0,
         60.0,
         1,
         1
     ), (
         2,
-        'Ad Content B',
-        'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd',
+        'The text in this cute Facebook ad design is brilliantly positioned. The funny part (secret SaaS) speaks loudest with the big font, but the pain point grabs your attention first with the contrasting yellow highlighting.',
+        'https://www.wordstream.com/wp-content/uploads/2022/02/facebook-ad-examples-grin-480x660.png',
         55.0,
         65.0,
-        2,
+        1,
         2
+    ),
+     (
+        3,
+        'The text in this cute Facebook ad design is brilliantly positioned. The funny part (secret SaaS) speaks loudest with the big font, but the pain point grabs your attention first with the contrasting yellow highlighting.',
+        'https://www.wordstream.com/wp-content/uploads/2022/02/facebook-ad-examples-grin-480x660.png',
+        100.0,
+        70.0,
+        1,
+        1
     );
+
 -- Dữ liệu mẫu cho bảng Report
 INSERT INTO
     `report` (
@@ -541,7 +551,7 @@ INSERT INTO
     )
 VALUES (
         '2023-01-15',
-        'Processing A',
+        NULL,
         'John Doe',
         'john@example.com',
         '111222333',
@@ -552,14 +562,14 @@ VALUES (
         NULL
     ), (
         '2023-02-20',
-        'Processing B',
+        'Phạt 5 triệu đối với trường hợp này.',
         'Jane Doe',
         'jane@example.com',
         '444555666',
         'pending',
         2,
         2,
-        NULL,
+        1,
         1
     );
 
@@ -579,8 +589,8 @@ INSERT INTO
         report_id
     )
 VALUES (
-        'License Content A',
-        'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2F3CD5A2AF-685B-4291-8EDF-FE84B7C397E5.JPGbab08c1e-c9a6-4c22-a95e-e4e45f3f9f3b?alt=media&token=8bd87c2b-20c1-43a8-8bec-a83e1fc56ee1',
+        'The text in this cute Facebook ad design is brilliantly positioned. The funny part (secret SaaS) speaks loudest with the big font, but the pain point grabs your attention first with the contrasting yellow highlighting.',
+        'https://www.wordstream.com/wp-content/uploads/2022/02/facebook-ad-examples-grin-480x660.png',
         'pending',
         NULL,
         4,
@@ -591,8 +601,8 @@ VALUES (
         1,
         1
     ), (
-        'License Content B',
-        'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Column_Outdoor-Advertising-Pillar-Mockup-PSD.jpeg7421084b-030d-42ab-b2ef-7498ebc118fb?alt=media&token=36623d13-caa8-4ad4-ac91-ed2b470330fd',
+        'The text in this cute Facebook ad design is brilliantly positioned. The funny part (secret SaaS) speaks loudest with the big font, but the pain point grabs your attention first with the contrasting yellow highlighting.',
+        'https://www.wordstream.com/wp-content/uploads/2022/02/facebook-ad-examples-grin-480x660.png',
         'pending',
         NULL,
         5,
@@ -622,9 +632,9 @@ VALUES (
         1,
         2,
         'pending',
-        'Edit Content A',
+        'Chỉnh sửa tên bảng quảng cáo.',
         'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2F1662892613618.jpg919448b3-25d1-4488-b565-3b426c980c6a?alt=media&token=92d64588-0c7a-451c-9363-01648d5c4c74',
-        'Change request A',
+        'Không đẹp.',
         '2023-12-24',
         10.0,
         8.0,
@@ -633,9 +643,9 @@ VALUES (
         1,
         2,
         'canceled',
-        'Edit Content A',
+        'Chỉnh sửa thông tin, hình ảnh bảng quảng cáo.',
         'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FCity%20lights%20(Anime%20Background).jpg0c1069f9-5a1b-40f9-8171-7513dc627248?alt=media&token=24074b26-ce6b-4aa4-93ad-579fbc8e4c0f',
-        'Change request A',
+        'Không phù hợp.',
         '2023-12-21',
         6.0,
         7.0,
@@ -644,9 +654,9 @@ VALUES (
         2,
         2,
         'approved',
-        'Edit Content B',
+        'Thêm ngày gia hạn.',
         'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2F370296844_352828990475963_7472452677685245752_n%20(1).jpg8bbe4926-7c8f-4969-a5cd-5d9f65c2685b?alt=media&token=f8d9bd8d-29f0-4450-8a02-5cd036776bc0',
-        'Change request B',
+        'Hết hợp đồng gia hạn.',
         '2023-12-20',
         20.0,
         10.0,
@@ -673,7 +683,7 @@ VALUES (
         false,
         'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FFree-Street-Column-Advertising-Mockup-PSD.jpege1e620af-64ec-466f-aa84-5d062a7341e7?alt=media&token=95e9ee75-1837-4a3b-b9fa-e8da8c113cb7',
         'pending',
-        'Change request A',
+        'Tên địa điểm không hợp lệ',
         '2023-12-20',
         4
     ), (
@@ -683,7 +693,7 @@ VALUES (
         false,
         'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2F340842304_211052514888451_6814854970581350591_n.jpegd6986e67-e6d8-4f77-a1d5-b88e31a57f19?alt=media&token=45c08982-18fc-43ad-928c-2aa4f2dda397',
         'pending',
-        'Change request C',
+        'Thêm diện tích của điểm quảng cáo.',
         '2023-11-25',
         6
     ), (
@@ -693,7 +703,7 @@ VALUES (
         false,
         'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2Fjsx8_8lo8_180725-removebg.png4dc1c29d-a1ee-4603-9f5a-16b456067ac2?alt=media&token=51ea5aa2-4862-4a67-a615-7c9bd0da2f2c',
         'canceled',
-        'Change request D',
+        'Tện địa điểm không hợp lệ.',
         '2023-12-25',
         7
     ), (
@@ -703,7 +713,7 @@ VALUES (
         true,
         'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FCity%20lights%20(Anime%20Background).jpg0c1069f9-5a1b-40f9-8171-7513dc627248?alt=media&token=24074b26-ce6b-4aa4-93ad-579fbc8e4c0f',
         'pending',
-        'Change request B',
+        'Không cho phép',
         '2023-11-25',
         5
     );
