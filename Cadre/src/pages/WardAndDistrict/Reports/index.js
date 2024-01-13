@@ -1,16 +1,16 @@
-import classes from './styles.module.scss';
-import React, { useState, useMemo, useEffect } from 'react';
-import { faLocationDot, faEye } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { format } from 'date-fns';
+import { useEffect, useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
+import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
+import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
+import { selectSelectedWards, selectUser, setReportCoord, setReportIndex } from '~/src/store/reducers';
+import request from '~/src/utils/request';
 import Pagination from '~components/Pagination';
 import SearchBar from '~components/SearchBar';
-import useAxiosPrivate from '~/src/hook/useAxiosPrivate';
-import { format } from 'date-fns';
-import { useDispatch, useSelector } from 'react-redux';
-import { setReportIndex, setReportCoord, selectUser, selectSelectedWards } from '~/src/store/reducers';
-import { useNavigate } from 'react-router';
-import { useSocketSubscribe } from '~/src/hook/useSocketSubscribe';
-import request from '~/src/utils/request';
+import classes from './styles.module.scss';
 
 export default function Reports() {
   const axiosPrivate = useAxiosPrivate();
@@ -35,7 +35,7 @@ export default function Reports() {
         .then((res) => {
           if (res.data.data.length > 0) {
             for (let j = 0; j < res.data.data.length; j++) {
-              reports.push(res.data.data[j].sort((a, b) => new Date(b.latestReport) - new Date(a.latestReport)));
+              reports.push(res.data.data[j]);
             }
           }
         })
@@ -43,8 +43,8 @@ export default function Reports() {
           console.log('Get report lists error: ', error);
         });
     }
-    setData(reports);
-    setFilteredData(reports);
+    setData(reports.reverse());
+    setFilteredData(reports.reverse());
     setLoading(false);
   };
   const fetchSingleWardReports = async () => {
