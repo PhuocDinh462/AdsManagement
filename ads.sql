@@ -1837,16 +1837,16 @@ INSERT INTO
     )
 VALUES (
         'Content A',
-        'img1A.jpg',
-        'img2A.jpg',
+        'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2F1662892613618.jpg919448b3-25d1-4488-b565-3b426c980c6a?alt=media&token=92d64588-0c7a-451c-9363-01648d5c4c74',
+        'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FCity%20lights%20(Anime%20Background).jpg0c1069f9-5a1b-40f9-8171-7513dc627248?alt=media&token=24074b26-ce6b-4aa4-93ad-579fbc8e4c0f',
         30.0,
         40.0,
         12.0,
         22.0
     ), (
         'Content B',
-        'img1B.jpg',
-        'img2B.jpg',
+        'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2F1662892613618.jpg919448b3-25d1-4488-b565-3b426c980c6a?alt=media&token=92d64588-0c7a-451c-9363-01648d5c4c74',
+        'https://firebasestorage.googleapis.com/v0/b/wncuploadimage.appspot.com/o/images%2FCity%20lights%20(Anime%20Background).jpg0c1069f9-5a1b-40f9-8171-7513dc627248?alt=media&token=24074b26-ce6b-4aa4-93ad-579fbc8e4c0f',
         35.0,
         45.0,
         18.0,
@@ -1906,7 +1906,7 @@ INSERT INTO
     )
 VALUES (
         '2023-01-15',
-        NULL,
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
         'John Doe',
         'john@example.com',
         '111222333',
@@ -1927,19 +1927,16 @@ VALUES (
         1,
         1
     ), (
-        4,
         '2024-01-12',
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
         'Phuoc Dinh',
         'phuocdinh462@gmail.com',
         '0988999888',
         'processing',
-        4,
+        1,
         1,
         5,
-        NULL,
-        '2024-01-12 13:33:35',
-        '2024-01-12 13:34:35'
+        NULL
     );
 
 -- Dữ liệu mẫu cho bảng LicensingRequest
